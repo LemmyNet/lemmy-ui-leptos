@@ -1,0 +1,8 @@
+# ide config
+.idea
+.vscode
+
+# build
+target
+node_modules
+style
