@@ -1,33 +1,11 @@
-use crate::api;
+use crate::api::post::fetch_posts;
 use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
 
 #[component]
-pub fn App(cx: Scope) -> impl IntoView {
-  provide_meta_context(cx);
-
-  view! { cx,
-    <Stylesheet id="leptos" href="/pkg/tailwind.css"/>
-    <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-    <Router>
-      <Routes>
-        <Route path="" view=move |cx| view! { cx, <Home/> }/>
-      </Routes>
-    </Router>
-  }
-}
-
-#[component]
-fn Home(cx: Scope) -> impl IntoView {
+pub fn Home(cx: Scope) -> impl IntoView {
   let (count, set_count) = create_signal(cx, 0);
 
-  let posts = create_resource(
-    cx,
-    move || 2,
-    move |_| async move { api::fetch_posts(cx).await },
-  );
-  let (pending, set_pending) = create_signal(cx, false);
+  let posts = create_resource(cx, move || 2, move |_| async move { fetch_posts(cx).await });
 
   view! { cx,
     <main class="my-0 mx-auto max-w-3xl text-center">

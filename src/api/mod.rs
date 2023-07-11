@@ -1,15 +1,8 @@
-use lemmy_api_common::post::GetPostsResponse;
 use leptos::{Scope, Serializable};
 
+pub mod post;
+
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
-
-pub fn posts() -> String {
-  format!("{}/post/list", ENDPOINT)
-}
-
-pub async fn fetch_posts(cx: Scope) -> Option<GetPostsResponse> {
-  fetch_api::<GetPostsResponse>(cx, &posts()).await
-}
 
 #[cfg(not(feature = "ssr"))]
 pub async fn fetch_api<T>(cx: Scope, path: &str) -> Option<T>

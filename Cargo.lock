@@ -1393,6 +1393,7 @@ dependencies = [
  "reqwest",
  "serde",
  "simple_logger",
+ "tracing",
  "wasm-bindgen",
  "web-sys",
 ]

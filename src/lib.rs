@@ -1,40 +1,48 @@
-pub mod api;
-pub mod app;
 use cfg_if::cfg_if;
+use leptos::*;
+use leptos_meta::*;
+use leptos_router::*;
+mod api;
+mod routes;
+use crate::routes::{home::Home, nav::Nav};
 
+#[component]
+pub fn App(cx: Scope) -> impl IntoView {
+  provide_meta_context(cx);
+  let (is_routing, set_is_routing) = create_signal(cx, false);
+
+  view! { cx,
+    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+    <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+    <Meta name="description" content="Leptos implementation of a HackerNews demo."/>
+    // adding `set_is_routing` causes the router to wait for async data to load on new pages
+    <Router set_is_routing>
+      // shows a progress bar while async data are loading
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+      <Nav/>
+      <main>
+        <Routes>
+          <Route path="home" view=Home/>
+          <Route path="" view=Home/>
+        // <Route path="stories/:id" view=Story/>
+        // <Route path=":stories?" view=Stories/>
+        </Routes>
+      </main>
+    </Router>
+  }
+}
+
+// Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {
     if #[cfg(feature = "hydrate")] {
         use wasm_bindgen::prelude::wasm_bindgen;
-        use crate::app::*;
-        use crate::api::*;
-        use leptos::*;
 
         #[wasm_bindgen]
         pub fn hydrate() {
             _ = console_log::init_with_level(log::Level::Debug);
             console_error_panic_hook::set_once();
-
-            log!("hydrate mode - hydrating");
-
-            leptos::mount_to_body(|cx| {
-                view! { cx,  <App/> }
-            });
-        }
-    }
-    else if #[cfg(feature = "csr")] {
-        use wasm_bindgen::prelude::wasm_bindgen;
-
-        #[wasm_bindgen(start)]
-        pub fn main() {
-            use app::*;
-            use leptos::*;
-            _ = console_log::init_with_level(log::Level::Debug);
-            console_error_panic_hook::set_once();
-
-            log!("csr mode - mounting to body");
-
-            mount_to_body(|cx| {
-                view! { cx, <App /> }
+            leptos::mount_to_body(move |cx| {
+                view! { cx, <App/> }
             });
         }
     }

@@ -18,6 +18,7 @@ web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.2", features = ["http"] }
 log = "0.4"
 cfg-if = "1.0"
+tracing = "0.1"
 reqwest = { version = "0.11", features = ["json"] }
 getrandom = { version = "0.2.10", features = ["js"] }
 lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }
