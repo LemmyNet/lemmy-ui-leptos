@@ -1378,6 +1378,7 @@ version = "0.0.1"
 dependencies = [
  "actix-files",
  "actix-web",
+ "anyhow",
  "cfg-if",
  "console_error_panic_hook",
  "console_log",
@@ -1392,6 +1393,7 @@ dependencies = [
  "log",
  "reqwest",
  "serde",
+ "serde_urlencoded",
  "simple_logger",
  "tracing",
  "wasm-bindgen",
@@ -1403,6 +1405,7 @@ name = "lemmy_api_common"
 version = "0.18.1"
 dependencies = [
  "anyhow",
+ "getrandom",
  "lemmy_db_schema",
  "lemmy_db_views",
  "lemmy_db_views_actor",

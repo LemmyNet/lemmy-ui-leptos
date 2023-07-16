@@ -22,6 +22,8 @@ tracing = "0.1"
 reqwest = { version = "0.11", features = ["json"] }
 getrandom = { version = "0.2.10", features = ["js"] }
 lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }
+serde_urlencoded = "0.7"
+anyhow = "*"
 
 # dependecies for client (enable when csr or hydrate set)
 wasm-bindgen = { version = "0.2", optional = true }

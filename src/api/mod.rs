@@ -1,18 +1,24 @@
 use leptos::{Scope, Serializable};
+use serde::Serialize;
 
 pub mod post;
 
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
+pub fn build_route(route: &str) -> String {
+  format!("{}/{}", ENDPOINT, route)
+}
+
 #[cfg(not(feature = "ssr"))]
-pub async fn fetch_api<T>(cx: Scope, path: &str) -> Option<T>
+pub async fn fetch_api<Response, Form>(cx: Scope, path: &str, form: &Form) -> Option<Response>
 where
-  T: Serializable,
+  Response: Serializable,
+  Form: Serialize,
 {
   let abort_controller = web_sys::AbortController::new().ok();
   let abort_signal = abort_controller.as_ref().map(|a| a.signal());
-
-  let json = gloo_net::http::Request::get(path)
+  let path_with_query = build_fetch_query(path, form);
+  let json = gloo_net::http::Request::get(&path_with_query)
     .abort_signal(abort_signal.as_ref())
     .send()
     .await
@@ -29,20 +35,30 @@ where
       abort_controller.abort()
     }
   });
-  T::de(&json).ok()
+  Response::de(&json).ok()
 }
 
 #[cfg(feature = "ssr")]
-pub async fn fetch_api<T>(_cx: Scope, path: &str) -> Option<T>
+pub async fn fetch_api<Response, Form>(_cx: Scope, path: &str, form: &Form) -> Option<Response>
 where
-  T: Serializable,
+  Response: Serializable,
+  Form: Serialize,
 {
-  let json = reqwest::get(path)
+  let path_with_query = build_fetch_query(path, form);
+  let client = reqwest::Client::new();
+  let json = client
+    .get(&path_with_query)
+    .send()
     .await
     .map_err(|e| log::error!("{e}"))
     .ok()?
     .text()
     .await
     .ok()?;
-  T::de(&json).map_err(|e| log::error!("{e}")).ok()
+  Response::de(&json).map_err(|e| log::error!("{e}")).ok()
+}
+
+fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
+  let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
+  format!("{}?{}", path, form_str)
 }

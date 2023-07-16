@@ -1,10 +1,10 @@
+use crate::ui::components::{common::nav::Nav, home::home_activity::HomeActivity};
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 mod api;
-mod routes;
-use crate::routes::{home::Home, nav::Nav};
+mod ui;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -14,7 +14,7 @@ pub fn App(cx: Scope) -> impl IntoView {
   view! { cx,
     <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-    <Meta name="description" content="Leptos implementation of a HackerNews demo."/>
+    <Meta name="description" content="Lemmy-UI-Leptos."/>
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
       // shows a progress bar while async data are loading
@@ -22,8 +22,8 @@ pub fn App(cx: Scope) -> impl IntoView {
       <Nav/>
       <main>
         <Routes>
-          <Route path="home" view=Home/>
-          <Route path="" view=Home/>
+          <Route path="home" view=HomeActivity/>
+          <Route path="" view=HomeActivity/>
         // <Route path="stories/:id" view=Story/>
         // <Route path=":stories?" view=Stories/>
         </Routes>
