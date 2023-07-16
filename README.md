@@ -2,4 +2,6 @@
 
 Based on Lepto's [tailwind](https://github.com/leptos-rs/leptos/tree/main/examples/tailwind) and [hackernews](https://github.com/leptos-rs/leptos/tree/main/examples/hackernews) examples.
 
-## TODO
+## Development
+
+See [CONTRIBUTING.md](/CONTRIBUTING.md)

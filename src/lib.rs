@@ -1,4 +1,4 @@
-use crate::ui::components::{common::nav::Nav, home::home_activity::HomeActivity};
+use crate::ui::components::{common::nav::BottomNav, home::home_activity::HomeActivity};
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
@@ -15,11 +15,16 @@ pub fn App(cx: Scope) -> impl IntoView {
     <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
     <Meta name="description" content="Lemmy-UI-Leptos."/>
+    <Meta name="viewport" content="viewport-fit=cover"/>
+    <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+    <Script>
+      eruda.init();
+    </Script>
+
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
       // shows a progress bar while async data are loading
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
-      <Nav/>
       <main>
         <Routes>
           <Route path="home" view=HomeActivity/>
@@ -28,6 +33,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         // <Route path=":stories?" view=Stories/>
         </Routes>
       </main>
+      <BottomNav/>
     </Router>
   }
 }

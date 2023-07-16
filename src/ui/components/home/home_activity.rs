@@ -32,8 +32,8 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
   let err_msg = " Error loading this post.";
 
   view! { cx,
-    <main class="my-0 mx-auto max-w-3xl text-center">
-      <h2 class="p-6 text-4xl">"Not there. Welcome to Leptos with Tailwind"</h2>
+    <main class="mx-auto text-center">
+      <h2 class="p-6 text-4xl">"Welcome to Leptos with Tailwind"</h2>
       <Suspense fallback=|| {
           view! { cx, "Loading..." }
       }>
@@ -42,7 +42,7 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
                 .read(cx)
                 .map(|res| match res {
                     None => {
-                        view! { cx, <div class="item-view">{err_msg}</div> }
+                        view! { cx, <div>{err_msg}</div> }
                     }
                     Some(res) => {
                         view! { cx,

@@ -2,30 +2,21 @@ use leptos::{component, view, IntoView, Scope};
 use leptos_router::*;
 
 #[component]
-pub fn Nav(cx: Scope) -> impl IntoView {
+pub fn BottomNav(cx: Scope) -> impl IntoView {
   view! { cx,
-    <header class="header">
-      <nav class="inner">
-        <A href="/home">
-          <strong>"HN"</strong>
+    <footer class="sticky bottom-0">
+      <div class="btm-nav btm-nav-lg">
+        <A href="/" class="active">
+          // TODO put svg's here
+          <span class="btm-nav-label">"Home"</span>
         </A>
-        <A href="/new">
-          <strong>"New"</strong>
-        </A>
-        <A href="/show">
-          <strong>"Show"</strong>
-        </A>
-        <A href="/ask">
-          <strong>"Ask"</strong>
-        </A>
-        <A href="/job">
-          <strong>"Jobs"</strong>
-        </A>
-        //github.com/gbj/leptos" target="_blank" rel="noreferrer">
-        <a class="github" href="http://github.com/gbj/leptos" target="_blank" rel="noreferrer">
-          "Built with Leptos"
-        </a>
-      </nav>
-    </header>
+        <button>
+          <span class="btm-nav-label">"Warnings"</span>
+        </button>
+        <button>
+          <span class="btm-nav-label">"Statics"</span>
+        </button>
+      </div>
+    </footer>
   }
 }
