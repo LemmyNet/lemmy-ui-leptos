@@ -1,6 +1,7 @@
 use leptos::{Scope, Serializable};
 use serde::Serialize;
 
+pub mod comment;
 pub mod post;
 
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";

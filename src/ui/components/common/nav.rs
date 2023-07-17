@@ -11,10 +11,10 @@ pub fn BottomNav(cx: Scope) -> impl IntoView {
           <span class="btm-nav-label">"Home"</span>
         </A>
         <button>
-          <span class="btm-nav-label">"Warnings"</span>
+          <span class="btm-nav-label">"TODO 1"</span>
         </button>
         <button>
-          <span class="btm-nav-label">"Statics"</span>
+          <span class="btm-nav-label">"TODO 2"</span>
         </button>
       </div>
     </footer>

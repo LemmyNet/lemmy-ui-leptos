@@ -32,8 +32,8 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
   let err_msg = " Error loading this post.";
 
   view! { cx,
-    <main class="mx-auto text-center">
-      <h2 class="p-6 text-4xl">"Welcome to Leptos with Tailwind"</h2>
+    <main class="mx-auto">
+      <h2 class="p-6 text-4xl">"Home activity"</h2>
       <Suspense fallback=|| {
           view! { cx, "Loading..." }
       }>

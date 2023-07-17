@@ -1,4 +1,8 @@
-use crate::ui::components::{common::nav::BottomNav, home::home_activity::HomeActivity};
+use crate::ui::components::{
+  common::nav::BottomNav,
+  home::home_activity::HomeActivity,
+  post::post_activity::PostActivity,
+};
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
@@ -29,6 +33,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Routes>
           <Route path="home" view=HomeActivity/>
           <Route path="" view=HomeActivity/>
+          <Route path="post/:id" view=PostActivity/>
         // <Route path="stories/:id" view=Story/>
         // <Route path=":stories?" view=Stories/>
         </Routes>

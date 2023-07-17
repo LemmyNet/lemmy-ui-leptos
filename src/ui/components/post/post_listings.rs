@@ -5,10 +5,18 @@ use leptos::*;
 #[component]
 pub fn PostListings(cx: Scope, posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
   view! { cx,
-    <For
-      each=posts
-      key=|pv| pv.post.id
-      view=move |cx, pv| view! { cx, <PostListing post_view=pv.into()/> }
-    />
+    <ul>
+      <For
+        each=posts
+        key=|pv| pv.post.id
+        view=move |cx, pv| {
+            view! { cx,
+              <li>
+                <PostListing post_view=pv.into()/>
+              </li>
+            }
+        }
+      />
+    </ul>
   }
 }
