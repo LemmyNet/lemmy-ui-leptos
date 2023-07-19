@@ -1403,6 +1403,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.18.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#5cd4c6c5868c8bec964b6065d079f3a057885be7"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1419,6 +1420,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.18.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#5cd4c6c5868c8bec964b6065d079f3a057885be7"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1436,6 +1438,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.18.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#5cd4c6c5868c8bec964b6065d079f3a057885be7"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1445,6 +1448,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.18.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#5cd4c6c5868c8bec964b6065d079f3a057885be7"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1454,6 +1458,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.18.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#5cd4c6c5868c8bec964b6065d079f3a057885be7"
 dependencies = [
  "lemmy_db_schema",
  "serde",
