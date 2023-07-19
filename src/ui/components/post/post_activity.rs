@@ -22,7 +22,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             comment_id: None,
             auth: None,
           };
-          get_post(cx, &form).await
+          get_post(cx, &form).await.ok()
         }
       }
     },
@@ -48,7 +48,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             saved_only: None,
             auth: None,
           };
-          get_comments(cx, &form).await
+          get_comments(cx, &form).await.ok()
         }
       }
     },

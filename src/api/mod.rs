@@ -1,33 +1,66 @@
+use anyhow::{anyhow, Result};
 use leptos::{Scope, Serializable};
 use serde::Serialize;
 
 pub mod comment;
+pub mod login;
 pub mod post;
 
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
-pub fn build_route(route: &str) -> String {
-  format!("{}/{}", ENDPOINT, route)
+pub enum HttpType {
+  Get,
+  Post,
+  Put,
 }
 
 #[cfg(not(feature = "ssr"))]
-pub async fn fetch_api<Response, Form>(cx: Scope, path: &str, form: &Form) -> Option<Response>
+pub async fn api_wrapper<Response, Form>(
+  cx: Scope,
+  type_: HttpType,
+  path: &str,
+  form: &Form,
+) -> Result<Response>
 where
   Response: Serializable,
   Form: Serialize,
 {
+  use wasm_bindgen::UnwrapThrowExt;
+
+  let route = &build_route(path);
   let abort_controller = web_sys::AbortController::new().ok();
   let abort_signal = abort_controller.as_ref().map(|a| a.signal());
-  let path_with_query = build_fetch_query(path, form);
-  let json = gloo_net::http::Request::get(&path_with_query)
-    .abort_signal(abort_signal.as_ref())
-    .send()
-    .await
-    .map_err(|e| log::error!("{e}"))
-    .ok()?
-    .text()
-    .await
-    .ok()?;
+
+  let json = match type_ {
+    HttpType::Get => {
+      gloo_net::http::Request::get(&build_fetch_query(route, form))
+        .abort_signal(abort_signal.as_ref())
+        .send()
+        .await?
+        .text()
+        .await?
+    }
+    HttpType::Post => {
+      gloo_net::http::Request::post(route)
+        .json(form)
+        .expect_throw("Could not parse json body")
+        .abort_signal(abort_signal.as_ref())
+        .send()
+        .await?
+        .text()
+        .await?
+    }
+    HttpType::Put => {
+      gloo_net::http::Request::put(route)
+        .json(form)
+        .expect_throw("Could not parse json body")
+        .abort_signal(abort_signal.as_ref())
+        .send()
+        .await?
+        .text()
+        .await?
+    }
+  };
 
   // abort in-flight requests if the Scope is disposed
   // i.e., if we've navigated away from this page
@@ -36,27 +69,44 @@ where
       abort_controller.abort()
     }
   });
-  Response::de(&json).ok()
+
+  // Return the error response json as an error
+  Response::de(&json).map_err(|_| anyhow!(json.clone()))
 }
 
 #[cfg(feature = "ssr")]
-pub async fn fetch_api<Response, Form>(_cx: Scope, path: &str, form: &Form) -> Option<Response>
+pub async fn api_wrapper<Response, Form>(
+  _cx: Scope,
+  type_: HttpType,
+  path: &str,
+  form: &Form,
+) -> Result<Response>
 where
   Response: Serializable,
   Form: Serialize,
 {
-  let path_with_query = build_fetch_query(path, form);
+  let route = &build_route(path);
   let client = reqwest::Client::new();
-  let json = client
-    .get(&path_with_query)
-    .send()
-    .await
-    .map_err(|e| log::error!("{e}"))
-    .ok()?
-    .text()
-    .await
-    .ok()?;
-  Response::de(&json).map_err(|e| log::error!("{e}")).ok()
+
+  let json = match type_ {
+    HttpType::Get => {
+      client
+        .get(&build_fetch_query(route, form))
+        .send()
+        .await?
+        .text()
+        .await?
+    }
+    HttpType::Post => client.post(path).json(form).send().await?.text().await?,
+    HttpType::Put => client.put(path).json(form).send().await?.text().await?,
+  };
+
+  // Return the error response json as an error
+  Response::de(&json).map_err(|_| anyhow!(json.clone()))
+}
+
+fn build_route(route: &str) -> String {
+  format!("{}/{}", ENDPOINT, route)
 }
 
 fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {

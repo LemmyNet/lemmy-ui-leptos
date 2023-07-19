@@ -1,6 +1,7 @@
 use crate::ui::components::{
-  common::nav::BottomNav,
+  common::nav::{BottomNav, TopNav},
   home::home_activity::HomeActivity,
+  login::login_activity::LoginActivity,
   post::post_activity::PostActivity,
 };
 use cfg_if::cfg_if;
@@ -29,10 +30,12 @@ pub fn App(cx: Scope) -> impl IntoView {
     <Router set_is_routing>
       // shows a progress bar while async data are loading
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+      <TopNav/>
       <main>
         <Routes>
           <Route path="home" view=HomeActivity/>
           <Route path="" view=HomeActivity/>
+          <Route path="login" view=LoginActivity/>
           <Route path="post/:id" view=PostActivity/>
         // <Route path="stories/:id" view=Story/>
         // <Route path=":stories?" view=Stories/>

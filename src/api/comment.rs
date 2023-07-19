@@ -1,8 +1,9 @@
-use super::build_route;
-use crate::api::fetch_api;
+use super::HttpType;
+use crate::api::api_wrapper;
+use anyhow::Result;
 use lemmy_api_common::comment::{GetComments, GetCommentsResponse};
 use leptos::Scope;
 
-pub async fn get_comments(cx: Scope, form: &GetComments) -> Option<GetCommentsResponse> {
-  fetch_api::<GetCommentsResponse, GetComments>(cx, &build_route("comment/list"), form).await
+pub async fn get_comments(cx: Scope, form: &GetComments) -> Result<GetCommentsResponse> {
+  api_wrapper::<GetCommentsResponse, GetComments>(cx, HttpType::Get, "comment/list", form).await
 }

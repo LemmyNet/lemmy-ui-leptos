@@ -26,7 +26,7 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
       saved_only: None,
       auth: None,
     };
-    list_posts(cx, &form).await
+    list_posts(cx, &form).await.ok()
   });
 
   let err_msg = " Error loading this post.";
