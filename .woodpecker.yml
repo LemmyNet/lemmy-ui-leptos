@@ -12,6 +12,8 @@ pipeline:
     commands:
       - taplo format --check
 
+  # TODO add leptos-fmt. Issue: https://github.com/bram209/leptosfmt/issues/12
+
   cargo_fmt:
     image: *rust_image
     environment:
@@ -34,6 +36,7 @@ pipeline:
     environment:
       CARGO_HOME: .cargo
     commands:
+      - apt-get update && apt-get -y install libssl-dev pkg-config
       - rustup target add wasm32-unknown-unknown
       - cargo install cargo-leptos
       - cargo leptos test
