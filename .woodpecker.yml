@@ -12,8 +12,6 @@ pipeline:
     commands:
       - taplo format --check
 
-  # TODO add leptos-fmt. Issue: https://github.com/bram209/leptosfmt/issues/12
-
   cargo_fmt:
     image: *rust_image
     environment:
@@ -22,6 +20,17 @@ pipeline:
     commands:
       - cargo fmt -- --check
 
+  # TODO add leptos-fmt. Issue: https://github.com/bram209/leptosfmt/issues/12
+  # Workaround doesn't work because of weird // issue: 
+  # https://github.com/bram209/leptosfmt/issues/45
+  # leptos_fmt:
+  #   image: *rust_image
+  #   environment:
+  #     CARGO_HOME: .cargo
+  #   commands:
+  #     - cargo install leptosfmt
+  #     - ./check_leptos_fmt.sh
+ 
   cargo_clippy:
     image: *rust_image
     environment:
@@ -47,9 +56,11 @@ pipeline:
     environment:
       CARGO_HOME: .cargo
     commands:
-      - apt-get update && apt-get -y install libssl-dev pkg-config
+      - apt-get update && apt-get -y install libssl-dev pkg-config npm nodejs
       - rustup target add wasm32-unknown-unknown
       - cargo install cargo-leptos
+      - npm i
+      - npx tailwindcss -i ./input.css -o ./style/output.css
       - cargo leptos build
 
   notify_on_failure:
