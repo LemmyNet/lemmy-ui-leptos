@@ -1,5 +1,5 @@
 variables:
-  - &rust_image "rustlang/rust:nightly-slim"
+  - &rust_image "rustlang/rust:nightly-alpine"
 
 pipeline:
   prettier_check:
