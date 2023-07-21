@@ -2,7 +2,6 @@ variables:
   - &rust_image "rustlang/rust:nightly-slim"
 
 pipeline:
-
   cargo_build:
     image: *rust_image
     environment:
@@ -10,7 +9,6 @@ pipeline:
     commands:
       - apt-get update && apt-get -y install libssl-dev pkg-config curl
       - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-      # - export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
       - source /root/.nvm
       - nvm install node
       - npm i
@@ -18,7 +16,6 @@ pipeline:
       - rustup target add wasm32-unknown-unknown
       - cargo install cargo-leptos
       - cargo leptos build
-
 
   prettier_check:
     image: tmknom/prettier:3.0.0
