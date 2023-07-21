@@ -18,15 +18,16 @@ pipeline:
       # store cargo data in repo folder so that it gets cached between steps
       CARGO_HOME: .cargo
     commands:
-      - cargo +nightly fmt -- --check
+      - cargo fmt -- --check
 
   cargo_clippy:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo
     commands:
+      - sudo apt update && sudo apt-get -y install libssl-dev
       - rustup component add clippy
-      - cargo clippy --tests
+      - cargo clippy
 
   cargo_test:
     image: *rust_image
