@@ -31,7 +31,18 @@ pipeline:
       - rustup component add clippy
       - cargo clippy
 
-  cargo_test:
+  # Nothing to test yet
+  # cargo_test:
+  #   image: *rust_image
+  #   environment:
+  #     CARGO_HOME: .cargo
+  #   commands:
+  #     - apt-get update && apt-get -y install libssl-dev pkg-config
+  #     - rustup target add wasm32-unknown-unknown
+  #     - cargo install cargo-leptos
+  #     - cargo leptos test
+
+  cargo_build:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo
@@ -39,13 +50,6 @@ pipeline:
       - apt-get update && apt-get -y install libssl-dev pkg-config
       - rustup target add wasm32-unknown-unknown
       - cargo install cargo-leptos
-      - cargo leptos test
-
-  cargo_build:
-    image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
-    commands:
       - cargo leptos build
 
   notify_on_failure:
