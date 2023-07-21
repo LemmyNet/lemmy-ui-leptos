@@ -2,6 +2,22 @@ variables:
   - &rust_image "rustlang/rust:nightly-slim"
 
 pipeline:
+
+  cargo_build:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - apt-get update && apt-get -y install libssl-dev pkg-config curl
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+      - nvm install node
+      - npm i
+      - npx tailwindcss -i ./input.css -o ./style/output.css
+      - rustup target add wasm32-unknown-unknown
+      - cargo install cargo-leptos
+      - cargo leptos build
+
+
   prettier_check:
     image: tmknom/prettier:3.0.0
     commands:
@@ -50,18 +66,6 @@ pipeline:
   #     - rustup target add wasm32-unknown-unknown
   #     - cargo install cargo-leptos
   #     - cargo leptos test
-
-  cargo_build:
-    image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
-    commands:
-      - apt-get update && apt-get -y install libssl-dev pkg-config npm nodejs
-      - rustup target add wasm32-unknown-unknown
-      - cargo install cargo-leptos
-      - npm i
-      - npx tailwindcss -i ./input.css -o ./style/output.css
-      - cargo leptos build
 
   notify_on_failure:
     image: alpine:3
