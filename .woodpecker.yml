@@ -21,7 +21,7 @@ pipeline:
       - cargo fmt -- --check
 
   # TODO add leptos-fmt. Issue: https://github.com/bram209/leptosfmt/issues/12
-  # Workaround doesn't work because of weird // issue: 
+  # Workaround doesn't work because of weird // issue:
   # https://github.com/bram209/leptosfmt/issues/45
   # leptos_fmt:
   #   image: *rust_image
@@ -30,7 +30,7 @@ pipeline:
   #   commands:
   #     - cargo install leptosfmt
   #     - ./check_leptos_fmt.sh
- 
+
   cargo_clippy:
     image: *rust_image
     environment:
