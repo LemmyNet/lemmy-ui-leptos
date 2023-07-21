@@ -31,26 +31,12 @@ pipeline:
   #     - cargo install leptosfmt
   #     - ./check_leptos_fmt.sh
 
-  cargo_build:
-    image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
-    commands:
-      # - apt-get update && apt-get -y install libssl-dev pkg-config npm nodejs
-      - apk add openssl-dev musl-dev nodejs npm
-      - rustup target add wasm32-unknown-unknown
-      - cargo install cargo-leptos
-      - npm i
-      - npx tailwindcss -i ./input.css -o ./style/output.css
-      - cargo leptos build
-
   cargo_clippy:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo
     commands:
-      - apk add openssl-dev musl-dev
-      # - apt-get update && apt-get -y install libssl-dev pkg-config
+      - apt-get update && apt-get -y install libssl-dev pkg-config
       - rustup component add clippy
       - cargo clippy
 
@@ -64,6 +50,18 @@ pipeline:
   #     - rustup target add wasm32-unknown-unknown
   #     - cargo install cargo-leptos
   #     - cargo leptos test
+
+  cargo_build:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - apt-get update && apt-get -y install libssl-dev pkg-config npm nodejs
+      - rustup target add wasm32-unknown-unknown
+      - cargo install cargo-leptos
+      - npm i
+      - npx tailwindcss -i ./input.css -o ./style/output.css
+      - cargo leptos build
 
   notify_on_failure:
     image: alpine:3
