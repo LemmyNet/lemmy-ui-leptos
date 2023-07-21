@@ -1,5 +1,6 @@
 use crate::{
   api::{comment::get_comments, post::get_post},
+  errors::LemmyAppError,
   ui::components::{comment::comment_nodes::CommentNodes, post::post_listing::PostListing},
 };
 use lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost};
@@ -15,14 +16,14 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
     move || post_id_from_params(params),
     move |id| async move {
       match id {
-        Err(_) => None,
+        Err(e) => Err(LemmyAppError::from(e)),
         Ok(id) => {
           let form = GetPost {
             id: Some(PostId(id)),
             comment_id: None,
             auth: None,
           };
-          get_post(cx, &form).await.ok()
+          get_post(cx, &form).await
         }
       }
     },
@@ -33,7 +34,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
     move || post_id_from_params(params),
     move |id| async move {
       match id {
-        Err(_) => None,
+        Err(e) => Err(LemmyAppError::from(e)),
         Ok(id) => {
           let form = GetComments {
             post_id: Some(PostId(id)),
@@ -48,13 +49,11 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             saved_only: None,
             auth: None,
           };
-          get_comments(cx, &form).await.ok()
+          get_comments(cx, &form).await
         }
       }
     },
   );
-
-  let err_msg = " Error loading this post.";
 
   view! { cx,
     <main class="mx-auto">
@@ -65,10 +64,10 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
         {move || {
             post.read(cx)
                 .map(|res| match res {
-                    None => {
-                        view! { cx, <div>{err_msg}</div> }
+                    Err(e) => {
+                        view! { cx, <div>{e.to_string()}</div> }
                     }
-                    Some(res) => {
+                    Ok(res) => {
                         view! { cx,
                           <div>
                             <PostListing post_view=res.post_view.into()/>
@@ -81,10 +80,10 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             comments
                 .read(cx)
                 .map(|res| match res {
-                    None => {
-                        view! { cx, <div>{err_msg}</div> }
+                    Err(e) => {
+                        view! { cx, <div>{e.to_string()}</div> }
                     }
-                    Some(res) => {
+                    Ok(res) => {
                         view! { cx,
                           <div>
                             <CommentNodes comments=res.comments.into()/>

@@ -1378,7 +1378,6 @@ version = "0.0.1"
 dependencies = [
  "actix-files",
  "actix-web",
- "anyhow",
  "cfg-if",
  "console_error_panic_hook",
  "console_log",
@@ -1393,8 +1392,10 @@ dependencies = [
  "log",
  "reqwest",
  "serde",
+ "serde_json",
  "serde_urlencoded",
  "simple_logger",
+ "thiserror",
  "tracing",
  "wasm-bindgen",
  "web-sys",

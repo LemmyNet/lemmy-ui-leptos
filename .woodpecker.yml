@@ -1,0 +1,61 @@
+variables:
+  - &rust_image "rustlang/rust:nightly-alpine3.16"
+
+pipeline:
+  prettier_check:
+    image: tmknom/prettier:3.0.0
+    commands:
+      - prettier -c .
+
+  toml_fmt:
+    image: tamasfe/taplo:0.8.1
+    commands:
+      - taplo format --check
+
+  cargo_fmt:
+    image: *rust_image
+    environment:
+      # store cargo data in repo folder so that it gets cached between steps
+      CARGO_HOME: .cargo
+    commands:
+      - cargo +nightly fmt -- --check
+
+  cargo_clippy:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - rustup component add clippy
+      - cargo clippy --tests
+
+  cargo_test:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - rustup target add wasm32-unknown-unknown
+      - cargo install cargo-leptos
+      - cargo leptos test
+
+  cargo_build:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - cargo leptos build
+
+  notify_on_failure:
+    image: alpine:3
+    commands:
+      - apk add curl
+      - "curl -d'Lemmy-UI-leptos build failed: ${CI_BUILD_LINK}' ntfy.sh/lemmy_drone_ci"
+    when:
+      status: [failure]
+
+  notify_on_tag_deploy:
+    image: alpine:3
+    commands:
+      - apk add curl
+      - "curl -d'Lemmy-UI-leptos:${CI_COMMIT_TAG} deployed' ntfy.sh/lemmy_drone_ci"
+    when:
+      event: tag
