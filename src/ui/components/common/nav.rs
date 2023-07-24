@@ -31,11 +31,9 @@ pub fn TopNav(cx: Scope) -> impl IntoView {
         <button class="btn btn-ghost btn-circle">
           <MagnifyingGlass />
         </button>
-        <button class="btn btn-ghost btn-circle">
-          <div class="indicator">
+        <button class="btn btn-ghost btn-circle indicator">
             <Bell class="w-10" />
-            <span class="badge badge-xs badge-primary indicator-item"/>
-          </div>
+            <span class="badge badge-xs badge-primary indicator-item top-3 right-3"/>
         </button>
         <A href="/login">"Login"</A>
       </div>
