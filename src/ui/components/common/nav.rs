@@ -33,7 +33,7 @@ pub fn TopNav(cx: Scope) -> impl IntoView {
         </button>
         <button class="btn btn-ghost btn-circle">
           <div class="indicator">
-            <Bell class="w-3" />
+            <Bell class="w-10" />
             <span class="badge badge-xs badge-primary indicator-item"/>
           </div>
         </button>
