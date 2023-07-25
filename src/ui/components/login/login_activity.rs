@@ -24,23 +24,22 @@ pub fn LoginActivity(cx: Scope) -> impl IntoView {
       // TODO figure out how to handle errors
       log::debug!("Login res: {:?}", result);
       // JWT can be extracted using into_inner()
-      log::debug!("jwt: {:?}", result.unwrap().jwt.unwrap().into_inner());
-      // match result {
-      //   Ok(res) => {
-      //     set_login_error.update(|e| *e = None);
-      //     on_success(res);
-      //   }
-      //   Err(err) => {
-      //     let msg = match err {
-      //       api::Error::Fetch(js_err) => {
-      //         format!("{js_err:?}")
-      //       }
-      //       api::Error::Api(err) => err.message,
-      //     };
-      //     error!("Unable to login with {}: {msg}", credentials.email);
-      //     set_login_error.update(|e| *e = Some(msg));
-      //   }
-      // }
+      match result {
+        Ok(res) => {
+          log::debug!("jwt: {:?}", res.jwt.unwrap().into_inner());
+          set_login_error.update(|e| *e = None);
+          // on_success(res);
+        }
+        Err(err) => {
+          let err_str = err.to_string();
+          error!(
+            "Unable to login with {}: {}",
+            form.username_or_email.into_inner(),
+            err_str,
+          );
+          set_login_error.update(|e| *e = Some(err_str));
+        }
+      }
     }
   });
 

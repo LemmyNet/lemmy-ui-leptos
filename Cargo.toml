@@ -14,6 +14,7 @@ leptos_actix = { version = "0.4.0", optional = true }
 leptos_meta = { version = "0.4.0", features = ["nightly"] }
 leptos_router = { version = "0.4.0", features = ["nightly"] }
 serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.2", features = ["http"] }
 log = "0.4"
@@ -24,7 +25,7 @@ getrandom = { version = "0.2.10", features = ["js"] }
 lemmy_api_common = { git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
-anyhow = "*"
+thiserror = "1.0"
 
 # dependecies for client (enable when csr or hydrate set)
 wasm-bindgen = { version = "0.2", optional = true }
@@ -39,8 +40,8 @@ simple_logger = { version = "4.0", optional = true }
 leptos_heroicons = { version = "0.1.1", features = [
   "24-solid-bars-3",
   "24-solid-magnifying-glass",
-  "24-outline-bell"
-]}
+  "24-outline-bell",
+] }
 
 [features]
 default = ["csr"]
@@ -50,7 +51,7 @@ hydrate = [
   "leptos_router/hydrate",
   "dep:wasm-bindgen",
   "dep:console_log",
-  "dep:console_error_panic_hook"
+  "dep:console_error_panic_hook",
 ]
 csr = [
   "leptos/csr",
@@ -58,7 +59,7 @@ csr = [
   "leptos_router/csr",
   "dep:wasm-bindgen",
   "dep:console_log",
-  "dep:console_error_panic_hook"
+  "dep:console_error_panic_hook",
 ]
 ssr = [
   "leptos/ssr",
@@ -68,7 +69,7 @@ ssr = [
   "dep:actix-web",
   "dep:actix-files",
   "dep:futures",
-  "dep:simple_logger"
+  "dep:simple_logger",
 ]
 
 [package.metadata.cargo-all-features]
