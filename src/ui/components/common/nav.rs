@@ -12,7 +12,7 @@ pub fn TopNav(cx: Scope) -> impl IntoView {
       <div class="navbar-start">
         <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost btn-circle">
-            <Bars3 />
+            <Bars3/>
           </label>
           <ul
             tabindex="0"
@@ -29,11 +29,12 @@ pub fn TopNav(cx: Scope) -> impl IntoView {
       </div>
       <div class="navbar-end">
         <button class="btn btn-ghost btn-circle">
-          <MagnifyingGlass />
+          <MagnifyingGlass/>
         </button>
         <button class="btn btn-ghost btn-circle indicator">
-            <Bell class="w-10" />
-            <span class="badge badge-xs badge-primary indicator-item top-3 right-3"/>
+          <Bell class="w-10"/>
+          <span class="badge badge-xs badge-primary indicator-item top-3 right-3"></span>
+
         </button>
         <A href="/login">"Login"</A>
       </div>
