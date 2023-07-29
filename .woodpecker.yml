@@ -20,7 +20,7 @@ pipeline:
     commands:
       - cargo fmt -- --check
 
-  # TODO add leptos-fmt proper --check at some point. 
+  # TODO add leptos-fmt proper --check at some point.
   # Issue: https://github.com/bram209/leptosfmt/issues/12
   leptos_fmt:
     image: *rust_image
