@@ -5,4 +5,4 @@ cp -R src /tmp/lemmysrc
 leptosfmt -c .leptosfmt.toml src
 
 # Diff the dirs
-diff src /tmp/lemmysrc
+diff -r src /tmp/lemmysrc/src

@@ -45,6 +45,7 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
                         view! { cx, <div>{err_msg}</div> }
                     }
                     Some(res) => {
+
                         view! { cx,
                           <div>
                             <PostListings posts=res.posts.into()/>
@@ -53,6 +54,7 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
                     }
                 })
         }}
+
       </Suspense>
     </main>
   }
