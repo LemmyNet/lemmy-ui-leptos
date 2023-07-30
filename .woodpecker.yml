@@ -9,8 +9,9 @@ pipeline:
     environment:
       CARGO_HOME: .cargo
     commands:
+      - ls .
       - cargo install --git https://github.com/bram209/leptosfmt.git
-      - . check_leptos_fmt.sh
+      - ./check_leptos_fmt.sh
 
   prettier_check:
     image: tmknom/prettier:3.0.0

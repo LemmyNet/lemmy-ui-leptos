@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Copy old src to /tmp
 cp -R src /tmp/lemmysrc
 
