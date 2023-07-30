@@ -26,6 +26,7 @@ pub fn LoginForm(
                   view! { cx, <p style="color:red;">{err}</p> }
               })
       }}
+
       <input
         type="text"
         required
@@ -35,11 +36,13 @@ pub fn LoginForm(
             let val = event_target_value(&ev);
             set_name.update(|v| *v = val);
         }
+
         on:change=move |ev| {
             let val = event_target_value(&ev);
             set_name.update(|v| *v = val);
         }
       />
+
       <input
         type="password"
         required
@@ -56,11 +59,13 @@ pub fn LoginForm(
                 }
             }
         }
+
         on:change=move |ev| {
             let val = event_target_value(&ev);
             set_password.update(|p| *p = val);
         }
       />
+
       <button prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
         "Login"
       </button>

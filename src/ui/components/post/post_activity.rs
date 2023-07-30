@@ -68,6 +68,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
                         view! { cx, <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
+
                         view! { cx,
                           <div>
                             <PostListing post_view=res.post_view.into()/>
@@ -84,6 +85,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
                         view! { cx, <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
+
                         view! { cx,
                           <div>
                             <CommentNodes comments=res.comments.into()/>

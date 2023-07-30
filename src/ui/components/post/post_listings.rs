@@ -17,6 +17,7 @@ pub fn PostListings(cx: Scope, posts: MaybeSignal<Vec<PostView>>) -> impl IntoVi
             }
         }
       />
+
     </ul>
   }
 }
