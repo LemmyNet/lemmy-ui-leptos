@@ -4,6 +4,7 @@ variables:
 pipeline:
   # TODO add leptos-fmt proper --check at some point.
   # Issue: https://github.com/bram209/leptosfmt/issues/12
+  # Also, use the binary when possible rather than building from source.
   leptos_fmt:
     image: *rust_image
     commands:
