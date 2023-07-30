@@ -6,11 +6,11 @@ pipeline:
   # Issue: https://github.com/bram209/leptosfmt/issues/12
   leptos_fmt:
     image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
+    # environment:
+    #   CARGO_HOME: .cargo
     commands:
       - cargo install --git https://github.com/bram209/leptosfmt.git
-      - cp .cargo/bin/leptosfmt .
+      # - cp .cargo/bin/leptosfmt .
       - ./check_leptos_format.sh
 
   prettier_check:
