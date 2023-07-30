@@ -10,7 +10,7 @@ pipeline:
       CARGO_HOME: .cargo
     commands:
       - cargo install --git https://github.com/bram209/leptosfmt.git
-      - export PATH="$HOME/.cargo/bin:$PATH"
+      - cp ~/.cargo/bin/leptosfmt .
       - ./check_leptos_format.sh
 
   prettier_check:
