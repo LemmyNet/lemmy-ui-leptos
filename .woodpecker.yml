@@ -2,16 +2,6 @@ variables:
   - &rust_image "rustlang/rust:nightly-slim"
 
 pipeline:
-  # TODO add leptos-fmt proper --check at some point.
-  # Issue: https://github.com/bram209/leptosfmt/issues/12
-  leptos_fmt:
-    image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
-    commands:
-      - cargo install --git https://github.com/bram209/leptosfmt.git
-      - ./check_leptos_format.sh
-
   prettier_check:
     image: tmknom/prettier:3.0.0
     commands:
@@ -29,6 +19,16 @@ pipeline:
       CARGO_HOME: .cargo
     commands:
       - cargo fmt -- --check
+
+  # TODO add leptos-fmt proper --check at some point.
+  # Issue: https://github.com/bram209/leptosfmt/issues/12
+  leptos_fmt:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - cargo install --git https://github.com/bram209/leptosfmt.git
+      - ./check_leptos_format.sh
 
   cargo_clippy:
     image: *rust_image
