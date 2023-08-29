@@ -35,30 +35,30 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
   let err_msg = " Error loading this post.";
 
   view! { cx,
-    <main class="mx-auto">
-      <h2 class="p-6 text-4xl">"Home activity"</h2>
-      <Suspense fallback=|| {
-          view! { cx, "Loading..." }
-      }>
-        {move || {
-            posts
-                .read(cx)
-                .map(|res| match res {
-                    None => {
-                        view! { cx, <div>{err_msg}</div> }
-                    }
-                    Some(res) => {
+      <main class="mx-auto">
+          <h2 class="p-6 text-4xl">"Home activity"</h2>
+          <Suspense fallback=|| {
+              view! { cx, "Loading..." }
+          }>
+              {move || {
+                  posts
+                      .read(cx)
+                      .map(|res| match res {
+                          None => {
+                              view! { cx, <div>{err_msg}</div> }
+                          }
+                          Some(res) => {
 
-                        view! { cx,
-                          <div>
-                            <PostListings posts=res.posts.into()/>
-                          </div>
-                        }
-                    }
-                })
-        }}
+                              view! { cx,
+                                  <div>
+                                      <PostListings posts=res.posts.into()/>
+                                  </div>
+                              }
+                          }
+                      })
+              }}
 
-      </Suspense>
-    </main>
+          </Suspense>
+      </main>
   }
 }

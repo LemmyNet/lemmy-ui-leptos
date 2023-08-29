@@ -17,58 +17,61 @@ pub fn LoginForm(
   });
 
   view! { cx,
-    <form on:submit=|ev| ev.prevent_default()>
-      <p>"LoginForm"</p>
-      {move || {
-          error
-              .get()
-              .map(|err| {
-                  view! { cx, <p style="color:red;">{err}</p> }
-              })
-      }}
+      <form on:submit=|ev| ev.prevent_default()>
+          <p>"LoginForm"</p>
+          {move || {
+              error
+                  .get()
+                  .map(|err| {
+                      view! { cx, <p style="color:red;">{err}</p> }
+                  })
+          }}
 
-      <input
-        type="text"
-        required
-        placeholder="Username"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
+          <input
+              type="text"
+              required
+              placeholder="Username"
+              prop:disabled=move || disabled.get()
+              on:keyup=move |ev: ev::KeyboardEvent| {
+                  let val = event_target_value(&ev);
+                  set_name.update(|v| *v = val);
+              }
 
-        on:change=move |ev| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
-      />
+              on:change=move |ev| {
+                  let val = event_target_value(&ev);
+                  set_name.update(|v| *v = val);
+              }
+          />
 
-      <input
-        type="password"
-        required
-        placeholder="Password"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            match &*ev.key() {
-                "Enter" => {
-                    dispatch_action();
-                }
-                _ => {
-                    let val = event_target_value(&ev);
-                    set_password.update(|p| *p = val);
-                }
-            }
-        }
+          <input
+              type="password"
+              required
+              placeholder="Password"
+              prop:disabled=move || disabled.get()
+              on:keyup=move |ev: ev::KeyboardEvent| {
+                  match &*ev.key() {
+                      "Enter" => {
+                          dispatch_action();
+                      }
+                      _ => {
+                          let val = event_target_value(&ev);
+                          set_password.update(|p| *p = val);
+                      }
+                  }
+              }
 
-        on:change=move |ev| {
-            let val = event_target_value(&ev);
-            set_password.update(|p| *p = val);
-        }
-      />
+              on:change=move |ev| {
+                  let val = event_target_value(&ev);
+                  set_password.update(|p| *p = val);
+              }
+          />
 
-      <button prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
-        "Login"
-      </button>
-    </form>
+          <button
+              prop:disabled=move || button_is_disabled.get()
+              on:click=move |_| dispatch_action()
+          >
+              "Login"
+          </button>
+      </form>
   }
 }

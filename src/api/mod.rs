@@ -36,6 +36,8 @@ where
   Form: Serialize,
 {
   let route = &build_route(path);
+  #[allow(clippy::needless_late_init)]
+  let json;
 
   cfg_if! {
     if #[cfg(feature = "ssr")] {
@@ -59,7 +61,7 @@ where
      let abort_controller = web_sys::AbortController::new().ok();
      let abort_signal = abort_controller.as_ref().map(|a| a.signal());
 
-     let json = match type_ {
+     json = match type_ {
        HttpType::Get => {
          gloo_net::http::Request::get(&build_fetch_query(route, form))
            .abort_signal(abort_signal.as_ref())

@@ -18,32 +18,32 @@ pub fn App(cx: Scope) -> impl IntoView {
   let (is_routing, set_is_routing) = create_signal(cx, false);
 
   view! { cx,
-    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
-    <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-    <Meta name="description" content="Lemmy-UI-Leptos."/>
-    <Meta name="viewport" content="viewport-fit=cover"/>
-    <Script src="//cdn.jsdelivr.net/npm/eruda"/>
-    <Script>
-      eruda.init();
-    </Script>
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+      <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+      <Meta name="description" content="Lemmy-UI-Leptos."/>
+      <Meta name="viewport" content="viewport-fit=cover"/>
+      <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+      <Script>
+          eruda.init();
+      </Script>
 
-    // adding `set_is_routing` causes the router to wait for async data to load on new pages
-    <Router set_is_routing>
-      // shows a progress bar while async data are loading
-      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
-      <TopNav/>
-      <main>
-        <Routes>
-          <Route path="home" view=HomeActivity/>
-          <Route path="" view=HomeActivity/>
-          <Route path="login" view=LoginActivity/>
-          <Route path="post/:id" view=PostActivity/>
-        // <Route path="stories/:id" view=Story/>
-        // <Route path=":stories?" view=Stories/>
-        </Routes>
-      </main>
-      <BottomNav/>
-    </Router>
+      // adding `set_is_routing` causes the router to wait for async data to load on new pages
+      <Router set_is_routing>
+          // shows a progress bar while async data are loading
+          <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+          <TopNav/>
+          <main>
+              <Routes>
+                  <Route path="home" view=HomeActivity/>
+                  <Route path="" view=HomeActivity/>
+                  <Route path="login" view=LoginActivity/>
+                  <Route path="post/:id" view=PostActivity/>
+              // <Route path="stories/:id" view=Story/>
+              // <Route path=":stories?" view=Stories/>
+              </Routes>
+          </main>
+          <BottomNav/>
+      </Router>
   }
 }
 
