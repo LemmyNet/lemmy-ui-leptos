@@ -24,6 +24,9 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
       page: Some(page),
       limit: None,
       saved_only: None,
+      disliked_only: None,
+      liked_only: None,
+      moderator_view: None,
       auth: None,
     };
     list_posts(cx, &form).await.ok()
