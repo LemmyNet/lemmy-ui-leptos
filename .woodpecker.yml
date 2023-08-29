@@ -1,7 +1,7 @@
 variables:
   - &rust_image "rustlang/rust:nightly-slim"
 
-pipeline:
+steps:
   prettier_check:
     image: tmknom/prettier:3.0.0
     commands:
