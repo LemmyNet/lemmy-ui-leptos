@@ -26,8 +26,7 @@ steps:
   leptos_fmt:
     image: *rust_image
     commands:
-      - cargo install --git https://github.com/bram209/leptosfmt.git
-      - ./check_leptos_format.sh
+      - leptosfmt -c .leptosfmt.toml --check src
 
   cargo_clippy:
     image: *rust_image
