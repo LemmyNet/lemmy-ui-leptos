@@ -58,47 +58,47 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
   );
 
   view! { cx,
-      <main class="mx-auto">
-          <h2 class="p-6 text-4xl">"Post page"</h2>
-          <Suspense fallback=|| {
-              view! { cx, "Loading..." }
-          }>
-              {move || {
-                  post.read(cx)
-                      .map(|res| match res {
-                          Err(e) => {
-                              view! { cx, <div>{e.to_string()}</div> }
-                          }
-                          Ok(res) => {
+    <main class="mx-auto">
+      <h2 class="p-6 text-4xl">"Post page"</h2>
+      <Suspense fallback=|| {
+          view! { cx, "Loading..." }
+      }>
+        {move || {
+            post.read(cx)
+                .map(|res| match res {
+                    Err(e) => {
+                        view! { cx, <div>{e.to_string()}</div> }
+                    }
+                    Ok(res) => {
 
-                              view! { cx,
-                                  <div>
-                                      <PostListing post_view=res.post_view.into()/>
-                                  </div>
-                              }
-                          }
-                      })
-              }}
-              {move || {
-                  comments
-                      .read(cx)
-                      .map(|res| match res {
-                          Err(e) => {
-                              view! { cx, <div>{e.to_string()}</div> }
-                          }
-                          Ok(res) => {
+                        view! { cx,
+                          <div>
+                            <PostListing post_view=res.post_view.into()/>
+                          </div>
+                        }
+                    }
+                })
+        }}
+        {move || {
+            comments
+                .read(cx)
+                .map(|res| match res {
+                    Err(e) => {
+                        view! { cx, <div>{e.to_string()}</div> }
+                    }
+                    Ok(res) => {
 
-                              view! { cx,
-                                  <div>
-                                      <CommentNodes comments=res.comments.into()/>
-                                  </div>
-                              }
-                          }
-                      })
-              }}
+                        view! { cx,
+                          <div>
+                            <CommentNodes comments=res.comments.into()/>
+                          </div>
+                        }
+                    }
+                })
+        }}
 
-          </Suspense>
-      </main>
+      </Suspense>
+    </main>
   }
 }
 

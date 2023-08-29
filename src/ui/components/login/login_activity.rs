@@ -46,10 +46,10 @@ pub fn LoginActivity(cx: Scope) -> impl IntoView {
   let disabled = Signal::derive(cx, move || wait_for_response.get());
 
   view! { cx,
-      <main class="mx-auto">
-          <h2 class="p-6 text-4xl">"Login Activity"</h2>
-          <LoginForm action=login_action error=login_error.into() disabled/>
+    <main class="mx-auto">
+      <h2 class="p-6 text-4xl">"Login Activity"</h2>
+      <LoginForm action=login_action error=login_error.into() disabled/>
 
-      </main>
+    </main>
   }
 }

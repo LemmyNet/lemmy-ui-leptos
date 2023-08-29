@@ -5,19 +5,19 @@ use leptos::*;
 #[component]
 pub fn CommentNodes(cx: Scope, comments: MaybeSignal<Vec<CommentView>>) -> impl IntoView {
   view! { cx,
-      <ul>
-          <For
-              each=comments
-              key=|cv| cv.comment.id
-              view=move |cx, cv| {
-                  view! { cx,
-                      <li>
-                          <CommentNode comment_view=cv.into()/>
-                      </li>
-                  }
-              }
-          />
+    <ul>
+      <For
+        each=comments
+        key=|cv| cv.comment.id
+        view=move |cx, cv| {
+            view! { cx,
+              <li>
+                <CommentNode comment_view=cv.into()/>
+              </li>
+            }
+        }
+      />
 
-      </ul>
+    </ul>
   }
 }
