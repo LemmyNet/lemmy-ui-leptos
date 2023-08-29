@@ -20,14 +20,11 @@ steps:
     commands:
       - cargo fmt -- --check
 
-  # TODO add leptos-fmt proper --check at some point.
-  # Issue: https://github.com/bram209/leptosfmt/issues/12
-  # Also, use the binary when possible rather than building from source.
   leptos_fmt:
     image: *rust_image
     commands:
-      - cargo install --git https://github.com/bram209/leptosfmt.git
-      - ./check_leptos_format.sh
+      - cargo install leptosfmt
+      - leptosfmt -c .leptosfmt.toml --check src
 
   cargo_clippy:
     image: *rust_image
