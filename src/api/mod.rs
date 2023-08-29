@@ -36,7 +36,6 @@ where
   Form: Serialize,
 {
   let route = &build_route(path);
-  
 
   cfg_if! {
     if #[cfg(feature = "ssr")] {
