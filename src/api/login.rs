@@ -1,4 +1,10 @@
-use crate::api_fn;
+use crate::{
+  api::{api_wrapper, HttpType},
+  errors::LemmyAppError,
+};
 use lemmy_api_common::person::{Login, LoginResponse};
+use leptos::Scope;
 
-api_fn!(login, Login, LoginResponse, Post, "user/login");
+pub async fn login(cx: Scope, form: &Login) -> Result<LoginResponse, LemmyAppError> {
+  api_wrapper::<LoginResponse, Login>(cx, HttpType::Post, "user/login", form).await
+}

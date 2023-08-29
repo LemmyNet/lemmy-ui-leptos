@@ -107,18 +107,6 @@ where
   })
 }
 
-#[macro_export]
-macro_rules! api_fn {
-  ($name:ident, $form:ty, $res:ty, $method:ident, $route:expr) => {
-    pub async fn $name(
-      cx: leptos::Scope,
-      form: &$form,
-    ) -> Result<$res, crate::errors::LemmyAppError> {
-      crate::api::api_wrapper::<$res, $form>(cx, crate::api::HttpType::$method, $route, form).await
-    }
-  };
-}
-
 fn build_route(route: &str) -> String {
   format!("{ENDPOINT}/{route}")
 }
