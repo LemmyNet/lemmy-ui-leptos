@@ -44,7 +44,7 @@ pub fn LoginForm(
   let dispatch_action = move || action.dispatch((name.get(), password.get()));
 
   let button_is_disabled = Signal::derive(cx, move || {
-    disabled.get() || password.get().is_empty() || name.get().is_empty()
+    disabled() || password.with(|p| p.is_empty()) || name.with(|n| n.is_empty())
   });
 
   let login = create_server_action::<LoginForm>(cx);
@@ -53,11 +53,13 @@ pub fn LoginForm(
     <ActionForm action=login>
       <p>"LoginForm"</p>
       {move || {
-          error
-              .get()
-              .map(|err| {
-                  view! { cx, <p style="color:red;">{err}</p> }
-              })
+          if let Some(Err(err)) = login.value().get() {
+              Some(
+                  view! { cx, <p style="color:red;">{err.to_string()}</p> },
+              )
+          } else {
+              None
+          }
       }}
 
       <input
@@ -101,7 +103,10 @@ pub fn LoginForm(
         }
       />
 
-      <button prop:type="submit" prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
+      <button
+        prop:type="submit"
+        prop:disabled=move || button_is_disabled.get()
+      >
         "Login"
       </button>
     </ActionForm>
