@@ -1,4 +1,31 @@
 use leptos::{ev, *};
+use leptos_router::ActionForm;
+
+#[server(LoginForm, "/serverfn")]
+pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
+  use crate::api::login::login;
+  use lemmy_api_common::person::Login;
+  log::debug!("Try to login with {username_or_email}");
+
+  // let on_success = on_success.clone();
+  async move {
+    let form = Login {
+      username_or_email: username_or_email.into(),
+      password: password.into(),
+      totp_2fa_token: None,
+    };
+    let res = login(None, &form).await?;
+
+    // TODO figure out how to handle errors
+    log::debug!("Login res: {:?}", res);
+    // JWT can be extracted using into_inner()
+
+    log::debug!("jwt: {:?}", res.jwt.unwrap().into_inner());
+
+    Ok(())
+  }
+  .await
+}
 
 #[component]
 pub fn LoginForm(
@@ -16,8 +43,10 @@ pub fn LoginForm(
     disabled.get() || password.get().is_empty() || name.get().is_empty()
   });
 
+  let login = create_server_action::<LoginForm>(cx);
+
   view! { cx,
-    <form on:submit=|ev| ev.prevent_default()>
+    <ActionForm action=login>
       <p>"LoginForm"</p>
       {move || {
           error
@@ -30,6 +59,7 @@ pub fn LoginForm(
       <input
         type="text"
         required
+        name="username_or_email"
         placeholder="Username"
         prop:disabled=move || disabled.get()
         on:keyup=move |ev: ev::KeyboardEvent| {
@@ -46,6 +76,7 @@ pub fn LoginForm(
       <input
         type="password"
         required
+        name="password"
         placeholder="Password"
         prop:disabled=move || disabled.get()
         on:keyup=move |ev: ev::KeyboardEvent| {
@@ -66,9 +97,9 @@ pub fn LoginForm(
         }
       />
 
-      <button prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
+      <button prop:type="submit" prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
         "Login"
       </button>
-    </form>
+    </ActionForm>
   }
 }

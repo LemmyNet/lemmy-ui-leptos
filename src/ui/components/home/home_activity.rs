@@ -29,7 +29,7 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
       moderator_view: None,
       auth: None,
     };
-    list_posts(cx, &form).await.ok()
+    list_posts(Some(cx), &form).await.ok()
   });
 
   let err_msg = " Error loading this post.";

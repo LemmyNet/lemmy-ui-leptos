@@ -19,7 +19,7 @@ pub fn LoginActivity(cx: Scope) -> impl IntoView {
         password: password.into(),
         totp_2fa_token: None,
       };
-      let result = login(cx, &form).await;
+      let result = login(Some(cx), &form).await;
       set_wait_for_response.update(|w| *w = false);
       // TODO figure out how to handle errors
       log::debug!("Login res: {:?}", result);
