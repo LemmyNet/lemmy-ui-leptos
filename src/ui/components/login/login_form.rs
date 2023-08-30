@@ -2,7 +2,11 @@ use leptos::{ev, *};
 use leptos_router::ActionForm;
 
 #[server(LoginForm, "/serverfn")]
-pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
+pub async fn login(
+  cx: Scope,
+  username_or_email: String,
+  password: String,
+) -> Result<(), ServerFnError> {
   use crate::api::login::login;
   use lemmy_api_common::person::Login;
   log::debug!("Try to login with {username_or_email}");
@@ -14,7 +18,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
       password: password.into(),
       totp_2fa_token: None,
     };
-    let res = login(None, &form).await?;
+    let res = login(cx, &form).await?;
 
     // TODO figure out how to handle errors
     log::debug!("Login res: {:?}", res);

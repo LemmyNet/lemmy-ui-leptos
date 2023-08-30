@@ -5,6 +5,6 @@ use crate::{
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::Scope;
 
-pub async fn login(cx: Option<Scope>, form: &Login) -> Result<LoginResponse, LemmyAppError> {
+pub async fn login(cx: Scope, form: &Login) -> Result<LoginResponse, LemmyAppError> {
   api_wrapper::<LoginResponse, Login>(cx, HttpType::Post, "user/login", form).await
 }

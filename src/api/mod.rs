@@ -26,7 +26,7 @@ fn json_deser_err(json: &str) -> String {
 }
 
 pub async fn api_wrapper<Response, Form>(
-  _cx: Option<Scope>,
+  _cx: Scope,
   type_: HttpType,
   path: &str,
   form: &Form,
@@ -94,7 +94,7 @@ where
 
      // abort in-flight requests if the Scope is disposed
      // i.e., if we've navigated away from this page
-     leptos::on_cleanup(_cx.unwrap(), move || {
+     leptos::on_cleanup(_cx, move || {
        if let Some(abort_controller) = abort_controller {
          abort_controller.abort()
        }

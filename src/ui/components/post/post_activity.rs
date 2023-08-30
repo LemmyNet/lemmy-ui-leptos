@@ -23,7 +23,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             comment_id: None,
             auth: None,
           };
-          get_post(Some(cx), &form).await
+          get_post(cx, &form).await
         }
       }
     },
@@ -51,7 +51,7 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             liked_only: None,
             auth: None,
           };
-          get_comments(Some(cx), &form).await
+          get_comments(cx, &form).await
         }
       }
     },
