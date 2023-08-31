@@ -41,6 +41,8 @@ leptos_heroicons = { version = "0.1.1", features = [
   "24-solid-bars-3",
   "24-solid-magnifying-glass",
   "24-outline-bell",
+  "24-outline-eye",
+  "24-outline-eye-slash",
 ] }
 
 [features]

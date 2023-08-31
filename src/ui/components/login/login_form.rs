@@ -1,3 +1,4 @@
+use crate::ui::components::common::password_input::PasswordInput;
 use leptos::{ev, *};
 use leptos_router::ActionForm;
 
@@ -50,63 +51,45 @@ pub fn LoginForm(
   let login = create_server_action::<LoginForm>(cx);
 
   view! { cx,
-    <ActionForm action=login>
-      <p>"LoginForm"</p>
+    <ActionForm action=login class="mx-auto w-full lg:w-1/3 space-y-3">
       {move || {
           if let Some(Err(err)) = login.value().get() {
-              Some(
-                  view! { cx, <p style="color:red;">{err.to_string()}</p> },
-              )
+              Some(view! { cx, <p style="color:red;">{err.to_string()}</p> })
           } else {
               None
           }
       }}
 
-      <input
-        type="text"
-        required
-        name="username_or_email"
-        placeholder="Username"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
+      <div class="form-control w-full">
+        <label class="label" for="username">
+          <span class="label-text">
+            Username
+          </span>
+        </label>
+        <input
+          id="username"
+          type="text"
+          required
+          name="username_or_email"
+          class="input input-bordered"
+          placeholder="Username"
+          prop:disabled=move || disabled.get()
+          on:keyup=move |ev: ev::KeyboardEvent| {
+              let val = event_target_value(&ev);
+              set_name.update(|v| *v = val);
+          }
 
-        on:change=move |ev| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
-      />
+          on:change=move |ev| {
+              let val = event_target_value(&ev);
+              set_name.update(|v| *v = val);
+          }
+        />
 
-      <input
-        type="password"
-        required
-        name="password"
-        placeholder="Password"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            match &*ev.key() {
-                "Enter" => {
-                    dispatch_action();
-                }
-                _ => {
-                    let val = event_target_value(&ev);
-                    set_password.update(|p| *p = val);
-                }
-            }
-        }
+      </div>
 
-        on:change=move |ev| {
-            let val = event_target_value(&ev);
-            set_password.update(|p| *p = val);
-        }
-      />
+      <PasswordInput id="password" name="password"/>
 
-      <button
-        prop:type="submit"
-        prop:disabled=move || button_is_disabled.get()
-      >
+      <button class="btn btn-lg" prop:type="submit" prop:disabled=button_is_disabled>
         "Login"
       </button>
     </ActionForm>
