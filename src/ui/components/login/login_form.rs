@@ -33,19 +33,12 @@ pub async fn login(
 }
 
 #[component]
-pub fn LoginForm(
-  cx: Scope,
-  action: Action<(String, String), ()>,
-  error: Signal<Option<String>>,
-  disabled: Signal<bool>,
-) -> impl IntoView {
+pub fn LoginForm(cx: Scope) -> impl IntoView {
   let (password, set_password) = create_signal(cx, String::new());
   let (name, set_name) = create_signal(cx, String::new());
 
-  let dispatch_action = move || action.dispatch((name.get(), password.get()));
-
   let button_is_disabled = Signal::derive(cx, move || {
-    disabled() || password.with(|p| p.is_empty()) || name.with(|n| n.is_empty())
+    password.with(|p| p.is_empty()) || name.with(|n| n.is_empty())
   });
 
   let login = create_server_action::<LoginForm>(cx);
@@ -73,7 +66,6 @@ pub fn LoginForm(
           name="username_or_email"
           class="input input-bordered"
           placeholder="Username"
-          prop:disabled=move || disabled.get()
           on:keyup=move |ev: ev::KeyboardEvent| {
               let val = event_target_value(&ev);
               set_name.update(|v| *v = val);
@@ -87,7 +79,11 @@ pub fn LoginForm(
 
       </div>
 
-      <PasswordInput id="password" name="password"/>
+      <PasswordInput
+        id="password"
+        name="password"
+        on_input=move |s| set_password.update(|p| *p = s)
+      />
 
       <button class="btn btn-lg" prop:type="submit" prop:disabled=button_is_disabled>
         "Login"
