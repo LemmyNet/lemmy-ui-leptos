@@ -12,6 +12,7 @@ const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
 pub enum HttpType {
   Get,
+  #[allow(dead_code)]
   Post,
   #[allow(dead_code)]
   Put,
