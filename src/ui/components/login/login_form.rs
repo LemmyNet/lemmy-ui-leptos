@@ -2,28 +2,26 @@ use leptos::{ev, *};
 
 #[component]
 pub fn LoginForm(
-  cx: Scope,
   action: Action<(String, String), ()>,
   error: Signal<Option<String>>,
   disabled: Signal<bool>,
 ) -> impl IntoView {
-  let (password, set_password) = create_signal(cx, String::new());
-  let (name, set_name) = create_signal(cx, String::new());
+  let (password, set_password) = create_signal(String::new());
+  let (name, set_name) = create_signal(String::new());
 
   let dispatch_action = move || action.dispatch((name.get(), password.get()));
 
-  let button_is_disabled = Signal::derive(cx, move || {
-    disabled.get() || password.get().is_empty() || name.get().is_empty()
-  });
+  let button_is_disabled =
+    Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
 
-  view! { cx,
+  view! {
     <form on:submit=|ev| ev.prevent_default()>
       <p>"LoginForm"</p>
       {move || {
           error
               .get()
               .map(|err| {
-                  view! { cx, <p style="color:red;">{err}</p> }
+                  view! { <p style="color:red;">{err}</p> }
               })
       }}
 

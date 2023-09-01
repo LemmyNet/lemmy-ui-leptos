@@ -7,15 +7,15 @@ use leptos_router::use_query_map;
 // https://github.com/leptos-rs/leptos/blob/main/examples/hackernews/src/routes/stories.rs
 
 #[component]
-pub fn HomeActivity(cx: Scope) -> impl IntoView {
-  let query = use_query_map(cx);
+pub fn HomeActivity() -> impl IntoView {
+  let query = use_query_map();
   let page = move || {
     query
       .with(|q| q.get("page").and_then(|page| page.parse::<i64>().ok()))
       .unwrap_or(1)
   };
 
-  let posts = create_resource(cx, page, move |page| async move {
+  let posts = create_resource(page, move |page| async move {
     let form = GetPosts {
       type_: None,
       sort: None,
@@ -26,30 +26,30 @@ pub fn HomeActivity(cx: Scope) -> impl IntoView {
       saved_only: None,
       disliked_only: None,
       liked_only: None,
-      moderator_view: None,
+      // moderator_view: None,
       auth: None,
     };
-    list_posts(cx, &form).await.ok()
+    list_posts(&form).await.ok()
   });
 
   let err_msg = " Error loading this post.";
 
-  view! { cx,
+  view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Home activity"</h2>
       <Suspense fallback=|| {
-          view! { cx, "Loading..." }
+          view! { "Loading..." }
       }>
         {move || {
             posts
-                .read(cx)
+                .read()
                 .map(|res| match res {
                     None => {
-                        view! { cx, <div>{err_msg}</div> }
+                        view! { <div>{err_msg}</div> }
                     }
                     Some(res) => {
 
-                        view! { cx,
+                        view! {
                           <div>
                             <PostListings posts=res.posts.into()/>
                           </div>

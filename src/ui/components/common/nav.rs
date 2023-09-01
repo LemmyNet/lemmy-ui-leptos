@@ -1,4 +1,4 @@
-use leptos::{component, view, IntoView, Scope};
+use leptos::{component, view, IntoView};
 use leptos_heroicons::size_24::{
   outline::Bell,
   solid::{Bars3, MagnifyingGlass},
@@ -6,8 +6,8 @@ use leptos_heroicons::size_24::{
 use leptos_router::*;
 
 #[component]
-pub fn TopNav(cx: Scope) -> impl IntoView {
-  view! { cx,
+pub fn TopNav() -> impl IntoView {
+  view! {
     <div class="navbar bg-base-300">
       <div class="navbar-start">
         <div class="dropdown">
@@ -43,8 +43,8 @@ pub fn TopNav(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn BottomNav(cx: Scope) -> impl IntoView {
-  view! { cx,
+pub fn BottomNav() -> impl IntoView {
+  view! {
     <footer class="sticky bottom-0">
       <div class="btm-nav btm-nav-lg">
         <A href="/" class="active">

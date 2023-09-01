@@ -13,12 +13,11 @@ mod errors;
 mod ui;
 
 #[component]
-pub fn App(cx: Scope) -> impl IntoView {
-  provide_meta_context(cx);
-  let (is_routing, set_is_routing) = create_signal(cx, false);
+pub fn App() -> impl IntoView {
+  provide_meta_context();
+  let (is_routing, set_is_routing) = create_signal(false);
 
-  view! { cx,
-    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+  view! { <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
     <Meta name="description" content="Lemmy-UI-Leptos."/>
     <Meta name="viewport" content="viewport-fit=cover"/>
@@ -56,8 +55,8 @@ cfg_if! {
         pub fn hydrate() {
             _ = console_log::init_with_level(log::Level::Debug);
             console_error_panic_hook::set_once();
-            leptos::mount_to_body(move |cx| {
-                view! { cx, <App/> }
+            leptos::mount_to_body(move || {
+                view! { <App/> }
             });
         }
     }
