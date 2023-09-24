@@ -10,7 +10,7 @@ pub fn PostListings(posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
         each=posts
         key=|pv| pv.post.id
         view=move |pv| {
-            view! { cx,
+            view! {
               <li>
                 <PostListing post_view=pv.into()/>
               </li>

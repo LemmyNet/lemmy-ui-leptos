@@ -62,7 +62,7 @@ pub fn PostActivity() -> impl IntoView {
           view! { "Loading..." }
       }>
         {move || {
-            post.read()
+            post()
                 .map(|res| match res {
                     Err(e) => {
                         view! {  <div>{e.to_string()}</div> }
@@ -78,8 +78,7 @@ pub fn PostActivity() -> impl IntoView {
                 })
         }}
         {move || {
-            comments
-                .read()
+            comments()
                 .map(|res| match res {
                     Err(e) => {
                         view! { <div>{e.to_string()}</div> }

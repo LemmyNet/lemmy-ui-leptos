@@ -1,6 +1,6 @@
 use crate::{api::login::login, ui::components::login::login_form::LoginForm};
 use lemmy_api_common::person::Login;
-use leptos::*;
+use leptos::{logging::*, *};
 
 #[component]
 pub fn LoginActivity() -> impl IntoView {

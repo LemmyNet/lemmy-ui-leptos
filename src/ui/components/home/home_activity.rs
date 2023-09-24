@@ -41,8 +41,7 @@ pub fn HomeActivity() -> impl IntoView {
           view! { "Loading..." }
       }>
         {move || {
-            posts
-                .read()
+            posts()
                 .map(|res| match res {
                     None => {
                         view! { <div>{err_msg}</div> }

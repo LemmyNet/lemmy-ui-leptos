@@ -1,8 +1,5 @@
 use leptos::{component, view, IntoView};
-use leptos_heroicons::size_24::{
-  outline::Bell,
-  solid::{Bars3, MagnifyingGlass},
-};
+use leptos_icons::*;
 use leptos_router::*;
 
 #[component]
@@ -12,7 +9,7 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-start">
         <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost btn-circle">
-            <Bars3/>
+            <Icon icon=icon!(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
           </label>
           <ul
             tabindex="0"
@@ -27,14 +24,13 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-center">
         <a class="btn btn-ghost normal-case text-xl">"Lemmy"</a>
       </div>
-      <div class="navbar-end">
+      <div class="navbar-end gap-1">
         <button class="btn btn-ghost btn-circle">
-          <MagnifyingGlass/>
+          <Icon icon=icon!(ChSearch) width="1.25rem" height="1.25rem"/>
         </button>
         <button class="btn btn-ghost btn-circle indicator">
-          <Bell class="w-10"/>
-          <span class="badge badge-xs badge-primary indicator-item top-3 right-3"></span>
-
+          <Icon icon=icon!(ChBell) width="1.25rem" height="1.25rem"/>
+          <span class="badge badge-xs badge-primary indicator-item top-3 right-1"></span>
         </button>
         <A href="/login">"Login"</A>
       </div>
