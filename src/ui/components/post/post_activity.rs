@@ -65,10 +65,9 @@ pub fn PostActivity() -> impl IntoView {
             post()
                 .map(|res| match res {
                     Err(e) => {
-                        view! {  <div>{e.to_string()}</div> }
+                        view! { <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
-
                         view! {
                           <div>
                             <PostListing post_view=res.post_view.into()/>
@@ -84,7 +83,6 @@ pub fn PostActivity() -> impl IntoView {
                         view! { <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
-
                         view! {
                           <div>
                             <CommentNodes comments=res.comments.into()/>

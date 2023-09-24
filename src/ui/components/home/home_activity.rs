@@ -47,7 +47,6 @@ pub fn HomeActivity() -> impl IntoView {
                         view! { <div>{err_msg}</div> }
                     }
                     Some(res) => {
-
                         view! {
                           <div>
                             <PostListings posts=res.posts.into()/>

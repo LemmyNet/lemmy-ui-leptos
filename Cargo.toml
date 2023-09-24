@@ -13,7 +13,12 @@ leptos = { version = "0.5.0-rc3", features = ["nightly"] }
 leptos_actix = { version = "0.5.0-rc3", optional = true }
 leptos_meta = { version = "0.5.0-rc3", features = ["nightly"] }
 leptos_router = { version = "0.5.0-rc3", features = ["nightly"] }
-leptos_icons = { git="https://github.com/Carlosted/leptos-icons.git", features = ["macros", "ChBell", "ChSearch", "ChMenuHamburger"] }
+leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features = [
+  "macros",
+  "ChBell",
+  "ChSearch",
+  "ChMenuHamburger",
+] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
