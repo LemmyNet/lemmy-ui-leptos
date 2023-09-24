@@ -24,13 +24,15 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-center">
         <a class="btn btn-ghost normal-case text-xl">"Lemmy"</a>
       </div>
-      <div class="navbar-end gap-1">
+      <div class="navbar-end gap-3">
         <button class="btn btn-ghost btn-circle">
           <Icon icon=icon!(ChSearch) width="1.25rem" height="1.25rem"/>
         </button>
-        <button class="btn btn-ghost btn-circle indicator">
-          <Icon icon=icon!(ChBell) width="1.25rem" height="1.25rem"/>
-          <span class="badge badge-xs badge-primary indicator-item top-3 right-1"></span>
+        <button class="btn btn-ghost btn-circle">
+          <div class="indicator">
+            <Icon icon=icon!(ChBell) width="1.25rem" height="1.25rem"/>
+            <span class="badge badge-xs badge-primary indicator-item" />
+          </div>
         </button>
         <A href="/login">"Login"</A>
       </div>
