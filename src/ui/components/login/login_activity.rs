@@ -1,13 +1,13 @@
 use crate::{api::login::login, ui::components::login::login_form::LoginForm};
 use lemmy_api_common::person::Login;
-use leptos::*;
+use leptos::{logging::*, *};
 
 #[component]
-pub fn LoginActivity(cx: Scope) -> impl IntoView {
-  let (login_error, set_login_error) = create_signal(cx, None::<String>);
-  let (wait_for_response, set_wait_for_response) = create_signal(cx, false);
+pub fn LoginActivity() -> impl IntoView {
+  let (login_error, set_login_error) = create_signal(None::<String>);
+  let (wait_for_response, set_wait_for_response) = create_signal(false);
 
-  let login_action = create_action(cx, move |(name, password): &(String, String)| {
+  let login_action = create_action(move |(name, password): &(String, String)| {
     log::debug!("Try to login with {name}");
     let name = name.to_string();
     let password = password.to_string();
@@ -19,7 +19,7 @@ pub fn LoginActivity(cx: Scope) -> impl IntoView {
         password: password.into(),
         totp_2fa_token: None,
       };
-      let result = login(cx, &form).await;
+      let result = login(&form).await;
       set_wait_for_response.update(|w| *w = false);
       // TODO figure out how to handle errors
       log::debug!("Login res: {:?}", result);
@@ -43,9 +43,9 @@ pub fn LoginActivity(cx: Scope) -> impl IntoView {
     }
   });
 
-  let disabled = Signal::derive(cx, move || wait_for_response.get());
+  let disabled = Signal::derive(move || wait_for_response.get());
 
-  view! { cx,
+  view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Login Activity"</h2>
       <LoginForm action=login_action error=login_error.into() disabled/>
