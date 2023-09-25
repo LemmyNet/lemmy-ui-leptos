@@ -30,7 +30,6 @@ pub fn App() -> impl IntoView {
       // shows a progress bar while async data are loading
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <TopNav/>
-      <main>
         <Routes>
           <Route path="home" view=HomeActivity/>
           <Route path="" view=HomeActivity/>
@@ -39,7 +38,6 @@ pub fn App() -> impl IntoView {
         // <Route path="stories/:id" view=Story/>
         // <Route path=":stories?" view=Stories/>
         </Routes>
-      </main>
       <BottomNav/>
     </Router>
   }

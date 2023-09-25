@@ -36,8 +36,7 @@ pub fn LoginForm() -> impl IntoView {
     Signal::derive(move || password.with(|p| p.is_empty()) || name.with(|n| n.is_empty()));
 
   view! {
-    <form on:submit=|ev| ev.prevent_default()>
-      <p>"LoginForm"</p>
+    <form class="space-y-3" on:submit=|ev| ev.prevent_default()>
       // {move || {
       //     error
       //         .get()
