@@ -9,10 +9,9 @@ use leptos_router::{use_params_map, ParamsMap};
 use std::num::ParseIntError;
 
 #[component]
-pub fn PostActivity(cx: Scope) -> impl IntoView {
-  let params = use_params_map(cx);
+pub fn PostActivity() -> impl IntoView {
+  let params = use_params_map();
   let post = create_resource(
-    cx,
     move || post_id_from_params(params),
     move |id| async move {
       match id {
@@ -23,14 +22,13 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             comment_id: None,
             auth: None,
           };
-          get_post(cx, &form).await
+          get_post(&form).await
         }
       }
     },
   );
 
   let comments = create_resource(
-    cx,
     move || post_id_from_params(params),
     move |id| async move {
       match id {
@@ -51,27 +49,26 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
             liked_only: None,
             auth: None,
           };
-          get_comments(cx, &form).await
+          get_comments(&form).await
         }
       }
     },
   );
 
-  view! { cx,
+  view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Post page"</h2>
       <Suspense fallback=|| {
-          view! { cx, "Loading..." }
+          view! { "Loading..." }
       }>
         {move || {
-            post.read(cx)
+            post()
                 .map(|res| match res {
                     Err(e) => {
-                        view! { cx, <div>{e.to_string()}</div> }
+                        view! { <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
-
-                        view! { cx,
+                        view! {
                           <div>
                             <PostListing post_view=res.post_view.into()/>
                           </div>
@@ -80,15 +77,13 @@ pub fn PostActivity(cx: Scope) -> impl IntoView {
                 })
         }}
         {move || {
-            comments
-                .read(cx)
+            comments()
                 .map(|res| match res {
                     Err(e) => {
-                        view! { cx, <div>{e.to_string()}</div> }
+                        view! { <div>{e.to_string()}</div> }
                     }
                     Ok(res) => {
-
-                        view! { cx,
+                        view! {
                           <div>
                             <CommentNodes comments=res.comments.into()/>
                           </div>

@@ -9,10 +9,18 @@ crate-type = ["cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-leptos = { version = "0.4.10", features = ["nightly"] }
-leptos_actix = { version = "0.4.10", optional = true }
-leptos_meta = { version = "0.4.10", features = ["nightly"] }
-leptos_router = { version = "0.4.10", features = ["nightly"] }
+leptos = { version = "0.5.0-rc3", features = ["nightly"] }
+leptos_actix = { version = "0.5.0-rc3", optional = true }
+leptos_meta = { version = "0.5.0-rc3", features = ["nightly"] }
+leptos_router = { version = "0.5.0-rc3", features = ["nightly"] }
+leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features = [
+  "macros",
+  "ChBell",
+  "ChSearch",
+  "ChMenuHamburger",
+  "ChEye",
+  "ChEyeSlash"
+] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
@@ -37,13 +45,6 @@ actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
 futures = { version = "0.3", optional = true }
 simple_logger = { version = "4.2", optional = true }
-leptos_heroicons = { version = "0.1.1", features = [
-  "24-solid-bars-3",
-  "24-solid-magnifying-glass",
-  "24-outline-bell",
-  "24-outline-eye",
-  "24-outline-eye-slash",
-] }
 
 [features]
 default = ["csr"]
@@ -100,8 +101,7 @@ site-root = "target/site"
 # The site-root relative folder where all compiled output (JS, WASM and CSS) is written
 # Defaults to pkg	
 site-pkg-dir = "pkg"
-# [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
-style-file = "style/output.css"
+tailwind-input-file = "style/tailwind.css"
 # [Optional] Files in the asset-dir will be copied to the site-root directory
 assets-dir = "public"
 # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.

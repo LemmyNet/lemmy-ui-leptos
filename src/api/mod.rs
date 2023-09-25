@@ -1,6 +1,6 @@
 use crate::errors::LemmyAppError;
 use cfg_if::cfg_if;
-use leptos::{Scope, Serializable};
+use leptos::Serializable;
 use serde::Serialize;
 use serde_json::Value;
 
@@ -27,7 +27,6 @@ fn json_deser_err(json: &str) -> String {
 }
 
 pub async fn api_wrapper<Response, Form>(
-  _cx: Scope,
   type_: HttpType,
   path: &str,
   form: &Form,
@@ -95,7 +94,7 @@ where
 
      // abort in-flight requests if the Scope is disposed
      // i.e., if we've navigated away from this page
-     leptos::on_cleanup(_cx, move || {
+     leptos::on_cleanup( move || {
        if let Some(abort_controller) = abort_controller {
          abort_controller.abort()
        }

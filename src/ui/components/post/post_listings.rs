@@ -3,14 +3,14 @@ use lemmy_api_common::lemmy_db_views::structs::PostView;
 use leptos::*;
 
 #[component]
-pub fn PostListings(cx: Scope, posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
-  view! { cx,
+pub fn PostListings(posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
+  view! {
     <ul>
       <For
         each=posts
         key=|pv| pv.post.id
-        view=move |cx, pv| {
-            view! { cx,
+        view=move |pv| {
+            view! {
               <li>
                 <PostListing post_view=pv.into()/>
               </li>

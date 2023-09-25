@@ -45,7 +45,6 @@ steps:
       - . /root/.profile
       - nvm install node
       - npm i
-      - npx tailwindcss -i ./input.css -o ./style/output.css
       - rustup target add wasm32-unknown-unknown
       - cargo install cargo-leptos
       - cargo leptos build
