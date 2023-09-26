@@ -9,7 +9,9 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 mod api;
+mod config;
 mod errors;
+mod host;
 mod ui;
 
 #[component]

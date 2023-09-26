@@ -1,4 +1,4 @@
-use crate::errors::LemmyAppError;
+use crate::{errors::LemmyAppError, host::get_host};
 use cfg_if::cfg_if;
 use leptos::Serializable;
 use serde::Serialize;
@@ -7,8 +7,6 @@ use serde_json::Value;
 pub mod comment;
 pub mod login;
 pub mod post;
-
-const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
 pub enum HttpType {
   Get,
@@ -109,7 +107,7 @@ where
 }
 
 fn build_route(route: &str) -> String {
-  format!("{ENDPOINT}/{route}")
+  format!("http://{}/api/v3/{route}", get_host())
 }
 
 fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
