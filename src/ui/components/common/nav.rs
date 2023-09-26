@@ -1,5 +1,5 @@
 use leptos::{component, view, IntoView};
-use leptos_icons::{Icon,ChIcon::*};
+use leptos_icons::{ChIcon::*, Icon};
 use leptos_router::*;
 
 #[component]
