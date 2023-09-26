@@ -27,8 +27,8 @@ log = "0.4"
 cfg-if = "1.0"
 tracing = "0.1"
 reqwest = { version = "0.11", features = ["json"] }
-getrandom = { version = "0.2.10", features = ["js"] }
-lemmy_api_common = { git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+getrandom = { version = "0.2", features = ["js"] }
+lemmy_api_common = { tag = "0.18.4", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
 thiserror = "1.0"

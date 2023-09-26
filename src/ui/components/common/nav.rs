@@ -1,5 +1,5 @@
 use leptos::{component, view, IntoView};
-use leptos_icons::*;
+use leptos_icons::{Icon,ChIcon::*};
 use leptos_router::*;
 
 #[component]
@@ -9,7 +9,8 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-start">
         <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost btn-circle">
-            <Icon icon=icon!(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
+            <Icon icon=Icon::from(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
+            // <Icon icon=icon!(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
           </label>
           <ul
             tabindex="0"
@@ -26,11 +27,13 @@ pub fn TopNav() -> impl IntoView {
       </div>
       <div class="navbar-end gap-3">
         <button class="btn btn-ghost btn-circle">
-          <Icon icon=icon!(ChSearch) width="1.25rem" height="1.25rem"/>
+          <Icon icon=Icon::from(ChSearch) width="1.25rem" height="1.25rem"/>
+          // <Icon icon=icon!(ChSearch) width="1.25rem" height="1.25rem"/>
         </button>
         <button class="btn btn-ghost btn-circle">
           <div class="indicator">
-            <Icon icon=icon!(ChBell) width="1.25rem" height="1.25rem"/>
+            <Icon icon=Icon::from(ChBell) width="1.25rem" height="1.25rem"/>
+            // <Icon icon=icon!(ChBell) width="1.25rem" height="1.25rem"/>
             <span class="badge badge-xs badge-primary indicator-item"></span>
           </div>
         </button>
