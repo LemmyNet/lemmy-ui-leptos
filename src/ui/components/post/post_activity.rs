@@ -20,7 +20,6 @@ pub fn PostActivity() -> impl IntoView {
           let form = GetPost {
             id: Some(PostId(id)),
             comment_id: None,
-            auth: None,
           };
           get_post(&form).await
         }
@@ -45,9 +44,8 @@ pub fn PostActivity() -> impl IntoView {
             community_name: None,
             parent_id: None,
             saved_only: None,
-            // disliked_only: None,
-            // liked_only: None,
-            auth: None,
+            disliked_only: None,
+            liked_only: None,
           };
           get_comments(&form).await
         }

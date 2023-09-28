@@ -1346,9 +1346,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.0.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5477fe2230a79769d8dc68e0eabf5437907c0457a5614a9e8dddb67f65eb65d"
+checksum = "ad227c3af19d4914570ad36d30409928b75967c298feb9ea1969db3a610bb14e"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.0",
@@ -1482,8 +1482,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_api_common"
-version = "0.18.4"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.18.4#3dd4f74cb6b9e790f1756dba9c0bf72b2911e55b"
+version = "0.19.0-rc.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1499,8 +1499,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_schema"
-version = "0.18.4"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.18.4#3dd4f74cb6b9e790f1756dba9c0bf72b2911e55b"
+version = "0.19.0-rc.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1517,8 +1517,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views"
-version = "0.18.4"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.18.4#3dd4f74cb6b9e790f1756dba9c0bf72b2911e55b"
+version = "0.19.0-rc.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1528,9 +1528,10 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_actor"
-version = "0.18.4"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.18.4#3dd4f74cb6b9e790f1756dba9c0bf72b2911e55b"
+version = "0.19.0-rc.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
+ "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
@@ -1539,8 +1540,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_moderator"
-version = "0.18.4"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.18.4#3dd4f74cb6b9e790f1756dba9c0bf72b2911e55b"
+version = "0.19.0-rc.1"
+source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1612,7 +1613,7 @@ dependencies = [
  "futures",
  "getrandom",
  "html-escape",
- "indexmap 2.0.0",
+ "indexmap 2.0.1",
  "itertools",
  "js-sys",
  "leptos_reactive",
@@ -1638,7 +1639,7 @@ checksum = "5150fc7672c39169cf66db7de9badc07a7a878ea8952e5dd4ad67260d74d9f26"
 dependencies = [
  "anyhow",
  "camino",
- "indexmap 2.0.0",
+ "indexmap 2.0.1",
  "parking_lot",
  "proc-macro2",
  "quote",
@@ -1702,7 +1703,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75c723352b5beed21eee9442e5b01fe177fecd195baa7beed2a4d619d6e4368f"
 dependencies = [
  "cfg-if",
- "indexmap 2.0.0",
+ "indexmap 2.0.1",
  "leptos",
  "tracing",
  "wasm-bindgen",
@@ -1718,7 +1719,7 @@ dependencies = [
  "base64 0.21.4",
  "cfg-if",
  "futures",
- "indexmap 2.0.0",
+ "indexmap 2.0.1",
  "js-sys",
  "rkyv",
  "rustc-hash",
@@ -2649,7 +2650,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.0.0",
+ "indexmap 2.0.1",
  "serde",
  "serde_json",
  "serde_with_macros",

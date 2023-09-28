@@ -27,7 +27,7 @@ pub fn HomeActivity() -> impl IntoView {
       // disliked_only: None,
       // liked_only: None,
       // moderator_view: None,
-      auth: None,
+      page_cursor: None,
     };
     list_posts(&form).await.ok()
   });
