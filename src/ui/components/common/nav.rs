@@ -1,6 +1,8 @@
 use leptos::{component, view, IntoView};
 use leptos_icons::{ChIcon::*, Icon};
 use leptos_router::*;
+// use leptos_icons::*;
+use icondata::*;
 
 #[component]
 pub fn TopNav() -> impl IntoView {
@@ -9,8 +11,9 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-start">
         <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost btn-circle">
-            <Icon icon=Icon::from(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
-          </label>
+            // <Icon icon=Icon::from(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
+            <Icon icon=icon!(ChMenuHamburger) width="1.25rem" height="1.25rem"/>
+            </label>
           <ul
             tabindex="0"
             class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"

@@ -19,6 +19,8 @@ leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features
   "ChSearch",
   "ChMenuHamburger",
 ] }
+# icondata = { version = "0.0.8", features = ["macros"] }
+icondata = { git = "https://github.com/Carlosted/icondata", features = ["macros"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
