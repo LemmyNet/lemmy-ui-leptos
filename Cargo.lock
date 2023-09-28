@@ -1288,15 +1288,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "icondata"
-version = "0.0.8"
-source = "git+https://github.com/Carlosted/icondata#0e4df418543494acbd054a16996bafdb14525952"
-dependencies = [
- "icondata_core",
- "icondata_macros",
-]
-
-[[package]]
 name = "icondata_ch"
 version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1461,7 +1452,6 @@ dependencies = [
  "futures",
  "getrandom",
  "gloo-net",
- "icondata 0.0.8",
  "lemmy_api_common",
  "leptos",
  "leptos_actix",
@@ -1483,7 +1473,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1500,7 +1490,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1518,30 +1508,28 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "lemmy_db_schema",
  "serde",
  "serde_with",
- "typed-builder 0.15.2",
 ]
 
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
- "typed-builder 0.15.2",
 ]
 
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git#9275041f4251c72e8387a6a180256252df001b89"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1654,7 +1642,7 @@ name = "leptos_icons"
 version = "0.0.16-rc3"
 source = "git+https://github.com/Carlosted/leptos-icons.git#120961e8863dbc4e4faaa3e9697f6bb8274c1528"
 dependencies = [
- "icondata 0.0.7",
+ "icondata",
  "leptos",
  "tracing",
 ]

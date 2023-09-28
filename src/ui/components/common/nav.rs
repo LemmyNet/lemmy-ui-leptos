@@ -1,8 +1,6 @@
 use leptos::{component, view, IntoView};
-use leptos_icons::{ChIcon::*, Icon};
+use leptos_icons::*;
 use leptos_router::*;
-// use leptos_icons::*;
-use icondata::*;
 
 #[component]
 pub fn TopNav() -> impl IntoView {

@@ -24,9 +24,8 @@ pub fn HomeActivity() -> impl IntoView {
       page: Some(page),
       limit: None,
       saved_only: None,
-      // disliked_only: None,
-      // liked_only: None,
-      // moderator_view: None,
+      disliked_only: None,
+      liked_only: None,
       page_cursor: None,
     };
     list_posts(&form).await.ok()
