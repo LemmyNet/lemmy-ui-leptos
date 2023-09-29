@@ -13,9 +13,7 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
   view! {
     <div class="form-control w-full">
       <label class="label" for=id>
-        <span class="label-text">
-          Password
-        </span>
+        <span class="label-text">Password</span>
       </label>
       <div class="join">
         <input
@@ -35,8 +33,11 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
           class="btn btn-outline join-item rounded-r-full btn-primary"
           on:click=move |_| set_show_password.update(|s| *s = !*s)
         >
-          <Show when=show_password fallback=|| view! { <Icon icon=icon!(ChEye) width="2.5rem" height="2.5rem"/> }>
-            <Icon icon=icon!(ChEyeSlash) width="2.5rem" height="2.5rem" />
+          <Show
+            when=show_password
+            fallback=|| view! { <Icon icon=icon!(ChEye) width="2.5rem" height="2.5rem"/> }
+          >
+            <Icon icon=icon!(ChEyeSlash) width="2.5rem" height="2.5rem"/>
           </Show>
         </button>
       </div>

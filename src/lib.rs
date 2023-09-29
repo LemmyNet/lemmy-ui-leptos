@@ -9,6 +9,7 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 mod api;
+pub mod api_service;
 mod config;
 mod errors;
 mod host;
@@ -32,14 +33,14 @@ pub fn App() -> impl IntoView {
       // shows a progress bar while async data are loading
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <TopNav/>
-        <Routes>
-          <Route path="home" view=HomeActivity/>
-          <Route path="" view=HomeActivity/>
-          <Route path="login" view=LoginActivity/>
-          <Route path="post/:id" view=PostActivity/>
-        // <Route path="stories/:id" view=Story/>
-        // <Route path=":stories?" view=Stories/>
-        </Routes>
+      <Routes>
+        <Route path="home" view=HomeActivity/>
+        <Route path="" view=HomeActivity/>
+        <Route path="login" view=LoginActivity/>
+        <Route path="post/:id" view=PostActivity/>
+      // <Route path="stories/:id" view=Story/>
+      // <Route path=":stories?" view=Stories/>
+      </Routes>
       <BottomNav/>
     </Router>
   }

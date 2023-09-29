@@ -38,17 +38,15 @@ pub fn LoginForm() -> impl IntoView {
   view! {
     <form class="space-y-3" on:submit=|ev| ev.prevent_default()>
       // {move || {
-      //     error
-      //         .get()
-      //         .map(|err| {
-      //             view! { <p style="color:red;">{err}</p> }
-      //         })
+      // error
+      // .get()
+      // .map(|err| {
+      // view! { <p style="color:red;">{err}</p> }
+      // })
       // }}
       <div class="form-control w-full">
         <label class="label" for="username">
-          <span class="label-text">
-            Username
-          </span>
+          <span class="label-text">Username</span>
         </label>
         <input
           id="username"

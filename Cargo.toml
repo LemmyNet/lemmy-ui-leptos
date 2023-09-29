@@ -19,7 +19,7 @@ leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features
   "ChSearch",
   "ChMenuHamburger",
   "ChEye",
-  "ChEyeSlash"
+  "ChEyeSlash",
 ] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
@@ -45,6 +45,8 @@ actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
 futures = { version = "0.3", optional = true }
 simple_logger = { version = "4.2", optional = true }
+actix-proxy = { version = "0.2.0", optional = true }
+awc = { version = "3.2.0", optional = true }
 
 [features]
 default = ["csr"]
@@ -73,6 +75,8 @@ ssr = [
   "dep:actix-files",
   "dep:futures",
   "dep:simple_logger",
+  "dep:actix-proxy",
+  "dep:awc",
 ]
 
 [package.metadata.cargo-all-features]

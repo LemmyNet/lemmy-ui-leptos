@@ -3,20 +3,17 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use actix_files::Files;
-        use actix_web::*;
+        use actix_web::{*, http::Uri};
         use leptos::*;
-        use lemmy_ui_leptos::App;
+        use lemmy_ui_leptos::{App, api_service::route_to_api};
         use leptos_actix::{generate_route_list, LeptosRoutes};
-
-        #[get("/style.css")]
-        async fn css() -> impl Responder {
-            actix_files::NamedFile::open_async("./style/output.css").await
-        }
+        use awc::Client;
 
         #[actix_web::get("favicon.ico")]
         async fn favicon(
-            leptos_options: actix_web::web::Data<leptos::LeptosOptions>,
+            leptos_options: web::Data<leptos::LeptosOptions>,
         ) -> actix_web::Result<actix_files::NamedFile> {
+
             let leptos_options = leptos_options.into_inner();
             let site_root = &leptos_options.site_root;
             Ok(actix_files::NamedFile::open(format!(
@@ -41,11 +38,11 @@ cfg_if! {
                 let routes = &routes;
 
                 App::new()
-                    .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
+                    .route("/api/{tail:.*}", web::route().guard(guard::Header("content-type", "application/json")).to(route_to_api))
+                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
-            .service(favicon)
-                    .service(css)
+                    .service(favicon)
                     .leptos_routes(
                         leptos_options.to_owned(),
                         routes.to_owned(),
