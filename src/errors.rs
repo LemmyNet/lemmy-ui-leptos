@@ -47,13 +47,6 @@ impl From<gloo_net::Error> for LemmyAppError {
 }
 
 #[cfg(feature = "ssr")]
-impl From<reqwest::Error> for LemmyAppError {
-  fn from(_value: reqwest::Error) -> Self {
-    Self::InternalServerError
-  }
-}
-
-#[cfg(feature = "ssr")]
 impl From<awc::error::JsonPayloadError> for LemmyAppError {
   fn from(value: awc::error::JsonPayloadError) -> Self {
     Self::APIError {
