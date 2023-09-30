@@ -3,28 +3,28 @@ use leptos::*;
 
 #[server(LoginForm, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use crate::api::login::login;
+  use crate::api::LemmyClient;
+  use actix_web::web;
+  use awc::Client;
   use lemmy_api_common::person::Login;
+  use leptos_actix::extract;
   log::debug!("Try to login with {username_or_email}");
 
-  // let on_success = on_success.clone();
-  async move {
-    let form = Login {
-      username_or_email: username_or_email.into(),
-      password: password.into(),
-      totp_2fa_token: None,
-    };
-    let res = login(&form).await?;
+  let form = Login {
+    username_or_email: username_or_email.into(),
+    password: password.into(),
+    totp_2fa_token: None,
+  };
 
-    // TODO figure out how to handle errors
-    log::debug!("Login res: {:?}", res);
-    // JWT can be extracted using into_inner()
+  let res = extract(|client: web::Data<Client>| async move { client.login(&form).await }).await??;
 
-    log::debug!("jwt: {:?}", res.jwt.unwrap().into_inner());
+  // TODO figure out how to handle errors
+  log::debug!("Login res: {:?}", res);
+  // JWT can be extracted using into_inner()
 
-    Ok(())
-  }
-  .await
+  log::debug!("jwt: {:?}", res.jwt.unwrap().into_inner());
+
+  Ok(())
 }
 
 #[component]
