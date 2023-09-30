@@ -35,7 +35,9 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
         >
           <Show
             when=show_password
-            fallback=|| view! { <Icon icon=Icon::from(ChIcon::ChEye) width="2.5rem" height="2.5rem"/> }
+            fallback=|| {
+                view! { <Icon icon=Icon::from(ChIcon::ChEye) width="2.5rem" height="2.5rem"/> }
+            }
           >
             <Icon icon=Icon::from(ChIcon::ChEyeSlash) width="2.5rem" height="2.5rem"/>
           </Show>
