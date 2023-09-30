@@ -5,7 +5,7 @@ cfg_if! {
         use actix_files::Files;
         use actix_web::{*, http::Uri};
         use leptos::*;
-        use lemmy_ui_leptos::App;
+        use lemmy_ui_leptos::{App, api_service::route_to_api};
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
@@ -39,7 +39,9 @@ cfg_if! {
 
                 App::new()
                     .app_data(web::Data::new(Client::new()))
-                    // .route("/api/{tail:.*}", web::route().guard(guard::Header("content-type", "application/json")).to(route_to_api))
+                    .route("/api/{tail:.*}", web::route()
+                           .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
+                           .to(route_to_api))
                     .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
