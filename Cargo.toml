@@ -9,10 +9,10 @@ crate-type = ["cdylib", "rlib"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-leptos = { version = "0.5.0-rc3", features = ["nightly"] }
-leptos_actix = { version = "0.5.0-rc3", optional = true }
-leptos_meta = { version = "0.5.0-rc3", features = ["nightly"] }
-leptos_router = { version = "0.5.0-rc3", features = ["nightly"] }
+leptos = { version = "0.5.0", features = ["nightly"] }
+leptos_actix = { version = "0.5.0", optional = true }
+leptos_meta = { version = "0.5.0", features = ["nightly"] }
+leptos_router = { version = "0.5.0", features = ["nightly"] }
 leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features = [
   "macros",
   "ChBell",
@@ -44,16 +44,8 @@ async-trait = "0.1.73"
 
 [features]
 default = ["csr"]
-hydrate = [
-  "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
-]
-csr = [
-  "leptos/csr",
-  "leptos_meta/csr",
-  "leptos_router/csr",
-]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
@@ -66,11 +58,7 @@ ssr = [
 ]
 
 [package.metadata.cargo-all-features]
-denylist = [
-  "actix-files",
-  "actix-web",
-  "leptos_actix",
-]
+denylist = ["actix-files", "actix-web", "leptos_actix"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [profile.release]

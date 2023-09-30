@@ -2,10 +2,9 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use actix_web::{HttpRequest, HttpResponse, web, http::uri::{Uri, Authority, InvalidUri, InvalidUriParts}};
+        use actix_web::{HttpRequest, HttpResponse, web, http::uri::{Uri, InvalidUri, InvalidUriParts}};
         use actix_proxy::{IntoHttpResponse, SendRequestError as ProxyError};
-        use awc::{Client, ClientRequest, error::{InvalidUrl, SendRequestError, HttpError}};
-        use serde::{Deserialize, Serialize};
+        use awc::{Client, error::{InvalidUrl, SendRequestError, HttpError}};
         use crate::host::get_host;
 
         pub async fn route_to_api(
@@ -31,7 +30,7 @@ cfg_if! {
             let uri = Uri::from_parts(parts)
                                 .map_err(map_uri_err::<InvalidUriParts>)?;
 
-            client.request_from(uri, &request.head())
+            client.request_from(uri, request.head())
                                 .no_decompress()
                                 .send_stream(payload).await?
                                 .into_wrapped_http_response()

@@ -50,41 +50,41 @@ pub fn PostActivity() -> impl IntoView {
   view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Post page"</h2>
-      // <Suspense fallback=|| {
-      //     view! { "Loading..." }
-      // }>
-      //   {move || {
-      //       post()
-      //           .map(|res| match res {
-      //               Err(e) => {
-      //                   view! { <div>{e.to_string()}</div> }
-      //               }
-      //               Ok(res) => {
-      //                   view! {
-      //                     <div>
-      //                       <PostListing post_view=res.post_view.into()/>
-      //                     </div>
-      //                   }
-      //               }
-      //           })
-      //   }}
-      //   {move || {
-      //       comments()
-      //           .map(|res| match res {
-      //               Err(e) => {
-      //                   view! { <div>{e.to_string()}</div> }
-      //               }
-      //               Ok(res) => {
-      //                   view! {
-      //                     <div>
-      //                       <CommentNodes comments=res.comments.into()/>
-      //                     </div>
-      //                   }
-      //               }
-      //           })
-      //   }}
+    // <Suspense fallback=|| {
+    // view! { "Loading..." }
+    // }>
+    // {move || {
+    // post()
+    // .map(|res| match res {
+    // Err(e) => {
+    // view! { <div>{e.to_string()}</div> }
+    // }
+    // Ok(res) => {
+    // view! {
+    // <div>
+    // <PostListing post_view=res.post_view.into()/>
+    // </div>
+    // }
+    // }
+    // })
+    // }}
+    // {move || {
+    // comments()
+    // .map(|res| match res {
+    // Err(e) => {
+    // view! { <div>{e.to_string()}</div> }
+    // }
+    // Ok(res) => {
+    // view! {
+    // <div>
+    // <CommentNodes comments=res.comments.into()/>
+    // </div>
+    // }
+    // }
+    // })
+    // }}
 
-      // </Suspense>
+    // </Suspense>
     </main>
   }
 }

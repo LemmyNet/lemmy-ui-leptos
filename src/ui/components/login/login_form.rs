@@ -4,7 +4,7 @@ use leptos_router::ActionForm;
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use crate::api::LemmyClient;
+  use crate::lemmy_client::LemmyClient;
   use actix_web::web;
   use awc::Client;
   use lemmy_api_common::person::Login;

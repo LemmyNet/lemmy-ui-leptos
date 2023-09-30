@@ -11,6 +11,7 @@ pub fn get_internal_host() -> String {
   }
 }
 
+#[allow(dead_code)]
 pub fn get_external_host() -> String {
   cfg_if! {
       if #[cfg(not(feature="ssr"))] {

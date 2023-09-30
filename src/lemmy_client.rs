@@ -129,14 +129,14 @@ cfg_if! {
        }
 
         impl LemmyClient for Fetch {}
+
+        fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
+            let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
+            format!("{path}?{form_str}")
+        }
     }
 }
 
 fn build_route(route: &str) -> String {
   format!("http://{}/api/v3/{route}", get_host())
-}
-
-fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
-  let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
-  format!("{path}?{form_str}")
 }

@@ -3,7 +3,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         use actix_files::Files;
-        use actix_web::{*, http::Uri};
+        use actix_web::*;
         use leptos::*;
         use lemmy_ui_leptos::{App, api_service::route_to_api};
         use leptos_actix::{generate_route_list, LeptosRoutes};
