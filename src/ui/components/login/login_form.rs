@@ -1,14 +1,17 @@
 use crate::ui::components::common::password_input::PasswordInput;
 use leptos::*;
+use leptos_router::ActionForm;
 
-#[server(LoginForm, "/serverfn")]
+#[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use crate::api::LemmyClient;
   use actix_web::web;
   use awc::Client;
   use lemmy_api_common::person::Login;
+  use leptos::logging::log;
   use leptos_actix::extract;
-  log::debug!("Try to login with {username_or_email}");
+
+  log!("Try to login with {username_or_email}");
 
   let form = Login {
     username_or_email: username_or_email.into(),
@@ -19,10 +22,10 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   let res = extract(|client: web::Data<Client>| async move { client.login(&form).await }).await??;
 
   // TODO figure out how to handle errors
-  log::debug!("Login res: {:?}", res);
+  log!("Login res: {:?}", res);
   // JWT can be extracted using into_inner()
 
-  log::debug!("jwt: {:?}", res.jwt.unwrap().into_inner());
+  log!("jwt: {:?}", res.jwt.unwrap().into_inner());
 
   Ok(())
 }
@@ -35,8 +38,10 @@ pub fn LoginForm() -> impl IntoView {
   let button_is_disabled =
     Signal::derive(move || password.with(|p| p.is_empty()) || name.with(|n| n.is_empty()));
 
+  let login = create_server_action::<LoginAction>();
+
   view! {
-    <form class="space-y-3" on:submit=|ev| ev.prevent_default()>
+    <ActionForm class="space-y-3" action=login>
       // {move || {
       // error
       // .get()
@@ -68,6 +73,6 @@ pub fn LoginForm() -> impl IntoView {
       <button class="btn btn-lg" type="submit" disabled=button_is_disabled>
         "Login"
       </button>
-    </form>
+    </ActionForm>
   }
 }
