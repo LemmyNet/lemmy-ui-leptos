@@ -30,7 +30,7 @@ cfg_if! {
             let addr = conf.leptos_options.site_addr;
 
             // Generate the list of routes in your Leptos App
-            let routes = generate_route_list(|| view! { <App/> });
+            let routes = generate_route_list(App);
 
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
@@ -49,7 +49,7 @@ cfg_if! {
                     .leptos_routes(
                         leptos_options.to_owned(),
                         routes.to_owned(),
-                        || view! { <App/> },
+                        App
                     )
                     .app_data(web::Data::new(leptos_options.to_owned()))
                 //.wrap(middleware::Compress::default())
@@ -66,7 +66,7 @@ cfg_if! {
 
             _ = console_log::init_with_level(log::Level::Debug);
             console_error_panic_hook::set_once();
-            mount_to_body(|| view! { <App/> })
+            mount_to_body(App)
         }
     }
 }

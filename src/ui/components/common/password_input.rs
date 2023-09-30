@@ -39,6 +39,7 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
                 view! { <Icon icon=Icon::from(ChIcon::ChEye) width="2.5rem" height="2.5rem"/> }
             }
           >
+
             <Icon icon=Icon::from(ChIcon::ChEyeSlash) width="2.5rem" height="2.5rem"/>
           </Show>
         </button>
