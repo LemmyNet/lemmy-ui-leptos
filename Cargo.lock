@@ -860,9 +860,9 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
 name = "errno"
-version = "0.3.3"
+version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "136526188508e25c6fef639d7927dfb3e0e3084488bf202267829cf7fc23dbdd"
+checksum = "add4f07d43996f76ef320709726a556a9d4f965d9410d8d0271132d2f8293480"
 dependencies = [
  "errno-dragonfly",
  "libc",
@@ -1621,9 +1621,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_i18n"
-version = "0.2.0-rc"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fed3b5f74d0c85543505efaf8c7cae3df01c98bfc3b469f5f0cd0741b68b713f"
+checksum = "5b1f5938c4bd20bb46de24440313112c199e6fec01938d80e7c214d21f1d0d4d"
 dependencies = [
  "actix-web",
  "leptos",
@@ -1635,9 +1635,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_i18n_macro"
-version = "0.2.0-rc"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2054c839e6c553e808524a047095e360cd4a68a573bfa15727531621831deae7"
+checksum = "eb8a9510418389133f50411219df4e72e0ff25e5e743acb2f35e2e98a2b67aad"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1871,9 +1871,9 @@ dependencies = [
 
 [[package]]
 name = "memchr"
-version = "2.6.3"
+version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f232d6ef707e1956a43342693d2a31e72989554d58299d7a88738cc95b0d35c"
+checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 
 [[package]]
 name = "mime"

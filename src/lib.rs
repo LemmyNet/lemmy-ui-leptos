@@ -47,7 +47,6 @@ pub fn App() -> impl IntoView {
             <Route path="communities" view=HomeActivity ssr=SsrMode::Async/>
             <Route path="create_post" view=HomeActivity ssr=SsrMode::Async/>
             <Route path="create_community" view=HomeActivity ssr=SsrMode::Async/>
-            // <Route path="donate" view=HomeActivity ssr=SsrMode::Async/>
 
             <Route path="search" view=HomeActivity ssr=SsrMode::Async/>
             <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
@@ -62,12 +61,6 @@ pub fn App() -> impl IntoView {
             <Route path="instances" view=HomeActivity ssr=SsrMode::Async/>
 
             <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
-          // <Route path="home" view=HomeActivity/>
-          // <Route path="" view=HomeActivity/>
-          // <Route path="login" view=LoginActivity/>
-          // <Route path="post/:id" view=PostActivity/>
-          // <Route path="stories/:id" view=Story/>
-          // <Route path=":stories?" view=Stories/>
           </Routes>
         </main>
         <BottomNav/>

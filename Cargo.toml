@@ -18,7 +18,6 @@ leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features
   "ChMenuHamburger",
   "ChHeart",
 ] }
-# leptos_i18n = { version = "0.2.0-rc"/*, features = ["debug_interpolations", "csr", "hydrate"] */}
 leptos_i18n = { version = "0.2.0-rc" }
 
 serde = { version = "1", features = ["derive"] }
@@ -64,7 +63,6 @@ hydrate = [
 ]
 csr = [
   "leptos/csr",
-  # "leptos_i18n/csr",
   "leptos_meta/csr",
   "leptos_router/csr",
   "dep:wasm-bindgen",
