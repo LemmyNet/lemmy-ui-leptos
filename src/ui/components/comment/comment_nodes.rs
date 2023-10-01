@@ -9,7 +9,7 @@ pub fn CommentNodes(comments: MaybeSignal<Vec<CommentView>>) -> impl IntoView {
       <For
         each=comments
         key=|cv| cv.comment.id
-        view=move |cv| {
+        children=move |cv| {
             view! {
               <li>
                 <CommentNode comment_view=cv.into()/>
