@@ -23,7 +23,7 @@ leptos_i18n = { version = "0.2.0-rc" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
-gloo-net = { version = "0.2", features = ["http"] }
+gloo-net = { version = "0.4", features = ["http"] }
 log = "0.4"
 cfg-if = "1.0"
 tracing = "0.1"
@@ -38,6 +38,7 @@ thiserror = "1.0"
 wasm-bindgen = { version = "0.2", optional = true }
 console_log = { version = "1", optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
+wasm-cookies = "0.2"
 
 # dependecies for server (enable when ssr set)
 actix-files = { version = "0.6", optional = true }

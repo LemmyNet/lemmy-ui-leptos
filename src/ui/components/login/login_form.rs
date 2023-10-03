@@ -1,21 +1,56 @@
-use leptos::{ev, *};
+
+use lemmy_api_common::person::LoginResponse;
+use leptos::{ev, logging::*, *};
+use leptos_router::ActionForm;
+
+#[server(LoginFormFn, "/api")]
+pub async fn login_form_fn(
+  username: String,
+  password: String,
+) -> Result<LoginResponse, ServerFnError> {
+  use leptos_actix::redirect;
+  use lemmy_api_common::person::Login;
+  use crate::api::{login::login, set_cookie_wrapper};
+
+  let form = Login {
+    username_or_email: username.into(),
+    password: password.into(),
+    totp_2fa_token: None,
+  };
+  let result = login(&form).await;
+  redirect("/");
+
+  match result {
+    Ok(res) => {
+      match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
+        Ok(_) => {
+          Ok(res)
+        }
+        Err(e) => {
+          Err(ServerFnError::ServerError(e.to_string()))
+        }
+      }
+
+    }
+    Err(err) => Err(ServerFnError::ServerError(err.to_string())),
+  }
+}
 
 #[component]
 pub fn LoginForm(
-  action: Action<(String, String), ()>,
   error: Signal<Option<String>>,
   disabled: Signal<bool>,
 ) -> impl IntoView {
   let (password, set_password) = create_signal(String::new());
   let (name, set_name) = create_signal(String::new());
 
-  let dispatch_action = move || action.dispatch((name.get(), password.get()));
-
   let button_is_disabled =
     Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
 
+  let login_form_action = create_server_action::<LoginFormFn>();
+
   view! {
-    <form on:submit=|ev| ev.prevent_default()>
+    <ActionForm action=login_form_action>
       <p>"LoginForm"</p>
       {move || {
           error
@@ -26,6 +61,7 @@ pub fn LoginForm(
       }}
 
       <input
+        name="username"
         type="text"
         required
         placeholder="Username"
@@ -42,15 +78,13 @@ pub fn LoginForm(
       />
 
       <input
+        name="password"
         type="password"
         required
         placeholder="Password"
         prop:disabled=move || disabled.get()
         on:keyup=move |ev: ev::KeyboardEvent| {
             match &*ev.key() {
-                "Enter" => {
-                    dispatch_action();
-                }
                 _ => {
                     let val = event_target_value(&ev);
                     set_password.update(|p| *p = val);
@@ -64,9 +98,7 @@ pub fn LoginForm(
         }
       />
 
-      <button prop:disabled=move || button_is_disabled.get() on:click=move |_| dispatch_action()>
-        "Login"
-      </button>
-    </form>
+      <button type="submit" prop:disabled=move || button_is_disabled.get()>"Login"</button>
+    </ActionForm>
   }
 }

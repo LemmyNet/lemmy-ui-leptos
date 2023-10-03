@@ -1,11 +1,26 @@
 use crate::i18n::*;
-use leptos::{component, view, IntoAttribute, IntoView};
+use leptos::{component, create_server_action, server, view, IntoView, ServerFnError};
 use leptos_icons::*;
 use leptos_router::*;
+
+#[server(LogoutFormFn, "/api")]
+pub async fn logout_form_fn() -> Result<(), ServerFnError> {
+  use leptos_actix::redirect;
+  use crate::api::set_cookie_wrapper;
+
+  redirect("/");
+
+  match set_cookie_wrapper("jwt", "").await {
+    Ok(o) => Ok(o),
+    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+  }
+}
 
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
+
+  let logout_form_action = create_server_action::<LogoutFormFn>();
 
   view! {
     <nav class="container navbar mx-auto">
@@ -32,9 +47,11 @@ pub fn TopNav() -> impl IntoView {
             </A>
           </li>
           <li>
-            <a href="//join-lemmy.org/donate" title=t!(i18n, nav_donate)>
-              <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
-            </a>
+            <A href="//join-lemmy.org/donate">
+              <span title=t!(i18n, nav_donate)>
+                <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+              </span>
+            </A>
           </li>
         </ul>
       </div>
@@ -74,7 +91,9 @@ pub fn TopNav() -> impl IntoView {
                   <hr/>
                 </li>
                 <li>
-                  <A href="/logout">{t!(i18n, nav_logout)}</A>
+                  <ActionForm action=logout_form_action>
+                    <button type="submit">{t!(i18n, nav_logout)}</button>
+                  </ActionForm>
                 </li>
               </ul>
             </details>
