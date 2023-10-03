@@ -1,5 +1,4 @@
-use crate::{ui::components::login::login_form::LoginForm};
-
+use crate::ui::components::login::login_form::LoginForm;
 use leptos::{logging::*, *};
 
 #[component]

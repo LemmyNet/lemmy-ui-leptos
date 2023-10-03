@@ -5,8 +5,8 @@ use leptos_router::*;
 
 #[server(LogoutFormFn, "/api")]
 pub async fn logout_form_fn() -> Result<(), ServerFnError> {
-  use leptos_actix::redirect;
   use crate::api::set_cookie_wrapper;
+  use leptos_actix::redirect;
 
   redirect("/");
 

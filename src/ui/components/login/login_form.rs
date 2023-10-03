@@ -1,4 +1,3 @@
-
 use lemmy_api_common::person::LoginResponse;
 use leptos::{ev, logging::*, *};
 use leptos_router::ActionForm;
@@ -8,9 +7,9 @@ pub async fn login_form_fn(
   username: String,
   password: String,
 ) -> Result<LoginResponse, ServerFnError> {
-  use leptos_actix::redirect;
-  use lemmy_api_common::person::Login;
   use crate::api::{login::login, set_cookie_wrapper};
+  use lemmy_api_common::person::Login;
+  use leptos_actix::redirect;
 
   let form = Login {
     username_or_email: username.into(),
@@ -21,26 +20,16 @@ pub async fn login_form_fn(
   redirect("/");
 
   match result {
-    Ok(res) => {
-      match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
-        Ok(_) => {
-          Ok(res)
-        }
-        Err(e) => {
-          Err(ServerFnError::ServerError(e.to_string()))
-        }
-      }
-
-    }
+    Ok(res) => match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
+      Ok(_) => Ok(res),
+      Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+    },
     Err(err) => Err(ServerFnError::ServerError(err.to_string())),
   }
 }
 
 #[component]
-pub fn LoginForm(
-  error: Signal<Option<String>>,
-  disabled: Signal<bool>,
-) -> impl IntoView {
+pub fn LoginForm(error: Signal<Option<String>>, disabled: Signal<bool>) -> impl IntoView {
   let (password, set_password) = create_signal(String::new());
   let (name, set_name) = create_signal(String::new());
 
@@ -98,7 +87,9 @@ pub fn LoginForm(
         }
       />
 
-      <button type="submit" prop:disabled=move || button_is_disabled.get()>"Login"</button>
+      <button type="submit" prop:disabled=move || button_is_disabled.get()>
+        "Login"
+      </button>
     </ActionForm>
   }
 }
