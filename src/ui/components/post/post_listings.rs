@@ -6,17 +6,11 @@ use leptos::*;
 pub fn PostListings(posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
   view! {
     <ul>
-      <For
-        each=posts
-        key=|pv| pv.post.id
-        children=move |pv| {
-            view! {
-              <li>
-                <PostListing post_view=pv.into()/>
-              </li>
-            }
-        }
-      />
+      <For each=posts key=|pv| pv.post.id let:pv>
+        <li>
+          <PostListing post_view=pv.into()/>
+        </li>
+      </For>
 
     </ul>
   }

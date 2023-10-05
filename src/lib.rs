@@ -11,9 +11,13 @@ use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-mod api;
+pub mod api_service;
+mod config;
 mod errors;
+mod host;
+mod lemmy_client;
 mod ui;
+mod api;
 
 leptos_i18n::load_locales!();
 
@@ -36,7 +40,6 @@ pub fn App() -> impl IntoView {
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
       <div class="flex flex-col h-screen">
-        // shows a progress bar while async data are loading
         <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
         <TopNav/>
         <main class="container mx-auto">
@@ -76,11 +79,9 @@ cfg_if! {
 
         #[wasm_bindgen]
         pub fn hydrate() {
-            _ = console_log::init_with_level(log::Level::Debug);
-            console_error_panic_hook::set_once();
-            leptos::mount_to_body(move || {
-                view! { <App/> }
-            });
+            // _ = console_log::init_with_level(log::Level::Debug);
+            // console_error_panic_hook::set_once();
+            leptos::mount_to_body(App);
         }
     }
 }

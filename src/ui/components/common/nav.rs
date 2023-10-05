@@ -3,14 +3,14 @@ use leptos::{component, create_server_action, server, view, IntoView, ServerFnEr
 use leptos_icons::*;
 use leptos_router::*;
 
-#[server(LogoutFormFn, "/api")]
+#[server(LogoutFormFn, "/srv")]
 pub async fn logout_form_fn() -> Result<(), ServerFnError> {
-  use crate::api::set_cookie_wrapper;
+  use crate::api::remove_cookie_wrapper;
   use leptos_actix::redirect;
 
   redirect("/");
 
-  match set_cookie_wrapper("jwt", "").await {
+  match remove_cookie_wrapper("jwt").await {
     Ok(o) => Ok(o),
     Err(e) => Err(ServerFnError::ServerError(e.to_string())),
   }
