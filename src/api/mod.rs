@@ -7,8 +7,11 @@ use serde_json::Value;
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
 pub enum HttpType {
+  #[allow(dead_code)]
   Get,
+  #[allow(dead_code)]
   Post,
+  #[allow(dead_code)]
   Put,
 }
 

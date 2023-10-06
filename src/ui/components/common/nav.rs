@@ -22,11 +22,13 @@ use leptos_icons::*;
 use leptos_router::*;
 
 #[server(LogoutFormFn, "/serverfn")]
-pub async fn logout_form_fn() -> Result<(), ServerFnError> {
+pub async fn logout_form_fn(is_ssr: bool) -> Result<(), ServerFnError> {
   use crate::api::remove_cookie_wrapper;
   use leptos_actix::redirect;
 
-  // redirect("/");
+  if is_ssr {
+    redirect("/");
+  }
 
   match remove_cookie_wrapper("jwt").await {
     Ok(o) => Ok(o),
@@ -37,6 +39,11 @@ pub async fn logout_form_fn() -> Result<(), ServerFnError> {
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
+
+  #[cfg(feature = "ssr")]
+  let is_ssr = create_rw_signal::<bool>(true);
+  #[cfg(not(feature = "ssr"))]
+  let is_ssr = create_rw_signal::<bool>(false);
 
   let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
 
@@ -160,6 +167,11 @@ pub fn TopNav() -> impl IntoView {
                                       </li>
                                       <li>
                                         <ActionForm action=logout_form_action>
+                                          <input
+                                            name="is_ssr"
+                                            type="hidden"
+                                            value=format!("{}", is_ssr.get())
+                                          />
                                           <button type="submit">{t!(i18n, nav_logout)}</button>
                                         </ActionForm>
                                       </li>
