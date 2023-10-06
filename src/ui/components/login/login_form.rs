@@ -113,8 +113,7 @@ pub fn LoginForm() -> impl IntoView {
         }
 
         class="input input-bordered"
-      />
-      <button type="submit" class="btn">
+      /> <button type="submit" class="btn">
         "Login"
       </button>
     </ActionForm>
