@@ -7,7 +7,6 @@ use lemmy_api_common::{
   post::{GetPost, GetPostResponse, GetPosts, GetPostsResponse},
 };
 use leptos::Serializable;
-use log::logger;
 use serde::{Deserialize, Serialize};
 
 pub enum HttpType {
@@ -111,6 +110,7 @@ cfg_if! {
         use crate::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
         use gloo_net::http::Request;
+        use crate::api::get_cookie_wrapper;
 
         pub struct Fetch;
 
@@ -122,78 +122,74 @@ cfg_if! {
                path: &str,
                form: &Form,
            ) -> Result<Response, LemmyAppError> {
-              use crate::api::get_cookie_wrapper;
-
                let route = &build_route(path);
                let abort_controller = AbortController::new().ok();
                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
 
-               // abort in-flight requests if the Scope is disposed
-               // i.e., if we've navigated away from this page
                leptos::on_cleanup( move || {
                    if let Some(abort_controller) = abort_controller {
                        abort_controller.abort()
                    }
                });
 
-              //  let mut request_builder = match method {
-              //     HttpType::Get => {
-              //         Request::get(&build_fetch_query(path, form))
+               let mut request_builder = match method {
+                  HttpType::Get => {
+                      Request::get(&build_fetch_query(path, form))
+                        .abort_signal(abort_signal.as_ref())
+                  }
+                  HttpType::Post => {
+                      Request::post(route)
+                      .abort_signal(abort_signal.as_ref())
+                  }
+                  HttpType::Put => {
+                      Request::put(route)
+                      .abort_signal(abort_signal.as_ref())
+                  }
+                };
+
+                match get_cookie_wrapper("jwt").await {
+                  Ok(Some(jwt)) => {
+                    request_builder = request_builder.header("Authorization", &format!("Bearer {}", jwt)[..]);
+                  },
+                  _ => {
+                  },
+                };
+
+                match method {
+                  HttpType::Get => {
+                      request_builder.send().await
+                  }
+                  HttpType::Post => {
+                      request_builder.json(form)
+                      .expect_throw("Could not parse json body").send().await
+                  }
+                  HttpType::Put => {
+                      request_builder.json(form)
+                      .expect_throw("Could not parse json body").send().await
+                  }
+                }?.json::<Response>().await.map_err(Into::into)
+
+              //  match method {
+              //      HttpType::Get => {
+              //          Request::get(&build_fetch_query(path, form))
+              //            .abort_signal(abort_signal.as_ref())
+              //            .send().await
+              //      }
+              //      HttpType::Post => {
+              //          Request::post(route)
               //           .abort_signal(abort_signal.as_ref())
-              //     }
-              //     HttpType::Post => {
-              //         Request::post(route)
-              //         .abort_signal(abort_signal.as_ref())
-              //     }
-              //     HttpType::Put => {
-              //         Request::put(route)
-              //         .abort_signal(abort_signal.as_ref())
-              //     }
-              //   };
-
-              //   match get_cookie_wrapper("jwt").await {
-              //     Ok(Some(jwt)) => {
-              //       request_builder = request_builder.header("Authorization", &format!("Bearer {}", jwt)[..]);
-              //     },
-              //     _ => {
-              //     },
-              //   };
-
-              //   match method {
-              //     HttpType::Get => {
-              //         request_builder.send().await
-              //     }
-              //     HttpType::Post => {
-              //         request_builder.json(form)
-              //         .expect_throw("Could not parse json body").send().await
-              //     }
-              //     HttpType::Put => {
-              //         request_builder.json(form)
-              //         .expect_throw("Could not parse json body").send().await
-              //     }
-              //   }?.json::<Response>().await.map_err(Into::into)
-
-               match method {
-                   HttpType::Get => {
-                       Request::get(&build_fetch_query(path, form))
-                         .abort_signal(abort_signal.as_ref())
-                         .send().await
-                   }
-                   HttpType::Post => {
-                       Request::post(route)
-                        .abort_signal(abort_signal.as_ref())
-                        .json(form)
-                           .expect_throw("Could not parse json body")
-                        .send().await
-                   }
-                   HttpType::Put => {
-                       Request::put(route)
-                        .abort_signal(abort_signal.as_ref())
-                        .json(form)
-                           .expect_throw("Could not parse json body")
-                        .send().await
-                   }
-               }?.json::<Response>().await.map_err(Into::into)
+              //           .json(form)
+              //              .expect_throw("Could not parse json body")
+              //           .send().await
+              //      }
+              //      HttpType::Put => {
+              //          Request::put(route)
+              //           .abort_signal(abort_signal.as_ref())
+              //           .json(form)
+              //              .expect_throw("Could not parse json body")
+              //           .send().await
+              //      }
+              //  }?.json::<Response>().await.map_err(Into::into)
            }
        }
 

@@ -1,9 +1,8 @@
+use crate::errors::LemmyAppError;
+use cfg_if::cfg_if;
 use leptos::Serializable;
 use serde::Serialize;
-use cfg_if::cfg_if;
 use serde_json::Value;
-
-use crate::errors::LemmyAppError;
 
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
@@ -56,7 +55,7 @@ where
         HttpType::Put => request_builder.json(form).send().await?.text().await?,
       };
     } else {
-      use crate::wasm_bindgen::UnwrapThrowExt;
+
 
       let abort_controller = web_sys::AbortController::new().ok();
       let abort_signal = abort_controller.as_ref().map(|a| a.signal());
@@ -88,7 +87,6 @@ where
           request_builder
             .abort_signal(abort_signal.as_ref())
             .json(form)?
-            // .expect_throw("Could not parse json body")
             .send()
             .await?
             .text()
@@ -98,7 +96,6 @@ where
           request_builder
             .abort_signal(abort_signal.as_ref())
             .json(form)?
-            // .expect_throw("Could not parse json body")
             .send()
             .await?
             .text()
@@ -274,8 +271,6 @@ pub async fn get_cookie_wrapper(path: &str) -> Result<Option<String>, LemmyAppEr
       Some(s.value().to_string())
     } else {
       None
-      // Err("no existy")
-      // "".to_string()
     }
   })
   .await

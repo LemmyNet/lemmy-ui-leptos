@@ -27,26 +27,6 @@ pub fn App() -> impl IntoView {
   provide_i18n_context();
 
   let authenticated = create_rw_signal::<bool>(false);
-
-  // let reso = create_resource(|| (), move |()| async move {
-  //   log!("here");
-  //   match cookie_wrapper("jwt").await {
-  //       Ok(jwt) => {
-  //         log!("here 5");
-
-  //         // auth.set(Some(Sensitive::new(jwt.clone())));
-  //         Some(Sensitive::new(jwt.clone()))
-  //         // log!("NPT {:#?}", jwt.clone());
-  //       },
-  //       Err(e) => {
-  //         log!("no auth thingy {}", e);
-  //         None
-  //       },
-  //   }
-  //   // log!("here 4");
-
-  // });
-
   provide_context(authenticated);
 
   let (is_routing, set_is_routing) = create_signal(false);
@@ -102,8 +82,6 @@ cfg_if! {
 
         #[wasm_bindgen]
         pub fn hydrate() {
-            // _ = console_log::init_with_level(log::Level::Debug);
-            // console_error_panic_hook::set_once();
             leptos::mount_to_body(App);
         }
     }

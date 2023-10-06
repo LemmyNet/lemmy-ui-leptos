@@ -1,16 +1,12 @@
 // use actix_web::web;
-use lemmy_api_common::lemmy_db_views::structs::PostView;
+use crate::{
+  api::{api_wrapper, HttpType},
+  errors::LemmyAppError,
+  ui::components::post::post_listings::PostListings,
+};
 use lemmy_api_common::post::{GetPosts, GetPostsResponse};
 use leptos::*;
 use leptos_router::use_query_map;
-use cfg_if::cfg_if;
-use async_trait::async_trait;
-
-
-use crate::api::{api_wrapper, HttpType};
-use crate::errors::LemmyAppError;
-use crate::ui::components::post::post_listings::PostListings;
-
 
 pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
   api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
@@ -25,38 +21,43 @@ pub fn HomeActivity() -> impl IntoView {
       .unwrap_or(1)
   };
 
-  let posts = create_resource(page, move |page| async move {
-    let form = GetPosts {
-      type_: None,
-      sort: None,
-      community_name: None,
-      community_id: None,
-      page: Some(page),
-      limit: None,
-      saved_only: None,
-      disliked_only: None,
-      liked_only: None,
-      // moderator_view: None,
-      // auth: None,
-      page_cursor: None,
-    };
+  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
 
-    list_posts(&form).await.ok()
-    // cfg_if! {
-    //   if #[cfg(feature = "ssr")] {
-    //     use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
-    //     use awc::Client;
-    //     awc::Client::new().list_posts(&form).await.ok()
-    //   } else {
-    //     use crate::lemmy_client::Fetch;
-    //     use crate::lemmy_client::LemmyClient;
-    //     // let c = Fetch::new();
-    //     // c.list_posts(&form).await.ok()
-    //     let v: Vec<PostView> = vec![];
-    //     Some(GetPostsResponse { next_page: None, posts: v } )
-    //   }
-    // }
-  });
+  let posts = create_resource(
+    move || (page(), authenticated()),
+    move |(page, _authenticated)| async move {
+      let form = GetPosts {
+        type_: None,
+        sort: None,
+        community_name: None,
+        community_id: None,
+        page: Some(page),
+        limit: None,
+        saved_only: None,
+        disliked_only: None,
+        liked_only: None,
+        // moderator_view: None,
+        // auth: None,
+        page_cursor: None,
+      };
+
+      list_posts(&form).await.ok()
+      // cfg_if! {
+      //   if #[cfg(feature = "ssr")] {
+      //     use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
+      //     use awc::Client;
+      //     awc::Client::new().list_posts(&form).await.ok()
+      //   } else {
+      //     use crate::lemmy_client::Fetch;
+      //     use crate::lemmy_client::LemmyClient;
+      //     // let c = Fetch::new();
+      //     // c.list_posts(&form).await.ok()
+      //     let v: Vec<PostView> = vec![];
+      //     Some(GetPostsResponse { next_page: None, posts: v } )
+      //   }
+      // }
+    },
+  );
 
   let err_msg = " Error loading this post.";
 
@@ -67,7 +68,8 @@ pub fn HomeActivity() -> impl IntoView {
           view! { "Loading..." }
       }>
         {move || {
-            posts.get()
+            posts
+                .get()
                 .map(|res| match res {
                     None => {
                         view! { <div>{err_msg}</div> }

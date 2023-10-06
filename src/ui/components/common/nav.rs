@@ -1,7 +1,11 @@
 use crate::{api::get_cookie_wrapper, i18n::*};
+#[cfg(feature = "ssr")]
+use leptos::IntoAttribute;
 use leptos::{
   component,
+  create_effect,
   create_resource,
+  create_rw_signal,
   create_server_action,
   server,
   use_context,
@@ -16,15 +20,13 @@ use leptos::{
 };
 use leptos_icons::*;
 use leptos_router::*;
-#[cfg(feature = "ssr")]
-use leptos::IntoAttribute;
 
 #[server(LogoutFormFn, "/serverfn")]
 pub async fn logout_form_fn() -> Result<(), ServerFnError> {
   use crate::api::remove_cookie_wrapper;
   use leptos_actix::redirect;
 
-  redirect("/");
+  // redirect("/");
 
   match remove_cookie_wrapper("jwt").await {
     Ok(o) => Ok(o),
@@ -36,7 +38,7 @@ pub async fn logout_form_fn() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let authenticated = use_context::<RwSignal<bool>>().expect("still going to get an option");
+  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
 
   let auth_resource = create_resource(
     || (),
@@ -59,6 +61,16 @@ pub fn TopNav() -> impl IntoView {
   );
 
   let logout_form_action = create_server_action::<LogoutFormFn>();
+
+  create_effect(move |_| match logout_form_action.value().get() {
+    None => {}
+    Some(Ok(_o)) => {
+      authenticated.set(false);
+      let navigate = leptos_router::use_navigate();
+      navigate("/", Default::default());
+    }
+    Some(Err(_e)) => {}
+  });
 
   view! {
     <nav class="container navbar mx-auto">
@@ -102,15 +114,20 @@ pub fn TopNav() -> impl IntoView {
               </span>
             </A>
           </li>
-          <Suspense fallback=move || view! { <p>"Loading User"</p> }>
+          <Suspense fallback=move || {
+              view! {
+                <li></li>
+                <li></li>
+              }
+          }>
             <ErrorBoundary fallback=|_| {
                 view! { <p>"Something went wrong"</p> }
             }>
               {move || {
                   auth_resource
                       .get()
-                      .map(move |x| {
-                          if !x {
+                      .map(move |_| {
+                          if !authenticated.get() {
                               view! {
                                 <li>
                                   <A href="/login">{t!(i18n, nav_login)}</A>
