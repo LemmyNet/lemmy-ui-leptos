@@ -67,8 +67,6 @@ cfg_if! {
             ) -> Result<Response, LemmyAppError> {
                 use crate::api::get_cookie_wrapper;
 
-                use crate::api::get_cookie_wrapper;
-
                 let route = &build_route(path);
 
                 // let mut request_builder = match method {

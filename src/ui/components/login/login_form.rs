@@ -4,12 +4,6 @@ use crate::{
 };
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::{ev, logging::*, *};
-use crate::{
-  api::{api_wrapper, HttpType},
-  errors::LemmyAppError,
-};
-use lemmy_api_common::person::{Login, LoginResponse};
-use leptos::{ev, logging::*, *};
 use leptos_router::ActionForm;
 
 pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
@@ -27,10 +21,8 @@ pub async fn login_form_fn(
   use awc::Client;
   use lemmy_api_common::person::Login;
   use leptos_actix::{extract, redirect};
-  use leptos_actix::{extract, redirect};
 
   let form = Login {
-    username_or_email: username.into(),
     username_or_email: username.into(),
     password: password.into(),
     totp_2fa_token: None,
