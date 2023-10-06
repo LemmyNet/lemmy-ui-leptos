@@ -91,7 +91,7 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <span>{ move || is_ssr() }</span>
+    <span>{move || is_ssr()}</span>
     <ActionForm action=login_form_action>
       {move || {
           error
@@ -138,8 +138,7 @@ pub fn LoginForm() -> impl IntoView {
         }
 
         class="input input-bordered"
-      />
-      <input name="is_ssr" type="hidden" value=format!("{}", is_ssr.get()) />
+      /> <input name="is_ssr" type="hidden" value=format!("{}", is_ssr.get())/>
       <button type="submit" class="btn">
         "Login"
       </button>

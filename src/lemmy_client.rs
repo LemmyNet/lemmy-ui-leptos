@@ -105,16 +105,13 @@ cfg_if! {
         impl LemmyClient for awc::Client {}
     } else {
       use crate::wasm_bindgen::UnwrapThrowExt;
-      use crate::wasm_bindgen::UnwrapThrowExt;
       use web_sys::AbortController;
       use gloo_net::http::Request;
-      use crate::api::get_cookie_wrapper;
-      use crate::api::get_cookie_wrapper;
+      
 
       pub struct Fetch;
 
       #[async_trait(?Send)]
-      impl private_trait::LemmyClient for Fetch {
       impl private_trait::LemmyClient for Fetch {
           async fn make_request<Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
               &self,
@@ -200,7 +197,6 @@ cfg_if! {
           format!("{path}?{form_str}")
       }
     }
-  }
 }
 
 fn build_route(route: &str) -> String {

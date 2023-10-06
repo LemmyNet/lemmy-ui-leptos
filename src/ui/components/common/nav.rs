@@ -167,7 +167,11 @@ pub fn TopNav() -> impl IntoView {
                                       </li>
                                       <li>
                                         <ActionForm action=logout_form_action>
-                                          <input name="is_ssr" type="hidden" value=format!("{}", is_ssr.get()) />
+                                          <input
+                                            name="is_ssr"
+                                            type="hidden"
+                                            value=format!("{}", is_ssr.get())
+                                          />
                                           <button type="submit">{t!(i18n, nav_logout)}</button>
                                         </ActionForm>
                                       </li>
