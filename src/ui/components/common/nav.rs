@@ -1,61 +1,231 @@
-use leptos::{component, view, IntoView};
+use crate::{api::get_cookie_wrapper, i18n::*};
+#[cfg(feature = "ssr")]
+use leptos::IntoAttribute;
+use leptos::{
+  component,
+  create_effect,
+  create_resource,
+  create_rw_signal,
+  create_server_action,
+  server,
+  use_context,
+  view,
+  ErrorBoundary,
+  IntoView,
+  RwSignal,
+  ServerFnError,
+  SignalGet,
+  SignalSet,
+  Suspense,
+};
 use leptos_icons::*;
 use leptos_router::*;
 
+#[server(LogoutFormFn, "/serverfn")]
+pub async fn logout_form_fn() -> Result<(), ServerFnError> {
+  use crate::api::remove_cookie_wrapper;
+  use leptos_actix::redirect;
+
+  // redirect("/");
+
+  match remove_cookie_wrapper("jwt").await {
+    Ok(o) => Ok(o),
+    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+  }
+}
+
 #[component]
 pub fn TopNav() -> impl IntoView {
+  let i18n = use_i18n();
+
+  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
+
+  let auth_resource = create_resource(
+    || (),
+    move |()| async move {
+      match get_cookie_wrapper("jwt").await {
+        Ok(Some(_jwt)) => {
+          authenticated.set(true);
+          true
+        }
+        Ok(None) => {
+          authenticated.set(false);
+          false
+        }
+        Err(_e) => {
+          authenticated.set(false);
+          false
+        }
+      }
+    },
+  );
+
+  let logout_form_action = create_server_action::<LogoutFormFn>();
+
+  create_effect(move |_| match logout_form_action.value().get() {
+    None => {}
+    Some(Ok(_o)) => {
+      authenticated.set(false);
+      let navigate = leptos_router::use_navigate();
+      navigate("/", Default::default());
+    }
+    Some(Err(_e)) => {}
+  });
+
   view! {
-    <div class="navbar bg-base-300">
+    <nav class="container navbar mx-auto">
       <div class="navbar-start">
-        <div class="dropdown">
-          <label tabindex="0" class="btn btn-ghost btn-circle">
-            <Icon icon=Icon::from(ChIcon::ChMenuHamburger) width="1.25rem" height="1.25rem"/>
-          </label>
-          <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            <li>
-              <a>"Homepage"</a>
-            </li>
-          </ul>
-        </div>
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <A href="/" class="text-xl whitespace-nowrap">
+              "Brand from env"
+            </A>
+          </li>
+          <li>
+            <A href="/communities" class="text-md">
+              {t!(i18n, nav_communities)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_post" class="text-md">
+              {t!(i18n, nav_create_post)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_community" class="text-md">
+              {t!(i18n, nav_create_community)}
+            </A>
+          </li>
+          <li>
+            <a href="//join-lemmy.org/donate">
+              <span title=t!(i18n, nav_donate)>
+                <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+              </span>
+            </a>
+          </li>
+        </ul>
       </div>
-      <div class="navbar-center">
-        <a class="btn btn-ghost normal-case text-xl">"Lemmy"</a>
+      <div class="navbar-end">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <A href="/search">
+              <span title=t!(i18n, nav_search)>
+                <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+              </span>
+            </A>
+          </li>
+          <Suspense fallback=move || {
+              view! {
+                <li></li>
+                <li></li>
+              }
+          }>
+            <ErrorBoundary fallback=|_| {
+                view! { <p>"Something went wrong"</p> }
+            }>
+              {move || {
+                  auth_resource
+                      .get()
+                      .map(move |_| {
+                          if !authenticated.get() {
+                              view! {
+                                <li>
+                                  <A href="/login">{t!(i18n, nav_login)}</A>
+                                </li>
+                                <li>
+                                  <A href="/signup">{t!(i18n, nav_signup)}</A>
+                                </li>
+                              }
+                          } else {
+                              view! {
+                                <li>
+                                  <A href="/inbox">
+                                    <span title=t!(i18n, nav_unread_messages)>
+                                      <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+                                    </span>
+                                  </A>
+                                </li>
+                                <li>
+                                  <details>
+                                    <summary>"User name"</summary>
+                                    <ul>
+                                      <li>
+                                        <A href="/u/jimmy90">{t!(i18n, nav_profile)}</A>
+                                      </li>
+                                      <li>
+                                        <A href="/settings">{t!(i18n, nav_settings)}</A>
+                                      </li>
+                                      <li>
+                                        <hr/>
+                                      </li>
+                                      <li>
+                                        <ActionForm action=logout_form_action>
+                                          <button type="submit">{t!(i18n, nav_logout)}</button>
+                                        </ActionForm>
+                                      </li>
+                                    </ul>
+                                  </details>
+                                </li>
+                              }
+                          }
+                      })
+              }}
+
+            </ErrorBoundary>
+          </Suspense>
+
+        </ul>
       </div>
-      <div class="navbar-end gap-3">
-        <button class="btn btn-ghost btn-circle">
-          <Icon icon=Icon::from(ChIcon::ChSearch) width="1.25rem" height="1.25rem"/>
-        </button>
-        <button class="btn btn-ghost btn-circle">
-          <div class="indicator">
-            <Icon icon=Icon::from(ChIcon::ChBell) width="1.25rem" height="1.25rem"/>
-            <span class="badge badge-xs badge-primary indicator-item"></span>
-          </div>
-        </button>
-        <A href="/login">"Login"</A>
-      </div>
-    </div>
+    </nav>
   }
 }
 
 #[component]
 pub fn BottomNav() -> impl IntoView {
+  let i18n = use_i18n();
+
   view! {
-    <footer class="sticky bottom-0">
-      <div class="btm-nav btm-nav-lg">
-        <A href="/" class="active">
-          // TODO put svg's here
-          <span class="btm-nav-label">"Home"</span>
-        </A>
-        <button>
-          <span class="btm-nav-label">"TODO 1"</span>
-        </button>
-        <button>
-          <span class="btm-nav-label">"TODO 2"</span>
-        </button>
+    <nav class="container navbar mx-auto">
+      <div class="navbar-start"></div>
+      <div class="navbar-end ">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
+              "f/e from env"
+            </a>
+          </li>
+          <li>
+            <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
+              "b/e from env"
+            </a>
+          </li>
+          <li>
+            <A href="/modlog" class="text-md">
+              {t!(i18n, nav_modlog)}
+            </A>
+          </li>
+          <li>
+            <A href="/instances" class="text-md">
+              {t!(i18n, nav_instances)}
+            </A>
+          </li>
+          <li>
+            <a href="join-lemmy.org/docs/en/index.html" class="text-md">
+              {t!(i18n, nav_docs)}
+            </a>
+          </li>
+          <li>
+            <a href="//github.com/LemmyNet" class="text-md">
+              {t!(i18n, nav_code)}
+            </a>
+          </li>
+          <li>
+            <a href="//join-lemmy.org" class="text-md">
+              "join-lemmy.org"
+            </a>
+          </li>
+        </ul>
       </div>
-    </footer>
+    </nav>
   }
 }

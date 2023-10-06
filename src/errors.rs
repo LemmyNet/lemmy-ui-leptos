@@ -33,6 +33,14 @@ impl From<ser::Error> for LemmyAppError {
   }
 }
 
+impl From<reqwest::Error> for LemmyAppError {
+  fn from(value: reqwest::Error) -> Self {
+    Self::APIError {
+      error: value.to_string(),
+    }
+  }
+}
+
 impl From<ParseIntError> for LemmyAppError {
   fn from(_value: ParseIntError) -> Self {
     Self::ParamsError
