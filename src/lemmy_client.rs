@@ -107,7 +107,6 @@ cfg_if! {
       use crate::wasm_bindgen::UnwrapThrowExt;
       use web_sys::AbortController;
       use gloo_net::http::Request;
-      
 
       pub struct Fetch;
 
