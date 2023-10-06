@@ -14,6 +14,7 @@ pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
 pub async fn login_form_fn(
   username: String,
   password: String,
+  is_ssr: bool,
 ) -> Result<LoginResponse, ServerFnError> {
   use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
   use actix_web::web;
@@ -29,7 +30,10 @@ pub async fn login_form_fn(
   // let result =
   //   extract(|client: web::Data<Client>| async move { client.login(&form).await }).await?;
   let result = login(&form).await;
-  // redirect("/");
+
+  if is_ssr {
+    redirect("/");
+  }
 
   match result {
     Ok(res) => match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
@@ -46,6 +50,11 @@ pub fn LoginForm() -> impl IntoView {
   let (name, set_name) = create_signal(String::new());
   let error = create_rw_signal::<Option<String>>(None);
   let (disabled, _set_disabled) = create_signal(false);
+
+  #[cfg(feature = "ssr")]
+  let is_ssr = create_rw_signal::<bool>(true);
+  #[cfg(not(feature = "ssr"))]
+  let is_ssr = create_rw_signal::<bool>(false);
 
   let _button_is_disabled =
     Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
@@ -67,13 +76,14 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
+    <span>{ move || is_ssr() }</span>
     <ActionForm action=login_form_action>
       {move || {
           error
               .get()
               .map(|err| {
                   view! {
-                    <div class="alert shadow-lg">
+                    <div class="alert">
                       <span>{err}</span>
                     </div>
                   }
@@ -114,6 +124,7 @@ pub fn LoginForm() -> impl IntoView {
 
         class="input input-bordered"
       />
+      <input name="is_ssr" type="hidden" value=format!("{}", is_ssr.get()) />
       <button type="submit" class="btn">
         "Login"
       </button>
