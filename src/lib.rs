@@ -11,12 +11,11 @@ use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-mod api;
-pub mod api_service;
 mod config;
 mod errors;
 mod host;
 mod lemmy_client;
+pub mod server;
 mod ui;
 
 leptos_i18n::load_locales!();

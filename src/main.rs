@@ -5,7 +5,7 @@ cfg_if! {
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
-        use lemmy_ui_leptos::{App, api_service::route_to_api};
+        use lemmy_ui_leptos::{App, server::{route_to_api, cookie_middleware}};
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
@@ -36,6 +36,7 @@ cfg_if! {
                 let routes = &routes;
 
                 App::new()
+                    .wrap(cookie_middleware())
                     .app_data(web::Data::new(Client::new()))
                     .route("/api/{tail:.*}", web::route()
                            .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
