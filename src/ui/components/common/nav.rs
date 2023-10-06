@@ -43,7 +43,6 @@ pub fn TopNav() -> impl IntoView {
     move |()| async move {
       match get_cookie_wrapper("jwt").await {
         Ok(Some(_jwt)) => {
-          leptos::logging::log!("sdfkvln");
           authenticated.set(true);
           true
         }

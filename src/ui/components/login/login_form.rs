@@ -1,9 +1,18 @@
 // use actix_web::web;
 
-use lemmy_api_common::person::LoginResponse;
+use lemmy_api_common::person::{LoginResponse, Login};
 use leptos::{ev, logging::*, *};
 // use leptos_actix::extract;
 use leptos_router::ActionForm;
+
+use crate::{errors::LemmyAppError, api::{api_wrapper, HttpType}};
+// use leptos::wasm_bindgen::UnwrapThrowExt;
+
+
+pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
+  api_wrapper::<LoginResponse, Login>(HttpType::Post, "user/login", form).await
+}
+
 
 #[server(LoginFormFn, "/serverfn")]
 pub async fn login_form_fn(
@@ -25,19 +34,24 @@ pub async fn login_form_fn(
     password: password.into(),
     totp_2fa_token: None,
   };
+  // let result: Result<LoginResponse, LemmyAppError> = Ok(LoginResponse { jwt: Some("lajdnaksdj".to_string().into()), registration_created: false, verify_email_sent: false });
   // let result =
   //   extract(|client: web::Data<Client>| async move { client.login(&form).await }).await?;
-  // // let result = login(&form).await;
+  let result = login(&form).await;
   // redirect("/");
 
-  // match result {
-  //   Ok(res) => match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
-  //     Ok(_) => Ok(res),
-  //     Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-  //   },
-  //   Err(err) => Err(ServerFnError::ServerError(err.to_string())),
-  // }
-  Ok(LoginResponse { jwt: Some("()".to_string().into()), registration_created: false, verify_email_sent: false })
+  // let result = awc::Client::new().login(&form).await;
+
+  match result {
+    Ok(res) => {
+      match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
+        Ok(_) => Ok(res),
+        Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+      }
+    },
+    Err(err) => Err(ServerFnError::ServerError(err.to_string())),
+  }
+  // Ok(LoginResponse { jwt: Some("()".to_string().into()), registration_created: false, verify_email_sent: false })
 }
 
 #[component]
@@ -51,6 +65,22 @@ pub fn LoginForm() -> impl IntoView {
     Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
 
   let login_form_action = create_server_action::<LoginFormFn>();
+
+  create_effect(move |_| {
+
+    match login_form_action.value().get() {
+      None => {
+        leptos::logging::log!("none");
+      },
+      Some(Ok(o)) => {
+        leptos::logging::log!("ok");
+      },
+      Some(Err(e)) => {
+        leptos::logging::log!("error");
+      },
+    }
+
+  });
 
   view! {
     <ActionForm action=login_form_action>

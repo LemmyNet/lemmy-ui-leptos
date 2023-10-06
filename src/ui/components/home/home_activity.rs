@@ -7,13 +7,14 @@ use cfg_if::cfg_if;
 use async_trait::async_trait;
 
 
-// use crate::lemmy_client::LemmyClient;
+use crate::api::{api_wrapper, HttpType};
+use crate::errors::LemmyAppError;
 use crate::ui::components::post::post_listings::PostListings;
-// use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
 
 
-// This is helpful:
-// https://github.com/leptos-rs/leptos/blob/main/examples/hackernews/src/routes/stories.rs
+pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
+  api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
+}
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
@@ -40,33 +41,21 @@ pub fn HomeActivity() -> impl IntoView {
       page_cursor: None,
     };
 
-    // let c = Client::new();
-
-    // LemmyClient::list_posts(&form).await.ok()
-    cfg_if! {
-    if #[cfg(feature = "ssr")] {
-      use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
-      use awc::Client;
-    
-      // let c: LemmyClient = awc::Client::new().into();
-
-      awc::Client::new().list_posts(&form).await.ok()
-    } else {
-      use crate::lemmy_client::Fetch;
-      use crate::lemmy_client::LemmyClient;
-      // use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
-      // use reqwest::Client;
-      // let c = Fetch::new();
-      // c.list_posts(&form).await.ok()
-      let v: Vec<PostView> = vec![];
-      Some(GetPostsResponse { next_page: None, posts: v } )
-    }
-    }
-
-    // let l = LemmyClient
-    // ::list_posts(&form).await.ok()
-    // let v: Vec<PostView> = vec![];
-    // Some(v)
+    list_posts(&form).await.ok()
+    // cfg_if! {
+    //   if #[cfg(feature = "ssr")] {
+    //     use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
+    //     use awc::Client;
+    //     awc::Client::new().list_posts(&form).await.ok()
+    //   } else {
+    //     use crate::lemmy_client::Fetch;
+    //     use crate::lemmy_client::LemmyClient;
+    //     // let c = Fetch::new();
+    //     // c.list_posts(&form).await.ok()
+    //     let v: Vec<PostView> = vec![];
+    //     Some(GetPostsResponse { next_page: None, posts: v } )
+    //   }
+    // }
   });
 
   let err_msg = " Error loading this post.";

@@ -7,6 +7,7 @@ use lemmy_api_common::{
   post::{GetPost, GetPostResponse, GetPosts, GetPostsResponse},
 };
 use leptos::Serializable;
+use log::logger;
 use serde::{Deserialize, Serialize};
 
 pub enum HttpType {
@@ -82,6 +83,8 @@ cfg_if! {
                   _ => {
                   },
                 };
+
+                leptos::logging::log!("{:#?}", route);
 
                 match method {
                   HttpType::Get => request_builder.send(),
