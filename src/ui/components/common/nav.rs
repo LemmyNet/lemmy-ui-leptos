@@ -1,11 +1,25 @@
 use crate::i18n::*;
-use leptos::{component, view, IntoAttribute, IntoView};
+use leptos::*;
 use leptos_icons::*;
 use leptos_router::*;
+
+#[server(LogoutAction, "serverfn")]
+pub async fn logout() -> Result<(), ServerFnError> {
+  use actix_session::Session;
+  use leptos_actix::extract;
+
+  extract(|session: Session| async move {
+    // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
+    session.purge();
+  })
+  .await
+}
 
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
+
+  let logout_action = create_server_action::<LogoutAction>();
 
   view! {
     <nav class="navbar container mx-auto">
@@ -55,7 +69,9 @@ pub fn TopNav() -> impl IntoView {
               </A>
           </li>
           <li>
-            <button type="submit">{t!(i18n, nav_logout)}</button>
+            <ActionForm action=logout_action>
+              <button type="submit">{t!(i18n, nav_logout)}</button>
+            </ActionForm>
           </li>
         </ul>
       </div>

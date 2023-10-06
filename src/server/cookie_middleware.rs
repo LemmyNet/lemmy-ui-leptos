@@ -7,7 +7,7 @@ cfg_if! {
 
         pub fn cookie_middleware() -> SessionMiddleware<CookieSessionStore> {
             SessionMiddleware::builder(
-                CookieSessionStore::default(), Key::generate() // TODO: Should probably get the key for the cookie from config
+                CookieSessionStore::default(),  Key::from(&[0; 64]) // TODO: The key should definitely be read from a config value for production
             )
             .cookie_name(String::from("jwt"))
             .cookie_secure(false) // TODO: Make cookie secure option depend on whether in dev or prod

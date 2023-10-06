@@ -36,12 +36,12 @@ cfg_if! {
                 let routes = &routes;
 
                 App::new()
-                    .wrap(cookie_middleware())
                     .app_data(web::Data::new(Client::new()))
                     .route("/api/{tail:.*}", web::route()
                            .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
                            .to(route_to_api))
                     .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                    .wrap(cookie_middleware())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
                     .service(favicon)
@@ -51,7 +51,6 @@ cfg_if! {
                         App
                     )
                     .app_data(web::Data::new(leptos_options.to_owned()))
-                //.wrap(middleware::Compress::default())
             })
             .bind(&addr)?
             .run()
