@@ -18,6 +18,26 @@ use leptos::{
   SignalSet,
   Suspense,
 };
+use crate::{api::get_cookie_wrapper, i18n::*};
+#[cfg(feature = "ssr")]
+use leptos::IntoAttribute;
+use leptos::{
+  component,
+  create_effect,
+  create_resource,
+  create_rw_signal,
+  create_server_action,
+  server,
+  use_context,
+  view,
+  ErrorBoundary,
+  IntoView,
+  RwSignal,
+  ServerFnError,
+  SignalGet,
+  SignalSet,
+  Suspense,
+};
 use leptos_icons::*;
 use leptos_router::*;
 
@@ -80,6 +100,7 @@ pub fn TopNav() -> impl IntoView {
   });
 
   view! {
+    <nav class="container navbar mx-auto">
     <nav class="container navbar mx-auto">
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap">

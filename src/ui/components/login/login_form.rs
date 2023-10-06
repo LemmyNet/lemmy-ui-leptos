@@ -4,6 +4,12 @@ use crate::{
 };
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::{ev, logging::*, *};
+use crate::{
+  api::{api_wrapper, HttpType},
+  errors::LemmyAppError,
+};
+use lemmy_api_common::person::{Login, LoginResponse};
+use leptos::{ev, logging::*, *};
 use leptos_router::ActionForm;
 
 pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
@@ -21,8 +27,10 @@ pub async fn login_form_fn(
   use awc::Client;
   use lemmy_api_common::person::Login;
   use leptos_actix::{extract, redirect};
+  use leptos_actix::{extract, redirect};
 
   let form = Login {
+    username_or_email: username.into(),
     username_or_email: username.into(),
     password: password.into(),
     totp_2fa_token: None,
@@ -59,6 +67,21 @@ pub fn LoginForm() -> impl IntoView {
   let _button_is_disabled =
     Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
 
+  let login_form_action = create_server_action::<LoginFormFn>();
+
+  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
+
+  create_effect(move |_| match login_form_action.value().get() {
+    None => {}
+    Some(Ok(_o)) => {
+      authenticated.set(true);
+      let navigate = leptos_router::use_navigate();
+      navigate("/", Default::default());
+    }
+    Some(Err(e)) => {
+      error.set(Some(e.to_string()));
+    }
+  });
   let login_form_action = create_server_action::<LoginFormFn>();
 
   let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
