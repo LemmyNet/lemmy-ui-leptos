@@ -11,13 +11,13 @@ use cfg_if::cfg_if;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
+mod api;
 pub mod api_service;
 mod config;
 mod errors;
 mod host;
 mod lemmy_client;
 mod ui;
-mod api;
 
 leptos_i18n::load_locales!();
 
@@ -25,6 +25,29 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
+
+  let authenticated = create_rw_signal::<bool>(false);
+
+  // let reso = create_resource(|| (), move |()| async move {
+  //   log!("here");
+  //   match cookie_wrapper("jwt").await {
+  //       Ok(jwt) => {
+  //         log!("here 5");
+
+  //         // auth.set(Some(Sensitive::new(jwt.clone())));
+  //         Some(Sensitive::new(jwt.clone()))
+  //         // log!("NPT {:#?}", jwt.clone());
+  //       },
+  //       Err(e) => {
+  //         log!("no auth thingy {}", e);
+  //         None
+  //       },
+  //   }
+  //   // log!("here 4");
+
+  // });
+
+  provide_context(authenticated);
 
   let (is_routing, set_is_routing) = create_signal(false);
 

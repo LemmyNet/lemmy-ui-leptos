@@ -1,8 +1,4 @@
 use crate::errors::LemmyAppError;
-use cfg_if::cfg_if;
-use leptos::Serializable;
-use serde::Serialize;
-use serde_json::Value;
 
 const ENDPOINT: &str = "https://voyager.lemmy.ml/api/v3";
 
@@ -131,11 +127,11 @@ pub enum HttpType {
 // }
 
 #[cfg(not(feature = "ssr"))]
-pub async fn get_cookie_wrapper(path: &str) -> Result<String, LemmyAppError> {
-  use leptos::window;
+pub async fn get_cookie_wrapper(name: &str) -> Result<Option<String>, LemmyAppError> {
   use crate::wasm_bindgen::JsCast;
+  use leptos::window;
 
-  let r = window()
+  let cookie_string = window()
     .document()
     .ok_or(LemmyAppError::APIError {
       error: String::from("DOM document is None"),
@@ -146,22 +142,27 @@ pub async fn get_cookie_wrapper(path: &str) -> Result<String, LemmyAppError> {
     })?
     .cookie()
     .map_err(|_| LemmyAppError::APIError {
-      error: String::from("Cookie could not be set"),
+      error: String::from("Could not get cookie string"),
     })?;
 
-  wasm_cookies::cookies::get(&r, path)
+  if let Ok(value) = wasm_cookies::cookies::get(&cookie_string, name)
     .ok_or(LemmyAppError::APIError {
       error: String::from("DOM cookie is None"),
     })?
     .map_err(|e| LemmyAppError::APIError {
       error: e.to_string(),
     })
+  {
+    Ok(Some(value))
+  } else {
+    Ok(None)
+  }
 }
 
 #[cfg(not(feature = "ssr"))]
 pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppError> {
-  use leptos::window;
   use crate::wasm_bindgen::JsCast;
+  use leptos::window;
   use wasm_cookies::CookieOptions;
 
   let r = window()
@@ -183,8 +184,8 @@ pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppE
 
 #[cfg(not(feature = "ssr"))]
 pub async fn remove_cookie_wrapper(path: &str) -> Result<(), LemmyAppError> {
-  use leptos::window;
   use crate::wasm_bindgen::JsCast;
+  use leptos::window;
 
   let r = window()
     .document()
@@ -258,7 +259,7 @@ pub async fn remove_cookie_wrapper(path: &str) -> Result<(), LemmyAppError> {
 }
 
 #[cfg(feature = "ssr")]
-pub async fn get_cookie_wrapper(path: &str) -> Result<String, LemmyAppError> {
+pub async fn get_cookie_wrapper(path: &str) -> Result<Option<String>, LemmyAppError> {
   use actix_web::HttpRequest;
   use leptos_actix::extract;
 
@@ -267,9 +268,11 @@ pub async fn get_cookie_wrapper(path: &str) -> Result<String, LemmyAppError> {
   let cookie_value = extract(|req: HttpRequest| async move {
     if let Some(c) = req.cookie(&path_string) {
       let s = c.clone();
-      s.value().to_string()
+      Some(s.value().to_string())
     } else {
-      "".to_string()
+      None
+      // Err("no existy")
+      // "".to_string()
     }
   })
   .await

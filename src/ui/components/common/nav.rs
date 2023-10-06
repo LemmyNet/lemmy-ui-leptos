@@ -1,9 +1,25 @@
-use crate::i18n::*;
-use leptos::{component, create_server_action, server, view, IntoView, ServerFnError};
+use crate::{api::get_cookie_wrapper, i18n::*};
+use leptos::{
+  component,
+  create_resource,
+  create_server_action,
+  server,
+  use_context,
+  view,
+  ErrorBoundary,
+  IntoView,
+  RwSignal,
+  ServerFnError,
+  SignalGet,
+  SignalSet,
+  Suspense,
+};
 use leptos_icons::*;
 use leptos_router::*;
+#[cfg(feature = "ssr")]
+use leptos::IntoAttribute;
 
-#[server(LogoutFormFn, "/srv")]
+#[server(LogoutFormFn, "/serverfn")]
 pub async fn logout_form_fn() -> Result<(), ServerFnError> {
   use crate::api::remove_cookie_wrapper;
   use leptos_actix::redirect;
@@ -19,6 +35,29 @@ pub async fn logout_form_fn() -> Result<(), ServerFnError> {
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
+
+  let authenticated = use_context::<RwSignal<bool>>().expect("still going to get an option");
+
+  let auth_resource = create_resource(
+    || (),
+    move |()| async move {
+      match get_cookie_wrapper("jwt").await {
+        Ok(Some(_jwt)) => {
+          leptos::logging::log!("sdfkvln");
+          authenticated.set(true);
+          true
+        }
+        Ok(None) => {
+          authenticated.set(false);
+          false
+        }
+        Err(_e) => {
+          authenticated.set(false);
+          false
+        }
+      }
+    },
+  );
 
   let logout_form_action = create_server_action::<LogoutFormFn>();
 
@@ -47,11 +86,11 @@ pub fn TopNav() -> impl IntoView {
             </A>
           </li>
           <li>
-            <A href="//join-lemmy.org/donate">
+            <a href="//join-lemmy.org/donate">
               <span title=t!(i18n, nav_donate)>
                 <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
               </span>
-            </A>
+            </a>
           </li>
         </ul>
       </div>
@@ -64,40 +103,61 @@ pub fn TopNav() -> impl IntoView {
               </span>
             </A>
           </li>
-          <li>
-            <A href="/login">{t!(i18n, nav_login)}</A>
-          </li>
-          <li>
-            <A href="/signup">{t!(i18n, nav_signup)}</A>
-          </li>
-          <li>
-            <A href="/inbox">
-              <span title=t!(i18n, nav_unread_messages)>
-                <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
-              </span>
-            </A>
-          </li>
-          <li>
-            <details>
-              <summary>"User name"</summary>
-              <ul>
-                <li>
-                  <A href="/u/jimmy90">{t!(i18n, nav_profile)}</A>
-                </li>
-                <li>
-                  <A href="/settings">{t!(i18n, nav_settings)}</A>
-                </li>
-                <li>
-                  <hr/>
-                </li>
-                <li>
-                  <ActionForm action=logout_form_action>
-                    <button type="submit">{t!(i18n, nav_logout)}</button>
-                  </ActionForm>
-                </li>
-              </ul>
-            </details>
-          </li>
+          <Suspense fallback=move || view! { <p>"Loading User"</p> }>
+            <ErrorBoundary fallback=|_| {
+                view! { <p>"Something went wrong"</p> }
+            }>
+              {move || {
+                  auth_resource
+                      .get()
+                      .map(move |x| {
+                          if !x {
+                              view! {
+                                <li>
+                                  <A href="/login">{t!(i18n, nav_login)}</A>
+                                </li>
+                                <li>
+                                  <A href="/signup">{t!(i18n, nav_signup)}</A>
+                                </li>
+                              }
+                          } else {
+                              view! {
+                                <li>
+                                  <A href="/inbox">
+                                    <span title=t!(i18n, nav_unread_messages)>
+                                      <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+                                    </span>
+                                  </A>
+                                </li>
+                                <li>
+                                  <details>
+                                    <summary>"User name"</summary>
+                                    <ul>
+                                      <li>
+                                        <A href="/u/jimmy90">{t!(i18n, nav_profile)}</A>
+                                      </li>
+                                      <li>
+                                        <A href="/settings">{t!(i18n, nav_settings)}</A>
+                                      </li>
+                                      <li>
+                                        <hr/>
+                                      </li>
+                                      <li>
+                                        <ActionForm action=logout_form_action>
+                                          <button type="submit">{t!(i18n, nav_logout)}</button>
+                                        </ActionForm>
+                                      </li>
+                                    </ul>
+                                  </details>
+                                </li>
+                              }
+                          }
+                      })
+              }}
+
+            </ErrorBoundary>
+          </Suspense>
+
         </ul>
       </div>
     </nav>

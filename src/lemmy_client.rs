@@ -69,26 +69,6 @@ cfg_if! {
 
                 let route = &build_route(path);
 
-                // let mut request_builder = match type_ {
-                //   HttpType::Get => self.get(&build_fetch_query(route, form)),
-                //   HttpType::Post => self.post(route),
-                //   HttpType::Put => self.put(route),
-                // };
-
-                // match get_cookie_wrapper("jwt").await {
-                //   Ok(jwt) => {
-                //     request_builder = request_builder.header("Authorization", &format!("Bearer {}", jwt)[..]);
-                //   },
-                //   Err(_) => {
-                //   },
-                // };
-
-                // json = match type_ {
-                //   HttpType::Get => request_builder.send().await?.text().await?,
-                //   HttpType::Post => request_builder.json(form).send().await?.text().await?,
-                //   HttpType::Put => request_builder.json(form).send().await?.text().await?,
-                // };
-
                 let mut request_builder = match method {
                     HttpType::Get => self.get(route).query(form)?,
                     HttpType::Post => self.post(route),
@@ -96,21 +76,12 @@ cfg_if! {
                 };
 
                 match get_cookie_wrapper("jwt").await {
-                  Ok(jwt) => {
+                  Ok(Some(jwt)) => {
                     request_builder = request_builder.insert_header(("Authorization", &format!("Bearer {}", jwt)[..]));
                   },
-                  Err(_) => {
+                  _ => {
                   },
                 };
-
-                // match method {
-                //   HttpType::Get => self.get(route).query(form)?,
-                //   HttpType::Post => self.post(route),
-                //   HttpType::Put => self.put(route),
-                // };
-
-
-                // request_builder.await?.json::<Response>().await.map_err(Into::into)
 
                 match method {
                   HttpType::Get => request_builder.send(),
@@ -162,64 +133,64 @@ cfg_if! {
                    }
                });
 
-               let mut request_builder = match method {
-                  HttpType::Get => {
-                      Request::get(&build_fetch_query(path, form))
+              //  let mut request_builder = match method {
+              //     HttpType::Get => {
+              //         Request::get(&build_fetch_query(path, form))
+              //           .abort_signal(abort_signal.as_ref())
+              //     }
+              //     HttpType::Post => {
+              //         Request::post(route)
+              //         .abort_signal(abort_signal.as_ref())
+              //     }
+              //     HttpType::Put => {
+              //         Request::put(route)
+              //         .abort_signal(abort_signal.as_ref())
+              //     }
+              //   };
+
+              //   match get_cookie_wrapper("jwt").await {
+              //     Ok(Some(jwt)) => {
+              //       request_builder = request_builder.header("Authorization", &format!("Bearer {}", jwt)[..]);
+              //     },
+              //     _ => {
+              //     },
+              //   };
+
+              //   match method {
+              //     HttpType::Get => {
+              //         request_builder.send().await
+              //     }
+              //     HttpType::Post => {
+              //         request_builder.json(form)
+              //         .expect_throw("Could not parse json body").send().await
+              //     }
+              //     HttpType::Put => {
+              //         request_builder.json(form)
+              //         .expect_throw("Could not parse json body").send().await
+              //     }
+              //   }?.json::<Response>().await.map_err(Into::into)
+
+               match method {
+                   HttpType::Get => {
+                       Request::get(&build_fetch_query(path, form))
+                         .abort_signal(abort_signal.as_ref())
+                         .send().await
+                   }
+                   HttpType::Post => {
+                       Request::post(route)
                         .abort_signal(abort_signal.as_ref())
-                  }
-                  HttpType::Post => {
-                      Request::post(route)
-                      .abort_signal(abort_signal.as_ref())
-                  }
-                  HttpType::Put => {
-                      Request::put(route)
-                      .abort_signal(abort_signal.as_ref())
-                  }
-                };
-
-                match get_cookie_wrapper("jwt").await {
-                  Ok(jwt) => {
-                    request_builder = request_builder.header("Authorization", &format!("Bearer {}", jwt)[..]);
-                  },
-                  Err(_e) => {
-                  },
-                };
-
-                match method {
-                  HttpType::Get => {
-                      request_builder.send().await
-                  }
-                  HttpType::Post => {
-                      request_builder.json(form)
-                      .expect_throw("Could not parse json body").send().await
-                  }
-                  HttpType::Put => {
-                      request_builder.json(form)
-                      .expect_throw("Could not parse json body").send().await
-                  }
-                }?.json::<Response>().await.map_err(Into::into)
-
-              //  match method {
-              //      HttpType::Get => {
-              //          Request::get(&build_fetch_query(path, form))
-              //            .abort_signal(abort_signal.as_ref())
-              //            .send().await
-              //      }
-              //      HttpType::Post => {
-              //          Request::post(route)
-              //           .abort_signal(abort_signal.as_ref())
-              //           .json(form)
-              //              .expect_throw("Could not parse json body")
-              //           .send().await
-              //      }
-              //      HttpType::Put => {
-              //          Request::put(route)
-              //           .abort_signal(abort_signal.as_ref())
-              //           .json(form)
-              //              .expect_throw("Could not parse json body")
-              //           .send().await
-              //      }
-              //  }?.json::<Response>().await.map_err(Into::into)
+                        .json(form)
+                           .expect_throw("Could not parse json body")
+                        .send().await
+                   }
+                   HttpType::Put => {
+                       Request::put(route)
+                        .abort_signal(abort_signal.as_ref())
+                        .json(form)
+                           .expect_throw("Could not parse json body")
+                        .send().await
+                   }
+               }?.json::<Response>().await.map_err(Into::into)
            }
        }
 
