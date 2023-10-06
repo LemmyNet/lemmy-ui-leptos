@@ -91,7 +91,6 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <span>{move || is_ssr()}</span>
     <ActionForm action=login_form_action>
       {move || {
           error
