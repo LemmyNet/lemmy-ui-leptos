@@ -18,8 +18,13 @@ pub enum HttpType {
   Put,
 }
 
+pub struct LemmyRequest<'a, R: Serialize> {
+  pub body: R,
+  pub jwt: Option<&'a str>,
+}
+
 mod private_trait {
-  use super::HttpType;
+  use super::{HttpType, LemmyRequest};
   use crate::errors::LemmyAppError;
   use async_trait::async_trait;
   use leptos::Serializable;
@@ -27,54 +32,87 @@ mod private_trait {
 
   #[async_trait(?Send)]
   pub trait LemmyClient {
-    async fn make_request<Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
+    async fn make_request<'a, Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
       &self,
       method: HttpType,
       path: &str,
-      form: &Form,
+      form: LemmyRequest<'a, Form>,
     ) -> Result<Response, LemmyAppError>;
   }
 }
 
 #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
-  async fn login(&self, form: &Login) -> Result<LoginResponse, LemmyAppError> {
+  async fn login<'a>(&self, form: LemmyRequest<'a, Login>) -> Result<LoginResponse, LemmyAppError> {
     self.make_request(HttpType::Post, "user/login", form).await
   }
 
-  async fn get_comments(&self, form: &GetComments) -> Result<GetCommentsResponse, LemmyAppError> {
+  async fn get_comments<'a>(
+    &self,
+    form: LemmyRequest<'a, GetComments>,
+  ) -> Result<GetCommentsResponse, LemmyAppError> {
     self.make_request(HttpType::Get, "comment/list", form).await
   }
 
-  async fn list_posts(&self, form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
+  async fn list_posts<'a>(
+    &self,
+    form: LemmyRequest<'a, GetPosts>,
+  ) -> Result<GetPostsResponse, LemmyAppError> {
     self.make_request(HttpType::Get, "post/list", form).await
   }
 
-  async fn get_post(&self, form: &GetPost) -> Result<GetPostResponse, LemmyAppError> {
+  async fn get_post<'a>(
+    &self,
+    form: LemmyRequest<'a, GetPost>,
+  ) -> Result<GetPostResponse, LemmyAppError> {
     self.make_request(HttpType::Get, "post", form).await
   }
 }
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        trait MaybeBearerAuth {
+            fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self;
+        }
+
+        impl MaybeBearerAuth for awc::ClientRequest {
+            fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self {
+                if let Some(token) = token {
+                    self.bearer_auth(token)
+                } else {
+                    self
+                }
+            }
+        }
+
         #[async_trait(?Send)]
         impl private_trait::LemmyClient for awc::Client {
-            async fn make_request<Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
+            async fn make_request<'a, Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
                &self,
                method: HttpType,
                path: &str,
-               form: &Form,
-            ) -> Result<Response, LemmyAppError> {
+               LemmyRequest{body, jwt}: LemmyRequest<'a, Form>,
+           ) -> Result<Response, LemmyAppError> {
                 let route = &build_route(path);
+
                 match method {
                     HttpType::Get => {
                         self
                             .get(route)
-                            .query(form)?
+                            .maybe_bearer_auth(jwt)
+                            .query(&body)?
                             .send()
                     }
-                    HttpType::Post => self.post(route).send_json(form),
-                    HttpType::Put => self.put(route).send_json(form)
+                    HttpType::Post =>
+                        self
+                            .post(route)
+                            .maybe_bearer_auth(jwt)
+                            .send_json(&body),
+                    HttpType::Put =>
+                        self
+                            .put(route)
+                            .maybe_bearer_auth(jwt)
+                            .send_json(&body)
                 }.await?.json::<Response>().await.map_err(Into::into)
             }
         }
@@ -83,17 +121,31 @@ cfg_if! {
     } else {
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
-        use gloo_net::http::Request;
+        use gloo_net::http::{Request, RequestBuilder};
 
         pub struct Fetch;
 
+        trait MaybeBearerAuth {
+            fn maybe_bearer_auth(self, token: Option<&str>) -> Self;
+        }
+
+        impl MaybeBearerAuth for RequestBuilder {
+           fn maybe_bearer_auth(self, token: Option<&str>) -> Self {
+                if let Some(token) = token {
+                    self.header("Authorization", format!("Bearer {token}").as_str())
+                } else {
+                    self
+                }
+            }
+        }
+
         #[async_trait(?Send)]
        impl private_trait::LemmyClient for Fetch {
-           async fn make_request<Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
+           async fn make_request<'a, Response: Serializable + for<'de> Deserialize<'de>, Form: Serialize>(
                &self,
                method: HttpType,
                path: &str,
-               form: &Form,
+               LemmyRequest{body, jwt}: LemmyRequest<'a, Form>,
            ) -> Result<Response, LemmyAppError> {
                let route = &build_route(path);
                let abort_controller = AbortController::new().ok();
@@ -109,21 +161,24 @@ cfg_if! {
 
                match method {
                    HttpType::Get => {
-                       Request::get(&build_fetch_query(path, form))
+                       Request::get(&build_fetch_query(path, body))
+                           .maybe_bearer_auth(jwt)
                            .abort_signal(abort_signal.as_ref())
                            .build()
                            .expect_throw("Could not parse query params")
                    }
                    HttpType::Post => {
                        Request::post(route)
+                           .maybe_bearer_auth(jwt)
                            .abort_signal(abort_signal.as_ref())
-                           .json(form)
+                           .json(&body)
                            .expect_throw("Could not parse json body")
                    }
                    HttpType::Put => {
                        Request::put(route)
+                           .maybe_bearer_auth(jwt)
                            .abort_signal(abort_signal.as_ref())
-                           .json(form)
+                           .json(&body)
                            .expect_throw("Could not parse json body")
                    }
                }.send().await?.json::<Response>().await.map_err(Into::into)

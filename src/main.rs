@@ -30,13 +30,16 @@ cfg_if! {
             let addr = conf.leptos_options.site_addr;
             let routes = generate_route_list(App);
 
+
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
                 let site_root = &leptos_options.site_root;
                 let routes = &routes;
 
+
+                let client = web::Data::new(Client::new());
+
                 App::new()
-                    .app_data(web::Data::new(Client::new()))
                     .route("/api/{tail:.*}", web::route()
                            .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
                            .to(route_to_api))
@@ -51,6 +54,7 @@ cfg_if! {
                         App
                     )
                     .app_data(web::Data::new(leptos_options.to_owned()))
+                    .app_data(client)
             })
             .bind(&addr)?
             .run()

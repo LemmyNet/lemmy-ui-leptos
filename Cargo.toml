@@ -47,7 +47,9 @@ actix-web = { version = "4", features = ["macros"], optional = true }
 actix-proxy = { version = "0.2", optional = true }
 awc = { version = "3.2", optional = true }
 async-trait = "0.1"
-actix-session = { version = "0.8.0", features = ["cookie-session"], optional = true }
+actix-session = { version = "0.8.0", features = [
+  "cookie-session",
+], optional = true }
 
 
 [package.metadata.leptos-i18n]
@@ -68,7 +70,7 @@ ssr = [
   "dep:actix-files",
   "dep:actix-proxy",
   "dep:awc",
-  "dep:actix-session"
+  "dep:actix-session",
 ]
 
 [package.metadata.cargo-all-features]

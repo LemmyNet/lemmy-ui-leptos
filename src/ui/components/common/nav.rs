@@ -64,9 +64,7 @@ pub fn TopNav() -> impl IntoView {
             </A>
           </li>
           <li>
-              <A href="/login">
-                {t!(i18n, nav_login)}
-              </A>
+            <A href="/login">{t!(i18n, nav_login)}</A>
           </li>
           <li>
             <ActionForm action=logout_action>

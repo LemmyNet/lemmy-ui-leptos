@@ -55,27 +55,27 @@ pub fn HomeActivity() -> impl IntoView {
   view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Home activity"</h2>
-      // <Suspense fallback=|| {
-      //     view! { "Loading..." }
-      // }>
-      //   {move || {
-      //       posts
-      //           .get()
-      //           .map(|res| match res {
-      //               None => {
-      //                   view! { <div>{err_msg}</div> }
-      //               }
-      //               Some(res) => {
-      //                   view! {
-      //                     <div>
-      //                       <PostListings posts=res.posts.into()/>
-      //                     </div>
-      //                   }
-      //               }
-      //           })
-      //   }}
+    // <Suspense fallback=|| {
+    // view! { "Loading..." }
+    // }>
+    // {move || {
+    // posts
+    // .get()
+    // .map(|res| match res {
+    // None => {
+    // view! { <div>{err_msg}</div> }
+    // }
+    // Some(res) => {
+    // view! {
+    // <div>
+    // <PostListings posts=res.posts.into()/>
+    // </div>
+    // }
+    // }
+    // })
+    // }}
 
-      // </Suspense>
+    // </Suspense>
     </main>
   }
 }

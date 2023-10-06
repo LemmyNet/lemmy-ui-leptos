@@ -4,21 +4,24 @@ use leptos_router::ActionForm;
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
   use actix_session::Session;
   use actix_web::web;
   use awc::Client;
   use lemmy_api_common::person::{Login, LoginResponse};
   use leptos_actix::extract;
 
-  let form = Login {
-    username_or_email: username_or_email.into(),
-    password: password.into(),
-    totp_2fa_token: None,
-  };
-
   extract(|client: web::Data<Client>, session: Session| async move {
-    let LoginResponse { jwt, .. } = client.login(&form).await?;
+    let req = LemmyRequest {
+      body: Login {
+        username_or_email: username_or_email.into(),
+        password: password.into(),
+        totp_2fa_token: None,
+      },
+      jwt: None,
+    };
+
+    let LoginResponse { jwt, .. } = client.login(req).await?;
     if let Some(jwt) = jwt {
       session.insert("jwt", jwt.into_inner())?;
     }
