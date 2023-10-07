@@ -12,13 +12,10 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   use leptos_actix::extract;
 
   extract(|client: web::Data<Client>, session: Session| async move {
-    let req = LemmyRequest {
-      body: Login {
-        username_or_email: username_or_email.into(),
-        password: password.into(),
-        totp_2fa_token: None,
-      },
-      jwt: None,
+    let req = Login {
+      username_or_email: username_or_email.into(),
+      password: password.into(),
+      totp_2fa_token: None,
     };
 
     let LoginResponse { jwt, .. } = client.login(req).await?;

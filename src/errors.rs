@@ -25,16 +25,10 @@ impl LemmyAppError {
   // }
 }
 
+pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
+
 impl From<ser::Error> for LemmyAppError {
   fn from(value: ser::Error) -> Self {
-    Self::APIError {
-      error: value.to_string(),
-    }
-  }
-}
-
-impl From<reqwest::Error> for LemmyAppError {
-  fn from(value: reqwest::Error) -> Self {
     Self::APIError {
       error: value.to_string(),
     }
