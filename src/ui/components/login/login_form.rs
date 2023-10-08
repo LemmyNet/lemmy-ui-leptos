@@ -4,7 +4,6 @@ use crate::{
 };
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::{ev, logging::*, *};
-// use crate::use_query_map;
 use leptos_router::use_query_map;
 use leptos_router::ActionForm;
 
