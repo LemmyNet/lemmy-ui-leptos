@@ -168,8 +168,6 @@ pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppE
   use leptos::window;
   use wasm_cookies::CookieOptions;
 
-  
-
   window()
     .document()
     .ok_or(LemmyAppError::APIError {
@@ -189,8 +187,6 @@ pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppE
 pub async fn remove_cookie_wrapper(path: &str) -> Result<(), LemmyAppError> {
   use crate::wasm_bindgen::JsCast;
   use leptos::window;
-
-  
 
   window()
     .document()

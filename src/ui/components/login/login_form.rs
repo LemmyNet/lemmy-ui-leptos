@@ -4,8 +4,7 @@ use crate::{
 };
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::{ev, logging::*, *};
-use leptos_router::use_query_map;
-use leptos_router::ActionForm;
+use leptos_router::{use_query_map, ActionForm};
 
 pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
   api_wrapper::<LoginResponse, Login>(HttpType::Post, "user/login", form).await
