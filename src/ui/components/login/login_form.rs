@@ -30,7 +30,7 @@ pub async fn login_form_fn(
 
   // let result =
   //   extract(|client: web::Data<Client>| async move { client.login(&form).await }).await?;
-  
+
   let result = login(&form).await;
 
   match result {
