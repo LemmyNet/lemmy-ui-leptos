@@ -45,30 +45,28 @@ pub fn App() -> impl IntoView {
       <div class="flex flex-col h-screen">
         <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
         <TopNav/>
-        <main class="container mx-auto">
-          <Routes>
-            <Route path="" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="home" view=HomeActivity ssr=SsrMode::Async/>
+        <Routes>
+          <Route path="" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="home" view=HomeActivity ssr=SsrMode::Async/>
 
-            <Route path="communities" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="create_post" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="create_community" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="communities" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="create_post" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="create_community" view=HomeActivity ssr=SsrMode::Async/>
 
-            <Route path="search" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
-            <Route path="signup" view=LoginActivity ssr=SsrMode::Async/>
+          <Route path="search" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
+          <Route path="signup" view=LoginActivity ssr=SsrMode::Async/>
 
-            <Route path="inbox" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="u/:id" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="settings" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="logout" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="inbox" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="u/:id" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="settings" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="logout" view=HomeActivity ssr=SsrMode::Async/>
 
-            <Route path="modlog" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="instances" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="modlog" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="instances" view=HomeActivity ssr=SsrMode::Async/>
 
-            <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
-          </Routes>
-        </main>
+          <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
+        </Routes>
         <BottomNav/>
       </div>
     </Router>
