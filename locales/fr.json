@@ -1,20 +1,17 @@
 {
-  "nav_communities": "Communities",
-  "nav_create_post": "Create post",
-  "nav_create_community": "Create community",
-  "nav_donate": "Donate",
-
-  "nav_search": "Search",
-  "nav_login": "Login",
-  "nav_signup": "Sign Up",
-  "nav_unread_messages": "unread messages",
-
-  "nav_profile": "Profile",
-  "nav_settings": "Settings",
-  "nav_logout": "Logout",
-
-  "nav_modlog": "Modlog",
-  "nav_instances": "Instances",
-  "nav_docs": "Docs",
-  "nav_code": "Code"
+  "communities": "Communities",
+  "create_post": "Create post",
+  "create_community": "Create community",
+  "donate": "Donate",
+  "search": "Search",
+  "login": "Login",
+  "signup": "Sign Up",
+  "unread_messages": "unread messages",
+  "profile": "Profile",
+  "settings": "Settings",
+  "logout": "Logout",
+  "modlog": "Modlog",
+  "instances": "Instances",
+  "docs": "Docs",
+  "code": "Code"
 }
