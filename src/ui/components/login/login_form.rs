@@ -42,8 +42,14 @@ pub async fn login_form_fn(
       Err(e) => {
         if is_ssr_only {
           redirect("/login?error=1");
+          Ok(LoginResponse {
+            jwt: None,
+            registration_created: false,
+            verify_email_sent: false,
+          })
+        } else {
+          Err(ServerFnError::ServerError(e.to_string()))
         }
-        Err(ServerFnError::ServerError(e.to_string()))
       }
     },
     Err(err) => {
