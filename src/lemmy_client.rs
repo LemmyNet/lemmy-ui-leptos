@@ -5,6 +5,7 @@ use lemmy_api_common::{
   comment::{GetComments, GetCommentsResponse},
   person::{Login, LoginResponse},
   post::{GetPost, GetPostResponse, GetPosts, GetPostsResponse},
+  site::GetSiteResponse,
 };
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
@@ -18,14 +19,26 @@ pub enum HttpType {
   Put,
 }
 
-pub struct LemmyRequest<'a, R: Serialize> {
-  pub body: R,
-  pub jwt: Option<&'a str>,
+pub struct LemmyRequest<R: Serialize> {
+  pub body: Option<R>,
+  pub jwt: Option<String>,
 }
 
-impl<'a, R: Serialize> From<R> for LemmyRequest<'a, R> {
+impl<R: Serialize> LemmyRequest<R> {
+  pub fn from_jwt(jwt: Option<String>) -> Self {
+    Self {
+      body: None::<R>,
+      jwt,
+    }
+  }
+}
+
+impl<R: Serialize> From<R> for LemmyRequest<R> {
   fn from(body: R) -> Self {
-    LemmyRequest { body, jwt: None }
+    LemmyRequest {
+      body: Some(body),
+      jwt: None,
+    }
   }
 }
 
@@ -38,7 +51,7 @@ mod private_trait {
 
   #[async_trait(?Send)]
   pub trait LemmyClient {
-    async fn make_request<'a, Response, Form, Request>(
+    async fn make_request<Response, Form, Request>(
       &self,
       method: HttpType,
       path: &str,
@@ -47,38 +60,43 @@ mod private_trait {
     where
       Response: Serializable + for<'de> Deserialize<'de>,
       Form: Serialize,
-      Request: Into<LemmyRequest<'a, Form>>;
+      Request: Into<LemmyRequest<Form>>;
   }
 }
 
 #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
-  async fn login<'a, T>(&self, form: T) -> LemmyAppResult<LoginResponse>
+  async fn login<T>(&self, form: T) -> LemmyAppResult<LoginResponse>
   where
-    T: Into<LemmyRequest<'a, Login>>,
+    T: Into<LemmyRequest<Login>>,
   {
     self.make_request(HttpType::Post, "user/login", form).await
   }
 
-  async fn get_comments<'a, T>(&self, form: T) -> LemmyAppResult<GetCommentsResponse>
+  async fn get_comments<T>(&self, form: T) -> LemmyAppResult<GetCommentsResponse>
   where
-    T: Into<LemmyRequest<'a, GetComments>>,
+    T: Into<LemmyRequest<GetComments>>,
   {
     self.make_request(HttpType::Get, "comment/list", form).await
   }
 
-  async fn list_posts<'a, T>(&self, form: T) -> LemmyAppResult<GetPostsResponse>
+  async fn list_posts<T>(&self, form: T) -> LemmyAppResult<GetPostsResponse>
   where
-    T: Into<LemmyRequest<'a, GetPosts>>,
+    T: Into<LemmyRequest<GetPosts>>,
   {
     self.make_request(HttpType::Get, "post/list", form).await
   }
 
-  async fn get_post<'a, T>(&self, form: T) -> LemmyAppResult<GetPostResponse>
+  async fn get_post<T>(&self, form: T) -> LemmyAppResult<GetPostResponse>
   where
-    T: Into<LemmyRequest<'a, GetPost>>,
+    T: Into<LemmyRequest<GetPost>>,
   {
     self.make_request(HttpType::Get, "post", form).await
+  }
+  async fn get_site(&self, jwt: Option<String>) -> LemmyAppResult<GetSiteResponse> {
+    self
+      .make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt))
+      .await
   }
 }
 
@@ -100,7 +118,7 @@ cfg_if! {
 
         #[async_trait(?Send)]
         impl private_trait::LemmyClient for awc::Client {
-            async fn make_request<'a, Response, Form, Request>(
+            async fn make_request<Response, Form, Request>(
                 &self,
                 method: HttpType,
                 path: &str,
@@ -109,19 +127,18 @@ cfg_if! {
             where
                 Response: Serializable + for<'de> Deserialize<'de>,
                 Form: Serialize,
-                Request: Into<LemmyRequest<'a, Form>>
+                Request: Into<LemmyRequest<Form>>
             {
                 let LemmyRequest {body, jwt} = req.into();
                 let route = &build_route(path);
 
                 match method {
-                    HttpType::Get => {
+                    HttpType::Get =>
                         self
                             .get(route)
                             .maybe_bearer_auth(jwt)
                             .query(&body)?
-                            .send()
-                    }
+                            .send(),
                     HttpType::Post =>
                         self
                             .post(route)
@@ -160,7 +177,7 @@ cfg_if! {
 
         #[async_trait(?Send)]
        impl private_trait::LemmyClient for Fetch {
-           async fn make_request<'a, Response, Form, Req>(
+           async fn make_request<Response, Form, Req>(
                 &self,
                 method: HttpType,
                 path: &str,
@@ -169,7 +186,7 @@ cfg_if! {
             where
                 Response: Serializable + for<'de> Deserialize<'de>,
                 Form: Serialize,
-                Req: Into<LemmyRequest<'a, Form>>
+                Req: Into<LemmyRequest<Form>>
            {
                let LemmyRequest { body, .. } = req.into();
                let route = &build_route(path);
@@ -186,27 +203,24 @@ cfg_if! {
                });
 
                match method {
-                   HttpType::Get => {
+                   HttpType::Get =>
                        Request::get(&build_fetch_query(path, body))
                            .maybe_bearer_auth(jwt.as_deref())
                            .abort_signal(abort_signal.as_ref())
                            .build()
-                           .expect_throw("Could not parse query params")
-                   }
-                   HttpType::Post => {
+                           .expect_throw("Could not parse query params"),
+                   HttpType::Post =>
                        Request::post(route)
                            .maybe_bearer_auth(jwt.as_deref())
                            .abort_signal(abort_signal.as_ref())
                            .json(&body)
-                           .expect_throw("Could not parse json body")
-                   }
-                   HttpType::Put => {
+                           .expect_throw("Could not parse json body"),
+                   HttpType::Put =>
                        Request::put(route)
                            .maybe_bearer_auth(jwt.as_deref())
                            .abort_signal(abort_signal.as_ref())
                            .json(&body)
                            .expect_throw("Could not parse json body")
-                   }
                }.send().await?.json::<Response>().await.map_err(Into::into)
            }
        }
