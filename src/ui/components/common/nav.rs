@@ -1,4 +1,7 @@
-use crate::i18n::*;
+use crate::{
+  i18n::*,
+  ui::components::site_state_provider::{SiteStateContext, SiteStateProvider},
+};
 use leptos::*;
 use leptos_icons::*;
 use leptos_router::*;
@@ -17,7 +20,12 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav() -> impl IntoView {
+  let get_site_resource = use_context::<SiteStateContext>();
   let i18n = use_i18n();
+  let logged_in = Signal::derive(move || {
+    let resource = get_site_resource.unwrap();
+    !resource.loading()() && resource().unwrap().unwrap().my_user.is_some()
+  });
 
   let logout_action = create_server_action::<LogoutAction>();
 
@@ -64,12 +72,14 @@ pub fn TopNav() -> impl IntoView {
             </A>
           </li>
           <li>
-            <A href="/login">{t!(i18n, login)}</A>
-          </li>
-          <li>
-            <ActionForm action=logout_action>
-              <button type="submit">{t!(i18n, logout)}</button>
-            </ActionForm>
+            <Show
+              when=logged_in
+              fallback=move || view!{<A href="/login">{t!(i18n, login)}</A>}
+              >
+              <ActionForm action=logout_action>
+                <button type="submit">{t!(i18n, logout)}</button>
+              </ActionForm>
+            </Show>
           </li>
         </ul>
       </div>

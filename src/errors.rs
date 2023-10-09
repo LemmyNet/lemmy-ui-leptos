@@ -65,3 +65,10 @@ impl From<awc::error::SendRequestError> for LemmyAppError {
     }
   }
 }
+
+#[cfg(feature = "ssr")]
+impl From<actix_session::SessionGetError> for LemmyAppError {
+  fn from(value: actix_session::SessionGetError) -> Self {
+    Self::InternalServerError
+  }
+}
