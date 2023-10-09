@@ -19,7 +19,7 @@ leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features
   "ChEye",
   "ChEyeSlash",
 ] }
-leptos_i18n = { version = "0.2.0-rc" }
+leptos_i18n = { version = "0.2", features = ["nightly"] }
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -52,11 +52,17 @@ async-trait = "0.1"
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en", "fr"]
+namespaces = ["nav"]
 
 [features]
 default = ["csr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
+hydrate = [
+  "leptos/hydrate",
+  "leptos_meta/hydrate",
+  "leptos_router/hydrate",
+  "leptos_i18n/hydrate",
+]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
