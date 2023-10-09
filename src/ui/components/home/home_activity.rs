@@ -62,7 +62,7 @@ pub fn HomeActivity() -> impl IntoView {
   let err_msg = " Error loading this post.";
 
   view! {
-    <main class="mx-auto">
+    <main class="container mx-auto">
       <h2 class="p-6 text-4xl">"Home activity"</h2>
       <Suspense fallback=|| {
           view! { "Loading..." }

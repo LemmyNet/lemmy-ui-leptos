@@ -168,7 +168,7 @@ pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppE
   use leptos::window;
   use wasm_cookies::CookieOptions;
 
-  let r = window()
+  window()
     .document()
     .ok_or(LemmyAppError::APIError {
       error: String::from("DOM document is None"),
@@ -180,9 +180,7 @@ pub async fn set_cookie_wrapper(path: &str, value: &str) -> Result<(), LemmyAppE
     .set_cookie(&wasm_cookies::cookies::set(path, value, &CookieOptions::default())[..])
     .map_err(|_| LemmyAppError::APIError {
       error: String::from("Cookie could not be set"),
-    });
-
-  r
+    })
 }
 
 #[cfg(not(feature = "ssr"))]
@@ -190,7 +188,7 @@ pub async fn remove_cookie_wrapper(path: &str) -> Result<(), LemmyAppError> {
   use crate::wasm_bindgen::JsCast;
   use leptos::window;
 
-  let r = window()
+  window()
     .document()
     .ok_or(LemmyAppError::APIError {
       error: String::from("DOM document is None"),
@@ -202,9 +200,7 @@ pub async fn remove_cookie_wrapper(path: &str) -> Result<(), LemmyAppError> {
     .set_cookie(&wasm_cookies::cookies::delete(path))
     .map_err(|_| LemmyAppError::APIError {
       error: String::from("Cookie could not be set"),
-    });
-
-  r
+    })
 }
 
 #[cfg(feature = "ssr")]
