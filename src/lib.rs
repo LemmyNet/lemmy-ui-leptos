@@ -47,26 +47,26 @@ pub fn App() -> impl IntoView {
           <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
           <TopNav/>
           <Routes>
-            <Route path="" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="home" view=HomeActivity ssr=SsrMode::Async/>
+            <Route path="" view=HomeActivity/>
+            <Route path="home" view=HomeActivity/>
 
-            <Route path="communities" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="create_post" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="create_community" view=HomeActivity ssr=SsrMode::Async/>
+            <Route path="communities" view=HomeActivity/>
+            <Route path="create_post" view=HomeActivity/>
+            <Route path="create_community" view=HomeActivity/>
 
-            <Route path="search" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
-            <Route path="signup" view=LoginActivity ssr=SsrMode::Async/>
+            <Route path="search" view=HomeActivity/>
+            <Route path="login" view=LoginActivity/>
+            <Route path="signup" view=LoginActivity/>
 
-            <Route path="inbox" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="u/:id" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="settings" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="logout" view=HomeActivity ssr=SsrMode::Async/>
+            <Route path="inbox" view=HomeActivity/>
+            <Route path="u/:id" view=HomeActivity/>
+            <Route path="settings" view=HomeActivity/>
+            <Route path="logout" view=HomeActivity/>
 
-            <Route path="modlog" view=HomeActivity ssr=SsrMode::Async/>
-            <Route path="instances" view=HomeActivity ssr=SsrMode::Async/>
+            <Route path="modlog" view=HomeActivity/>
+            <Route path="instances" view=HomeActivity/>
 
-            <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
+            <Route path="post/:id" view=PostActivity/>
           </Routes>
           <BottomNav/>
         </div>

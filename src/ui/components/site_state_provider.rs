@@ -26,7 +26,7 @@ pub type SiteStateContext = Resource<(), Result<GetSiteResponse, ServerFnError>>
 
 #[component]
 pub fn SiteStateProvider(children: ChildrenFn) -> impl IntoView {
-  let get_site_resource = create_blocking_resource(|| (), |_| async move { get_site().await });
+  let get_site_resource = create_resource(|| (), |_| async move { get_site().await });
   let children = store_value(children);
   let is_error = Signal::derive(move || {
     !(get_site_resource.loading()() || get_site_resource().is_some_and(|res| res.is_ok()))
