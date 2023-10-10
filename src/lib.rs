@@ -42,7 +42,7 @@ pub fn App() -> impl IntoView {
 
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
-      <div class="flex flex-col h-screen">
+      <div class="flex flex-col h-screen" data-theme="retro">
         <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
         <TopNav/>
         <Routes>

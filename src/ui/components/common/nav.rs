@@ -45,7 +45,7 @@ pub fn TopNav() -> impl IntoView {
   #[cfg(not(feature = "ssr"))]
   let is_ssr = create_rw_signal::<bool>(false);
 
-  let authenticated = use_context::<RwSignal<bool>>().expect("gfgfx");// .unwrap_or(create_rw_signal(false));
+  let authenticated = use_context::<RwSignal<bool>>().expect("gfgfx"); // .unwrap_or(create_rw_signal(false));
 
   let auth_resource = create_resource(
     || (),
@@ -136,8 +136,8 @@ pub fn TopNav() -> impl IntoView {
                       .get()
                       .map(move |b| {
                           if !b {
-                          // if !authenticated.get() {
                               view! {
+                                // if !authenticated.get() {
                                 <li>
                                   <A href="/login">{t!(i18n, nav.login)}</A>
                                 </li>
@@ -147,6 +147,8 @@ pub fn TopNav() -> impl IntoView {
                               }
                           } else {
                               view! {
+                                // if !authenticated.get() {
+
                                 <li>
                                   <A href="/inbox">
                                     <span title=t!(i18n, nav.unread_messages)>

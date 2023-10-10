@@ -52,7 +52,7 @@ where
         },
       };
 
-      leptos::logging::log!("{:#?}", request_builder);
+      // leptos::logging::log!("{:#?}", request_builder);
 
       json = match type_ {
         HttpType::Get => request_builder.send().await?.text().await?,
