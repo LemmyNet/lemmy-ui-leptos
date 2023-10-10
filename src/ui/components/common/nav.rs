@@ -45,7 +45,7 @@ pub fn TopNav() -> impl IntoView {
   #[cfg(not(feature = "ssr"))]
   let is_ssr = create_rw_signal::<bool>(false);
 
-  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
+  let authenticated = use_context::<RwSignal<bool>>().expect("gfgfx");// .unwrap_or(create_rw_signal(false));
 
   let auth_resource = create_resource(
     || (),
@@ -80,6 +80,7 @@ pub fn TopNav() -> impl IntoView {
   });
 
   view! {
+    <span>{move || authenticated.get()}</span>
     <nav class="container navbar mx-auto">
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap">
@@ -133,8 +134,9 @@ pub fn TopNav() -> impl IntoView {
               {move || {
                   auth_resource
                       .get()
-                      .map(move |_| {
-                          if !authenticated.get() {
+                      .map(move |b| {
+                          if !b {
+                          // if !authenticated.get() {
                               view! {
                                 <li>
                                   <A href="/login">{t!(i18n, login)}</A>
@@ -170,7 +172,7 @@ pub fn TopNav() -> impl IntoView {
                                           <input
                                             name="is_ssr"
                                             type="hidden"
-                                            value=format!("{}", is_ssr.get())
+                                            value=move || format!("{}", is_ssr.get())
                                           />
                                           <button type="submit">{t!(i18n, logout)}</button>
                                         </ActionForm>

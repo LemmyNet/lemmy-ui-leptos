@@ -63,7 +63,6 @@ pub fn HomeActivity() -> impl IntoView {
 
   view! {
     <main class="container mx-auto">
-      <h2 class="p-6 text-4xl">"Home activity"</h2>
       <Suspense fallback=|| {
           view! { "Loading..." }
       }>

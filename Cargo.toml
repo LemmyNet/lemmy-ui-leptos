@@ -18,6 +18,15 @@ leptos_icons = { git = "https://github.com/Carlosted/leptos-icons.git", features
   "ChHeart",
   "ChEye",
   "ChEyeSlash",
+  "ChArrowUp",
+  "ChArrowDown",
+  "ChNotes",
+  "ChStar",
+  "ChCopy",
+  "ChMenuKebab",
+  "ChFlag",
+  "ChBlock",
+
 ] }
 leptos_i18n = { version = "0.2.0-rc" }
 

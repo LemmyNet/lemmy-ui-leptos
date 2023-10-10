@@ -52,6 +52,8 @@ where
         },
       };
 
+      leptos::logging::log!("{:#?}", request_builder);
+
       json = match type_ {
         HttpType::Get => request_builder.send().await?.text().await?,
         HttpType::Post => request_builder.json(form).send().await?.text().await?,
