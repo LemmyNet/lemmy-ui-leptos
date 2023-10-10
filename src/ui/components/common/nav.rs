@@ -72,7 +72,8 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <Show
                 when=move || logged_in().is_ok_and(|logged_in| logged_in)
-                fallback=move || view! {<A href="/login">{t!(i18n, nav.login)}</A> }>
+                fallback=move || view! { <A href="/login">{t!(i18n, nav.login)}</A> }
+              >
                 <ActionForm action=logout_action>
                   <button type="submit">{t!(i18n, nav.logout)}</button>
                 </ActionForm>
