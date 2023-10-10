@@ -38,22 +38,22 @@ pub fn TopNav() -> impl IntoView {
             </li>
             <li>
               <A href="/communities" class="text-md">
-                {t!(i18n, communities)}
+                {t!(i18n, nav.communities)}
               </A>
             </li>
             <li>
               <A href="/create_post" class="text-md">
-                {t!(i18n, create_post)}
+                {t!(i18n, nav.create_post)}
               </A>
             </li>
             <li>
               <A href="/create_community" class="text-md">
-                {t!(i18n, create_community)}
+                {t!(i18n, nav.create_community)}
               </A>
             </li>
             <li>
               <a href="join-lemmy.org/donate">
-                <span title=t!(i18n, donate)>
+                <span title=t!(i18n, nav.donate)>
                   <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
                 </span>
               </a>
@@ -64,7 +64,7 @@ pub fn TopNav() -> impl IntoView {
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
               <A href="/search">
-                <span title=t!(i18n, search)>
+                <span title=t!(i18n, nav.search)>
                   <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
                 </span>
               </A>
@@ -72,9 +72,9 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <Show
                 when=move || logged_in().is_ok_and(|logged_in| logged_in)
-                fallback=move || view! {<A href="/login">{t!(i18n, login)}</A> }>
+                fallback=move || view! {<A href="/login">{t!(i18n, nav.login)}</A> }>
                 <ActionForm action=logout_action>
-                  <button type="submit">{t!(i18n, logout)}</button>
+                  <button type="submit">{t!(i18n, nav.logout)}</button>
                 </ActionForm>
               </Show>
             </li>
@@ -89,49 +89,47 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   view! {
-    <footer class="sticky bottom-0">
-      <nav class="container navbar mx-auto">
-        <div class="navbar-start"></div>
-        <div class="navbar-end ">
-          <ul class="menu menu-horizontal flex-nowrap">
-            <li>
-              <a href="github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
-                "f/e from env"
-              </a>
-            </li>
-            <li>
-              <a href="github.com/LemmyNet/lemmy/releases" class="text-md">
-                "b/e from env"
-              </a>
-            </li>
-            <li>
-              <A href="/modlog" class="text-md">
-                {t!(i18n, modlog)}
-              </A>
-            </li>
-            <li>
-              <A href="/instances" class="text-md">
-                {t!(i18n, instances)}
-              </A>
-            </li>
-            <li>
-              <a href="join-lemmy.org/docs/en/index.html" class="text-md">
-                {t!(i18n, docs)}
-              </a>
-            </li>
-            <li>
-              <a href="github.com/LemmyNet" class="text-md">
-                {t!(i18n, code)}
-              </a>
-            </li>
-            <li>
-              <a href="join-lemmy.org" class="text-md">
-                "join-lemmy.org"
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </footer>
+    <nav class="container navbar mx-auto">
+      <div class="navbar-start"></div>
+      <div class="navbar-end ">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <a href="github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
+              "f/e from env"
+            </a>
+          </li>
+          <li>
+            <a href="github.com/LemmyNet/lemmy/releases" class="text-md">
+              "b/e from env"
+            </a>
+          </li>
+          <li>
+            <A href="/modlog" class="text-md">
+              {t!(i18n, nav.modlog)}
+            </A>
+          </li>
+          <li>
+            <A href="/instances" class="text-md">
+              {t!(i18n, nav.instances)}
+            </A>
+          </li>
+          <li>
+            <a href="join-lemmy.org/docs/en/index.html" class="text-md">
+              {t!(i18n, nav.docs)}
+            </a>
+          </li>
+          <li>
+            <a href="github.com/LemmyNet" class="text-md">
+              {t!(i18n, nav.code)}
+            </a>
+          </li>
+          <li>
+            <a href="join-lemmy.org" class="text-md">
+              "join-lemmy.org"
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   }
 }

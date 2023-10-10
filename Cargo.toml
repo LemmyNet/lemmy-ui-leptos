@@ -19,8 +19,9 @@ leptos_icons = { version = "0.1", features = [
   "ChEye",
   "ChEyeSlash",
 ] }
-leptos_i18n = { version = "0.2.0-rc" }
+leptos_i18n = { version = "0.2", features = ["nightly"] }
 leptos_query = "0.3.0"
+
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -55,11 +56,18 @@ actix-session = { version = "0.8.0", features = [
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en", "fr"]
+namespaces = ["nav"]
 
 [features]
 default = ["csr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "leptos_query/hydrate"]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
+hydrate = [
+  "leptos/hydrate",
+  "leptos_meta/hydrate",
+  "leptos_router/hydrate",
+  "leptos_i18n/hydrate",
+  "leptos_query/hydrate"
+]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
