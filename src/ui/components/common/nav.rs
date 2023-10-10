@@ -1,9 +1,7 @@
-use crate::{
-  i18n::*,
-  ui::components::site_state_provider::{SiteStateContext, SiteStateProvider},
-};
+use crate::{i18n::*, queries::site_state_query::use_site_state};
 use leptos::*;
 use leptos_icons::*;
+use leptos_query::QueryResult;
 use leptos_router::*;
 
 #[server(LogoutAction, "serverfn")]
@@ -20,70 +18,70 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav() -> impl IntoView {
-  let get_site_resource = use_context::<SiteStateContext>();
+  let QueryResult { data, .. } = use_site_state();
   let i18n = use_i18n();
-  let logged_in = Signal::derive(move || {
-    let resource = get_site_resource.unwrap();
-    !resource.loading()() && resource().unwrap().unwrap().my_user.is_some()
+  let logged_in = Signal::<Result<_, ServerFnError>>::derive(move || {
+    data().map_or_else(|| Ok(false), |res| Ok(res?.my_user.is_some()))
   });
 
   let logout_action = create_server_action::<LogoutAction>();
 
   view! {
-    <nav class="navbar container mx-auto">
-      <div class="navbar-start">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <A href="/" class="text-xl whitespace-nowrap">
-              "Brand from env"
-            </A>
-          </li>
-          <li>
-            <A href="/communities" class="text-md">
-              {t!(i18n, communities)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_post" class="text-md">
-              {t!(i18n, create_post)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_community" class="text-md">
-              {t!(i18n, create_community)}
-            </A>
-          </li>
-          <li>
-            <a href="join-lemmy.org/donate">
-              <span title=t!(i18n, donate)>
-                <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
-              </span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div class="navbar-end">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <A href="/search">
-              <span title=t!(i18n, search)>
-                <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
-              </span>
-            </A>
-          </li>
-          <li>
-            <Show
-              when=logged_in
-              fallback=move || view!{<A href="/login">{t!(i18n, login)}</A>}
-              >
-              <ActionForm action=logout_action>
-                <button type="submit">{t!(i18n, logout)}</button>
-              </ActionForm>
-            </Show>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    <Transition>
+      <nav class="navbar container mx-auto">
+        <div class="navbar-start">
+          <ul class="menu menu-horizontal flex-nowrap">
+            <li>
+              <A href="/" class="text-xl whitespace-nowrap">
+                "Brand from env"
+              </A>
+            </li>
+            <li>
+              <A href="/communities" class="text-md">
+                {t!(i18n, communities)}
+              </A>
+            </li>
+            <li>
+              <A href="/create_post" class="text-md">
+                {t!(i18n, create_post)}
+              </A>
+            </li>
+            <li>
+              <A href="/create_community" class="text-md">
+                {t!(i18n, create_community)}
+              </A>
+            </li>
+            <li>
+              <a href="join-lemmy.org/donate">
+                <span title=t!(i18n, donate)>
+                  <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="navbar-end">
+          <ul class="menu menu-horizontal flex-nowrap">
+            <li>
+              <A href="/search">
+                <span title=t!(i18n, search)>
+                  <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+                </span>
+              </A>
+            </li>
+            <li>
+              <Show
+                when=move || logged_in().is_ok_and(|logged_in| logged_in)
+                fallback=move || view! {<A href="/login">{t!(i18n, login)}</A> }>
+                <ActionForm action=logout_action>
+                  <button type="submit">{t!(i18n, logout)}</button>
+                </ActionForm>
+              </Show>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </Transition>
   }
 }
 

@@ -1218,6 +1218,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "gloo-timers"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b995a66bb87bebce9a0f4a95aed01daca4872c050bfcb21653361c03bc35e5c"
+dependencies = [
+ "futures-channel",
+ "futures-core",
+ "js-sys",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "gloo-utils"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1599,6 +1611,7 @@ dependencies = [
  "leptos_i18n",
  "leptos_icons",
  "leptos_meta",
+ "leptos_query",
  "leptos_router",
  "log",
  "serde",
@@ -1866,6 +1879,19 @@ dependencies = [
  "tracing",
  "wasm-bindgen",
  "web-sys",
+]
+
+[[package]]
+name = "leptos_query"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66071614752de947770824578b126f78b7f87436a1fccd71ef9545e7f95d4f94"
+dependencies = [
+ "cfg-if",
+ "gloo-timers",
+ "js-sys",
+ "leptos",
+ "tokio",
 ]
 
 [[package]]
