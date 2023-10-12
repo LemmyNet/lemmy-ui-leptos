@@ -239,7 +239,7 @@ pub fn PostListing(
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", ! post_view().saved)/>
+            <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
             <button
               type="submit"
               prop:disabled=move || !authenticated.get()
