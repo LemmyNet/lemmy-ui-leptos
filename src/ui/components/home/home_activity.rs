@@ -63,6 +63,31 @@ pub fn HomeActivity() -> impl IntoView {
 
   view! {
     <main class="container mx-auto">
+      <div class="join">
+        <button class="btn join-item">"Posts"</button>
+        <button class="btn join-item">"Comments"</button>
+      </div>
+      <div class="join">
+        <button class="btn join-item">"Subscribed"</button>
+        <button class="btn join-item">"Local"</button>
+        <button class="btn join-item">"All"</button>
+      </div>
+      <div class="dropdown">
+        <label tabindex="0" class="btn">
+          "Sort type"
+        </label>
+        <ul
+          tabindex="0"
+          class="menu dropdown-content z-[1]"
+        >
+          <li>
+            <a>Item 1</a>
+          </li>
+          <li>
+            <a>Item 2</a>
+          </li>
+        </ul>
+      </div>
       <Suspense fallback=|| {
           view! { "Loading..." }
       }>

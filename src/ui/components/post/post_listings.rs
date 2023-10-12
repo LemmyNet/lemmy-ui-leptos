@@ -5,7 +5,7 @@ use leptos::*;
 #[component]
 pub fn PostListings(posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
   view! {
-    <table class="table w-6/12">
+    <table class="table">
       <For each=posts key=|pv| pv.post.id let:pv>
         <PostListing post_view=pv.into()/>
       </For>

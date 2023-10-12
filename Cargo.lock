@@ -1336,9 +1336,9 @@ dependencies = [
 
 [[package]]
 name = "icondata"
-version = "0.0.8"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f41f2deec9249d16ef6b1a8442fbe16013f67053797052aa0b7d2f5ebd0f0098"
+checksum = "d8d9ea009dc26e5196175f903b93d3f4782dd71c47b6c505ea6ac8e1a1714ae2"
 dependencies = [
  "icondata_ch",
  "icondata_core",
@@ -1715,10 +1715,11 @@ dependencies = [
 [[package]]
 name = "leptos_icons"
 version = "0.1.0"
-source = "git+https://github.com/Carlosted/leptos-icons.git#77439666cfb05845ce3c6600a7d3349fddb2d38d"
+source = "git+https://github.com/Carlosted/leptos-icons.git#abfa9c0562fde3cfa7be564878b597539c85ae7a"
 dependencies = [
  "encoding_rs",
  "icondata",
+ "icondata_core",
  "lazy_static",
  "leptos",
  "log",

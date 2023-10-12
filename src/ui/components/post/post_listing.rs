@@ -112,6 +112,8 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   let pv = post_view().clone();
   let link = format!("post/{}", pv.post.id);
 
+  let authenticated = expect_context::<RwSignal<bool>>();
+
   let error = create_rw_signal::<Option<String>>(None);
 
   let post_view = create_rw_signal(pv.clone());
@@ -219,6 +221,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
+            prop:disabled=move || !authenticated.get()
             class=move || if Some(1) == post_view().my_vote { " text-accent" } else { "" }
           >
             <Icon icon=Icon::from(ChIcon::ChArrowUp) class="h-6 w-6"/>
@@ -235,6 +238,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
+            prop:disabled=move || !authenticated.get()
             class=move || if Some(-1) == post_view().my_vote { " text-accent" } else { "" }
           >
             <Icon icon=Icon::from(ChIcon::ChArrowDown) class="h-6 w-6"/>
@@ -258,21 +262,17 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
 
       </td>
       <td>
-        <A
-          href=move || format!("post/{}", post_view().post.id)
-          class="block"
-        >
+        <A href=move || format!("post/{}", post_view().post.id) class="block">
           <span class="text-lg">{move || post_view().post.name}</span>
         </A>
         <span class="block">
-          <A
-            href=move || format!("/u/{}", post_view().creator.name)
-            class="text-sm inline-block"
-          >
+          <A href=move || format!("/u/{}", post_view().creator.name) class="text-sm inline-block">
             {post_view().creator.name}
           </A>
           " to "
-          <A class="text-sm inline-block" href=format!("/c/{}", post_view().community.name)>{post_view().community.title}</A>
+          <A class="text-sm inline-block" href=format!("/c/{}", post_view().community.name)>
+            {post_view().community.title}
+          </A>
         </span>
         <span class="block">
           <A
@@ -297,28 +297,58 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           <A href="/create_post" class="inline-block align-bottom">
             <Icon icon=Icon::from(ChIcon::ChCopy) class="h-6 w-6"/>
           </A>
-          <a href="#" class="inline-block align-bottom">
-            <Icon icon=Icon::from(ChIcon::ChMenuKebab) class="h-6 w-6"/>
-          </a>
-          <ActionForm action=report_post_action class="inline-block align-bottom">
-            <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input class="input input-bordered" type="text" name="reason" placeholder="reason"/>
-            <button type="submit">
-              <Icon icon=Icon::from(ChIcon::ChFlag) class="h-6 w-6 align-bottom"/>
-            </button>
-          </ActionForm>
-          <ActionForm action=block_user_action class="inline-block align-bottom">
-            <input type="hidden" name="person_id" value=format!("{}", post_view().creator.id.0)/>
-            <input
-              type="hidden"
-              name="block"
-              // refresh page? blank hing  check voyager
-              // value=move || format!("{}", if post_view().saved { false } else { true })
-            />
-            <button type="submit">
-              <Icon icon=Icon::from(ChIcon::ChBlock) class="h-6 w-6"/>
-            </button>
-          </ActionForm>
+
+          <div class="dropdown">
+            <label tabindex="0" class="btn">
+              <Icon icon=Icon::from(ChIcon::ChMenuKebab) class="h-6 w-6"/>
+            </label>
+            <ul
+              tabindex="0"
+              class="menu dropdown-content z-[1]"
+            >
+              <li class="flex-nowrap">
+                <ActionForm action=report_post_action class="inline-block align-bottom">
+                  <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
+                  <input class="input input-bordered" type="text" name="reason" placeholder="reason"/>
+                  <button type="submit">
+                    <Icon icon=Icon::from(ChIcon::ChFlag) class="h-6 w-6 align-bottom"/>
+                  </button>
+                </ActionForm>
+              </li>
+              <li>
+                <ActionForm action=block_user_action class="inline-block align-bottom">
+                  <input type="hidden" name="person_id" value=format!("{}", post_view().creator.id.0)/>
+                  <input type="hidden" name="block"/>
+                  // refresh page? blank hing  check voyager
+                  // value=move || format!("{}", if post_view().saved { false } else { true })
+                  <button type="submit">
+                    <Icon icon=Icon::from(ChIcon::ChBlock) class="h-6 w-6"/>
+                  </button>
+                </ActionForm>
+              </li>
+            </ul>
+          </div>
+          
+          // <a href="#" class="inline-block align-bottom">
+          //   <Icon icon=Icon::from(ChIcon::ChMenuKebab) class="h-6 w-6"/>
+          // </a>
+          // <ActionForm action=report_post_action class="inline-block align-bottom">
+          //   <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
+          //   <input class="input input-bordered" type="text" name="reason" placeholder="reason"/>
+          //   <button type="submit">
+          //     <Icon icon=Icon::from(ChIcon::ChFlag) class="h-6 w-6 align-bottom"/>
+          //   </button>
+          // </ActionForm>
+          // <ActionForm action=block_user_action class="inline-block align-bottom">
+          //   <input type="hidden" name="person_id" value=format!("{}", post_view().creator.id.0)/>
+          //   <input type="hidden" name="block"/>
+          //   // refresh page? blank hing  check voyager
+          //   // value=move || format!("{}", if post_view().saved { false } else { true })
+          //   <button type="submit">
+          //     <Icon icon=Icon::from(ChIcon::ChBlock) class="h-6 w-6"/>
+          //   </button>
+          // </ActionForm>
+
         </span>
       </td>
     </tr>

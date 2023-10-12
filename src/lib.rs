@@ -18,6 +18,7 @@ mod errors;
 mod host;
 mod lemmy_client;
 mod ui;
+use crate::api::get_cookie_wrapper;
 
 leptos_i18n::load_locales!();
 
@@ -26,8 +27,31 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
 
+  let ui_theme = create_rw_signal::<String>(String::from("retro"));
+  provide_context(ui_theme);
+
   let authenticated = create_rw_signal::<bool>(false);
   provide_context(authenticated);
+
+  // spawn_local(async move {
+  //   match get_cookie_wrapper("jwt").await {
+  //     Ok(Some(_jwt)) => {
+  //       leptos::logging::log!("ee1");
+  //       authenticated.set(true);
+  //       // true
+  //     }
+  //     Ok(None) => {
+  //       leptos::logging::log!("ee2");
+  //       authenticated.set(false);
+  //       // false
+  //     }
+  //     Err(_e) => {
+  //       leptos::logging::log!("ee3");
+  //       authenticated.set(false);
+  //       // false
+  //     }
+  //   }
+  // });
 
   let (is_routing, set_is_routing) = create_signal(false);
 
@@ -36,13 +60,13 @@ pub fn App() -> impl IntoView {
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
     <Meta name="description" content="Lemmy-UI-Leptos."/>
     <Meta name="viewport" content="viewport-fit=cover"/>
-    <Script src="//cdn.jsdelivr.net/npm/eruda"/>
-    <Script>eruda.init();</Script>
+    // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+    // <Script>eruda.init();</Script>
     <Title text="Brand from env"/>
 
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
-      <div class="flex flex-col h-screen" data-theme="retro">
+      <div class="flex flex-col h-screen" data-theme=move || ui_theme()>
         <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
         <TopNav/>
         <Routes>
