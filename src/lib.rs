@@ -18,7 +18,6 @@ mod errors;
 mod host;
 mod lemmy_client;
 mod ui;
-use crate::api::get_cookie_wrapper;
 
 leptos_i18n::load_locales!();
 
@@ -32,26 +31,6 @@ pub fn App() -> impl IntoView {
 
   let authenticated = create_rw_signal::<bool>(false);
   provide_context(authenticated);
-
-  // spawn_local(async move {
-  //   match get_cookie_wrapper("jwt").await {
-  //     Ok(Some(_jwt)) => {
-  //       leptos::logging::log!("ee1");
-  //       authenticated.set(true);
-  //       // true
-  //     }
-  //     Ok(None) => {
-  //       leptos::logging::log!("ee2");
-  //       authenticated.set(false);
-  //       // false
-  //     }
-  //     Err(_e) => {
-  //       leptos::logging::log!("ee3");
-  //       authenticated.set(false);
-  //       // false
-  //     }
-  //   }
-  // });
 
   let (is_routing, set_is_routing) = create_signal(false);
 

@@ -4,7 +4,10 @@ use crate::{
   errors::LemmyAppError,
   ui::components::post::post_listings::PostListings,
 };
-use lemmy_api_common::post::{GetPosts, GetPostsResponse};
+use lemmy_api_common::{
+  lemmy_db_views::structs::PaginationCursor,
+  post::{GetPosts, GetPostsResponse},
+};
 use leptos::*;
 use leptos_router::use_query_map;
 
@@ -12,16 +15,23 @@ pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppErr
   api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
 }
 
+// let page_navigate = move |page_cursor: | move |_| {
+//   let navigate = leptos_router::use_navigate();
+//   navigate("/", Default::default());
+// };
+
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let query = use_query_map();
   let page = move || {
     query
-      .with(|q| q.get("page").and_then(|page| page.parse::<i64>().ok()))
-      .unwrap_or(1)
+      .with(|q| q.get("page").and_then(|page| page.parse::<String>().ok()))
+      .unwrap_or("".to_string())
   };
 
-  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
+  let authenticated = expect_context::<RwSignal<bool>>();
+
+  let next_page = create_rw_signal::<Option<PaginationCursor>>(None);
 
   let posts = create_resource(
     move || (page(), authenticated()),
@@ -31,31 +41,16 @@ pub fn HomeActivity() -> impl IntoView {
         sort: None,
         community_name: None,
         community_id: None,
-        page: Some(page),
+        page: None,
         limit: None,
         saved_only: None,
         disliked_only: None,
         liked_only: None,
-        // moderator_view: None,
-        // auth: None,
+        // page_cursor: Some(PaginationCursor(page)),
         page_cursor: None,
       };
 
       list_posts(&form).await.ok()
-      // cfg_if! {
-      //   if #[cfg(feature = "ssr")] {
-      //     use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
-      //     use awc::Client;
-      //     awc::Client::new().list_posts(&form).await.ok()
-      //   } else {
-      //     use crate::lemmy_client::Fetch;
-      //     use crate::lemmy_client::LemmyClient;
-      //     // let c = Fetch::new();
-      //     // c.list_posts(&form).await.ok()
-      //     let v: Vec<PostView> = vec![];
-      //     Some(GetPostsResponse { next_page: None, posts: v } )
-      //   }
-      // }
     },
   );
 
@@ -76,15 +71,12 @@ pub fn HomeActivity() -> impl IntoView {
         <label tabindex="0" class="btn">
           "Sort type"
         </label>
-        <ul
-          tabindex="0"
-          class="menu dropdown-content z-[1]"
-        >
+        <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
           <li>
-            <a>Item 1</a>
+            <span>Item 1</span>
           </li>
           <li>
-            <a>Item 2</a>
+            <span>Item 2</span>
           </li>
         </ul>
       </div>
@@ -109,6 +101,8 @@ pub fn HomeActivity() -> impl IntoView {
         }}
 
       </Suspense>
+      <button class="btn">"Prev"</button>
+      <button class="btn">"Next"</button>
     </main>
   }
 }
