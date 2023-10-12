@@ -15,27 +15,24 @@ pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppErr
   api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
 }
 
-// let page_navigate = move |page_cursor: | move |_| {
-//   let navigate = leptos_router::use_navigate();
-//   navigate("/", Default::default());
-// };
-
 #[component]
 pub fn HomeActivity() -> impl IntoView {
-  let query = use_query_map();
-  let page = move || {
-    query
-      .with(|q| q.get("page").and_then(|page| page.parse::<String>().ok()))
-      .unwrap_or("".to_string())
-  };
+  let _query = use_query_map();
+
+  let error = create_rw_signal::<Option<String>>(None);
 
   let authenticated = expect_context::<RwSignal<bool>>();
 
-  let _next_page = create_rw_signal::<Option<PaginationCursor>>(None);
+  let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
+  let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
+
+  let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
+
+  let refresh = create_rw_signal(true);
 
   let posts = create_resource(
-    move || (page(), authenticated()),
-    move |(_page, _authenticated)| async move {
+    move || (refresh(), authenticated()),
+    move |(_refresh, _authenticated)| async move {
       let form = GetPosts {
         type_: None,
         sort: None,
@@ -46,11 +43,16 @@ pub fn HomeActivity() -> impl IntoView {
         saved_only: None,
         disliked_only: None,
         liked_only: None,
-        // page_cursor: Some(PaginationCursor(page)),
-        page_cursor: None,
+        page_cursor: page_cursor(),
       };
 
-      list_posts(&form).await.ok()
+      match list_posts(&form).await {
+        Ok(o) => {
+          next_page_cursor.set(o.next_page.clone());
+          Some(o)
+        }
+        _ => None,
+      }
     },
   );
 
@@ -58,16 +60,25 @@ pub fn HomeActivity() -> impl IntoView {
 
   view! {
     <main class="container mx-auto">
+      {move || {
+          error
+              .get()
+              .map(|err| {
+                  view! {
+                    <div class="alert alert-error">
+                      <span>{err}</span>
+                    </div>
+                  }
+              })
+      }}
       <div class="join">
         <button class="btn join-item">"Posts"</button>
         <button class="btn join-item">"Comments"</button>
-      </div>
-      <div class="join">
+      </div> <div class="join">
         <button class="btn join-item">"Subscribed"</button>
         <button class="btn join-item">"Local"</button>
         <button class="btn join-item">"All"</button>
-      </div>
-      <div class="dropdown">
+      </div> <div class="dropdown">
         <label tabindex="0" class="btn">
           "Sort type"
         </label>
@@ -93,7 +104,7 @@ pub fn HomeActivity() -> impl IntoView {
                     Some(res) => {
                         view! {
                           <div>
-                            <PostListings posts=res.posts.into()/>
+                            <PostListings posts=res.posts.into() error/>
                           </div>
                         }
                     }
@@ -101,8 +112,32 @@ pub fn HomeActivity() -> impl IntoView {
         }}
 
       </Suspense>
-      <button class="btn">"Prev"</button>
-      <button class="btn">"Next"</button>
+      <button
+        class="btn"
+        on:click=move |_| {
+            let mut p = prev_cursor_stack();
+            let s = p.pop().unwrap_or(None);
+            prev_cursor_stack.set(p);
+            page_cursor.set(s);
+            refresh.set(!refresh());
+        }
+      >
+
+        "Prev"
+      </button>
+      <button
+        class="btn"
+        on:click=move |_| {
+            let mut p = prev_cursor_stack();
+            p.push(page_cursor());
+            prev_cursor_stack.set(p);
+            page_cursor.set(next_page_cursor());
+            refresh.set(!refresh());
+        }
+      >
+
+        "Next"
+      </button>
     </main>
   }
 }

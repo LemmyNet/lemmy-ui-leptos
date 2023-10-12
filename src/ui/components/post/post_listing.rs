@@ -95,56 +95,73 @@ pub async fn report_post_fn(
 }
 
 #[component]
-pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
+pub fn PostListing(
+  post_view: MaybeSignal<PostView>,
+  error: RwSignal<Option<String>>,
+) -> impl IntoView {
   let authenticated = expect_context::<RwSignal<bool>>();
-
-  let error = create_rw_signal::<Option<String>>(None);
 
   let post_view = create_rw_signal(post_view().clone());
 
   let vote_action = create_server_action::<VotePostFn>();
 
-  create_effect(move |_| match vote_action.value().get() {
-    None => {}
-    Some(Ok(o)) => {
-      post_view.set(o.post_view);
-    }
-    Some(Err(e)) => {
-      error.set(Some(e.to_string()));
+  create_effect(move |_| {
+    error.set(None);
+    match vote_action.value().get() {
+      None => {}
+      Some(Ok(o)) => {
+        post_view.set(o.post_view);
+      }
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+      }
     }
   });
 
   let save_post_action = create_server_action::<SavePostFn>();
 
-  create_effect(move |_| match save_post_action.value().get() {
-    None => {}
-    Some(Ok(o)) => {
-      post_view.set(o.post_view);
-    }
-    Some(Err(e)) => {
-      error.set(Some(e.to_string()));
+  create_effect(move |_| {
+    error.set(None);
+    match save_post_action.value().get() {
+      None => {}
+      Some(Ok(o)) => {
+        post_view.set(o.post_view);
+      }
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+      }
     }
   });
 
   let block_user_action = create_server_action::<BlockUserFn>();
 
+  create_effect(move |_| {
+    error.set(None);
+    match block_user_action.value().get() {
+      None => {}
+      Some(Ok(_o)) => {}
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+      }
+    }
+  });
+
   let report_post_action = create_server_action::<BlockUserFn>();
+
+  create_effect(move |_| {
+    error.set(None);
+    match report_post_action.value().get() {
+      None => {}
+      Some(Ok(_o)) => {}
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+      }
+    }
+  });
 
   view! {
     <tr>
       <td class="flex flex-col text-center">
-
-        {move || {
-            error
-                .get()
-                .map(|err| {
-                    view! {
-                      <div class="alert alert-error">
-                        <span>{err}</span>
-                      </div>
-                    }
-                })
-        }}
         <ActionForm action=vote_action>
           <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
           <input
@@ -160,7 +177,8 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           >
             <Icon icon=Icon::from(ChIcon::ChArrowUp) class="h-6 w-6"/>
           </button>
-        </ActionForm> <span class="block text-sm">{move || post_view().counts.score}</span>
+        </ActionForm>
+        <span class="block text-sm">{move || post_view().counts.score}</span>
         <ActionForm action=vote_action>
           <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
           <input
@@ -221,7 +239,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
+            <input type="hidden" name="save" value=move || format!("{}", ! post_view().saved)/>
             <button
               type="submit"
               prop:disabled=move || !authenticated.get()
@@ -269,8 +287,6 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     value=format!("{}", post_view().creator.id.0)
                   />
                   <input type="hidden" name="block"/>
-                  // refresh page? blank hing  check voyager
-                  // value=move || format!("{}", if post_view().saved { false } else { true })
                   <button
                     prop:disabled=move || !authenticated.get()
                     title="Block user"

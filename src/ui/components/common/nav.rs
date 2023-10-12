@@ -8,7 +8,6 @@ use leptos::{
   create_rw_signal,
   create_server_action,
   expect_context,
-  logging,
   server,
   view,
   IntoView,
@@ -53,7 +52,6 @@ pub fn TopNav() -> impl IntoView {
     move |()| async move {
       match get_cookie_wrapper("jwt").await {
         Ok(Some(_jwt)) => {
-          logging::log!("oh yeah ");
           authenticated.set(true);
           true
         }
