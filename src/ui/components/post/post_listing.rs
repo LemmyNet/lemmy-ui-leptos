@@ -3,7 +3,6 @@ use crate::{
   errors::LemmyAppError,
 };
 use lemmy_api_common::{
-  lemmy_db_schema::newtypes::{PersonId, PostId},
   lemmy_db_views::structs::PostView,
   person::{BlockPerson, BlockPersonResponse},
   post::{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
@@ -221,11 +220,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input
-              type="hidden"
-              name="save"
-              value=move || format!("{}", if post_view().saved { false } else { true })
-            />
+            <input type="hidden" name="save" value=move || format!("{}", ! post_view().saved)/>
             <button
               type="submit"
               prop:disabled=move || !authenticated.get()

@@ -31,11 +31,11 @@ pub fn HomeActivity() -> impl IntoView {
 
   let authenticated = expect_context::<RwSignal<bool>>();
 
-  let next_page = create_rw_signal::<Option<PaginationCursor>>(None);
+  let _next_page = create_rw_signal::<Option<PaginationCursor>>(None);
 
   let posts = create_resource(
     move || (page(), authenticated()),
-    move |(page, _authenticated)| async move {
+    move |(_page, _authenticated)| async move {
       let form = GetPosts {
         type_: None,
         sort: None,
