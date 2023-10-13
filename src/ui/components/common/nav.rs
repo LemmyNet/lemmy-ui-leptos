@@ -56,7 +56,7 @@ pub fn TopNav() -> impl IntoView {
               </A>
             </li>
             <li>
-              <a href="join-lemmy.org/donate">
+              <a href="//join-lemmy.org/donate">
                 <span title=t!(i18n, nav.donate)>
                   <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
                 </span>
@@ -74,7 +74,7 @@ pub fn TopNav() -> impl IntoView {
               </A>
             </li>
             <Show
-              when=move || my_user().is_some()
+              when=move || with!(| my_user | my_user.is_some())
               fallback=move || {
                   view! {
                     <li>
@@ -140,12 +140,12 @@ pub fn BottomNav() -> impl IntoView {
       <div class="navbar-end ">
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
-            <a href="github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
+            <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
               "f/e from env"
             </a>
           </li>
           <li>
-            <a href="github.com/LemmyNet/lemmy/releases" class="text-md">
+            <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "b/e from env"
             </a>
           </li>
@@ -160,17 +160,17 @@ pub fn BottomNav() -> impl IntoView {
             </A>
           </li>
           <li>
-            <a href="join-lemmy.org/docs/en/index.html" class="text-md">
+            <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
               {t!(i18n, nav.docs)}
             </a>
           </li>
           <li>
-            <a href="github.com/LemmyNet" class="text-md">
+            <a href="//github.com/LemmyNet" class="text-md">
               {t!(i18n, nav.code)}
             </a>
           </li>
           <li>
-            <a href="join-lemmy.org" class="text-md">
+            <a href="//join-lemmy.org" class="text-md">
               "join-lemmy.org"
             </a>
           </li>

@@ -30,7 +30,6 @@ cfg_if! {
             let addr = conf.leptos_options.site_addr;
             let routes = generate_route_list(App);
 
-
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
                 let site_root = &leptos_options.site_root;
