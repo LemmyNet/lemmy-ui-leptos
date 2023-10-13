@@ -19,7 +19,7 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav() -> impl IntoView {
-  let QueryResult { data, .. } = use_site_state();
+  let QueryResult { data, refetch, .. } = use_site_state();
   let i18n = use_i18n();
   let my_user = Signal::<Option<Person>>::derive(move || {
     data().map_or_else(
@@ -29,6 +29,14 @@ pub fn TopNav() -> impl IntoView {
   });
 
   let logout_action = create_server_action::<LogoutAction>();
+  let logout_is_success =
+    Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
+
+  create_isomorphic_effect(move |_| {
+    if logout_is_success() {
+      refetch();
+    }
+  });
 
   view! {
     <Transition>
@@ -103,7 +111,7 @@ pub fn TopNav() -> impl IntoView {
                     )}
 
                   </summary>
-                  <ul>
+                  <ul class="z-10">
                     <li>
                       <A href=with!(
                           | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
