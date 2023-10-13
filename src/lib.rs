@@ -1,7 +1,7 @@
 use crate::{
   i18n::*,
+  layout::Layout,
   ui::components::{
-    common::nav::{BottomNav, TopNav},
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
@@ -15,6 +15,7 @@ use leptos_router::*;
 mod config;
 mod errors;
 mod host;
+mod layout;
 mod lemmy_client;
 mod queries;
 pub mod server;
@@ -31,23 +32,10 @@ pub fn App() -> impl IntoView {
   let (is_routing, set_is_routing) = create_signal(false);
 
   view! {
-    <Suspense>
-      <ErrorBoundary fallback=|_| view! { Error! }>
-        <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
-        <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-        <Meta name="description" content="Lemmy-UI-Leptos."/>
-        <Meta name="viewport" content="viewport-fit=cover"/>
-        <Script src="//cdn.jsdelivr.net/npm/eruda"/>
-        <Script>eruda.init();</Script>
-        <Title text="Brand from env"/>
-
-        // adding `set_is_routing` causes the router to wait for async data to load on new pages
         <Router set_is_routing>
-          <div class="flex flex-col h-screen">
-            <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
-            <TopNav/>
-            <Routes>
-              <Route path="" view=HomeActivity/>
+          <Routes>
+            <Route path="/" view=move || view!{ <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
+              <Route path="/" view=HomeActivity/>
               <Route path="home" view=HomeActivity/>
 
               <Route path="communities" view=HomeActivity/>
@@ -67,12 +55,9 @@ pub fn App() -> impl IntoView {
               <Route path="instances" view=HomeActivity/>
 
               <Route path="post/:id" view=PostActivity/>
-            </Routes>
-            <BottomNav/>
-          </div>
+            </Route>
+          </Routes>
         </Router>
-      </ErrorBoundary>
-    </Suspense>
   }
 }
 

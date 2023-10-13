@@ -68,7 +68,7 @@ pub fn LoginForm() -> impl IntoView {
         on_input=move |s| set_password.update(|p| *p = s)
       />
 
-      <button class="btn btn-lg" type="submit" disabled=button_is_disabled>
+      <button class="btn btn-lg" type="submit">
         "Login"
       </button>
     </ActionForm>
