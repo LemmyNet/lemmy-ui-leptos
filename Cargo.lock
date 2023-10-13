@@ -1626,8 +1626,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_api_common"
-version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
+version = "0.19.0-beta.7"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#608bb6b1b4099fe0d7a4c3fad118a4cd65226d72"
 dependencies = [
  "anyhow",
  "getrandom",
@@ -1643,8 +1643,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_schema"
-version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
+version = "0.19.0-beta.7"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#608bb6b1b4099fe0d7a4c3fad118a4cd65226d72"
 dependencies = [
  "async-trait",
  "chrono",
@@ -1661,8 +1661,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views"
-version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
+version = "0.19.0-beta.7"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#608bb6b1b4099fe0d7a4c3fad118a4cd65226d72"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1671,8 +1671,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_actor"
-version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
+version = "0.19.0-beta.7"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#608bb6b1b4099fe0d7a4c3fad118a4cd65226d72"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1682,8 +1682,8 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_moderator"
-version = "0.19.0-rc.1"
-source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.0-rc.1#9275041f4251c72e8387a6a180256252df001b89"
+version = "0.19.0-beta.7"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#608bb6b1b4099fe0d7a4c3fad118a4cd65226d72"
 dependencies = [
  "lemmy_db_schema",
  "serde",

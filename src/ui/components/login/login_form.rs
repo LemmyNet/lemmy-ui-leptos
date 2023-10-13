@@ -1,6 +1,11 @@
-use crate::ui::components::common::password_input::PasswordInput;
+use crate::{
+  queries::site_state_query::use_site_state,
+  ui::components::common::password_input::PasswordInput,
+};
+use cfg_if::cfg_if;
 use leptos::*;
-use leptos_router::ActionForm;
+use leptos_query::QueryResult;
+use leptos_router::{ActionForm, NavigateOptions};
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -37,9 +42,27 @@ pub fn LoginForm() -> impl IntoView {
     Signal::derive(move || password.with(|p| p.is_empty()) || name.with(|n| n.is_empty()));
 
   let login = create_server_action::<LoginAction>();
+  let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
+
+  let QueryResult { refetch, .. } = use_site_state();
+  create_isomorphic_effect(move |_| {
+    if login_is_success() {
+      refetch();
+
+      cfg_if! {
+        if #[cfg(feature = "ssr")] {
+          leptos_actix::redirect("/");
+        } else {
+          let navigate = leptos_router::use_navigate();
+
+          navigate("/", NavigateOptions { replace: true, ..Default::default() })
+        }
+      }
+    }
+  });
 
   view! {
-    <ActionForm class="space-y-3" action=login>
+      <ActionForm class="space-y-3" action=login>
       // {move || {
       // error
       // .get()

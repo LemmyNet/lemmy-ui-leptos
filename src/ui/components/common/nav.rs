@@ -1,4 +1,5 @@
 use crate::{i18n::*, queries::site_state_query::use_site_state};
+use lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_icons::*;
 use leptos_query::QueryResult;
@@ -20,8 +21,11 @@ pub async fn logout() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let QueryResult { data, .. } = use_site_state();
   let i18n = use_i18n();
-  let logged_in = Signal::<Result<_, ServerFnError>>::derive(move || {
-    data().map_or_else(|| Ok(false), |res| Ok(res?.my_user.is_some()))
+  let my_user = Signal::<Option<Person>>::derive(move || {
+    data().map_or_else(
+      || None,
+      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+    )
   });
 
   let logout_action = create_server_action::<LogoutAction>();
@@ -69,16 +73,55 @@ pub fn TopNav() -> impl IntoView {
                 </span>
               </A>
             </li>
-            <li>
-              <Show
-                when=move || logged_in().is_ok_and(|logged_in| logged_in)
-                fallback=move || view! { <A href="/login">{t!(i18n, nav.login)}</A> }
-              >
-                <ActionForm action=logout_action>
-                  <button type="submit">{t!(i18n, nav.logout)}</button>
-                </ActionForm>
-              </Show>
-            </li>
+            <Show
+              when=move || my_user().is_some()
+              fallback=move || {
+                  view! {
+                    <li>
+                      <A href="/login">{t!(i18n, nav.login)}</A>
+                    </li>
+                    <li>
+                      <A href="/signup">{t!(i18n, nav.signup)}</A>
+                    </li>
+                  }
+              }
+            >
+              <li>
+                <A href="/inbox">
+                  <span title=t!(i18n, nav.unread_messages)>
+                    <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+                  </span>
+                </A>
+              </li>
+              <li>
+                <details>
+                  <summary>
+                    {with!(
+                        | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+                        .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+                    )}
+                  </summary>
+                  <ul>
+                    <li>
+                      <A href=with!(
+                          | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+                      )>{t!(i18n, nav.profile)}</A>
+                    </li>
+                    <li>
+                      <A href="/settings">{t!(i18n, nav.settings)}</A>
+                    </li>
+                    <li>
+                      <hr/>
+                    </li>
+                    <li>
+                      <ActionForm action=logout_action>
+                        <button type="submit">{t!(i18n, nav.logout)}</button>
+                      </ActionForm>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </Show>
           </ul>
         </div>
       </nav>
