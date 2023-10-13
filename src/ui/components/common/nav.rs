@@ -86,6 +86,7 @@ pub fn TopNav() -> impl IntoView {
                   }
               }
             >
+
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, nav.unread_messages)>
@@ -100,6 +101,7 @@ pub fn TopNav() -> impl IntoView {
                         | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
                         .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
                     )}
+
                   </summary>
                   <ul>
                     <li>

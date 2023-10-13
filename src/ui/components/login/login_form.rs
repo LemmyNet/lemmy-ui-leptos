@@ -62,7 +62,7 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-      <ActionForm class="space-y-3" action=login>
+    <ActionForm class="space-y-3" action=login>
       // {move || {
       // error
       // .get()
