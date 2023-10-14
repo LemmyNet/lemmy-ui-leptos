@@ -34,7 +34,7 @@ steps:
       - apt-get update && apt-get -y install libssl-dev pkg-config
       - rustup target add wasm32-unknown-unknown
       - rustup component add clippy
-      - cargo clippy
+      - cargo clippy --target wasm32-unknown-unknown
 
   cargo_build:
     image: *rust_image
