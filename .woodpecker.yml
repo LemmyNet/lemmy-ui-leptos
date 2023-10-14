@@ -32,6 +32,7 @@ steps:
       CARGO_HOME: .cargo
     commands:
       - apt-get update && apt-get -y install libssl-dev pkg-config
+      - rustup target add wasm32-unknown-unknown
       - rustup component add clippy
       - cargo clippy
 
