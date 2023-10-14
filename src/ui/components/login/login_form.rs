@@ -1,169 +1,91 @@
 use crate::{
-  api::{api_wrapper, HttpType},
-  errors::LemmyAppError,
+  queries::site_state_query::use_site_state,
+  ui::components::common::password_input::PasswordInput,
 };
-use lemmy_api_common::person::{Login, LoginResponse};
-use leptos::{ev, logging::*, *};
-use leptos_router::{use_query_map, ActionForm};
+use cfg_if::cfg_if;
+use leptos::*;
+use leptos_query::QueryResult;
+use leptos_router::{ActionForm, NavigateOptions};
 
-pub async fn login(form: &Login) -> Result<LoginResponse, LemmyAppError> {
-  api_wrapper::<LoginResponse, Login>(HttpType::Post, "user/login", form).await
-}
-
-#[server(LoginFormFn, "/serverfn")]
-pub async fn login_form_fn(
-  username: String,
-  password: String,
-  is_ssr_only: bool,
-) -> Result<LoginResponse, ServerFnError> {
-  use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
+#[server(LoginAction, "/serverfn")]
+pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
+  use actix_session::Session;
   use actix_web::web;
   use awc::Client;
-  use lemmy_api_common::person::Login;
-  use leptos_actix::{extract, redirect};
+  use lemmy_api_common::person::{Login, LoginResponse};
+  use leptos_actix::extract;
 
-  let form = Login {
-    username_or_email: username.into(),
-    password: password.into(),
-    totp_2fa_token: None,
-  };
+  extract(|client: web::Data<Client>, session: Session| async move {
+    let req = Login {
+      username_or_email: username_or_email.into(),
+      password: password.into(),
+      totp_2fa_token: None,
+    };
 
-  // let result =
-  //   extract(|client: web::Data<Client>| async move { client.login(&form).await }).await?;
-
-  let result = login(&form).await;
-
-  match result {
-    Ok(res) => match set_cookie_wrapper("jwt", &res.jwt.clone().unwrap().into_inner()[..]).await {
-      Ok(_) => {
-        if is_ssr_only {
-          redirect("/");
-        }
-        Ok(res)
-      }
-      Err(e) => {
-        if is_ssr_only {
-          redirect("/login?error=1");
-          Ok(LoginResponse {
-            jwt: None,
-            registration_created: false,
-            verify_email_sent: false,
-          })
-        } else {
-          Err(ServerFnError::ServerError(e.to_string()))
-        }
-      }
-    },
-    Err(err) => {
-      if is_ssr_only {
-        redirect("/login?error=1");
-        Ok(LoginResponse {
-          jwt: None,
-          registration_created: false,
-          verify_email_sent: false,
-        })
-      } else {
-        Err(ServerFnError::ServerError(err.to_string()))
-      }
+    let LoginResponse { jwt, .. } = client.login(req).await?;
+    if let Some(jwt) = jwt {
+      session.insert("jwt", jwt.into_inner())?;
     }
-  }
+
+    Ok(())
+  })
+  .await?
 }
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
-  let (password, set_password) = create_signal(String::new());
-  let (name, set_name) = create_signal(String::new());
-  let error = create_rw_signal::<Option<String>>(None);
-  let (disabled, _set_disabled) = create_signal(false);
+  let name = RwSignal::new(String::new());
+  let password = RwSignal::new(String::new());
 
-  let is_ssr_only = create_rw_signal::<bool>(true);
+  let button_is_disabled =
+    Signal::derive(move || with!(|password, name| password.is_empty() || name.is_empty()));
 
-  let query = use_query_map();
-  error.set(
-    match query
-      .with(|q| q.get("error").and_then(|page| page.parse::<i64>().ok()))
-      .unwrap_or(0)
-    {
-      1 => Some(
-        "An error occurred while trying to login. Please try again or come back later.".to_string(),
-      ),
-      _x => None,
-    },
-  );
+  let login = create_server_action::<LoginAction>();
+  let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
 
-  #[cfg(not(feature = "ssr"))]
-  is_ssr_only.set(false);
+  let QueryResult { refetch, .. } = use_site_state();
+  create_isomorphic_effect(move |_| {
+    if login_is_success() {
+      refetch();
 
-  let _button_is_disabled =
-    Signal::derive(move || disabled.get() || password.get().is_empty() || name.get().is_empty());
+      cfg_if! {
+        if #[cfg(feature = "ssr")] {
+          leptos_actix::redirect("/");
+        } else {
+          let navigate = leptos_router::use_navigate();
 
-  let login_form_action = create_server_action::<LoginFormFn>();
-
-  let authenticated = use_context::<RwSignal<bool>>().unwrap_or(create_rw_signal(false));
-
-  create_effect(move |_| match login_form_action.value().get() {
-    None => {}
-    Some(Ok(_o)) => {
-      authenticated.set(true);
-      let navigate = leptos_router::use_navigate();
-      navigate("/", Default::default());
-    }
-    Some(Err(e)) => {
-      error.set(Some(e.to_string()));
+          navigate("/", NavigateOptions { replace: true, ..Default::default() })
+        }
+      }
     }
   });
 
   view! {
-    {move || {
-        error
-            .get()
-            .map(|err| {
-                view! {
-                  <div class="alert alert-error">
-                    <span>{err}</span>
-                  </div>
-                }
-            })
-    }}
+    <ActionForm class="space-y-3" action=login>
+      <div class="form-control w-full">
+        <label class="label" for="username">
+          <span class="label-text">Username</span>
+        </label>
+        <input
+          id="username"
+          type="text"
+          required
+          name="username_or_email"
+          class="input input-bordered"
+          placeholder="Username"
+          value=name
+          on:input=move |ev| update!(| name | * name = event_target_value(& ev))
+        />
+      </div>
 
-    <ActionForm action=login_form_action>
-      <input
-        name="username"
-        type="text"
-        required
-        placeholder="Username"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
-
-        on:change=move |ev| {
-            let val = event_target_value(&ev);
-            set_name.update(|v| *v = val);
-        }
-
-        class="input input-bordered"
-      />
-      <input
+      <PasswordInput
+        id="password"
         name="password"
-        type="password"
-        required
-        placeholder="Password"
-        prop:disabled=move || disabled.get()
-        on:keyup=move |ev: ev::KeyboardEvent| {
-            match &*ev.key() {
-                _ => {
-                    let val = event_target_value(&ev);
-                    set_password.update(|p| *p = val);
-                }
-            }
-        }
-
-        class="input input-bordered"
+        on_input=move |s| update!(| password | * password = s)
       />
-      <input name="is_ssr_only" type="hidden" value=move || format!("{}", is_ssr_only.get())/>
-      <button type="submit" class="btn">
+
+      <button class="btn btn-lg" type="submit" disabled=button_is_disabled>
         "Login"
       </button>
     </ActionForm>

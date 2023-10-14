@@ -1,16 +1,8 @@
 // use actix_web::web;
-use crate::{
-  api::{api_wrapper, HttpType},
-  errors::LemmyAppError,
-  ui::components::post::post_listings::PostListings,
-};
+use crate::ui::components::post::post_listings::PostListings;
 use lemmy_api_common::post::{GetPosts, GetPostsResponse};
 use leptos::*;
 use leptos_router::use_query_map;
-
-pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
-  api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
-}
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
@@ -41,7 +33,6 @@ pub fn HomeActivity() -> impl IntoView {
         page_cursor: None,
       };
 
-      list_posts(&form).await.ok()
       // cfg_if! {
       //   if #[cfg(feature = "ssr")] {
       //     use crate::{api::set_cookie_wrapper, lemmy_client::LemmyClient};
@@ -64,27 +55,27 @@ pub fn HomeActivity() -> impl IntoView {
   view! {
     <main class="container mx-auto">
       <h2 class="p-6 text-4xl">"Home activity"</h2>
-      <Suspense fallback=|| {
-          view! { "Loading..." }
-      }>
-        {move || {
-            posts
-                .get()
-                .map(|res| match res {
-                    None => {
-                        view! { <div>{err_msg}</div> }
-                    }
-                    Some(res) => {
-                        view! {
-                          <div>
-                            <PostListings posts=res.posts.into()/>
-                          </div>
-                        }
-                    }
-                })
-        }}
+    // <Suspense fallback=|| {
+    // view! { "Loading..." }
+    // }>
+    // {move || {
+    // posts
+    // .get()
+    // .map(|res| match res {
+    // None => {
+    // view! { <div>{err_msg}</div> }
+    // }
+    // Some(res) => {
+    // view! {
+    // <div>
+    // <PostListings posts=res.posts.into()/>
+    // </div>
+    // }
+    // }
+    // })
+    // }}
 
-      </Suspense>
+    // </Suspense>
     </main>
   }
 }
