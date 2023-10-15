@@ -81,17 +81,17 @@ pub fn App() -> impl IntoView {
   let (is_routing, set_is_routing) = create_signal(false);
 
   view! {
-    <Suspense>
-      <div>{ move || auth_resource.get() }</div>
-      <div>{ move || authenticated.get() }</div>
-    </Suspense>
-    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
-    <Link rel="shortcut icon" type_="image/svg" href="/favicon.svg"/>
-    <Meta name="description" content="Lemmy-UI-Leptos."/>
-    <Meta name="viewport" content="viewport-fit=cover"/>
-    // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
-    // <Script>eruda.init();</Script>
-    <Title text="Brand from env"/>
+    // <Suspense>
+    //   <div>{ move || auth_resource.get() }</div>
+    //   <div>{ move || authenticated.get() }</div>
+    // </Suspense>
+    // <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+    // <Link rel="shortcut icon" type_="image/svg" href="/favicon.svg"/>
+    // <Meta name="description" content="Lemmy-UI-Leptos."/>
+    // <Meta name="viewport" content="viewport-fit=cover"/>
+    // // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+    // // <Script>eruda.init();</Script>
+    // <Title text="Brand from env"/>
 
     // adding `set_is_routing` causes the router to wait for async data to load on new pages
     <Router set_is_routing>
