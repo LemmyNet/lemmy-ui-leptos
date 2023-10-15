@@ -1,4 +1,4 @@
-use crate::{errors::LemmyAppResult, host::get_host};
+use crate::{config::TEST_HOST_PROTOCOL, errors::LemmyAppResult, host::get_host};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
@@ -235,5 +235,5 @@ cfg_if! {
 }
 
 fn build_route(route: &str) -> String {
-  format!("http://{}/api/v3/{route}", get_host())
+  format!("{}://{}/api/v3/{route}", TEST_HOST_PROTOCOL, get_host())
 }

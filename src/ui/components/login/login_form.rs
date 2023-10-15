@@ -14,7 +14,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   use actix_web::web;
   use awc::Client;
   use lemmy_api_common::person::{Login, LoginResponse};
-  use leptos_actix::extract;
+  use leptos_actix::{extract,redirect};
 
   extract(|client: web::Data<Client>, session: Session| async move {
     let req = Login {
@@ -28,6 +28,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
       session.insert("jwt", jwt.into_inner())?;
     }
 
+    redirect("/");
     Ok(())
   })
   .await?
@@ -38,8 +39,8 @@ pub fn LoginForm() -> impl IntoView {
   let name = RwSignal::new(String::new());
   let password = RwSignal::new(String::new());
 
-  let button_is_disabled =
-    Signal::derive(move || with!(|password, name| password.is_empty() || name.is_empty()));
+  // let button_is_disabled =
+  //   Signal::derive(move || with!(|password, name| password.is_empty() || name.is_empty()));
 
   let login = create_server_action::<LoginAction>();
   let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
@@ -85,7 +86,7 @@ pub fn LoginForm() -> impl IntoView {
         on_input=move |s| update!(| password | * password = s)
       />
 
-      <button class="btn btn-lg" type="submit" disabled=button_is_disabled>
+      <button class="btn btn-lg" type="submit"/*  disabled=button_is_disabled */>
         "Login"
       </button>
     </ActionForm>

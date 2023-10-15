@@ -160,11 +160,6 @@ pub fn PostListing(
   });
 
   view! {
-    // <Suspense>
-    // <div>{ move || authenticated.get() }</div>
-
-    // <div>{ move || post_view().my_vote }</div>
-    // </Suspense>
     <tr>
       <td class="flex flex-col text-center">
         <ActionForm action=vote_action>
@@ -244,7 +239,7 @@ pub fn PostListing(
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
+            <input type="hidden" name="save" value=move || format!("{}", ! post_view().saved)/>
             <button
               type="submit"
               prop:disabled=move || !authenticated.get()

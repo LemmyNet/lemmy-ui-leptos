@@ -2,7 +2,7 @@ use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOption};
 
-#[server(GetSiteResource, "serverfn", "GetJson")]
+#[server(GetSiteResource, "/serverfn", "GetJson")]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   use crate::lemmy_client::{LemmyClient, LemmyRequest};
   use actix_session::Session;

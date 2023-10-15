@@ -1,13 +1,11 @@
 // use actix_web::web;
-use crate::ui::components::post::post_listings::PostListings;
+use crate::{api::api_wrapper, error::*, ui::components::post::post_listings::PostListings};
 use lemmy_api_common::{
   lemmy_db_views::structs::PaginationCursor,
   post::{GetPosts, GetPostsResponse},
 };
 use leptos::*;
 use leptos_router::use_query_map;
-use crate::api::api_wrapper;
-use crate::error::*;
 
 // pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
 //   api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
@@ -15,7 +13,6 @@ use crate::error::*;
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
-
   // cfg_if! {
   // }
 
@@ -46,7 +43,6 @@ pub fn HomeActivity() -> impl IntoView {
   //     }
   //   },
   // );
-
 
   // #[cfg(feature = "ssr")]
   // spawn_local(async move {
@@ -91,36 +87,52 @@ pub fn HomeActivity() -> impl IntoView {
         page_cursor: page_cursor(),
       };
 
+      let result = {
+        #[cfg(not(feature = "ssr"))]
+        {
+          use crate::lemmy_client::*;
 
-      #[cfg(not(feature = "ssr"))]
-      {
-        use crate::lemmy_client::*;
+          let fetch = Fetch {};
+          let omg = fetch.list_posts(form).await;
+          Some(omg)
+        }
+        #[cfg(feature = "ssr")]
+        {
+          use crate::lemmy_client::{LemmyClient, LemmyRequest};
+          use actix_session::Session;
+          use actix_web::web;
+          use leptos_actix::extract;
 
-        let fetch = Fetch {};
-        let omg = fetch.list_posts(form).await;
+          let x = extract(
+            |/* session: Session,  */ client: web::Data<awc::Client>| async move {
+              // let jwt = session.get::<String>("jwt")?;
+              let res = client.list_posts(form).await;
+              res
+            },
+          )
+          .await
+          .ok();
+
+          // logging::log!("{:#?}", x);
+          x
+        }
+      };
+      match result {
+        Some(Ok(o)) => {
+          next_page_cursor.set(o.next_page.clone());
+          Some(o)
+        }
+        _ => None,
       }
-
-
-      // match list_posts(&form).await {
-      //   Ok(o) => {
-      //     next_page_cursor.set(o.next_page.clone());
-      //     Some(o)
-      //   }
-      //   _ => None,
-      // }
-      None
     },
   );
 
   let err_msg = " Error loading this post.";
 
   view! {
-    // <Suspense>
-    // <div>{ move || auth_resource.get() }</div>
-    // <div>{ move || authenticated.get() }</div>
-    // </Suspense>
-
-    <main class="container mx-auto">
+    <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
+      <main role="main" class="w-full h-full flex-grow p-3 overflow-auto">
+      // <main class="container mx-auto">
       {move || {
           error
               .get()
@@ -165,7 +177,30 @@ pub fn HomeActivity() -> impl IntoView {
                     Some(res) => {
                         view! {
                           <div>
-                            <PostListings posts=res.posts.into() error/>
+                            // <div class="w-3/4 inline-block align-top">
+                              <PostListings posts=res.posts.into() error/>
+                            // </div>
+                            // <div class="w-1/4 inline-block align-top">
+                            //   <div class="card shadow-xl">
+                            //     <div class="card-body">
+                            //       <h2 class="card-title">Card title!</h2>
+                            //       <p>If a dog chews shoes whose shoes does he choose?</p>
+                            //       <div class="justify-end card-actions">
+                            //         <button class="btn btn-primary">Buy Now</button>
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                        
+                            //   <div class="card shadow-xl">
+                            //     <div class="card-body">
+                            //       <h2 class="card-title">Card title!</h2>
+                            //       <p>If a dog chews shoes whose shoes does he choose?</p>
+                            //       <div class="justify-end card-actions">
+                            //         <button class="btn btn-primary">Buy Now</button>
+                            //       </div>
+                            //     </div>
+                            //   </div>
+                            // </div>
                           </div>
                         }
                     }
@@ -199,6 +234,15 @@ pub fn HomeActivity() -> impl IntoView {
 
         "Next"
       </button>
-    </main>
+      </main>
+      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
+          <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full">
+          </div>
+          <div class="bg-gray-50 rounded-xl border my-3 w-full">
+              <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:py-12 lg:px-8 lg:flex lg:items-center lg:justify-between">
+              </div>
+          </div>
+      </div>
+    </div>
   }
 }

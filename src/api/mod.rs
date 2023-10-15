@@ -1,6 +1,6 @@
 use crate::errors::LemmyAppError;
 use cfg_if::cfg_if;
-use leptos::{Serializable, logging};
+use leptos::{logging, Serializable};
 use serde::Serialize;
 use serde_json::Value;
 

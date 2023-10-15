@@ -5,7 +5,7 @@ use leptos_icons::*;
 use leptos_query::QueryResult;
 use leptos_router::*;
 
-#[server(LogoutAction, "serverfn")]
+#[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
   use actix_session::Session;
   use leptos_actix::extract;
@@ -19,14 +19,19 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav() -> impl IntoView {
-  let QueryResult { data, refetch, .. } = use_site_state();
   let i18n = use_i18n();
+
+  let QueryResult { data, refetch, .. } = use_site_state();
+
   let my_user = Signal::<Option<Person>>::derive(move || {
     data().map_or_else(
       || None,
       |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
     )
   });
+
+  let instance_name =
+    Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
 
   let logout_action = create_server_action::<LogoutAction>();
   let logout_is_success =
@@ -38,6 +43,14 @@ pub fn TopNav() -> impl IntoView {
     }
   });
 
+  let ui_theme = expect_context::<RwSignal<String>>();
+
+  let change_theme = move |theme_name: &'static str| {
+    move |_| {
+      ui_theme.set(theme_name.to_string());
+    }
+  };
+
   view! {
     <Transition>
       <nav class="navbar container mx-auto">
@@ -45,7 +58,7 @@ pub fn TopNav() -> impl IntoView {
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
               <A href="/" class="text-xl whitespace-nowrap">
-                "Brand from env"
+                {instance_name}
               </A>
             </li>
             <li>
@@ -80,6 +93,22 @@ pub fn TopNav() -> impl IntoView {
                   <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
                 </span>
               </A>
+            </li>
+            <li class="z-[1]">
+              <details>
+                <summary>"Theme"</summary>
+                <ul>
+                  <li on:click=change_theme("dark")>
+                    <span>"Dark"</span>
+                  </li>
+                  <li on:click=change_theme("light")>
+                    <span>"Light"</span>
+                  </li>
+                  <li on:click=change_theme("retro")>
+                    <span>"Retro"</span>
+                  </li>
+                </ul>
+              </details>
             </li>
             <Show
               when=move || with!(| my_user | my_user.is_some())
@@ -120,9 +149,7 @@ pub fn TopNav() -> impl IntoView {
                     <li>
                       <A href="/settings">{t!(i18n, nav.settings)}</A>
                     </li>
-                    <li>
-                      <hr/>
-                    </li>
+                    <div class="divider mt-0 mb-0"></div>
                     <li>
                       <ActionForm action=logout_action>
                         <button type="submit">{t!(i18n, nav.logout)}</button>
@@ -142,6 +169,14 @@ pub fn TopNav() -> impl IntoView {
 #[component]
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
+
+  let QueryResult { data, refetch, .. } = use_site_state();
+
+  let instance_api_version =
+    Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.version)));
+
+  const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
+
   view! {
     <nav class="container navbar mx-auto">
       <div class="navbar-start"></div>
@@ -149,12 +184,14 @@ pub fn BottomNav() -> impl IntoView {
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
             <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
-              "f/e from env"
+              "FE: "
+              {FE_VERSION}
             </a>
           </li>
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-              "b/e from env"
+              "BE: "
+              {instance_api_version}
             </a>
           </li>
           <li>
