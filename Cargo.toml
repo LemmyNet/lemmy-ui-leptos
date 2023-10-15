@@ -31,7 +31,6 @@ leptos_icons = { version = "0.1", features = [
 leptos_i18n = { version = "0.2", features = ["nightly"] }
 leptos_query = "0.3"
 
-
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
