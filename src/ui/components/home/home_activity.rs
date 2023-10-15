@@ -1,38 +1,51 @@
 // use actix_web::web;
 use crate::ui::components::post::post_listings::PostListings;
-use lemmy_api_common::post::{GetPosts, GetPostsResponse};
+use lemmy_api_common::{
+  lemmy_db_views::structs::PaginationCursor,
+  post::{GetPosts, GetPostsResponse},
+};
 use leptos::*;
 use leptos_router::use_query_map;
+use crate::api::api_wrapper;
+use crate::error::*;
+
+// pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
+//   api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
+// }
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
+
+  // cfg_if! {
+  // }
+
   let _query = use_query_map();
 
   let error = create_rw_signal::<Option<String>>(None);
 
   let authenticated = expect_context::<RwSignal<bool>>();
 
-  let auth_resource = create_resource(
-    || (),
-    move |()| async move {
-      match get_cookie_wrapper("jwt").await {
-        Ok(Some(_jwt)) => {
-          authenticated.set(true);
-          leptos::logging::log!("home jwt");
-          true
-        }
-        Ok(None) => {
-          authenticated.set(false);
-          leptos::logging::log!("home NONE jwt");
-          false
-        }
-        Err(_e) => {
-          authenticated.set(false);
-          false
-        }
-      }
-    },
-  );
+  // let auth_resource = create_resource(
+  //   || (),
+  //   move |()| async move {
+  //     match get_cookie_wrapper("jwt").await {
+  //       Ok(Some(_jwt)) => {
+  //         authenticated.set(true);
+  //         leptos::logging::log!("home jwt");
+  //         true
+  //       }
+  //       Ok(None) => {
+  //         authenticated.set(false);
+  //         leptos::logging::log!("home NONE jwt");
+  //         false
+  //       }
+  //       Err(_e) => {
+  //         authenticated.set(false);
+  //         false
+  //       }
+  //     }
+  //   },
+  // );
 
 
   // #[cfg(feature = "ssr")]
@@ -62,7 +75,7 @@ pub fn HomeActivity() -> impl IntoView {
 
   let refresh = create_rw_signal(true);
 
-  let posts = create_resource(
+  let posts: Resource<(bool, bool), Option<GetPostsResponse>> = create_resource(
     move || (refresh(), authenticated()),
     move |(_refresh, _authenticated)| async move {
       let form = GetPosts {
@@ -78,23 +91,34 @@ pub fn HomeActivity() -> impl IntoView {
         page_cursor: page_cursor(),
       };
 
-      match list_posts(&form).await {
-        Ok(o) => {
-          next_page_cursor.set(o.next_page.clone());
-          Some(o)
-        }
-        _ => None,
+
+      #[cfg(not(feature = "ssr"))]
+      {
+        use crate::lemmy_client::*;
+
+        let fetch = Fetch {};
+        let omg = fetch.list_posts(form).await;
       }
+
+
+      // match list_posts(&form).await {
+      //   Ok(o) => {
+      //     next_page_cursor.set(o.next_page.clone());
+      //     Some(o)
+      //   }
+      //   _ => None,
+      // }
+      None
     },
   );
 
   let err_msg = " Error loading this post.";
 
   view! {
-    <Suspense>
-    <div>{ move || auth_resource.get() }</div>
-    <div>{ move || authenticated.get() }</div>
-    </Suspense>
+    // <Suspense>
+    // <div>{ move || auth_resource.get() }</div>
+    // <div>{ move || authenticated.get() }</div>
+    // </Suspense>
 
     <main class="container mx-auto">
       {move || {

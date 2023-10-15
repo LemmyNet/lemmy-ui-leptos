@@ -21,6 +21,7 @@ mod lemmy_client;
 mod queries;
 pub mod server;
 mod ui;
+mod api;
 
 leptos_i18n::load_locales!();
 
@@ -36,27 +37,27 @@ pub fn App() -> impl IntoView {
   let authenticated = create_rw_signal::<bool>(false);
   provide_context(authenticated);
 
-  let auth_resource = create_resource(
-    || (),
-    move |()| async move {
-      match get_cookie_wrapper("jwt").await {
-        Ok(Some(_jwt)) => {
-          authenticated.set(true);
-          leptos::logging::log!("ROOT jwt");
-          true
-        }
-        Ok(None) => {
-          authenticated.set(false);
-          leptos::logging::log!("NONE jwt");
-          false
-        }
-        Err(_e) => {
-          authenticated.set(false);
-          false
-        }
-      }
-    },
-  );
+  // let auth_resource = create_resource(
+  //   || (),
+  //   move |()| async move {
+  //     match get_cookie_wrapper("jwt").await {
+  //       Ok(Some(_jwt)) => {
+  //         authenticated.set(true);
+  //         leptos::logging::log!("ROOT jwt");
+  //         true
+  //       }
+  //       Ok(None) => {
+  //         authenticated.set(false);
+  //         leptos::logging::log!("NONE jwt");
+  //         false
+  //       }
+  //       Err(_e) => {
+  //         authenticated.set(false);
+  //         false
+  //       }
+  //     }
+  //   },
+  // );
 
   // #[cfg(feature = "ssr")]
   // spawn_local(async move {

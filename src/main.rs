@@ -38,7 +38,6 @@ cfg_if! {
                 let site_root = &leptos_options.site_root;
                 let routes = &routes;
 
-
                 let client = web::Data::new(Client::new());
 
                 App::new()

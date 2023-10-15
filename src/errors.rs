@@ -72,3 +72,11 @@ impl From<actix_session::SessionGetError> for LemmyAppError {
     Self::InternalServerError
   }
 }
+
+impl From<reqwest::Error> for LemmyAppError {
+  fn from(value: reqwest::Error) -> Self {
+    Self::APIError {
+      error: value.to_string(),
+    }
+  }
+}

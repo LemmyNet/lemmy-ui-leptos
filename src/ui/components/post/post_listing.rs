@@ -160,11 +160,11 @@ pub fn PostListing(
   });
 
   view! {
-    <Suspense>
-    <div>{ move || authenticated.get() }</div>
+    // <Suspense>
+    // <div>{ move || authenticated.get() }</div>
 
-    <div>{ move || post_view().my_vote }</div>
-    </Suspense>
+    // <div>{ move || post_view().my_vote }</div>
+    // </Suspense>
     <tr>
       <td class="flex flex-col text-center">
         <ActionForm action=vote_action>
