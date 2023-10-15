@@ -105,6 +105,7 @@ pub fn LoginForm() -> impl IntoView {
     None => {}
     Some(Ok(_o)) => {
       authenticated.set(true);
+      leptos::logging::log!("SET");
       let navigate = leptos_router::use_navigate();
       navigate("/", Default::default());
     }

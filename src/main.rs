@@ -9,7 +9,7 @@ cfg_if! {
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
-        #[actix_web::get("favicon.ico")]
+        #[actix_web::get("favicon.svg")]
         async fn favicon(
             leptos_options: web::Data<leptos::LeptosOptions>,
         ) -> actix_web::Result<actix_files::NamedFile> {
@@ -17,7 +17,7 @@ cfg_if! {
             let leptos_options = leptos_options.into_inner();
             let site_root = &leptos_options.site_root;
             Ok(actix_files::NamedFile::open(format!(
-                "{site_root}/favicon.ico"
+                "{site_root}/favicon.svg"
             ))?)
         }
 

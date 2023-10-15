@@ -1,6 +1,6 @@
 use crate::errors::LemmyAppError;
 use cfg_if::cfg_if;
-use leptos::Serializable;
+use leptos::{Serializable, logging};
 use serde::Serialize;
 use serde_json::Value;
 
@@ -27,7 +27,7 @@ pub async fn api_wrapper<Response, Form>(
   form: &Form,
 ) -> Result<Response, LemmyAppError>
 where
-  Response: Serializable,
+  Response: Serializable + std::fmt::Debug,
   Form: Serialize + std::fmt::Debug,
 {
   let route = &build_route(path);
@@ -51,6 +51,8 @@ where
         _ => {
         },
       };
+
+      // logging::log!("{:#?}", request_builder);
 
       json = match type_ {
         HttpType::Get => request_builder.send().await?.text().await?,
@@ -115,9 +117,13 @@ where
   }
 
   // Return the error response json as an error
-  Response::de(&json).map_err(|_| LemmyAppError::APIError {
+  let de = Response::de(&json).map_err(|_| LemmyAppError::APIError {
     error: json_deser_err(&json),
-  })
+  });
+
+  // logging::log!("{:#?}", de);
+
+  de
 }
 
 fn build_route(route: &str) -> String {

@@ -16,7 +16,7 @@ use leptos::{
   Show,
   SignalGet,
   SignalSet,
-  Suspense,
+  Suspense, leptos_dom::logging, spawn_local, create_isomorphic_effect,
 };
 use leptos_icons::*;
 use leptos_router::*;
@@ -53,10 +53,12 @@ pub fn TopNav() -> impl IntoView {
       match get_cookie_wrapper("jwt").await {
         Ok(Some(_jwt)) => {
           authenticated.set(true);
+          leptos::logging::log!("NAV jwt");
           true
         }
         Ok(None) => {
           authenticated.set(false);
+          leptos::logging::log!("NONE jwt");
           false
         }
         Err(_e) => {
@@ -67,9 +69,46 @@ pub fn TopNav() -> impl IntoView {
     },
   );
 
-  create_effect(move |_| match auth_resource.get() {
-    Some(true) => authenticated.set(true),
-    _ => authenticated.set(false),
+  // #[cfg(feature = "ssr")]
+  // spawn_local(async move {
+  //   match get_cookie_wrapper("jwt").await {
+  //     Ok(Some(_jwt)) => {
+  //       authenticated.set(true);
+  //       leptos::logging::log!("TONG jwt");
+  //       // true
+  //     }
+  //     Ok(None) => {
+  //       authenticated.set(false);
+  //       leptos::logging::log!("TONG NONE jwt");
+  //       // false
+  //     }
+  //     Err(_e) => {
+  //       authenticated.set(false);
+  //       // false
+  //     }
+  //   }
+  // });
+  // match auth_resource.get() {
+  //   Some(true) => {
+  //     leptos::logging::log!("EFFECT jwt YAY");
+  //     authenticated.set(true)
+  //   },
+  //   _ => {
+  //     leptos::logging::log!("EFFECT jwt NONE");
+  //     authenticated.set(false)
+  //   },
+  // }
+  // let thing = auth_resource.get();
+
+  create_isomorphic_effect(move |_| match auth_resource.get() {
+    Some(true) => {
+      leptos::logging::log!("EFFECT jwt YAY");
+      authenticated.set(true)
+    },
+    _ => {
+      leptos::logging::log!("EFFECT jwt NONE");
+      authenticated.set(false)
+    },
   });
 
   let change_theme = move |theme_name: &'static str| {
@@ -91,6 +130,12 @@ pub fn TopNav() -> impl IntoView {
   });
 
   view! {
+    // <Suspense>
+    // <div>{ move || auth_resource.get() }</div>
+
+    // <div>{ move || authenticated.get() }</div>
+    // </Suspense>
+
     <nav class="container navbar mx-auto">
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap">
@@ -138,6 +183,11 @@ pub fn TopNav() -> impl IntoView {
                 <li></li>
               }
           }>
+          <Suspense>
+          // <div>sfkjnwefjbk { move || auth_resource.get() }</div>
+          <div>sefdjefkjb { move || authenticated.get() }</div>
+          </Suspense>
+      
             <li class="z-[1]">
               <details>
                 <summary>"Theme"</summary>

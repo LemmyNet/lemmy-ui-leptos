@@ -1,6 +1,6 @@
 // use actix_web::web;
 use crate::{
-  api::{api_wrapper, HttpType},
+  api::{get_cookie_wrapper, api_wrapper, HttpType},
   errors::LemmyAppError,
   ui::components::post::post_listings::PostListings,
 };
@@ -22,6 +22,49 @@ pub fn HomeActivity() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
 
   let authenticated = expect_context::<RwSignal<bool>>();
+
+  let auth_resource = create_resource(
+    || (),
+    move |()| async move {
+      match get_cookie_wrapper("jwt").await {
+        Ok(Some(_jwt)) => {
+          authenticated.set(true);
+          leptos::logging::log!("home jwt");
+          true
+        }
+        Ok(None) => {
+          authenticated.set(false);
+          leptos::logging::log!("home NONE jwt");
+          false
+        }
+        Err(_e) => {
+          authenticated.set(false);
+          false
+        }
+      }
+    },
+  );
+
+
+  // #[cfg(feature = "ssr")]
+  // spawn_local(async move {
+  //   match get_cookie_wrapper("jwt").await {
+  //     Ok(Some(_jwt)) => {
+  //       authenticated.set(true);
+  //       leptos::logging::log!("HOME jwt");
+  //       // true
+  //     }
+  //     Ok(None) => {
+  //       authenticated.set(false);
+  //       leptos::logging::log!("HOME jwt");
+  //       // false
+  //     }
+  //     Err(_e) => {
+  //       authenticated.set(false);
+  //       // false
+  //     }
+  //   }
+  // });
 
   let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
@@ -59,6 +102,11 @@ pub fn HomeActivity() -> impl IntoView {
   let err_msg = " Error loading this post.";
 
   view! {
+    <Suspense>
+    <div>{ move || auth_resource.get() }</div>
+    <div>{ move || authenticated.get() }</div>
+    </Suspense>
+
     <main class="container mx-auto">
       {move || {
           error
