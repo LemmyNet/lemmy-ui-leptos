@@ -25,16 +25,10 @@ impl LemmyAppError {
   // }
 }
 
+pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
+
 impl From<ser::Error> for LemmyAppError {
   fn from(value: ser::Error) -> Self {
-    Self::APIError {
-      error: value.to_string(),
-    }
-  }
-}
-
-impl From<reqwest::Error> for LemmyAppError {
-  fn from(value: reqwest::Error) -> Self {
     Self::APIError {
       error: value.to_string(),
     }
@@ -69,5 +63,12 @@ impl From<awc::error::SendRequestError> for LemmyAppError {
     Self::APIError {
       error: value.to_string(),
     }
+  }
+}
+
+#[cfg(feature = "ssr")]
+impl From<actix_session::SessionGetError> for LemmyAppError {
+  fn from(value: actix_session::SessionGetError) -> Self {
+    Self::InternalServerError
   }
 }

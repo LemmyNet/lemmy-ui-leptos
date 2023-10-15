@@ -1,19 +1,8 @@
 // use actix_web::web;
-use crate::{
-  api::{get_cookie_wrapper, api_wrapper, HttpType},
-  errors::LemmyAppError,
-  ui::components::post::post_listings::PostListings,
-};
-use lemmy_api_common::{
-  lemmy_db_views::structs::PaginationCursor,
-  post::{GetPosts, GetPostsResponse},
-};
+use crate::ui::components::post::post_listings::PostListings;
+use lemmy_api_common::post::{GetPosts, GetPostsResponse};
 use leptos::*;
 use leptos_router::use_query_map;
-
-pub async fn list_posts(form: &GetPosts) -> Result<GetPostsResponse, LemmyAppError> {
-  api_wrapper::<GetPostsResponse, GetPosts>(HttpType::Get, "post/list", form).await
-}
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {

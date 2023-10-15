@@ -1,211 +1,88 @@
-use crate::{api::get_cookie_wrapper, i18n::*};
-#[cfg(feature = "ssr")]
-use leptos::IntoAttribute;
-use leptos::{
-  component,
-  create_effect,
-  create_resource,
-  create_rw_signal,
-  create_server_action,
-  expect_context,
-  server,
-  view,
-  IntoView,
-  RwSignal,
-  ServerFnError,
-  Show,
-  SignalGet,
-  SignalSet,
-  Suspense, leptos_dom::logging, spawn_local, create_isomorphic_effect,
-};
+use crate::{i18n::*, queries::site_state_query::use_site_state};
+use lemmy_api_common::lemmy_db_schema::source::person::Person;
+use leptos::*;
 use leptos_icons::*;
+use leptos_query::QueryResult;
 use leptos_router::*;
 
-#[server(LogoutFormFn, "/serverfn")]
-pub async fn logout_form_fn(is_ssr: bool) -> Result<(), ServerFnError> {
-  use crate::api::remove_cookie_wrapper;
-  use leptos_actix::redirect;
+#[server(LogoutAction, "serverfn")]
+pub async fn logout() -> Result<(), ServerFnError> {
+  use actix_session::Session;
+  use leptos_actix::extract;
 
-  if is_ssr {
-    redirect("/");
-  }
-
-  match remove_cookie_wrapper("jwt").await {
-    Ok(o) => Ok(o),
-    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-  }
+  extract(|session: Session| async move {
+    // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
+    session.purge();
+  })
+  .await
 }
 
 #[component]
 pub fn TopNav() -> impl IntoView {
+  let QueryResult { data, refetch, .. } = use_site_state();
   let i18n = use_i18n();
-  let is_ssr_only = create_rw_signal::<bool>(true);
-
-  #[cfg(not(feature = "ssr"))]
-  is_ssr_only.set(false);
-
-  let authenticated = expect_context::<RwSignal<bool>>();
-  let ui_theme = expect_context::<RwSignal<String>>();
-
-  let auth_resource = create_resource(
-    || (),
-    move |()| async move {
-      match get_cookie_wrapper("jwt").await {
-        Ok(Some(_jwt)) => {
-          authenticated.set(true);
-          leptos::logging::log!("NAV jwt");
-          true
-        }
-        Ok(None) => {
-          authenticated.set(false);
-          leptos::logging::log!("NONE jwt");
-          false
-        }
-        Err(_e) => {
-          authenticated.set(false);
-          false
-        }
-      }
-    },
-  );
-
-  // #[cfg(feature = "ssr")]
-  // spawn_local(async move {
-  //   match get_cookie_wrapper("jwt").await {
-  //     Ok(Some(_jwt)) => {
-  //       authenticated.set(true);
-  //       leptos::logging::log!("TONG jwt");
-  //       // true
-  //     }
-  //     Ok(None) => {
-  //       authenticated.set(false);
-  //       leptos::logging::log!("TONG NONE jwt");
-  //       // false
-  //     }
-  //     Err(_e) => {
-  //       authenticated.set(false);
-  //       // false
-  //     }
-  //   }
-  // });
-  // match auth_resource.get() {
-  //   Some(true) => {
-  //     leptos::logging::log!("EFFECT jwt YAY");
-  //     authenticated.set(true)
-  //   },
-  //   _ => {
-  //     leptos::logging::log!("EFFECT jwt NONE");
-  //     authenticated.set(false)
-  //   },
-  // }
-  // let thing = auth_resource.get();
-
-  create_isomorphic_effect(move |_| match auth_resource.get() {
-    Some(true) => {
-      leptos::logging::log!("EFFECT jwt YAY");
-      authenticated.set(true)
-    },
-    _ => {
-      leptos::logging::log!("EFFECT jwt NONE");
-      authenticated.set(false)
-    },
+  let my_user = Signal::<Option<Person>>::derive(move || {
+    data().map_or_else(
+      || None,
+      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+    )
   });
 
-  let change_theme = move |theme_name: &'static str| {
-    move |_| {
-      ui_theme.set(theme_name.to_string());
-    }
-  };
+  let logout_action = create_server_action::<LogoutAction>();
+  let logout_is_success =
+    Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
 
-  let logout_form_action = create_server_action::<LogoutFormFn>();
-
-  create_effect(move |_| match logout_form_action.value().get() {
-    None => {}
-    Some(Ok(_o)) => {
-      authenticated.set(false);
-      let navigate = leptos_router::use_navigate();
-      navigate("/", Default::default());
+  create_isomorphic_effect(move |_| {
+    if logout_is_success() {
+      refetch();
     }
-    Some(Err(_e)) => {}
   });
 
   view! {
-    // <Suspense>
-    // <div>{ move || auth_resource.get() }</div>
-
-    // <div>{ move || authenticated.get() }</div>
-    // </Suspense>
-
-    <nav class="container navbar mx-auto">
-      <div class="navbar-start">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <A href="/" class="text-xl whitespace-nowrap">
-              "Brand from env"
-            </A>
-          </li>
-          <li>
-            <A href="/communities" class="text-md">
-              {t!(i18n, nav.communities)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_post" class="text-md">
-              {t!(i18n, nav.create_post)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_community" class="text-md">
-              {t!(i18n, nav.create_community)}
-            </A>
-          </li>
-          <li>
-            <a href="//join-lemmy.org/donate">
-              <span title=t!(i18n, nav.donate)>
-                <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
-              </span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div class="navbar-end">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <A href="/search">
-              <span title=t!(i18n, nav.search)>
-                <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
-              </span>
-            </A>
-          </li>
-          <Suspense fallback=move || {
-              view! {
-                <li></li>
-                <li></li>
-              }
-          }>
-          <Suspense>
-          // <div>sfkjnwefjbk { move || auth_resource.get() }</div>
-          <div>sefdjefkjb { move || authenticated.get() }</div>
-          </Suspense>
-      
-            <li class="z-[1]">
-              <details>
-                <summary>"Theme"</summary>
-                <ul>
-                  <li on:click=change_theme("dark")>
-                    <span>"Dark"</span>
-                  </li>
-                  <li on:click=change_theme("light")>
-                    <span>"Light"</span>
-                  </li>
-                  <li on:click=change_theme("retro")>
-                    <span>"Retro"</span>
-                  </li>
-                </ul>
-              </details>
+    <Transition>
+      <nav class="navbar container mx-auto">
+        <div class="navbar-start">
+          <ul class="menu menu-horizontal flex-nowrap">
+            <li>
+              <A href="/" class="text-xl whitespace-nowrap">
+                "Brand from env"
+              </A>
+            </li>
+            <li>
+              <A href="/communities" class="text-md">
+                {t!(i18n, nav.communities)}
+              </A>
+            </li>
+            <li>
+              <A href="/create_post" class="text-md">
+                {t!(i18n, nav.create_post)}
+              </A>
+            </li>
+            <li>
+              <A href="/create_community" class="text-md">
+                {t!(i18n, nav.create_community)}
+              </A>
+            </li>
+            <li>
+              <a href="//join-lemmy.org/donate">
+                <span title=t!(i18n, nav.donate)>
+                  <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="navbar-end">
+          <ul class="menu menu-horizontal flex-nowrap">
+            <li>
+              <A href="/search">
+                <span title=t!(i18n, nav.search)>
+                  <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+                </span>
+              </A>
             </li>
             <Show
-              when=move || { authenticated.get() }
+              when=move || with!(| my_user | my_user.is_some())
               fallback=move || {
                   view! {
                     <li>
@@ -225,12 +102,20 @@ pub fn TopNav() -> impl IntoView {
                   </span>
                 </A>
               </li>
-              <li class="z-[1]">
+              <li>
                 <details>
-                  <summary>"User name"</summary>
-                  <ul>
+                  <summary>
+                    {with!(
+                        | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+                        .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+                    )}
+
+                  </summary>
+                  <ul class="z-10">
                     <li>
-                      <A href="/u/jimmy90">{t!(i18n, nav.profile)}</A>
+                      <A href=with!(
+                          | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+                      )>{t!(i18n, nav.profile)}</A>
                     </li>
                     <li>
                       <A href="/settings">{t!(i18n, nav.settings)}</A>
@@ -239,12 +124,7 @@ pub fn TopNav() -> impl IntoView {
                       <hr/>
                     </li>
                     <li>
-                      <ActionForm action=logout_form_action>
-                        <input
-                          name="is_ssr"
-                          type="hidden"
-                          value=move || format!("{}", is_ssr_only.get())
-                        />
+                      <ActionForm action=logout_action>
                         <button type="submit">{t!(i18n, nav.logout)}</button>
                       </ActionForm>
                     </li>
@@ -252,17 +132,16 @@ pub fn TopNav() -> impl IntoView {
                 </details>
               </li>
             </Show>
-          </Suspense>
-        </ul>
-      </div>
-    </nav>
+          </ul>
+        </div>
+      </nav>
+    </Transition>
   }
 }
 
 #[component]
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
-
   view! {
     <nav class="container navbar mx-auto">
       <div class="navbar-start"></div>

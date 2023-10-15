@@ -5,7 +5,7 @@ cfg_if! {
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
-        use lemmy_ui_leptos::{App, api_service::route_to_api};
+        use lemmy_ui_leptos::{App, server::{route_to_api, cookie_middleware}};
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
@@ -28,19 +28,25 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr;
+
+            leptos_query::suppress_query_load(true);
             let routes = generate_route_list(App);
+            leptos_query::suppress_query_load(false);
 
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
                 let site_root = &leptos_options.site_root;
                 let routes = &routes;
 
+
+                let client = web::Data::new(Client::new());
+
                 App::new()
-                    .app_data(web::Data::new(Client::new()))
                     .route("/api/{tail:.*}", web::route()
                            .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
                            .to(route_to_api))
                     .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                    .wrap(cookie_middleware())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
                     .service(favicon)
@@ -50,7 +56,7 @@ cfg_if! {
                         App
                     )
                     .app_data(web::Data::new(leptos_options.to_owned()))
-                //.wrap(middleware::Compress::default())
+                    .app_data(client)
             })
             .bind(&addr)?
             .run()
