@@ -13,9 +13,8 @@ async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
     extract(
       |session: Session, client: web::Data<awc::Client>| async move {
         let jwt = session.get::<String>("jwt")?;
-
+        logging::log!("certain {:#?} ", jwt.clone());
         let res = client.get_site(jwt).await;
-
         res
       },
     )

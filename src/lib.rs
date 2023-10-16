@@ -1,5 +1,4 @@
 use crate::{
-  api::get_cookie_wrapper,
   i18n::*,
   layout::Layout,
   ui::components::{
@@ -13,7 +12,6 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
 use leptos_router::*;
-mod api;
 mod config;
 mod errors;
 mod host;
@@ -43,7 +41,7 @@ pub fn App() -> impl IntoView {
     <Router set_is_routing>
       <Routes>
         <Route path="/" view=move || view! { <Layout is_routing/> }>
-          <Route path="" view=HomeActivity ssr=SsrMode::InOrder/>
+          <Route path="" view=HomeActivity ssr=SsrMode::Async/>
           <Route path="home" view=PostActivity/>
 
           <Route path="communities" view=PostActivity/>

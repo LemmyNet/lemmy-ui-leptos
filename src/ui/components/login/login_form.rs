@@ -14,7 +14,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   use actix_web::web;
   use awc::Client;
   use lemmy_api_common::person::{Login, LoginResponse};
-  use leptos_actix::{extract,redirect};
+  use leptos_actix::{extract, redirect};
 
   extract(|client: web::Data<Client>, session: Session| async move {
     let req = Login {
@@ -86,7 +86,7 @@ pub fn LoginForm() -> impl IntoView {
         on_input=move |s| update!(| password | * password = s)
       />
 
-      <button class="btn btn-lg" type="submit"/*  disabled=button_is_disabled */>
+      <button class="btn btn-lg" type="submit">
         "Login"
       </button>
     </ActionForm>

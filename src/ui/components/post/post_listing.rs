@@ -1,7 +1,3 @@
-use crate::{
-  api::{api_wrapper, HttpType},
-  errors::LemmyAppError,
-};
 use lemmy_api_common::{
   lemmy_db_schema::newtypes::{PersonId, PostId},
   lemmy_db_views::structs::PostView,
@@ -12,50 +8,46 @@ use leptos::*;
 use leptos_icons::*;
 use leptos_router::{ActionForm, A};
 
-pub async fn report_post(form: &CreatePostReport) -> Result<PostReportResponse, LemmyAppError> {
-  api_wrapper::<PostReportResponse, CreatePostReport>(HttpType::Post, "post/report", form).await
-}
-
-pub async fn block_user(form: &BlockPerson) -> Result<BlockPersonResponse, LemmyAppError> {
-  api_wrapper::<BlockPersonResponse, BlockPerson>(HttpType::Post, "user/block", form).await
-}
-
-pub async fn save_post(form: &SavePost) -> Result<PostResponse, LemmyAppError> {
-  api_wrapper::<PostResponse, SavePost>(HttpType::Put, "post/save", form).await
-}
-
-pub async fn like_post(form: &CreatePostLike) -> Result<PostResponse, LemmyAppError> {
-  api_wrapper::<PostResponse, CreatePostLike>(HttpType::Post, "post/like", form).await
-}
-
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {
-  let c = CreatePostLike {
+  use actix_web::web;
+  use leptos_actix::extract;
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
+  
+  let form = CreatePostLike {
     post_id: PostId(post_id),
     score,
   };
 
-  let thing = like_post(&c).await;
-
-  match thing {
-    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-    Ok(p) => Ok(p),
-  }
+  Ok(extract(|client: web::Data<awc::Client>| async move {
+      client.like_post(form).await
+    },
+  )
+  .await??)
 }
 
 #[server(SavePostFn, "/serverfn")]
 pub async fn save_post_fn(post_id: i32, save: bool) -> Result<PostResponse, ServerFnError> {
+  use actix_web::web;
+  use leptos_actix::extract;
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
+  
   let form = SavePost {
     post_id: PostId(post_id),
     save,
   };
 
-  let save_result = save_post(&form).await;
+  Ok(extract(|client: web::Data<awc::Client>| async move {
+      client.save_post(form).await
+    },
+  )
+  .await??)
+  // let save_result = save_post(&form).await;
 
-  match save_result {
-    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-    Ok(p) => Ok(p),
-  }
+  // match save_result {
+  //   Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+  //   Ok(p) => Ok(p),
+  // }
 }
 
 #[server(BlockUserFn, "/serverfn")]
@@ -63,17 +55,26 @@ pub async fn block_user_fn(
   person_id: i32,
   block: bool,
 ) -> Result<BlockPersonResponse, ServerFnError> {
+  use actix_web::web;
+  use leptos_actix::extract;
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
+  
   let form = BlockPerson {
     person_id: PersonId(person_id),
     block,
   };
 
-  let save_result = block_user(&form).await;
+  Ok(extract(|client: web::Data<awc::Client>| async move {
+      client.block_user(form).await
+    },
+  )
+  .await??)
+  // let save_result = block_user(&form).await;
 
-  match save_result {
-    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-    Ok(p) => Ok(p),
-  }
+  // match save_result {
+  //   Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+  //   Ok(p) => Ok(p),
+  // }
 }
 
 #[server(ReportPostFn, "/serverfn")]
@@ -81,17 +82,27 @@ pub async fn report_post_fn(
   post_id: i32,
   reason: String,
 ) -> Result<PostReportResponse, ServerFnError> {
+  use actix_web::web;
+  use leptos_actix::extract;
+  use crate::lemmy_client::{LemmyClient, LemmyRequest};
+  
   let form = CreatePostReport {
     post_id: PostId(post_id),
     reason,
   };
 
-  let save_result = report_post(&form).await;
+  Ok(extract(|client: web::Data<awc::Client>| async move {
+      client.report_post(form).await
+    },
+  )
+  .await??)
 
-  match save_result {
-    Err(e) => Err(ServerFnError::ServerError(e.to_string())),
-    Ok(p) => Ok(p),
-  }
+  // let save_result = report_post(&form).await;
+
+  // match save_result {
+  //   Err(e) => Err(ServerFnError::ServerError(e.to_string())),
+  //   Ok(p) => Ok(p),
+  // }
 }
 
 #[component]

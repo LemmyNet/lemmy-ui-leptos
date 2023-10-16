@@ -26,7 +26,10 @@ pub fn TopNav() -> impl IntoView {
   let my_user = Signal::<Option<Person>>::derive(move || {
     data().map_or_else(
       || None,
-      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+      |res| {
+        // logging::log!("info {:#?} ", res.clone().ok()?.my_user);
+        res.ok()?.my_user.map(|user| user.local_user_view.person)
+      },
     )
   });
 
@@ -191,7 +194,7 @@ pub fn BottomNav() -> impl IntoView {
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "BE: "
-              {instance_api_version}
+              { move || with!(|instance_api_version| { format!("{}", instance_api_version.clone().unwrap_or("".to_string())) }) }
             </a>
           </li>
           <li>

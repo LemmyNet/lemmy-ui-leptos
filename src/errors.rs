@@ -1,3 +1,4 @@
+use leptos::ServerFnError;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
 use std::num::ParseIntError;
@@ -56,6 +57,16 @@ impl From<awc::error::JsonPayloadError> for LemmyAppError {
     }
   }
 }
+
+// #[cfg(feature = "ssr")]
+// impl From<LemmyAppError> for ServerFnError {
+//   fn from(value: LemmyAppError) -> Self {
+//     Self::ServerError(e.to_string())
+//     // Self::APIError {
+//     //   error: value.to_string(),
+//     // }
+//   }
+// }
 
 #[cfg(feature = "ssr")]
 impl From<awc::error::SendRequestError> for LemmyAppError {
