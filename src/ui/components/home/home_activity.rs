@@ -1,12 +1,10 @@
 // use actix_web::web;
-use crate::{error::*, errors::LemmyAppError, ui::components::post::post_listings::PostListings, lemmy_client::LemmyClient};
+use crate::ui::components::post::post_listings::PostListings;
 use lemmy_api_common::{
   lemmy_db_views::structs::PaginationCursor,
   post::{GetPosts, GetPostsResponse},
 };
 use leptos::*;
-use leptos_router::use_query_map;
-
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
@@ -45,16 +43,14 @@ pub fn HomeActivity() -> impl IntoView {
         }
         #[cfg(feature = "ssr")]
         {
-          use crate::lemmy_client::{LemmyClient, LemmyRequest};
-          use actix_session::Session;
+          use crate::lemmy_client::LemmyClient;
           use actix_web::web;
           use leptos_actix::extract;
 
           extract(|client: web::Data<awc::Client>| async move {
-              let res = client.list_posts(form).await;
-              res
-            },
-          )
+            let res = client.list_posts(form).await;
+            res
+          })
           .await
           .ok()
         }

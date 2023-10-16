@@ -3,19 +3,22 @@ use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
   comment::{GetComments, GetCommentsResponse},
-  person::{Login, LoginResponse},
-  post::{GetPost, GetPostResponse, GetPosts, GetPostsResponse},
+  person::{BlockPerson, BlockPersonResponse, Login, LoginResponse},
+  post::{
+    CreatePostLike,
+    CreatePostReport,
+    GetPost,
+    GetPostResponse,
+    GetPosts,
+    GetPostsResponse,
+    PostReportResponse,
+    PostResponse,
+    SavePost,
+  },
   site::GetSiteResponse,
 };
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
-use lemmy_api_common::{
-  lemmy_db_schema::newtypes::{PersonId, PostId},
-  lemmy_db_views::structs::PostView,
-  person::{BlockPerson, BlockPersonResponse},
-  post::{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
-};
-
 
 pub enum HttpType {
   #[allow(dead_code)]
@@ -106,20 +109,16 @@ pub trait LemmyClient: private_trait::LemmyClient {
       .await
   }
   async fn report_post(&self, form: CreatePostReport) -> LemmyAppResult<PostReportResponse> {
-    self
-      .make_request(HttpType::Post, "post/report", form).await
+    self.make_request(HttpType::Post, "post/report", form).await
   }
   async fn block_user(&self, form: BlockPerson) -> LemmyAppResult<BlockPersonResponse> {
-    self
-      .make_request(HttpType::Post, "user/block", form).await
+    self.make_request(HttpType::Post, "user/block", form).await
   }
   async fn save_post(&self, form: SavePost) -> LemmyAppResult<PostResponse> {
-    self
-      .make_request(HttpType::Put, "post/save", form).await
+    self.make_request(HttpType::Put, "post/save", form).await
   }
   async fn like_post(&self, form: CreatePostLike) -> LemmyAppResult<PostResponse> {
-    self
-      .make_request(HttpType::Post, "post/like", form).await
+    self.make_request(HttpType::Post, "post/like", form).await
   }
 }
 

@@ -26,10 +26,7 @@ pub fn TopNav() -> impl IntoView {
   let my_user = Signal::<Option<Person>>::derive(move || {
     data().map_or_else(
       || None,
-      |res| {
-        // logging::log!("info {:#?} ", res.clone().ok()?.my_user);
-        res.ok()?.my_user.map(|user| user.local_user_view.person)
-      },
+      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
     )
   });
 
@@ -173,10 +170,10 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state();
+  let QueryResult { data, .. } = use_site_state();
 
   let instance_api_version =
-    Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.version)));
+    Signal::derive(move || data().map(|res| res.ok().map(|res| res.version)));
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -194,7 +191,7 @@ pub fn BottomNav() -> impl IntoView {
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "BE: "
-              { move || with!(|instance_api_version| { format!("{}", instance_api_version.clone().unwrap_or("".to_string())) }) }
+              {instance_api_version}
             </a>
           </li>
           <li>
