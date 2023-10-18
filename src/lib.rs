@@ -32,9 +32,6 @@ pub fn App() -> impl IntoView {
   let ui_theme = create_rw_signal::<String>(String::from("retro"));
   provide_context(ui_theme);
 
-  let authenticated = create_rw_signal::<bool>(false);
-  provide_context(authenticated);
-
   let (is_routing, set_is_routing) = create_signal(false);
 
   view! {

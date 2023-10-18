@@ -81,8 +81,6 @@ pub fn PostListing(
   post_view: MaybeSignal<PostView>,
   error: RwSignal<Option<String>>,
 ) -> impl IntoView {
-  let authenticated = expect_context::<RwSignal<bool>>();
-
   let post_view = create_rw_signal(post_view().clone());
 
   let vote_action = create_server_action::<VotePostFn>();
@@ -153,7 +151,6 @@ pub fn PostListing(
           />
           <button
             type="submit"
-            prop:disabled=move || !authenticated.get()
             class=move || if Some(1) == post_view().my_vote { " text-accent" } else { "" }
             title="Up vote"
           >
@@ -170,7 +167,6 @@ pub fn PostListing(
           />
           <button
             type="submit"
-            prop:disabled=move || !authenticated.get()
             class=move || if Some(-1) == post_view().my_vote { " text-accent" } else { "" }
             title="Down vote"
           >
@@ -224,7 +220,6 @@ pub fn PostListing(
             <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
             <button
               type="submit"
-              prop:disabled=move || !authenticated.get()
               title="Save post"
               class=move || if post_view().saved { " text-accent" } else { "" }
             >
@@ -252,7 +247,6 @@ pub fn PostListing(
                     placeholder="reason"
                   />
                   <button
-                    prop:disabled=move || !authenticated.get()
                     title="Report post"
                     type="submit"
                   >
@@ -270,7 +264,6 @@ pub fn PostListing(
                   />
                   <input type="hidden" name="block"/>
                   <button
-                    prop:disabled=move || !authenticated.get()
                     title="Block user"
                     type="submit"
                   >

@@ -6,22 +6,23 @@ use lemmy_api_common::{
 };
 use leptos::*;
 
+
+
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
 
-  let authenticated = expect_context::<RwSignal<bool>>();
-
   let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
+  let cursor_string = create_rw_signal::<Option<String>>(None);
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
   let refresh = create_rw_signal(true);
 
-  let posts: Resource<(bool, bool), Option<GetPostsResponse>> = create_resource(
-    move || (refresh(), authenticated()),
-    move |(_refresh, _authenticated)| async move {
+  let posts = create_resource(
+    move || cursor_string(),
+    move |cursor_string| async move {
       let form = GetPosts {
         type_: None,
         sort: None,
