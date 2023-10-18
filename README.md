@@ -20,9 +20,9 @@ It's a standard contemporary web development environment. The development feedba
 - when a custom look and feel is agreed upon, implement using Tailwind's fine grained styling
 - use Tailwind's layout and responsive tools to adapt UI to screens of all common sizes
 - use isomorphic Leptos code to ensure that features work in the following contexts:
-  - SSR only - server side rendering only. Search engine bots and browsers with with diverse technical requirements (JS and WASM are disabled) must be able to read and interact with all core features. There will be sophisticated (non-core) features where we agree this is not possible
-  - Hydrate - features progressively enhance from being rendered on the server to running almost entirely in the browser (JS and WASM are available). Interactive feature logic must handle this context switch gracefully
-  - CSR only - client side rendering only - all UI and interaction code is compiled into an app that communicates directly with its Lemmy instance
+  - SSR only - server side rendering only. Search engine bots and browsers with diverse technical requirements (JS and WASM are disabled) must be able to read and interact with all core features. There will be sophisticated (non-core) features where we agree this is not possible
+  - Hydrate - features progressively enhance from being rendered on the server to running almost entirely in the browser (JS and WASM are available). Feature logic must handle this context switch gracefully
+  - CSR only - client side rendering only - when a mobile/desktop app framework target is agreed upon (e.g. Tauri) all UI and interaction code is bundled into an app that communicates directly with its Lemmy instance
 - all core features should be acccessible to as diverse a user base as we agree is possible
-- all UI text should be internationlized and rendered effectively for RTL languages
-- the badge feature should be recognizeable across all Lemmy front ends for ease of identifications and administration
+- all UI text must be internationalized and rendered effectively for RTL languages
+- the badge feature must be recognizeable across all Lemmy front ends for ease of identification and administration
