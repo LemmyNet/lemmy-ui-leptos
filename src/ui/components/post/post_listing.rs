@@ -217,7 +217,7 @@ pub fn PostListing(
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
+            <input type="hidden" name="save" value=move || format!("{}", ! post_view().saved)/>
             <button
               type="submit"
               title="Save post"
@@ -246,10 +246,7 @@ pub fn PostListing(
                     name="reason"
                     placeholder="reason"
                   />
-                  <button
-                    title="Report post"
-                    type="submit"
-                  >
+                  <button title="Report post" type="submit">
                     <Icon icon=Icon::from(ChIcon::ChFlag) class="h-6 w-6"/>
                     "Report post"
                   </button>
@@ -263,10 +260,7 @@ pub fn PostListing(
                     value=format!("{}", post_view().creator.id.0)
                   />
                   <input type="hidden" name="block"/>
-                  <button
-                    title="Block user"
-                    type="submit"
-                  >
+                  <button title="Block user" type="submit">
                     <Icon icon=Icon::from(ChIcon::ChBlock) class="h-6 w-6"/>
                     "Block user"
                   </button>
