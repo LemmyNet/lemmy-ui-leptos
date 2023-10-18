@@ -6,8 +6,6 @@ use lemmy_api_common::{
 };
 use leptos::*;
 
-
-
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
