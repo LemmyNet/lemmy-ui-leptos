@@ -149,7 +149,7 @@ pub fn TopNav() -> impl IntoView {
                     <li>
                       <A href="/settings">{t!(i18n, nav.settings)}</A>
                     </li>
-                    <div class="divider mt-0 mb-0"></div>
+                    <div class="divider my-0"></div>
                     <li>
                       <ActionForm action=logout_action>
                         <button type="submit">{t!(i18n, nav.logout)}</button>

@@ -48,8 +48,7 @@ pub fn HomeActivity() -> impl IntoView {
           use leptos_actix::extract;
 
           extract(|client: web::Data<awc::Client>| async move {
-            let res = client.list_posts(form).await;
-            res
+            client.list_posts(form).await
           })
           .await
           .ok()
