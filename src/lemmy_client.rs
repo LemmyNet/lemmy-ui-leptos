@@ -1,10 +1,20 @@
-use crate::{errors::LemmyAppResult, host::get_host};
+use crate::{config::TEST_HOST_PROTOCOL, errors::LemmyAppResult, host::get_host};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
   comment::{GetComments, GetCommentsResponse},
-  person::{Login, LoginResponse},
-  post::{GetPost, GetPostResponse, GetPosts, GetPostsResponse},
+  person::{BlockPerson, BlockPersonResponse, Login, LoginResponse},
+  post::{
+    CreatePostLike,
+    CreatePostReport,
+    GetPost,
+    GetPostResponse,
+    GetPosts,
+    GetPostsResponse,
+    PostReportResponse,
+    PostResponse,
+    SavePost,
+  },
   site::GetSiteResponse,
 };
 use leptos::Serializable;
@@ -98,6 +108,18 @@ pub trait LemmyClient: private_trait::LemmyClient {
       .make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt))
       .await
   }
+  async fn report_post(&self, form: CreatePostReport) -> LemmyAppResult<PostReportResponse> {
+    self.make_request(HttpType::Post, "post/report", form).await
+  }
+  async fn block_user(&self, form: BlockPerson) -> LemmyAppResult<BlockPersonResponse> {
+    self.make_request(HttpType::Post, "user/block", form).await
+  }
+  async fn save_post(&self, form: SavePost) -> LemmyAppResult<PostResponse> {
+    self.make_request(HttpType::Put, "post/save", form).await
+  }
+  async fn like_post(&self, form: CreatePostLike) -> LemmyAppResult<PostResponse> {
+    self.make_request(HttpType::Post, "post/like", form).await
+  }
 }
 
 cfg_if! {
@@ -158,6 +180,7 @@ cfg_if! {
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
         use gloo_net::http::{Request, RequestBuilder};
+        use wasm_cookies::get;
 
         pub struct Fetch;
 
@@ -176,8 +199,8 @@ cfg_if! {
         }
 
         #[async_trait(?Send)]
-       impl private_trait::LemmyClient for Fetch {
-           async fn make_request<Response, Form, Req>(
+        impl private_trait::LemmyClient for Fetch {
+            async fn make_request<Response, Form, Req>(
                 &self,
                 method: HttpType,
                 path: &str,
@@ -187,43 +210,43 @@ cfg_if! {
                 Response: Serializable + for<'de> Deserialize<'de>,
                 Form: Serialize,
                 Req: Into<LemmyRequest<Form>>
-           {
-               let LemmyRequest { body, .. } = req.into();
-               let route = &build_route(path);
-               let abort_controller = AbortController::new().ok();
-               let abort_signal = abort_controller.as_ref().map(AbortController::signal);
-               let jwt = wasm_cookies::get("jwt").and_then(Result::ok);
+            {
+                let LemmyRequest { body, .. } = req.into();
+                let route = &build_route(path);
+                let abort_controller = AbortController::new().ok();
+                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
+                let jwt = get("jwt").and_then(Result::ok);
 
-               // abort in-flight requests if the Scope is disposed
-               // i.e., if we've navigated away from this page
-               leptos::on_cleanup( move || {
-                   if let Some(abort_controller) = abort_controller {
-                       abort_controller.abort()
-                   }
-               });
+                // abort in-flight requests if the Scope is disposed
+                // i.e., if we've navigated away from this page
+                leptos::on_cleanup( move || {
+                    if let Some(abort_controller) = abort_controller {
+                        abort_controller.abort()
+                    }
+                });
 
-               match method {
-                   HttpType::Get =>
-                       Request::get(&build_fetch_query(path, body))
-                           .maybe_bearer_auth(jwt.as_deref())
-                           .abort_signal(abort_signal.as_ref())
-                           .build()
-                           .expect_throw("Could not parse query params"),
-                   HttpType::Post =>
-                       Request::post(route)
-                           .maybe_bearer_auth(jwt.as_deref())
-                           .abort_signal(abort_signal.as_ref())
-                           .json(&body)
-                           .expect_throw("Could not parse json body"),
-                   HttpType::Put =>
-                       Request::put(route)
-                           .maybe_bearer_auth(jwt.as_deref())
-                           .abort_signal(abort_signal.as_ref())
-                           .json(&body)
-                           .expect_throw("Could not parse json body")
-               }.send().await?.json::<Response>().await.map_err(Into::into)
-           }
-       }
+                match method {
+                    HttpType::Get =>
+                        Request::get(&build_fetch_query(path, body))
+                            .maybe_bearer_auth(jwt.as_deref())
+                            .abort_signal(abort_signal.as_ref())
+                            .build()
+                            .expect_throw("Could not parse query params"),
+                    HttpType::Post =>
+                        Request::post(route)
+                            .maybe_bearer_auth(jwt.as_deref())
+                            .abort_signal(abort_signal.as_ref())
+                            .json(&body)
+                            .expect_throw("Could not parse json body"),
+                    HttpType::Put =>
+                        Request::put(route)
+                            .maybe_bearer_auth(jwt.as_deref())
+                            .abort_signal(abort_signal.as_ref())
+                            .json(&body)
+                            .expect_throw("Could not parse json body")
+                }.send().await?.json::<Response>().await.map_err(Into::into)
+            }
+        }
 
         impl LemmyClient for Fetch {}
 
@@ -235,5 +258,5 @@ cfg_if! {
 }
 
 fn build_route(route: &str) -> String {
-  format!("http://{}/api/v3/{route}", get_host())
+  format!("{}://{}/api/v3/{route}", TEST_HOST_PROTOCOL, get_host())
 }

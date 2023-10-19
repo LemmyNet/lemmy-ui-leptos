@@ -29,30 +29,33 @@ pub fn App() -> impl IntoView {
   provide_i18n_context();
   provide_query_client();
 
+  let ui_theme = create_rw_signal::<String>(String::from("retro"));
+  provide_context(ui_theme);
+
   let (is_routing, set_is_routing) = create_signal(false);
 
   view! {
     <Router set_is_routing>
       <Routes>
         <Route path="/" view=move || view! { <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
-          <Route path="/" view=HomeActivity/>
-          <Route path="home" view=HomeActivity/>
+          <Route path="" view=HomeActivity ssr=SsrMode::Async/>
+          <Route path="home" view=PostActivity/>
 
-          <Route path="communities" view=HomeActivity/>
-          <Route path="create_post" view=HomeActivity/>
-          <Route path="create_community" view=HomeActivity/>
+          <Route path="communities" view=PostActivity/>
+          <Route path="create_post" view=PostActivity/>
+          <Route path="create_community" view=PostActivity/>
 
-          <Route path="search" view=HomeActivity/>
+          <Route path="search" view=PostActivity/>
           <Route path="login" view=LoginActivity/>
-          <Route path="signup" view=LoginActivity/>
+          <Route path="signup" view=PostActivity/>
 
-          <Route path="inbox" view=HomeActivity/>
-          <Route path="u/:id" view=HomeActivity/>
-          <Route path="settings" view=HomeActivity/>
-          <Route path="logout" view=HomeActivity/>
+          <Route path="inbox" view=PostActivity/>
+          <Route path="u/:id" view=PostActivity/>
+          <Route path="settings" view=PostActivity/>
+          <Route path="logout" view=PostActivity/>
 
-          <Route path="modlog" view=HomeActivity/>
-          <Route path="instances" view=HomeActivity/>
+          <Route path="modlog" view=PostActivity/>
+          <Route path="instances" view=PostActivity/>
 
           <Route path="post/:id" view=PostActivity/>
         </Route>
