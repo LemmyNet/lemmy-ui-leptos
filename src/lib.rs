@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 use crate::{
   i18n::*,
   layout::Layout,

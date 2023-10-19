@@ -1,2 +1,2 @@
-pub const TEST_HOST: &str = "voyager.lemmy.ml";
-pub const TEST_HOST_PROTOCOL: &str = "https";
+pub const LEMMY_UI_LEMMY_INTERNAL_HOST: &str = "localhost:1237";
+pub const LEMMY_UI_HTTPS: bool = false;

@@ -133,19 +133,19 @@ pub fn TopNav() -> impl IntoView {
               </li>
               <li>
                 <details>
-                  <summary>
-                    {with!(
-                        | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                        .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                    )}
+                  // <summary>
+                  //   {with!(
+                  //       | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+                  //       .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+                  //   )}
 
-                  </summary>
+                  // </summary>
                   <ul class="z-10">
-                    <li>
-                      <A href=with!(
-                          | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      )>{t!(i18n, nav.profile)}</A>
-                    </li>
+                    // <li>
+                    //   <A href=with!(
+                    //       | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+                    //   )>{t!(i18n, nav.profile)}</A>
+                    // </li>
                     <li>
                       <A href="/settings">{t!(i18n, nav.settings)}</A>
                     </li>
@@ -188,12 +188,12 @@ pub fn BottomNav() -> impl IntoView {
               {FE_VERSION}
             </a>
           </li>
-          <li>
-            <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-              "BE: "
-              {instance_api_version}
-            </a>
-          </li>
+          // <li>
+          //   <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
+          //     "BE: "
+          //     {instance_api_version}
+          //   </a>
+          // </li>
           <li>
             <A href="/modlog" class="text-md">
               {t!(i18n, nav.modlog)}

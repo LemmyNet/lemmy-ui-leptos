@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 use cfg_if::cfg_if;
 
 cfg_if! {
@@ -40,11 +42,14 @@ cfg_if! {
 
                 let client = web::Data::new(Client::new());
 
-                App::new()
-                    .route("/api/{tail:.*}", web::route()
-                           .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                           .to(route_to_api))
-                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                let app = App::new();
+
+                #[cfg(not(feature = "bypass_internal_proxy"))]
+                app.route("/api/{tail:.*}", web::route()
+                    .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
+                    .to(route_to_api));
+
+                app.route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .wrap(cookie_middleware())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))

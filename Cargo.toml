@@ -64,7 +64,7 @@ locales = ["en", "fr"]
 namespaces = ["nav"]
 
 [features]
-default = ["csr"]
+default = ["ssr"]
 hydrate = [
   "leptos/hydrate",
   "leptos_meta/hydrate",
@@ -86,6 +86,7 @@ ssr = [
   "dep:awc",
   "dep:actix-session",
 ]
+bypass_internal_proxy = []
 
 [package.metadata.cargo-all-features]
 denylist = ["actix-files", "actix-web", "leptos_actix"]
@@ -128,7 +129,7 @@ env = "DEV"
 # The features to use when compiling the bin target
 #
 # Optional. Can be over-ridden with the command line parameter --bin-features
-bin-features = ["ssr"]
+bin-features = ["ssr", "bypass_internal_proxy"]
 
 # If the --no-default-features flag should be used when compiling the bin target
 #

@@ -1,4 +1,4 @@
-use crate::{config::TEST_HOST_PROTOCOL, errors::LemmyAppResult, host::get_host};
+use crate::{config::LEMMY_UI_HTTPS, errors::LemmyAppResult, host::get_host};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
@@ -258,5 +258,15 @@ cfg_if! {
 }
 
 fn build_route(route: &str) -> String {
-  format!("{}://{}/api/v3/{route}", TEST_HOST_PROTOCOL, get_host())
+  leptos::logging::log!("build {:#?} {:#?}", route, std::env::var("LEMMY_UI_HTTPS"));
+
+  format!(
+    "http{}://{}/api/v3/{route}",
+    if std::env::var("LEMMY_UI_HTTPS").unwrap_or(format!("{LEMMY_UI_HTTPS}")) == "true" {
+      "s"
+    } else {
+      ""
+    },
+    get_host()
+  )
 }
