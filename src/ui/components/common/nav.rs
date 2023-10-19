@@ -63,22 +63,22 @@ pub fn TopNav() -> impl IntoView {
             </li>
             <li>
               <A href="/communities" class="text-md">
-                {t!(i18n, nav.communities)}
+                {t!(i18n, communities)}
               </A>
             </li>
             <li>
               <A href="/create_post" class="text-md">
-                {t!(i18n, nav.create_post)}
+                {t!(i18n, create_post)}
               </A>
             </li>
             <li>
               <A href="/create_community" class="text-md">
-                {t!(i18n, nav.create_community)}
+                {t!(i18n, create_community)}
               </A>
             </li>
             <li>
               <a href="//join-lemmy.org/donate">
-                <span title=t!(i18n, nav.donate)>
+                <span title=t!(i18n, donate)>
                   <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
                 </span>
               </a>
@@ -89,7 +89,7 @@ pub fn TopNav() -> impl IntoView {
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
               <A href="/search">
-                <span title=t!(i18n, nav.search)>
+                <span title=t!(i18n, search)>
                   <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
                 </span>
               </A>
@@ -115,10 +115,10 @@ pub fn TopNav() -> impl IntoView {
               fallback=move || {
                   view! {
                     <li>
-                      <A href="/login">{t!(i18n, nav.login)}</A>
+                      <A href="/login">{t!(i18n, login)}</A>
                     </li>
                     <li>
-                      <A href="/signup">{t!(i18n, nav.signup)}</A>
+                      <A href="/signup">{t!(i18n, signup)}</A>
                     </li>
                   }
               }
@@ -126,7 +126,7 @@ pub fn TopNav() -> impl IntoView {
 
               <li>
                 <A href="/inbox">
-                  <span title=t!(i18n, nav.unread_messages)>
+                  <span title=t!(i18n, unread_messages)>
                     <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
                   </span>
                 </A>
@@ -144,15 +144,15 @@ pub fn TopNav() -> impl IntoView {
                     <li>
                       <A href=with!(
                           | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      )>{t!(i18n, nav.profile)}</A>
+                      )>{t!(i18n, profile)}</A>
                     </li>
                     <li>
-                      <A href="/settings">{t!(i18n, nav.settings)}</A>
+                      <A href="/settings">{t!(i18n, settings)}</A>
                     </li>
                     <div class="divider my-0"></div>
                     <li>
                       <ActionForm action=logout_action>
-                        <button type="submit">{t!(i18n, nav.logout)}</button>
+                        <button type="submit">{t!(i18n, logout)}</button>
                       </ActionForm>
                     </li>
                   </ul>
@@ -196,22 +196,22 @@ pub fn BottomNav() -> impl IntoView {
           </li>
           <li>
             <A href="/modlog" class="text-md">
-              {t!(i18n, nav.modlog)}
+              {t!(i18n, modlog)}
             </A>
           </li>
           <li>
             <A href="/instances" class="text-md">
-              {t!(i18n, nav.instances)}
+              {t!(i18n, instances)}
             </A>
           </li>
           <li>
             <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
-              {t!(i18n, nav.docs)}
+              {t!(i18n, docs)}
             </a>
           </li>
           <li>
             <a href="//github.com/LemmyNet" class="text-md">
-              {t!(i18n, nav.code)}
+              {t!(i18n, code)}
             </a>
           </li>
           <li>
