@@ -1,11 +1,8 @@
-use crate::host::get_https;
 use cfg_if::cfg_if;
-use leptos::leptos_dom::logging;
 
 cfg_if! {
     if #[cfg(all(feature = "ssr", not(feature = "bypass_internal_proxy")))] {
-        use crate::host::get_host;
-        use crate::config::LEMMY_UI_HTTPS;
+        use crate::host::{get_host, get_https};
         use actix_proxy::{IntoHttpResponse, SendRequestError as ProxyError};
         use actix_web::{
             http::uri::{InvalidUri, InvalidUriParts, Uri},

@@ -1,5 +1,4 @@
 use crate::{
-  config::LEMMY_UI_HTTPS,
   errors::LemmyAppResult,
   host::{get_host, get_https},
 };

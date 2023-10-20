@@ -5,7 +5,7 @@ use crate::{
 use cfg_if::cfg_if;
 use leptos::*;
 use leptos_query::QueryResult;
-use leptos_router::{ActionForm, NavigateOptions};
+use leptos_router::ActionForm;
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -39,13 +39,11 @@ pub fn LoginForm() -> impl IntoView {
   let name = RwSignal::new(String::new());
   let password = RwSignal::new(String::new());
 
-  // let button_is_disabled =
-  //   Signal::derive(move || with!(|password, name| password.is_empty() || name.is_empty()));
-
   let login = create_server_action::<LoginAction>();
   let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
 
   let QueryResult { refetch, .. } = use_site_state();
+
   create_isomorphic_effect(move |_| {
     if login_is_success() {
       refetch();
@@ -56,7 +54,7 @@ pub fn LoginForm() -> impl IntoView {
         } else {
           let navigate = leptos_router::use_navigate();
 
-          navigate("/", NavigateOptions { replace: true, ..Default::default() })
+          navigate("/", leptos_router::NavigateOptions { replace: true, ..Default::default() })
         }
       }
     }

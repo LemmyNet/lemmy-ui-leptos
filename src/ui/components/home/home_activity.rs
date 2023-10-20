@@ -1,45 +1,15 @@
 // use actix_web::web;
 use crate::ui::components::post::post_listings::PostListings;
 use lemmy_api_common::{
-  lemmy_db_views::structs::{PaginationCursor, PostView},
-  post::{GetPosts, GetPostsResponse},
+  lemmy_db_views::structs::PaginationCursor,
+  post::GetPosts,
 };
 use leptos::*;
-use leptos_router::*;
-
-fn extract_cursor(c: Option<PaginationCursor>) -> String {
-  if let Some(s) = c {
-    let r = format!("{:#?}", s).lines().nth(1).unwrap()[5..9].into();
-    r
-  } else {
-    "".into()
-  }
-}
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
-  // let query = use_query_map();
-  // let next = move || {
-  //   let p = PostView {};
-  //   query
-  //     .with(|q| q.get("next").and_then(|page| {
-  //       // if let Some(c) = page.parse::<String>() {
-  //         (PaginationCursor {})::after_post(&p)
-  //       // } else {
-  //       //   None
-  //       // }
-  //     }).or(None))
-  // };
-
-  // let prev = move || {
-  //   query
-  //     .with(|q| q.get("prev").and_then(|page| page.parse::<i64>().ok()))
-  //     .unwrap_or(1)
-  // };
-
   let error = create_rw_signal::<Option<String>>(None);
 
-  // let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
 
@@ -47,7 +17,7 @@ pub fn HomeActivity() -> impl IntoView {
 
   let posts = create_resource(
     move || cursor_string(),
-    move |cursor_string| async move {
+    move |_cursor_string| async move {
       let form = GetPosts {
         type_: None,
         sort: None,
