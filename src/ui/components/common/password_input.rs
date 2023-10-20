@@ -2,26 +2,26 @@ use leptos::*;
 use leptos_icons::*;
 
 #[component]
-pub fn PasswordInput<F: Fn(String) + 'static>(
+pub fn PasswordInput(
   #[prop(optional)] disabled: MaybeProp<bool>,
-  #[prop(into)] id: &'static str,
-  #[prop(into)] name: &'static str,
-  on_input: F,
+  #[prop(into)] id: Oco<'static, str>,
+  #[prop(into)] name: Oco<'static, str>,
+  #[prop(into)] on_input: Callback<String, ()>,
 ) -> impl IntoView {
   let (show_password, set_show_password) = create_signal(false);
 
   view! {
     <div class="form-control w-full">
-      <label class="label" for=id>
+      <label class="label" for=id.clone()>
         <span class="label-text">Password</span>
       </label>
       <div class="join">
         <input
           type=move || show_password.with(|s| if *s { "text " } else { "password" })
-          id=id
+          id=id.clone()
           class="input input-bordered join-item w-full"
           required
-          name=name
+          name=name.clone()
           disabled=move || disabled.get().unwrap_or(false)
           on:input=move |e| {
               on_input(event_target_value(&e));
