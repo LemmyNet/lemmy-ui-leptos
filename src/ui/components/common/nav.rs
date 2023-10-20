@@ -21,17 +21,17 @@ pub async fn logout() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state();
+  // let QueryResult { data, refetch, .. } = use_site_state();
 
-  let my_user = Signal::<Option<Person>>::derive(move || {
-    data().map_or_else(
-      || None,
-      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-    )
-  });
+  // let my_user = Signal::<Option<Person>>::derive(move || {
+  //   data().map_or_else(
+  //     || None,
+  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+  //   )
+  // });
 
-  let instance_name =
-    Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
+  // let instance_name =
+  //   Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
 
   let logout_action = create_server_action::<LogoutAction>();
   let logout_is_success =
@@ -39,7 +39,7 @@ pub fn TopNav() -> impl IntoView {
 
   create_isomorphic_effect(move |_| {
     if logout_is_success() {
-      refetch();
+      // refetch();
     }
   });
 
@@ -58,7 +58,7 @@ pub fn TopNav() -> impl IntoView {
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
               <A href="/" class="text-xl whitespace-nowrap">
-                {instance_name}
+                "" // {instance_name}
               </A>
             </li>
             <li>
@@ -111,7 +111,7 @@ pub fn TopNav() -> impl IntoView {
               </details>
             </li>
             <Show
-              when=move || with!(| my_user | my_user.is_some())
+              when=move || { logout_is_success() } //with!(| my_user | my_user.is_some())
               fallback=move || {
                   view! {
                     <li>
@@ -134,18 +134,18 @@ pub fn TopNav() -> impl IntoView {
               <li>
                 <details>
                   // <summary>
-                  //   {with!(
-                  //       | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                  //       .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                  //   )}
+                    // {with!(
+                    //     | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+                    //     .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+                    // )}
 
                   // </summary>
                   <ul class="z-10">
-                    // <li>
-                    //   <A href=with!(
-                    //       | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                    //   )>{t!(i18n, nav.profile)}</A>
-                    // </li>
+                    <li>
+                      // <A href=with!(
+                      //     | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+                      // )>{t!(i18n, nav.profile)}</A>
+                    </li>
                     <li>
                       <A href="/settings">{t!(i18n, nav.settings)}</A>
                     </li>
@@ -170,10 +170,16 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, .. } = use_site_state();
+  let QueryResult { data, refetch, .. } = use_site_state();
 
   let instance_api_version =
-    Signal::derive(move || data().map(|res| res.ok().map(|res| res.version)));
+  // Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
+  Signal::derive(move || "data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name))");
+
+
+  // let instance_api_version =
+  //   Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.version)));
+    // Signal::derive(move || data().map(|res| res.ok().map(|res| res.version)));
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -188,12 +194,12 @@ pub fn BottomNav() -> impl IntoView {
               {FE_VERSION}
             </a>
           </li>
-          // <li>
-          //   <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-          //     "BE: "
-          //     {instance_api_version}
-          //   </a>
-          // </li>
+          <li>
+            <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
+              "BE: "
+              {instance_api_version()}
+            </a>
+          </li>
           <li>
             <A href="/modlog" class="text-md">
               {t!(i18n, nav.modlog)}

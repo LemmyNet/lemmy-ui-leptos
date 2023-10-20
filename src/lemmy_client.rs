@@ -1,4 +1,8 @@
-use crate::{config::LEMMY_UI_HTTPS, errors::LemmyAppResult, host::get_host};
+use crate::{
+  config::LEMMY_UI_HTTPS,
+  errors::LemmyAppResult,
+  host::{get_host, get_https},
+};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
@@ -217,6 +221,19 @@ cfg_if! {
                 let abort_signal = abort_controller.as_ref().map(AbortController::signal);
                 let jwt = get("jwt").and_then(Result::ok);
 
+                leptos::logging::log!("fet 1 {}", build_fetch_query(path.clone(), GetPosts {
+                  type_: None,
+                  sort: None,
+                  community_name: None,
+                  community_id: None,
+                  page: None,
+                  limit: None,
+                  saved_only: None,
+                  disliked_only: None,
+                  liked_only: None,
+                  page_cursor: None,
+                }));
+
                 // abort in-flight requests if the Scope is disposed
                 // i.e., if we've navigated away from this page
                 leptos::on_cleanup( move || {
@@ -252,21 +269,29 @@ cfg_if! {
 
         fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
             let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
-            format!("{path}?{form_str}")
+            format!("{}?{}", build_route(path), form_str)
         }
     }
 }
 
 fn build_route(route: &str) -> String {
-  leptos::logging::log!("build {:#?} {:#?}", route, std::env::var("LEMMY_UI_HTTPS"));
+  leptos::logging::log!(
+    "build {:#?} {:#?} {:#?} {:#?}",
+    format!(
+      "http{}://{}/api/v3/{}",
+      if get_https() == "true" { "s" } else { "" },
+      get_host(),
+      route.clone()
+    ),
+    route,
+    get_https(),
+    get_https() == "true"
+  );
 
   format!(
-    "http{}://{}/api/v3/{route}",
-    if std::env::var("LEMMY_UI_HTTPS").unwrap_or(format!("{LEMMY_UI_HTTPS}")) == "true" {
-      "s"
-    } else {
-      ""
-    },
-    get_host()
+    "http{}://{}/api/v3/{}",
+    if get_https() == "true" { "s" } else { "" },
+    get_host(),
+    route
   )
 }

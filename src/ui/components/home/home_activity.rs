@@ -16,8 +16,6 @@ pub fn HomeActivity() -> impl IntoView {
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-  let refresh = create_rw_signal(true);
-
   let posts = create_resource(
     move || cursor_string(),
     move |cursor_string| async move {
@@ -54,8 +52,13 @@ pub fn HomeActivity() -> impl IntoView {
 
       match result {
         Some(Ok(o)) => {
+          logging::log!("data {:#?}", o.clone());
           next_page_cursor.set(o.next_page.clone());
           Some(o)
+        }
+        Some(Err(e)) => {
+          logging::log!("err {:#?}", e.to_string());
+          None
         }
         _ => None,
       }
@@ -128,8 +131,8 @@ pub fn HomeActivity() -> impl IntoView {
               let mut p = prev_cursor_stack();
               let s = p.pop().unwrap_or(None);
               prev_cursor_stack.set(p);
-              page_cursor.set(s);
-              refresh.set(!refresh());
+              page_cursor.set(s.clone());
+              cursor_string.set(Some(format!("{:#?}", s)));
           }
         >
 
@@ -142,7 +145,7 @@ pub fn HomeActivity() -> impl IntoView {
               p.push(page_cursor());
               prev_cursor_stack.set(p);
               page_cursor.set(next_page_cursor());
-              refresh.set(!refresh());
+              cursor_string.set(Some(format!("{:#?}", next_page_cursor())));
           }
         >
 

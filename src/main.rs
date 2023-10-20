@@ -42,25 +42,43 @@ cfg_if! {
 
                 let client = web::Data::new(Client::new());
 
-                let app = App::new();
-
-                #[cfg(not(feature = "bypass_internal_proxy"))]
-                app.route("/api/{tail:.*}", web::route()
-                    .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                    .to(route_to_api));
-
-                app.route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                    .wrap(cookie_middleware())
-                    .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                    .service(Files::new("/assets", site_root))
-                    .service(favicon)
-                    .leptos_routes(
-                        leptos_options.to_owned(),
-                        routes.to_owned(),
-                        App
-                    )
-                    .app_data(web::Data::new(leptos_options.to_owned()))
-                    .app_data(client)
+                cfg_if! {
+                    if #[cfg(not(feature = "bypass_internal_proxy"))] {
+                        App::new()
+                            .route("/api/{tail:.*}", web::route()
+                            .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
+                            .to(route_to_api))
+                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                            .wrap(cookie_middleware())
+                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                            .service(Files::new("/assets", site_root))
+                            .service(favicon)
+                            .leptos_routes(
+                                leptos_options.to_owned(),
+                                routes.to_owned(),
+                                App
+                            )
+                            .app_data(web::Data::new(leptos_options.to_owned()))
+                            .app_data(client)
+                    } else {
+                        App::new()
+                            // .route("/api/{tail:.*}", web::route()
+                            // .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
+                            // .to(route_to_api))
+                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                            .wrap(cookie_middleware())
+                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                            .service(Files::new("/assets", site_root))
+                            .service(favicon)
+                            .leptos_routes(
+                                leptos_options.to_owned(),
+                                routes.to_owned(),
+                                App
+                            )
+                            .app_data(web::Data::new(leptos_options.to_owned()))
+                            .app_data(client)
+                    }
+                }
             })
             .bind(&addr)?
             .run()
