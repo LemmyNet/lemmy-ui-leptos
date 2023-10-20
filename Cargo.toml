@@ -61,7 +61,6 @@ actix-session = { version = "0.8", features = [
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en", "fr"]
-namespaces = ["nav"]
 
 [features]
 default = ["ssr"]
