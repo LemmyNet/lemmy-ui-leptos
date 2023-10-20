@@ -14,14 +14,15 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
       <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
       <Meta name="description" content="Lemmy-UI-Leptos."/>
       <Meta name="viewport" content="viewport-fit=cover"/>
+      // debug where there is no visible console (mobile/live/desktop)
       // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
       // <Script>eruda.init();</Script>
       <Title text="Brand from env"/>
 
       <div class="flex flex-col h-screen" data-theme=move || ui_theme()>
-        <TopNav/>
+        // <TopNav/>
         <Outlet/>
-        <BottomNav/>
+        // <BottomNav/>
       </div>
     </ErrorBoundary>
   }

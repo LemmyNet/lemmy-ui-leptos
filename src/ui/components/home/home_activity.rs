@@ -1,20 +1,51 @@
 // use actix_web::web;
 use crate::ui::components::post::post_listings::PostListings;
 use lemmy_api_common::{
-  lemmy_db_views::structs::PaginationCursor,
+  lemmy_db_views::structs::{PaginationCursor, PostView},
   post::{GetPosts, GetPostsResponse},
 };
 use leptos::*;
+use leptos_router::*;
+
+fn extract_cursor(c: Option<PaginationCursor>) -> String {
+  if let Some(s) = c {
+    let r = format!("{:#?}", s).lines().nth(1).unwrap()[5..9].into();
+    r
+  } else {
+    "".into()
+  }
+}
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
+  // let query = use_query_map();
+  // let next = move || {
+  //   let p = PostView {};
+  //   query
+  //     .with(|q| q.get("next").and_then(|page| {
+  //       // if let Some(c) = page.parse::<String>() {
+  //         (PaginationCursor {})::after_post(&p)
+  //       // } else {
+  //       //   None
+  //       // }
+  //     }).or(None))
+  // };
+
+  // let prev = move || {
+  //   query
+  //     .with(|q| q.get("prev").and_then(|page| page.parse::<i64>().ok()))
+  //     .unwrap_or(1)
+  // };
+
   let error = create_rw_signal::<Option<String>>(None);
 
-  let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
+  // let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
+
+
 
   let posts = create_resource(
     move || cursor_string(),
@@ -52,8 +83,8 @@ pub fn HomeActivity() -> impl IntoView {
 
       match result {
         Some(Ok(o)) => {
-          logging::log!("data {:#?}", o.clone());
-          next_page_cursor.set(o.next_page.clone());
+          // next_page_cursor.set(o.next_page.clone());
+          // logging::log!("curs {:#?}", next_page_cursor());
           Some(o)
         }
         Some(Err(e)) => {
@@ -118,39 +149,46 @@ pub fn HomeActivity() -> impl IntoView {
                           view! {
                             <div>
                               <PostListings posts=res.posts.into() error/>
+
+                              // <a href="javascript:history.back()">"Go Back"</a>
+                              <button
+                                class="btn"
+                                on:click=move |_| {
+                                    let mut p = prev_cursor_stack();
+                                    let s = p.pop().unwrap_or(None);
+                                    prev_cursor_stack.set(p);
+
+                                    page_cursor.set(s.clone());
+                                    cursor_string.set(Some(format!("{:#?}", s)));
+                                }
+                              >
+
+                                "Prev"
+                              </button>
+                              // <A href=move || format!("/list?next={}", extract_cursor(res.next_page.clone()))>"Go Next"</A>
+                              <button
+                                class="btn"
+                                on:click=move |_| {
+                                    let mut p = prev_cursor_stack();
+                                    p.push(page_cursor());
+                                    prev_cursor_stack.set(p);
+
+                                    // logging::log!("{:#?}", next_page_cursor());
+                                    page_cursor.set(res.next_page.clone());
+                                    cursor_string.set(Some(format!("{:#?}", res.next_page.clone())));
+                                }
+                              >
+
+                                "Next"
+                              </button>
+
                             </div>
+
                           }
                       }
                   })
           }}
-
         </Suspense>
-        <button
-          class="btn"
-          on:click=move |_| {
-              let mut p = prev_cursor_stack();
-              let s = p.pop().unwrap_or(None);
-              prev_cursor_stack.set(p);
-              page_cursor.set(s.clone());
-              cursor_string.set(Some(format!("{:#?}", s)));
-          }
-        >
-
-          "Prev"
-        </button>
-        <button
-          class="btn"
-          on:click=move |_| {
-              let mut p = prev_cursor_stack();
-              p.push(page_cursor());
-              prev_cursor_stack.set(p);
-              page_cursor.set(next_page_cursor());
-              cursor_string.set(Some(format!("{:#?}", next_page_cursor())));
-          }
-        >
-
-          "Next"
-        </button>
       </main>
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
         <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>
