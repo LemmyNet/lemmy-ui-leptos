@@ -64,20 +64,20 @@ pub fn LoginForm() -> impl IntoView {
 
   view! {
     <ActionForm class="space-y-3" action=login>
-      <div class="form-control w-full">
-        <label class="label" for="username">
-          <span class="label-text">Username</span>
-        </label>
+      <div class="form-control w-full relative">
         <input
           id="username"
           type="text"
           required
           name="username_or_email"
-          class="input input-bordered"
-          placeholder="Username"
+          class="peer input input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50"
+          placeholder=" "
           value=name
           on:input=move |ev| update!(| name | * name = event_target_value(& ev))
         />
+        <label class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-neutral/50 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none" for="username">
+          Username
+        </label>
       </div>
 
       <PasswordInput
