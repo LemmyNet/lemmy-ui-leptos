@@ -5,7 +5,7 @@ cfg_if! {
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
-        use lemmy_ui_leptos::{App, server::{route_to_api, cookie_middleware}};
+        use lemmy_ui_leptos::{App, server::{cookie_middleware}};
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
@@ -41,6 +41,8 @@ cfg_if! {
 
                 cfg_if! {
                     if #[cfg(not(feature = "bypass_internal_proxy"))] {
+                        use lemmy_ui_leptos::server::route_to_api;
+
                         App::new()
                             .route("/api/{tail:.*}", web::route()
                             .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
@@ -59,9 +61,6 @@ cfg_if! {
                             .app_data(client)
                     } else {
                         App::new()
-                            // .route("/api/{tail:.*}", web::route()
-                            // .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                            // .to(route_to_api))
                             .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                             .wrap(cookie_middleware())
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))

@@ -1,11 +1,6 @@
-use cfg_if::cfg_if;
-
+#[cfg(all(feature = "ssr", not(feature = "bypass_internal_proxy")))]
 mod api_service;
+
+#[cfg(feature = "ssr")]
 mod cookie_middleware;
 
-cfg_if! {
-    if #[cfg(feature = "ssr")] {
-        pub use api_service::route_to_api;
-        pub use cookie_middleware::cookie_middleware;
-    }
-}

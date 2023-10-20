@@ -25,12 +25,12 @@ cfg_if! {
             parts.authority = Some(get_host().try_into().map_err(map_uri_err::<InvalidUri>)?);
             parts.scheme = Some(
                 format!(
-                "http{}",
-                if get_https() == "true" {
-                    "s"
-                } else {
-                    ""
-                }
+                    "http{}",
+                    if get_https() == "true" {
+                        "s"
+                    } else {
+                        ""
+                    }
                 )
                 .as_str()
                 .try_into()

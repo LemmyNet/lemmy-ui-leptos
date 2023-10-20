@@ -1,5 +1,4 @@
 use crate::config::LEMMY_UI_HTTPS;
-#[cfg(feature="ssr")]
 use crate::config::LEMMY_UI_LEMMY_INTERNAL_HOST;
 use cfg_if::cfg_if;
 
