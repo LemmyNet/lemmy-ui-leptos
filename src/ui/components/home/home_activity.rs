@@ -45,8 +45,6 @@ pub fn HomeActivity() -> impl IntoView {
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-
-
   let posts = create_resource(
     move || cursor_string(),
     move |cursor_string| async move {
@@ -82,21 +80,15 @@ pub fn HomeActivity() -> impl IntoView {
       };
 
       match result {
-        Some(Ok(o)) => {
-          // next_page_cursor.set(o.next_page.clone());
-          // logging::log!("curs {:#?}", next_page_cursor());
-          Some(o)
-        }
+        Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
-          logging::log!("err {:#?}", e.to_string());
+          error.set(Some(e.to_string()));
           None
         }
         _ => None,
       }
     },
   );
-
-  let err_msg = " Error loading this post.";
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
@@ -143,21 +135,19 @@ pub fn HomeActivity() -> impl IntoView {
                   .get()
                   .map(|res| match res {
                       None => {
-                          view! { <div>{err_msg}</div> }
+                          view! { <div></div> }
                       }
                       Some(res) => {
                           view! {
                             <div>
                               <PostListings posts=res.posts.into() error/>
 
-                              // <a href="javascript:history.back()">"Go Back"</a>
                               <button
                                 class="btn"
                                 on:click=move |_| {
                                     let mut p = prev_cursor_stack();
                                     let s = p.pop().unwrap_or(None);
                                     prev_cursor_stack.set(p);
-
                                     page_cursor.set(s.clone());
                                     cursor_string.set(Some(format!("{:#?}", s)));
                                 }
@@ -165,17 +155,15 @@ pub fn HomeActivity() -> impl IntoView {
 
                                 "Prev"
                               </button>
-                              // <A href=move || format!("/list?next={}", extract_cursor(res.next_page.clone()))>"Go Next"</A>
                               <button
                                 class="btn"
                                 on:click=move |_| {
                                     let mut p = prev_cursor_stack();
                                     p.push(page_cursor());
                                     prev_cursor_stack.set(p);
-
-                                    // logging::log!("{:#?}", next_page_cursor());
                                     page_cursor.set(res.next_page.clone());
-                                    cursor_string.set(Some(format!("{:#?}", res.next_page.clone())));
+                                    cursor_string
+                                        .set(Some(format!("{:#?}", res.next_page.clone())));
                                 }
                               >
 
@@ -183,11 +171,11 @@ pub fn HomeActivity() -> impl IntoView {
                               </button>
 
                             </div>
-
                           }
                       }
                   })
           }}
+
         </Suspense>
       </main>
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">

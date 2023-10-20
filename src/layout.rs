@@ -20,9 +20,9 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
       <Title text="Brand from env"/>
 
       <div class="flex flex-col h-screen" data-theme=move || ui_theme()>
-        // <TopNav/>
+        <TopNav/>
         <Outlet/>
-        // <BottomNav/>
+        <BottomNav/>
       </div>
     </ErrorBoundary>
   }

@@ -129,7 +129,7 @@ env = "DEV"
 # The features to use when compiling the bin target
 #
 # Optional. Can be over-ridden with the command line parameter --bin-features
-bin-features = ["ssr", "bypass_internal_proxy"]
+bin-features = ["ssr"]
 
 # If the --no-default-features flag should be used when compiling the bin target
 #
@@ -139,7 +139,7 @@ bin-default-features = false
 # The features to use when compiling the lib target
 #
 # Optional. Can be over-ridden with the command line parameter --lib-features
-lib-features = ["hydrate", "bypass_internal_proxy"]
+lib-features = ["hydrate"]
 
 # If the --no-default-features flag should be used when compiling the lib target
 #

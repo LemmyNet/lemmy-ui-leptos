@@ -3,7 +3,7 @@ use cfg_if::cfg_if;
 use leptos::leptos_dom::logging;
 
 cfg_if! {
-    if #[cfg(feature = "ssr")] {
+    if #[cfg(all(feature = "ssr", not(feature = "bypass_internal_proxy")))] {
         use crate::host::get_host;
         use crate::config::LEMMY_UI_HTTPS;
         use actix_proxy::{IntoHttpResponse, SendRequestError as ProxyError};
@@ -41,8 +41,6 @@ cfg_if! {
             );
 
             let uri = Uri::from_parts(parts).map_err(map_uri_err::<InvalidUriParts>)?;
-
-            leptos::logging::log!("proxy {:#?}", uri);
 
             client
                 .request_from(uri, request.head())

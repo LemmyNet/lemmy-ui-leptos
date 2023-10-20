@@ -1,5 +1,3 @@
-#![allow(warnings)]
-
 use cfg_if::cfg_if;
 
 cfg_if! {
@@ -25,7 +23,6 @@ cfg_if! {
 
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
-
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             let conf = get_configuration(None).await.unwrap();
 

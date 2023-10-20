@@ -37,11 +37,11 @@ pub fn TopNav() -> impl IntoView {
   let logout_is_success =
     Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
 
-  create_isomorphic_effect(move |_| {
-    if logout_is_success() {
-      // refetch();
-    }
-  });
+  // create_isomorphic_effect(move |_| {
+  //   if logout_is_success() {
+  //     refetch();
+  //   }
+  // });
 
   let ui_theme = expect_context::<RwSignal<String>>();
 
@@ -52,117 +52,114 @@ pub fn TopNav() -> impl IntoView {
   };
 
   view! {
-    <Transition>
-      <nav class="navbar container mx-auto">
-        <div class="navbar-start">
-          <ul class="menu menu-horizontal flex-nowrap">
-            <li>
-              <A href="/" class="text-xl whitespace-nowrap">
-                "" // {instance_name}
-              </A>
-            </li>
-            <li>
-              <A href="/communities" class="text-md">
-                {t!(i18n, nav.communities)}
-              </A>
-            </li>
-            <li>
-              <A href="/create_post" class="text-md">
-                {t!(i18n, nav.create_post)}
-              </A>
-            </li>
-            <li>
-              <A href="/create_community" class="text-md">
-                {t!(i18n, nav.create_community)}
-              </A>
-            </li>
-            <li>
-              <a href="//join-lemmy.org/donate">
-                <span title=t!(i18n, nav.donate)>
-                  <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
-                </span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div class="navbar-end">
-          <ul class="menu menu-horizontal flex-nowrap">
-            <li>
-              <A href="/search">
-                <span title=t!(i18n, nav.search)>
-                  <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
-                </span>
-              </A>
-            </li>
-            <li class="z-[1]">
-              <details>
-                <summary>"Theme"</summary>
-                <ul>
-                  <li on:click=change_theme("dark")>
-                    <span>"Dark"</span>
-                  </li>
-                  <li on:click=change_theme("light")>
-                    <span>"Light"</span>
-                  </li>
-                  <li on:click=change_theme("retro")>
-                    <span>"Retro"</span>
-                  </li>
-                </ul>
-              </details>
-            </li>
-            <Show
-              when=move || { logout_is_success() } //with!(| my_user | my_user.is_some())
-              fallback=move || {
-                  view! {
-                    <li>
-                      <A href="/login">{t!(i18n, nav.login)}</A>
-                    </li>
-                    <li>
-                      <A href="/signup">{t!(i18n, nav.signup)}</A>
-                    </li>
-                  }
-              }
-            >
+    <nav class="navbar container mx-auto">
+      <div class="navbar-start">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>// <A href="/" class="text-xl whitespace-nowrap">
+          // {instance_name}
+          // </A>
+          </li>
+          <li>
+            <A href="/communities" class="text-md">
+              {t!(i18n, nav.communities)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_post" class="text-md">
+              {t!(i18n, nav.create_post)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_community" class="text-md">
+              {t!(i18n, nav.create_community)}
+            </A>
+          </li>
+          <li>
+            <a href="//join-lemmy.org/donate">
+              <span title=t!(i18n, nav.donate)>
+                <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <A href="/search">
+              <span title=t!(i18n, nav.search)>
+                <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+              </span>
+            </A>
+          </li>
+          <li class="z-[1]">
+            <details>
+              <summary>"Theme"</summary>
+              <ul>
+                <li on:click=change_theme("dark")>
+                  <span>"Dark"</span>
+                </li>
+                <li on:click=change_theme("light")>
+                  <span>"Light"</span>
+                </li>
+                <li on:click=change_theme("retro")>
+                  <span>"Retro"</span>
+                </li>
+              </ul>
+            </details>
+          </li>
+          // <Show
+          // when=move || with!(| my_user | my_user.is_some())
+          // fallback=move || {
+          // view! {
+          <li>
+            <A href="/login">{t!(i18n, nav.login)}</A>
+          </li>
+          <li>
+            <A href="/signup">{t!(i18n, nav.signup)}</A>
+          </li>
+        // }
+        // }
+        // >
 
-              <li>
-                <A href="/inbox">
-                  <span title=t!(i18n, nav.unread_messages)>
-                    <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
-                  </span>
-                </A>
-              </li>
-              <li>
-                <details>
-                  // <summary>
-                    // {with!(
-                    //     | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                    //     .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                    // )}
+        // <li>
+        // <A href="/inbox">
+        // <span title=t!(i18n, nav.unread_messages)>
+        // <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+        // </span>
+        // </A>
+        // </li>
+        // <li>
+        // <details>
+        // <summary>
+        // //   {with!(
+        // //       | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+        // //       .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+        // //   )}
 
-                  // </summary>
-                  <ul class="z-10">
-                    <li>
-                      // <A href=with!(
-                      //     | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      // )>{t!(i18n, nav.profile)}</A>
-                    </li>
-                    <li>
-                      <A href="/settings">{t!(i18n, nav.settings)}</A>
-                    </li>
-                    <div class="divider my-0"></div>
-                    <li>
-                      <ActionForm action=logout_action>
-                        <button type="submit">{t!(i18n, nav.logout)}</button>
-                      </ActionForm>
-                    </li>
-                  </ul>
-                </details>
-              </li>
-            </Show>
-          </ul>
-        </div>
-      </nav>
-    </Transition>
+        // </summary>
+        // <ul class="z-10">
+        // <li>
+        // //   <A href=with!(
+        // //       | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+        // //   )>{t!(i18n, nav.profile)}</A>
+        // </li>
+        // <li>
+        // <A href="/settings">{t!(i18n, nav.settings)}</A>
+        // </li>
+        // <div class="divider my-0"></div>
+        // <li>
+        // <ActionForm action=logout_action>
+        // <button type="submit">{t!(i18n, nav.logout)}</button>
+        // </ActionForm>
+        // </li>
+        // </ul>
+        // </details>
+        // </li>
+        // </Show>
+        </ul>
+      </div>
+    </nav>
   }
 }
 
@@ -170,16 +167,10 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state();
-
-  let instance_api_version =
-  // Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
-  Signal::derive(move || "data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name))");
-
+  // let QueryResult { data, .. } = use_site_state();
 
   // let instance_api_version =
-  //   Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.version)));
-    // Signal::derive(move || data().map(|res| res.ok().map(|res| res.version)));
+  //   Signal::derive(move || data().map(|res| res.ok().map(|res| res.version)));
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -197,7 +188,7 @@ pub fn BottomNav() -> impl IntoView {
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "BE: "
-              {instance_api_version()}
+            // {instance_api_version}
             </a>
           </li>
           <li>
