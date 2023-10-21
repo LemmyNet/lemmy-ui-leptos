@@ -1,8 +1,6 @@
-use crate::{i18n::*, queries::site_state_query::use_site_state};
-use lemmy_api_common::lemmy_db_schema::source::person::Person;
+use crate::i18n::*;
 use leptos::*;
 use leptos_icons::*;
-use leptos_query::QueryResult;
 use leptos_router::*;
 
 #[server(LogoutAction, "/serverfn")]
@@ -34,7 +32,7 @@ pub fn TopNav() -> impl IntoView {
   //   Signal::derive(move || data().map_or_else(|| None, |res| Some(res.ok()?.site_view.site.name)));
 
   let logout_action = create_server_action::<LogoutAction>();
-  let logout_is_success =
+  let _logout_is_success =
     Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
 
   // create_isomorphic_effect(move |_| {

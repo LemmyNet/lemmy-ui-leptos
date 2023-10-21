@@ -12,50 +12,47 @@ pub fn HomeActivity() -> impl IntoView {
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-  let posts = create_resource(
-    move || cursor_string(),
-    move |_cursor_string| async move {
-      let form = GetPosts {
-        type_: None,
-        sort: None,
-        community_name: None,
-        community_id: None,
-        page: None,
-        limit: None,
-        saved_only: None,
-        disliked_only: None,
-        liked_only: None,
-        page_cursor: page_cursor(),
-      };
+  let posts = create_resource(cursor_string, move |_cursor_string| async move {
+    let form = GetPosts {
+      type_: None,
+      sort: None,
+      community_name: None,
+      community_id: None,
+      page: None,
+      limit: None,
+      saved_only: None,
+      disliked_only: None,
+      liked_only: None,
+      page_cursor: page_cursor(),
+    };
 
-      let result = {
-        #[cfg(not(feature = "ssr"))]
-        {
-          use crate::lemmy_client::*;
-          Some((Fetch {}).list_posts(form).await)
-        }
-        #[cfg(feature = "ssr")]
-        {
-          use crate::lemmy_client::LemmyClient;
-          use actix_web::web;
-          use leptos_actix::extract;
-
-          extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
-            .await
-            .ok()
-        }
-      };
-
-      match result {
-        Some(Ok(o)) => Some(o),
-        Some(Err(e)) => {
-          error.set(Some(e.to_string()));
-          None
-        }
-        _ => None,
+    let result = {
+      #[cfg(not(feature = "ssr"))]
+      {
+        use crate::lemmy_client::*;
+        Some((Fetch {}).list_posts(form).await)
       }
-    },
-  );
+      #[cfg(feature = "ssr")]
+      {
+        use crate::lemmy_client::LemmyClient;
+        use actix_web::web;
+        use leptos_actix::extract;
+
+        extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
+          .await
+          .ok()
+      }
+    };
+
+    match result {
+      Some(Ok(o)) => Some(o),
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+        None
+      }
+      _ => None,
+    }
+  });
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
