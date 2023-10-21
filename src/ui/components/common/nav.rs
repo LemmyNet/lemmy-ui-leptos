@@ -58,7 +58,8 @@ pub fn TopNav() -> impl IntoView {
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
               <A href="/" class="text-xl whitespace-nowrap">
-                " " // {instance_name}
+                // {instance_name}
+                " "
               </A>
             </li>
             <li>
