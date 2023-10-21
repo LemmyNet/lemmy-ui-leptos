@@ -4,12 +4,7 @@ use crate::{
 };
 use async_trait::async_trait;
 use cfg_if::cfg_if;
-use lemmy_api_common::{
-  comment::*,
-  person::*,
-  post::*,
-  site::*,
-};
+use lemmy_api_common::{comment::*, person::*, post::*, site::*};
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
 

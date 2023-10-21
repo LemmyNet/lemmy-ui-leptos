@@ -1,9 +1,6 @@
 // use actix_web::web;
 use crate::ui::components::post::post_listings::PostListings;
-use lemmy_api_common::{
-  lemmy_db_views::structs::PaginationCursor,
-  post::GetPosts,
-};
+use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::GetPosts};
 use leptos::*;
 
 #[component]

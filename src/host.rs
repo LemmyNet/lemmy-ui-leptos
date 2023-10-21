@@ -1,14 +1,13 @@
-use crate::config::LEMMY_UI_HTTPS;
-use crate::config::LEMMY_UI_LEMMY_INTERNAL_HOST;
+use crate::config::{LEMMY_UI_HTTPS, LEMMY_UI_LEMMY_INTERNAL_HOST};
 use cfg_if::cfg_if;
 
-#[cfg(feature="ssr")]
+#[cfg(feature = "ssr")]
 pub fn get_internal_host() -> String {
   std::env::var("LEMMY_UI_LEMMY_INTERNAL_HOST")
     .unwrap_or_else(|_| LEMMY_UI_LEMMY_INTERNAL_HOST.into())
 }
 
-#[cfg(not(feature="ssr"))]
+#[cfg(not(feature = "ssr"))]
 pub fn get_external_host() -> String {
   cfg_if! {
     if #[cfg(not(feature = "bypass_internal_proxy"))] {

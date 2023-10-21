@@ -4,9 +4,9 @@ mod host;
 mod layout;
 mod lemmy_client;
 mod queries;
-mod ui;
 #[cfg(feature = "ssr")]
 pub mod server;
+mod ui;
 
 use crate::{
   i18n::*,
