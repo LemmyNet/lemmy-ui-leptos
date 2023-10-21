@@ -3,7 +3,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
         
-        use lemmy_ui_leptos::{App, service::cookie_middleware::cookie_middleware};
+        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware};
 
         use actix_files::Files;
         use actix_web::*;
@@ -41,7 +41,7 @@ cfg_if! {
 
                 cfg_if! {
                     if #[cfg(not(feature = "bypass_internal_proxy"))] {
-                        use lemmy_ui_leptos::service::api_service::route_to_api;
+                        use lemmy_ui_leptos::server::api_service::route_to_api;
                         App::new()
                             .route("/api/{tail:.*}", web::route()
                                 .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))

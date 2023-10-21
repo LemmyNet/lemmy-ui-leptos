@@ -219,8 +219,7 @@ cfg_if! {
                 match method {
                     HttpType::Get =>
                         Request::get(&build_fetch_query(path, body))
-                            // .maybe_bearer_auth(jwt.as_deref())
-                            .header("Accept", "application/json")
+                            .maybe_bearer_auth(jwt.as_deref())
                             .abort_signal(abort_signal.as_ref())
                             .build()
                             .expect_throw("Could not parse query params"),

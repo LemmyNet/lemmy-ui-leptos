@@ -103,6 +103,15 @@ codegen-units = 1
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"
+env = "DEV"
+watch = false
+
+bin-features = ["ssr"]
+bin-default-features = false
+
+lib-features = ["hydrate"]
+lib-default-features = false
+lib-profile-release = "wasm-release"
 
 tailwind-input-file = "style/tailwind.css"
 browserquery = "defaults"
@@ -115,12 +124,3 @@ reload-port = 3001
 
 end2end-cmd = "npx playwright test"
 end2end-dir = "end2end"
-
-watch = false
-bin-features = ["ssr"]
-bin-default-features = false
-lib-features = ["hydrate"]
-lib-default-features = false
-
-env = "DEV"
-lib-profile-release = "wasm-release"

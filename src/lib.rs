@@ -6,7 +6,7 @@ mod lemmy_client;
 mod queries;
 mod ui;
 #[cfg(feature = "ssr")]
-pub mod service;
+pub mod server;
 
 use crate::{
   i18n::*,
