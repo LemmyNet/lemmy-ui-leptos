@@ -1,12 +1,12 @@
 use lemmy_api_common::{
-  lemmy_db_schema::newtypes::{PersonId, PostId},
-  lemmy_db_views::structs::PostView,
-  person::{BlockPerson, BlockPersonResponse},
-  post::{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
+  lemmy_db_schema::newtypes::*,//{PersonId, PostId},
+  lemmy_db_views::structs::*, //PostView,
+  person::*, //{BlockPerson, BlockPersonResponse},
+  post::*, //{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
 };
 use leptos::*;
 use leptos_icons::*;
-use leptos_router::{ActionForm, A};
+use leptos_router::*; //{ActionForm, A};
 
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {

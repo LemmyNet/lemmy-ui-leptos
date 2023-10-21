@@ -5,20 +5,10 @@ use crate::{
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{
-  comment::{GetComments, GetCommentsResponse},
-  person::{BlockPerson, BlockPersonResponse, Login, LoginResponse},
-  post::{
-    CreatePostLike,
-    CreatePostReport,
-    GetPost,
-    GetPostResponse,
-    GetPosts,
-    GetPostsResponse,
-    PostReportResponse,
-    PostResponse,
-    SavePost,
-  },
-  site::GetSiteResponse,
+  comment::*,
+  person::*,
+  post::*,
+  site::*,
 };
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
@@ -216,10 +206,10 @@ cfg_if! {
             {
                 let LemmyRequest { body, .. } = req.into();
                 let route = &build_route(path);
-                let abort_controller = AbortController::new().ok();
-                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
                 let jwt = get("jwt").and_then(Result::ok);
 
+                let abort_controller = AbortController::new().ok();
+                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
                 leptos::on_cleanup( move || {
                     if let Some(abort_controller) = abort_controller {
                         abort_controller.abort()
@@ -229,7 +219,8 @@ cfg_if! {
                 match method {
                     HttpType::Get =>
                         Request::get(&build_fetch_query(path, body))
-                            .maybe_bearer_auth(jwt.as_deref())
+                            // .maybe_bearer_auth(jwt.as_deref())
+                            .header("Accept", "application/json")
                             .abort_signal(abort_signal.as_ref())
                             .build()
                             .expect_throw("Could not parse query params"),

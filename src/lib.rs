@@ -1,3 +1,13 @@
+mod config;
+mod errors;
+mod host;
+mod layout;
+mod lemmy_client;
+mod queries;
+mod ui;
+#[cfg(feature = "ssr")]
+pub mod service;
+
 use crate::{
   i18n::*,
   layout::Layout,
@@ -12,14 +22,6 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
 use leptos_router::*;
-mod config;
-mod errors;
-mod host;
-mod layout;
-mod lemmy_client;
-mod queries;
-pub mod server;
-mod ui;
 
 leptos_i18n::load_locales!();
 
