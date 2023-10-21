@@ -1,22 +1,10 @@
-use crate::{config::TEST_HOST_PROTOCOL, errors::LemmyAppResult, host::get_host};
+use crate::{
+  errors::LemmyAppResult,
+  host::{get_host, get_https},
+};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
-use lemmy_api_common::{
-  comment::{GetComments, GetCommentsResponse},
-  person::{BlockPerson, BlockPersonResponse, Login, LoginResponse},
-  post::{
-    CreatePostLike,
-    CreatePostReport,
-    GetPost,
-    GetPostResponse,
-    GetPosts,
-    GetPostsResponse,
-    PostReportResponse,
-    PostResponse,
-    SavePost,
-  },
-  site::GetSiteResponse,
-};
+use lemmy_api_common::{comment::*, person::*, post::*, site::*};
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -213,12 +201,10 @@ cfg_if! {
             {
                 let LemmyRequest { body, .. } = req.into();
                 let route = &build_route(path);
-                let abort_controller = AbortController::new().ok();
-                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
                 let jwt = get("jwt").and_then(Result::ok);
 
-                // abort in-flight requests if the Scope is disposed
-                // i.e., if we've navigated away from this page
+                let abort_controller = AbortController::new().ok();
+                let abort_signal = abort_controller.as_ref().map(AbortController::signal);
                 leptos::on_cleanup( move || {
                     if let Some(abort_controller) = abort_controller {
                         abort_controller.abort()
@@ -252,11 +238,27 @@ cfg_if! {
 
         fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
             let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
-            format!("{path}?{form_str}")
+            format!("{}?{}", build_route(path), form_str)
         }
     }
 }
 
 fn build_route(route: &str) -> String {
-  format!("{}://{}/api/v3/{route}", TEST_HOST_PROTOCOL, get_host())
+  cfg_if! {
+    if #[cfg(all(not(feature = "ssr"), not(feature = "bypass_internal_proxy")))] {
+      format!(
+        "http{}://{}/api/v3/{}",
+        "",
+        get_host(),
+        route
+      )
+    } else {
+      format!(
+        "http{}://{}/api/v3/{}",
+        if get_https() == "true" { "s" } else { "" },
+        get_host(),
+        route
+      )
+    }
+  }
 }
