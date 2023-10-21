@@ -57,9 +57,9 @@ pub fn TopNav() -> impl IntoView {
         <div class="navbar-start">
           <ul class="menu menu-horizontal flex-nowrap">
             <li>
-            // <A href="/" class="text-xl whitespace-nowrap">
-            // {instance_name}
-            // </A>
+              <A href="/" class="text-xl whitespace-nowrap">
+                " " // {instance_name}
+              </A>
             </li>
             <li>
               <A href="/communities" class="text-md">
