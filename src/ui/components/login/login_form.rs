@@ -1,6 +1,6 @@
 use crate::{
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::PasswordInput,
+  ui::components::common::password_input::{InputType, PasswordInput},
 };
 use cfg_if::cfg_if;
 use leptos::*;
@@ -75,7 +75,10 @@ pub fn LoginForm() -> impl IntoView {
           value=name
           on:input=move |ev| update!(| name | * name = event_target_value(& ev))
         />
-        <label class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-neutral/50 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none" for="username">
+        <label
+          class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-neutral/50 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
+          for="username"
+        >
           Username
         </label>
       </div>
@@ -84,6 +87,8 @@ pub fn LoginForm() -> impl IntoView {
         id="password"
         name="password"
         on_input=move |s| update!(| password | * password = s)
+        label="Password"
+        input_type=InputType::Password
       />
 
       <button class="btn btn-lg" type="submit">

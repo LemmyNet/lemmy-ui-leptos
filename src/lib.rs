@@ -38,7 +38,7 @@ pub fn App() -> impl IntoView {
     <Router set_is_routing>
       <Routes>
         <Route path="/" view=move || view! { <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
-          <Route path="" view=HomeActivity />
+          <Route path="" view=HomeActivity/>
           <Route path="home" view=PostActivity/>
 
           <Route path="communities" view=PostActivity/>
