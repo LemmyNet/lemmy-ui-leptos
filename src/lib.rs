@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 mod config;
 mod errors;
 mod host;
@@ -15,12 +17,13 @@ use crate::{
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
-  },
+  }, queries::site_state_query::use_site_state,
 };
 use cfg_if::cfg_if;
+use lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_meta::*;
-use leptos_query::provide_query_client;
+use leptos_query::{provide_query_client, QueryResult};
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -33,6 +36,21 @@ pub fn App() -> impl IntoView {
 
   let ui_theme = create_rw_signal::<String>(String::from("retro"));
   provide_context(ui_theme);
+
+  // let authenticated_user = create_rw_signal::<Option<Person>>(None);
+  // provide_context(authenticated_user);
+
+  // let QueryResult { data, refetch, .. } = use_site_state();
+
+  // let authenticated_user = Signal::derive(move || {
+  //   data().map_or_else(
+  //     || None,
+  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+  //   )
+  // });
+
+  // provide_context(authenticated_user);
+  // provide_context(refetch);
 
   let (is_routing, set_is_routing) = create_signal(false);
 

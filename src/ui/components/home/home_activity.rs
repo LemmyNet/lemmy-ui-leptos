@@ -1,7 +1,23 @@
-// use actix_web::web;
-use crate::ui::components::post::post_listings::PostListings;
-use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::GetPosts};
+use crate::{ui::components::post::post_listings::PostListings, queries::site_state_query::use_site_state};
+use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::GetPosts, lemmy_db_schema::{newtypes::PostId, source::person::Person}, site::GetSiteResponse};
 use leptos::*;
+use leptos_query::QueryResult;
+
+
+// impl From<PaginationCursor> for String {
+//   fn from(value: PaginationCursor) -> Self {
+//     Self::APIError {
+//       error: value.to_string(),
+//     }
+//   }
+// }
+
+// impl fmt::Display for PaginationCursor {
+//   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//     write!(f, "{}", self.)
+//   }
+// }
+
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
@@ -12,7 +28,18 @@ pub fn HomeActivity() -> impl IntoView {
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-  let posts = create_resource(cursor_string, move |_cursor_string| async move {
+  // let authenticated_user = expect_context::<Signal<Option<Person>>>();
+
+  let QueryResult { data, refetch, .. } = use_site_state();
+
+  let my_user = Signal::<Option<Person>>::derive(move || {
+    data().map_or_else(
+      || None,
+      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+    )
+  });
+
+  let posts = create_resource(move || (cursor_string(), my_user()), move |(_cursor_string, _authenticated_user)| async move {
     let form = GetPosts {
       type_: None,
       sort: None,
@@ -91,9 +118,7 @@ pub fn HomeActivity() -> impl IntoView {
             </li>
           </ul>
         </div>
-        <Suspense fallback=|| {
-            view! { "Loading..." }
-        }>
+        <Transition fallback=|| { view! { "Loading..." } }>
           {move || {
               posts
                   .get()
@@ -140,7 +165,7 @@ pub fn HomeActivity() -> impl IntoView {
                   })
           }}
 
-        </Suspense>
+        </Transition>
       </main>
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
         <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>

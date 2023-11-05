@@ -5,7 +5,7 @@ use crate::{
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, person::*, post::*, site::*};
-use leptos::Serializable;
+use leptos::{Serializable, leptos_dom::logging};
 use serde::{Deserialize, Serialize};
 
 pub enum HttpType {
@@ -142,23 +142,46 @@ cfg_if! {
                 let LemmyRequest {body, jwt} = req.into();
                 let route = &build_route(path);
 
-                match method {
+                let mut r = match method {
                     HttpType::Get =>
                         self
                             .get(route)
-                            .maybe_bearer_auth(jwt)
+                            .maybe_bearer_auth(jwt.clone())
                             .query(&body)?
                             .send(),
                     HttpType::Post =>
                         self
                             .post(route)
-                            .maybe_bearer_auth(jwt)
+                            .maybe_bearer_auth(jwt.clone())
                             .send_json(&body),
                     HttpType::Put =>
                         self
                             .put(route)
-                            .maybe_bearer_auth(jwt)
+                            .maybe_bearer_auth(jwt.clone())
                             .send_json(&body)
+                }.await?;
+
+                let b = r.body().await.ok();
+
+                leptos::logging::log!("result {:#?}", b);
+
+                match method {
+                  HttpType::Get =>
+                      self
+                          .get(route)
+                          .maybe_bearer_auth(jwt)
+                          .query(&body)?
+                          .send(),
+                  HttpType::Post =>
+                      self
+                          .post(route)
+                          .maybe_bearer_auth(jwt)
+                          .send_json(&body),
+                  HttpType::Put =>
+                      self
+                          .put(route)
+                          .maybe_bearer_auth(jwt)
+                          .send_json(&body)
                 }.await?.json::<Response>().await.map_err(Into::into)
             }
         }
@@ -247,8 +270,7 @@ fn build_route(route: &str) -> String {
   cfg_if! {
     if #[cfg(all(not(feature = "ssr"), not(feature = "bypass_internal_proxy")))] {
       format!(
-        "http{}://{}/api/v3/{}",
-        "",
+        "//{}/api/v3/{}",
         get_host(),
         route
       )

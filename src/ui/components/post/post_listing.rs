@@ -1,5 +1,5 @@
 use lemmy_api_common::{
-  lemmy_db_schema::newtypes::*, //{PersonId, PostId},
+  lemmy_db_schema::newtypes::{PersonId, PostId},
   lemmy_db_views::structs::*,   //PostView,
   person::*,                    //{BlockPerson, BlockPersonResponse},
   post::*, //{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
@@ -181,7 +181,8 @@ pub fn PostListing(
                 let u = d.inner().to_string();
                 view! {
                   <span>
-                    <a href=u>{move || format!("{:#?}", post_view().post.thumbnail_url)}</a>
+                    <img class="h-24 w-24" src=u/>
+                    // <a href=u>{move || format!("{:#?}", post_view().post.thumbnail_url)}</a>
                   </span>
                 }
             } else {

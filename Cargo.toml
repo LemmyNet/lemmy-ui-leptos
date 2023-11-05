@@ -29,7 +29,7 @@ leptos_icons = { version = "0.1", features = [
 
 ] }
 leptos_i18n = { version = "0.2", features = ["nightly"] }
-leptos_query = "0.3"
+leptos_query = "0"
 
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -39,7 +39,7 @@ log = "0.4"
 cfg-if = "1.0"
 tracing = "0.1"
 getrandom = { version = "0.2", features = ["js"] }
-lemmy_api_common = { tag = "0.19.0-rc.3", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+lemmy_api_common = { tag = "0.19.0-rc.4", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
 thiserror = "1.0"
@@ -106,10 +106,10 @@ output-name = "lemmy-ui-leptos"
 env = "DEV"
 watch = false
 
-bin-features = ["ssr"]
+bin-features = ["ssr", "bypass_internal_proxy"]
 bin-default-features = false
 
-lib-features = ["hydrate"]
+lib-features = ["hydrate", "bypass_internal_proxy"]
 lib-default-features = false
 lib-profile-release = "wasm-release"
 
