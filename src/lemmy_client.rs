@@ -1,12 +1,14 @@
 use crate::{
-  errors::LemmyAppResult,
+  errors::{LemmyAppResult, LemmyAppErrorType, SimpleError},
   host::{get_host, get_https},
 };
+// use actix_web::http::StatusCode;
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, person::*, post::*, site::*};
 use leptos::{Serializable, leptos_dom::logging};
 use serde::{Deserialize, Serialize};
+use crate::lemmy_errors::{LemmyError, LemmyErrorExt, LemmyErrorType};
 
 pub enum HttpType {
   #[allow(dead_code)]
@@ -112,6 +114,8 @@ pub trait LemmyClient: private_trait::LemmyClient {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+        pub struct Fetch;
+
         trait MaybeBearerAuth {
             fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self;
         }
@@ -161,32 +165,114 @@ cfg_if! {
                             .send_json(&body)
                 }.await?;
 
-                let b = r.body().await.ok();
+                match r.status().as_u16() {
+                  400..=499 | 500..=599 => {
+                    let s = String::from(std::str::from_utf8(&r.body().await?)?);
+                    // let e = r.json::<LemmyErrorType>().await?;
+                    // return Err(e.into());
+                    return Err(s.into());
+                  },
+                  _ => {
+                    // Ok(())
+                  },
+                };
 
-                leptos::logging::log!("result {:#?}", b);
+                r.json::<Response>().await.map_err(Into::into)
 
-                match method {
-                  HttpType::Get =>
-                      self
-                          .get(route)
-                          .maybe_bearer_auth(jwt)
-                          .query(&body)?
-                          .send(),
-                  HttpType::Post =>
-                      self
-                          .post(route)
-                          .maybe_bearer_auth(jwt)
-                          .send_json(&body),
-                  HttpType::Put =>
-                      self
-                          .put(route)
-                          .maybe_bearer_auth(jwt)
-                          .send_json(&body)
-                }.await?.json::<Response>().await.map_err(Into::into)
+                // leptos::logging::log!("TEST {:#?}", thingy);
+
+                // leptos::logging::log!("result {:#?}", r);
+
+                // let b = r.body().await.ok();
+
+                // leptos::logging::log!("body {:#?}", b);
+
+                // match method {
+                //   HttpType::Get =>
+                //       self
+                //           .get(route)
+                //           .maybe_bearer_auth(jwt)
+                //           .query(&body)?
+                //           .send(),
+                //   HttpType::Post =>
+                //       self
+                //           .post(route)
+                //           .maybe_bearer_auth(jwt)
+                //           .send_json(&body),
+                //   HttpType::Put =>
+                //       self
+                //           .put(route)
+                //           .maybe_bearer_auth(jwt)
+                //           .send_json(&body)
+                // }.await?.json::<Response>().await.map_err(Into::into)
             }
         }
 
+        // #[async_trait(?Send)]
+        // impl private_trait::LemmyClient for Fetch {
+        //     async fn make_request<Response, Form, Request>(
+        //         &self,
+        //         method: HttpType,
+        //         path: &str,
+        //         req: Request,
+        //     ) -> LemmyAppResult<Response>
+        //     where
+        //         Response: Serializable + for<'de> Deserialize<'de>,
+        //         Form: Serialize,
+        //         Request: Into<LemmyRequest<Form>>
+        //     {
+        //         use actix_web::web;
+        //         use awc::Client;
+        //         use leptos_actix::{extract, redirect};
+            
+        //         let result = extract(|self: web::Data<Client>| async move {
+
+        //         let LemmyRequest {body, jwt} = req.into();
+        //         let route = &build_route(path);
+
+        //         let mut r = match method {
+        //             HttpType::Get =>
+        //                 self
+        //                     .get(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .query(&body)?
+        //                     .send(),
+        //             HttpType::Post =>
+        //                 self
+        //                     .post(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .send_json(&body),
+        //             HttpType::Put =>
+        //                 self
+        //                     .put(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .send_json(&body)
+        //         }.await?;
+
+        //         let thingy = match r.status().as_u16() {
+        //           400..=499 | 500..=599 => {
+        //             let e = r.json::<LemmyErrorType>().await?;
+        //             return Err(e.into());
+        //           },
+        //           _ => {
+        //             // Ok(())
+        //           },
+        //         };
+
+        //         r.json::<Response>().await.map_err(Into::into)
+
+        //         })
+        //         .await;
+
+        //         result
+
+        //         // }).await
+        //     }
+        // }
+
         impl LemmyClient for awc::Client {}
+        // impl LemmyClient for Fetch {}
+
     } else {
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
@@ -284,3 +370,19 @@ fn build_route(route: &str) -> String {
     }
   }
 }
+
+// pub async fn lemmy_api<R>(f: async fn(c: dyn LemmyClient) -> LemmyAppResult<R>) -> LemmyAppResult<R> {
+//   // #[cfg(not(feature = "ssr"))]
+//   // {
+//   //   f(Fetch {})
+//   // }
+//   // #[cfg(feature = "ssr")]
+//   // {
+//     let t = leptos_actix::extract(|client: actix_web::web::Data<awc::Client>| async move { 
+//       f(client)
+//     });
+
+//     // t
+//   // }
+//   f(Fetch {})
+// }

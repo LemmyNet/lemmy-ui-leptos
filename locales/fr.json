@@ -13,5 +13,8 @@
   "modlog": "Modlog",
   "instances": "Instances",
   "docs": "Docs",
-  "code": "Code"
+  "code": "Code",
+
+  "unknown": "Sorry, an unknown error occurred. The error has been logged and an administrator has been notified. Please try again in a short while if you wish.",
+  "invalid_login": "Either the username or password for your login did not match an account in this instance."
 }

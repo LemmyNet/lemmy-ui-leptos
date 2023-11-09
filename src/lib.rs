@@ -5,6 +5,7 @@ mod errors;
 mod host;
 mod layout;
 mod lemmy_client;
+mod lemmy_errors;
 mod queries;
 #[cfg(feature = "ssr")]
 pub mod server;

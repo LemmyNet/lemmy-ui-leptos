@@ -38,11 +38,16 @@ gloo-net = { version = "0.4", features = ["http"] }
 log = "0.4"
 cfg-if = "1.0"
 tracing = "0.1"
+tracing-error = "0"
 getrandom = { version = "0.2", features = ["js"] }
 lemmy_api_common = { tag = "0.19.0-rc.4", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+# lemmy_utils = { tag = "0.19.0-rc.4", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
-thiserror = "1.0"
+# thiserror = "1.0"
+anyhow = "1"
+strum = "0"
+strum_macros = "0"
 
 # dependecies for client (enable when csr or hydrate set)
 wasm-bindgen = { version = "0.2", optional = true }
@@ -52,6 +57,7 @@ wasm-cookies = "0.2"
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
 actix-proxy = { version = "0.2", optional = true }
+actix-http = { version = "3", optional = true }
 awc = { version = "3.2", optional = true }
 async-trait = "0.1"
 actix-session = { version = "0.8", features = [
@@ -79,6 +85,7 @@ ssr = [
   "leptos_router/ssr",
   "leptos_query/ssr",
   "dep:leptos_actix",
+  "dep:actix-http",
   "dep:actix-web",
   "dep:actix-files",
   "dep:actix-proxy",

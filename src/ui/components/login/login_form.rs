@@ -1,10 +1,11 @@
 use crate::{
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::PasswordInput,
+  ui::components::common::password_input::PasswordInput, lemmy_errors::LemmyErrorType, i18n::*,
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
+use leptos_i18n::t;
 use leptos_query::{QueryResult, RefetchFn};
 use leptos_router::ActionForm;
 
@@ -33,6 +34,8 @@ pub async fn login(username_or_email: String, password: String, is_ssr: bool) ->
   })
   .await?;
 
+  logging::log!("mushy {:#?}", result);
+
   match result {
     Ok(o) => {
       if is_ssr {
@@ -40,9 +43,17 @@ pub async fn login(username_or_email: String, password: String, is_ssr: bool) ->
       }
       Ok(())
     },
+    Err(ServerFnError::ServerError(e)) => {
+      if is_ssr {
+        redirect(&format!("/login?error={}", e)[..]);
+        Ok(())
+      } else {
+        Err(ServerFnError::ServerError(e))
+      }
+    },
     Err(e) => {
       if is_ssr {
-        redirect("/login?error=1");
+        redirect("/login?error=UnknownError");
         Ok(())
       } else {
         Err(e)
@@ -53,6 +64,8 @@ pub async fn login(username_or_email: String, password: String, is_ssr: bool) ->
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
+  let i18n = use_i18n();
+
   let name = RwSignal::new(String::new());
   let password = RwSignal::new(String::new());
 
@@ -79,9 +92,23 @@ pub fn LoginForm() -> impl IntoView {
       let navigate = leptos_router::use_navigate();
       navigate("/", Default::default());
     }
+    Some(Err(ServerFnError::ServerError(e))) => {
+      let le = serde_json::from_str::<LemmyErrorType>(&e[..]);
+      match le {
+        Ok(LemmyErrorType::IncorrectLogin) => {
+          error.set(Some(t!(i18n, invalid_login)().to_string()));
+        },
+        Ok(x) => {
+          error.set(Some(t!(i18n, unknown)().to_string()));
+        },
+        Err(x) => {
+          error.set(Some(t!(i18n, unknown)().to_string()));
+        },
+      }
+    },
     Some(Err(e)) => {
-      error.set(Some(e.to_string()));
-    }
+      error.set(Some(t!(i18n, unknown)().to_string()));
+    },
   });
 
   // create_effect(move |_| {
