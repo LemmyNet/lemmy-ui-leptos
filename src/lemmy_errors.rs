@@ -26,7 +26,8 @@ where
   fn from(t: T) -> Self {
     let cause = t.into();
     LemmyError {
-      error_type: LemmyErrorType::Unknown(format!("{}", &cause)),
+      // error_type: LemmyErrorType::Unknown(format!("{}", &cause)),
+      error_type: LemmyErrorType::Unknown,
       inner: cause,
       context: SpanTrace::capture(),
     }
@@ -71,7 +72,7 @@ impl Display for LemmyError {
 //   }
 // }
 
-#[derive(Display, Debug, Serialize, Deserialize, Clone, PartialEq, EnumIter)]
+#[derive(Default, Display, Debug, Serialize, Deserialize, Clone, PartialEq, EnumIter)]
 #[cfg_attr(feature = "full", derive(TS))]
 #[cfg_attr(feature = "full", ts(export))]
 #[serde(tag = "error", content = "message", rename_all = "snake_case")]
@@ -228,7 +229,8 @@ pub enum LemmyErrorType {
   BanExpirationInPast,
   InvalidUnixTime,
   InvalidBotAction,
-  Unknown(String),
+  #[default]
+  Unknown,
 }
 
 impl From<LemmyErrorType> for LemmyError {

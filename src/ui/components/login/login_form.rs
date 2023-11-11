@@ -1,6 +1,6 @@
 use crate::{
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::PasswordInput, lemmy_errors::LemmyErrorType, i18n::*,
+  ui::components::common::password_input::PasswordInput, lemmy_errors::LemmyErrorType, i18n::*, errors::{LemmyAppError, LemmyAppErrorType},
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::site::GetSiteResponse;
@@ -44,6 +44,7 @@ pub async fn login(username_or_email: String, password: String, is_ssr: bool) ->
       Ok(())
     },
     Err(ServerFnError::ServerError(e)) => {
+      logging::log!("function server error contents {e}");
       if is_ssr {
         redirect(&format!("/login?error={}", e)[..]);
         Ok(())
@@ -74,10 +75,11 @@ pub fn LoginForm() -> impl IntoView {
 
   let QueryResult { refetch, .. } = use_site_state();
 
+  #[cfg(feature = "ssr")]
   let is_ssr = create_rw_signal::<bool>(true);
-
   #[cfg(not(feature = "ssr"))]
-  is_ssr.set(false);
+  let is_ssr = create_rw_signal::<bool>(false);
+
 
   // let QueryResult { refetch, .. } = expect_context::<QueryResult<Result<GetSiteResponse, ServerFnError>, RefetchFn>>();
 
@@ -86,27 +88,43 @@ pub fn LoginForm() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
 
   create_effect(move |_| match login.value().get() {
-    None => {}
+    None => {
+      logging::log!("none");
+    }
     Some(Ok(_o)) => {
+      logging::log!("ok {:#?}", _o);
       // authenticated.set(true);
       let navigate = leptos_router::use_navigate();
       navigate("/", Default::default());
     }
     Some(Err(ServerFnError::ServerError(e))) => {
-      let le = serde_json::from_str::<LemmyErrorType>(&e[..]);
+      let le = serde_json::from_str::<LemmyAppError>(&e[..]);
+      // let le = serde_json::from_str::<LemmyErrorType>(&e[..]);
+      logging::log!("component server error contents {e} {}", serde_json::to_string(&LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin)).ok().unwrap());
+
+      // logging::log!("component server error contents {e} {}", serde_json::to_string(&LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin)).ok().unwrap());
+
       match le {
-        Ok(LemmyErrorType::IncorrectLogin) => {
-          error.set(Some(t!(i18n, invalid_login)().to_string()));
+        // Ok(LemmyAppError { error_type: LemmyAppErrorType::ApiError{ inner: Some(LemmyErrorType::IncorrectLogin) }}) => {
+        Ok(LemmyAppError { error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin)}) => {
+            error.set(Some(t!(i18n, invalid_login)().to_string()));
         },
-        Ok(x) => {
+        Ok(LemmyAppError { error_type: LemmyAppErrorType::Unknown}) => {
+          error.set(Some("t!(i18n, unknown)().to_string()".into()));
+        },
+        // Ok(LemmyErrorType::IncorrectLogin) => {
+        //     error.set(Some(t!(i18n, invalid_login)().to_string()));
+        // },
+        Ok(_) => {
           error.set(Some(t!(i18n, unknown)().to_string()));
         },
-        Err(x) => {
+        Err(g) => {
+          logging::log!("errare {}", g);
           error.set(Some(t!(i18n, unknown)().to_string()));
         },
       }
     },
-    Some(Err(e)) => {
+    Some(Err(_)) => {
       error.set(Some(t!(i18n, unknown)().to_string()));
     },
   });
@@ -166,7 +184,7 @@ pub fn LoginForm() -> impl IntoView {
         on_input=move |s| update!(| password | * password = s)
       />
 
-      <input name="is_ssr" type="hidden" value=format!("{}", is_ssr.get())/>
+      <input name="is_ssr" type="hidden" value=move || format!("{}", is_ssr.get())/>
 
       <button class="btn btn-lg" type="submit">
         "Login"

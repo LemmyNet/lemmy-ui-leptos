@@ -54,21 +54,21 @@ pub fn HomeActivity() -> impl IntoView {
     };
 
     let result = {
-      #[cfg(not(feature = "ssr"))]
-      {
+      // #[cfg(not(feature = "ssr"))]
+      // {
         use crate::lemmy_client::*;
         Some((Fetch {}).list_posts(form).await)
-      }
-      #[cfg(feature = "ssr")]
-      {
-        use crate::lemmy_client::LemmyClient;
-        use actix_web::web;
-        use leptos_actix::extract;
+      // }
+      // #[cfg(feature = "ssr")]
+      // {
+      //   use crate::lemmy_client::LemmyClient;
+      //   use actix_web::web;
+      //   use leptos_actix::extract;
 
-        extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
-          .await
-          .ok()
-      }
+      //   extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
+      //     .await
+      //     .ok()
+      // }
     };
 
     match result {
