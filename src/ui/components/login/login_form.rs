@@ -3,7 +3,7 @@ use crate::{
   ui::components::common::password_input::PasswordInput, lemmy_errors::LemmyErrorType, i18n::*, errors::{LemmyAppError, LemmyAppErrorType},
 };
 use cfg_if::cfg_if;
-use lemmy_api_common::site::GetSiteResponse;
+use lemmy_api_common::{site::GetSiteResponse, person::{Login, LoginResponse}};
 use leptos::*;
 use leptos_i18n::t;
 use leptos_query::{QueryResult, RefetchFn};
@@ -11,56 +11,122 @@ use leptos_router::ActionForm;
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String, is_ssr: bool) -> Result<(), ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
+  // use crate::lemmy_client::LemmyClient;
   use actix_session::Session;
-  use actix_web::web;
-  use awc::Client;
-  use lemmy_api_common::person::{Login, LoginResponse};
+  // use actix_web::web;
+  // use awc::Client;
+  // use lemmy_api_common::person::{Login, LoginResponse};
   use leptos_actix::{extract, redirect};
 
-  let result = extract(|client: web::Data<Client>, session: Session| async move {
-    let req = Login {
-      username_or_email: username_or_email.into(),
-      password: password.into(),
-      totp_2fa_token: None,
-    };
+  let req = Login {
+    username_or_email: username_or_email.into(),
+    password: password.into(),
+    totp_2fa_token: None,
+  };
 
-    let LoginResponse { jwt, .. } = client.login(req).await?;
-    if let Some(jwt) = jwt {
-      session.insert("jwt", jwt.into_inner())?;
-    }
+  let val = validate(&req);
 
-    Ok(())
-  })
-  .await?;
-
-  logging::log!("mushy {:#?}", result);
+  use crate::lemmy_client::*;
+  let result = (Fetch {}).login(req).await;
 
   match result {
-    Ok(o) => {
-      if is_ssr {
-        redirect("/");
-      }
-      Ok(())
-    },
-    Err(ServerFnError::ServerError(e)) => {
-      logging::log!("function server error contents {e}");
-      if is_ssr {
-        redirect(&format!("/login?error={}", e)[..]);
-        Ok(())
+    Ok(LoginResponse { jwt, .. }) => {
+      if let Some(jwt) = jwt {
+        let cookie_res = extract(|session: Session| async move {
+          session.insert("jwt", jwt.into_inner())
+        })
+        .await;
+
+        match cookie_res {
+          Ok(o) => {
+            if is_ssr {
+              redirect("/");
+            }
+            Ok(())
+          },
+          Err(e) => {
+            Err(e)
+            // LemmyAppErrorType::InternalServerError.into()
+          },
+        }
       } else {
-        Err(ServerFnError::ServerError(e))
+        if is_ssr {
+          redirect("/login?error=UnknownError");
+          Ok(())
+        } else {
+          Err(ServerFnError::ServerError(serde_json::to_string(&LemmyAppErrorType::MissingToken)?))
+        }
       }
+    
     },
+    // Err(ServerFnError::ServerError(e)) => {
+    //   logging::log!("function server error contents {e}");
+    //   if is_ssr {
+    //     redirect(&format!("/login?error={}", e)[..]);
+    //     Ok(())
+    //   } else {
+    //     Err(ServerFnError::ServerError(e))
+    //   }
+    // },
     Err(e) => {
       if is_ssr {
         redirect("/login?error=UnknownError");
         Ok(())
       } else {
-        Err(e)
+        Err(ServerFnError::ServerError(serde_json::to_string(&e)?))
       }
     }
   }
+
+
+  // let result = extract(|client: web::Data<Client>, session: Session| async move {
+
+  //   let LoginResponse { jwt, .. } = client.login(req).await?;
+  //   if let Some(jwt) = jwt {
+  //     session.insert("jwt", jwt.into_inner())?;
+  //   }
+
+  //   Ok(())
+  // })
+  // .await?;
+
+  // logging::log!("mushy {:#?}", result);
+
+  // match result {
+  //   Ok(o) => {
+  //     if is_ssr {
+  //       redirect("/");
+  //     }
+  //     Ok(())
+  //   },
+  //   Err(ServerFnError::ServerError(e)) => {
+  //     logging::log!("function server error contents {e}");
+  //     if is_ssr {
+  //       redirect(&format!("/login?error={}", e)[..]);
+  //       Ok(())
+  //     } else {
+  //       Err(ServerFnError::ServerError(e))
+  //     }
+  //   },
+  //   Err(e) => {
+  //     if is_ssr {
+  //       redirect("/login?error=UnknownError");
+  //       Ok(())
+  //     } else {
+  //       Err(e)
+  //     }
+  //   }
+  // }
+}
+
+fn validate(form: &Login) -> Option<LemmyAppErrorType> {
+  if form.username_or_email.len() == 0 {
+    return Some(LemmyAppErrorType::EmptyUsername);
+  }
+  if form.password.len() == 0 {
+    return Some(LemmyAppErrorType::EmptyPassword);
+  }
+  None
 }
 
 #[component]
@@ -86,6 +152,7 @@ pub fn LoginForm() -> impl IntoView {
   // let refetch = expect_context::<dyn RefetchFn>();
 
   let error = create_rw_signal::<Option<String>>(None);
+  let error_type = create_rw_signal::<String>("alert-error".into());
 
   create_effect(move |_| match login.value().get() {
     None => {
@@ -106,10 +173,10 @@ pub fn LoginForm() -> impl IntoView {
 
       match le {
         // Ok(LemmyAppError { error_type: LemmyAppErrorType::ApiError{ inner: Some(LemmyErrorType::IncorrectLogin) }}) => {
-        Ok(LemmyAppError { error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin)}) => {
+        Ok(LemmyAppError { error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin), content: _ }) => {
             error.set(Some(t!(i18n, invalid_login)().to_string()));
         },
-        Ok(LemmyAppError { error_type: LemmyAppErrorType::Unknown}) => {
+        Ok(LemmyAppError { error_type: LemmyAppErrorType::Unknown, content: _ }) => {
           error.set(Some("t!(i18n, unknown)().to_string()".into()));
         },
         // Ok(LemmyErrorType::IncorrectLogin) => {
@@ -154,7 +221,7 @@ pub fn LoginForm() -> impl IntoView {
                 .get()
                 .map(|err| {
                     view! {
-                      <div class="alert alert-error">
+                      <div class=move || format!("alert {}", error_type.get())>
                         <span>{err}</span>
                       </div>
                     }

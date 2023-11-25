@@ -1,3 +1,4 @@
+use crate::lemmy_client::*;
 use lemmy_api_common::{
   lemmy_db_schema::newtypes::{PersonId, PostId},
   lemmy_db_views::structs::*,   //PostView,
@@ -10,30 +11,33 @@ use leptos_router::*; //{ActionForm, A};
 
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
-  use actix_web::web;
-  use leptos_actix::extract;
+  // use actix_web::web;
+  // use leptos_actix::extract;
 
   let form = CreatePostLike {
     post_id: PostId(post_id),
     score,
   };
 
-  Ok(extract(|client: web::Data<awc::Client>| async move { client.like_post(form).await }).await??)
+  Ok((Fetch {}).like_post(form).await?)
+
+  // Ok(extract(|client: web::Data<awc::Client>| async move { client.like_post(form).await }).await??)
 }
 
 #[server(SavePostFn, "/serverfn")]
 pub async fn save_post_fn(post_id: i32, save: bool) -> Result<PostResponse, ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
-  use actix_web::web;
-  use leptos_actix::extract;
+  // use crate::lemmy_client::*;
+  // use actix_web::web;
+  // use leptos_actix::extract;
 
   let form = SavePost {
     post_id: PostId(post_id),
     save,
   };
 
-  Ok(extract(|client: web::Data<awc::Client>| async move { client.save_post(form).await }).await??)
+  Ok((Fetch {}).save_post(form).await?)
+  
+  // Ok(extract(|client: web::Data<awc::Client>| async move { client.save_post(form).await }).await??)
 }
 
 #[server(BlockUserFn, "/serverfn")]
@@ -41,19 +45,22 @@ pub async fn block_user_fn(
   person_id: i32,
   block: bool,
 ) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
-  use actix_web::web;
-  use leptos_actix::extract;
+  // use crate::lemmy_client::*;
+  // use actix_web::web;
+  // use leptos_actix::extract;
 
   let form = BlockPerson {
     person_id: PersonId(person_id),
     block,
   };
 
-  Ok(
-    extract(|client: web::Data<awc::Client>| async move { client.block_user(form).await })
-      .await??,
-  )
+
+  Ok((Fetch {}).block_user(form).await?)
+
+  // Ok(
+  //   extract(|client: web::Data<awc::Client>| async move { client.block_user(form).await })
+  //     .await??,
+  // )
 }
 
 #[server(ReportPostFn, "/serverfn")]
@@ -61,19 +68,21 @@ pub async fn report_post_fn(
   post_id: i32,
   reason: String,
 ) -> Result<PostReportResponse, ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
-  use actix_web::web;
-  use leptos_actix::extract;
+  // use crate::lemmy_client::*;
+  // use actix_web::web;
+  // use leptos_actix::extract;
 
   let form = CreatePostReport {
     post_id: PostId(post_id),
     reason,
   };
 
-  Ok(
-    extract(|client: web::Data<awc::Client>| async move { client.report_post(form).await })
-      .await??,
-  )
+  Ok((Fetch {}).report_post(form).await?)
+
+  // Ok(
+  //   extract(|client: web::Data<awc::Client>| async move { client.report_post(form).await })
+  //     .await??,
+  // )
 }
 
 #[component]

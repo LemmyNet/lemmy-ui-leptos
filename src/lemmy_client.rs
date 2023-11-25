@@ -9,6 +9,7 @@ use lemmy_api_common::{comment::*, person::*, post::*, site::*};
 use leptos::{Serializable, leptos_dom::logging};
 use serde::{Deserialize, Serialize};
 use crate::lemmy_errors::{LemmyError, LemmyErrorExt, LemmyErrorType};
+use tracing_error::SpanTrace;
 
 #[derive(Clone)]
 pub enum HttpType {
@@ -83,8 +84,8 @@ pub trait LemmyClient: private_trait::LemmyClient {
     self.make_request(HttpType::Get, "post", form).await
   }
 
-  async fn get_site(&self/* , jwt: Option<String> */) -> LemmyAppResult<GetSiteResponse> {
-    self.make_request(HttpType::Get, "site"/* , LemmyRequest::<()>::from_jwt(jwt) */, ()).await
+  async fn get_site(&self, jwt: Option<String>) -> LemmyAppResult<GetSiteResponse> {
+    self.make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt)).await
   }
 
   async fn report_post(&self, form: CreatePostReport) -> LemmyAppResult<PostReportResponse> {
@@ -165,11 +166,16 @@ cfg_if! {
                     match api_result {
                       Ok(le) => {
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError { inner: Some(le) } })
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le) })
+
+                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le), context: SpanTrace::capture() })
+
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
                       },
                       Err(e) => {
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
+                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown }, context: SpanTrace::capture() )
+
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown(e.to_string()))})
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown)})
                       },
@@ -272,11 +278,16 @@ cfg_if! {
                       match api_result {
                         Ok(le) => {
                           // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError { inner: Some(le) } })
-                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le) })
+
+                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                          // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le) }, context: SpanTrace::capture())
+                          
                           // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
                         },
                         Err(e) => {
-                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
+                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                          // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown }, context: SpanTrace::capture())
+                          
                           // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown(e.to_string()))})
                           // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown)})
                         },
@@ -403,14 +414,15 @@ cfg_if! {
                     // let s = String::from(std::str::from_utf8(&r.body().await?)?);
                     let api_result = r.json::<LemmyErrorType>().await;
 
+                    // fixme: replace with ? convert from/to correct error type
                     match api_result {
                       Ok(le) => {
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError { inner: Some(le) } })
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le) })
+                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
                       },
                       Err(e) => {
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
+                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown(e.to_string()))})
                         // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown)})
                       },

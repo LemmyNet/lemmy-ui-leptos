@@ -4,21 +4,35 @@ use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOpti
 
 #[server(GetSiteResource, "/serverfn", "GetJson")]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
-  use crate::lemmy_client::LemmyClient;
+  // use crate::lemmy_client::LemmyClient;
+  use crate::lemmy_client::*;
   use actix_session::Session;
-  use actix_web::web;
+  // use actix_web::web;
   use leptos_actix::extract;
 
-  Ok(
-    extract(
-      |/* session: Session,  */client: web::Data<awc::Client>| async move {
-        // let jwt = session.get::<String>("jwt")?;
+  let jwt = extract(|session: Session| async move {
+      session.get::<String>("jwt")
+  })
+  .await??;
 
-        client.get_site(/* jwt */).await
-      },
-    )
-    .await??,
-  )
+  let result = (Fetch {}).get_site(jwt).await?;
+
+  logging::log!("coop {:#?}", result);
+
+  Ok(result)
+
+
+
+  // Ok(
+  //   extract(
+  //     |/* session: Session,  */client: web::Data<awc::Client>| async move {
+  //       // let jwt = session.get::<String>("jwt")?;
+
+  //       client.get_site(/* jwt */).await
+  //     },
+  //   )
+  //   .await??,
+  // )
 }
 
 pub fn use_site_state() -> QueryResult<Result<GetSiteResponse, ServerFnError>, impl RefetchFn> {
