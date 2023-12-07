@@ -23,8 +23,21 @@ steps:
   leptos_fmt:
     image: *rust_image
     commands:
-      - cargo install leptosfmt
+      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - cp cargo-binstall /usr/local/cargo/bin
+      - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
+
+  cargo_machete:
+    group: format
+    image: *rust_image
+    commands:
+      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - cp cargo-binstall /usr/local/cargo/bin
+      - cargo binstall -y cargo-machete
+      - cargo machete
 
   cargo_clippy:
     image: *rust_image
@@ -46,7 +59,10 @@ steps:
       - nvm install node
       - npm i
       - rustup target add wasm32-unknown-unknown
-      - cargo install cargo-leptos
+      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
+      - cp cargo-binstall /usr/local/cargo/bin
+      - cargo binstall -y cargo-leptos
       - cargo leptos build
 
   # Nothing to test yet
