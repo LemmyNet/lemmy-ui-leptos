@@ -1,19 +1,22 @@
 variables:
-  - &rust_image "rustlang/rust:nightly-slim"
+  - &rust_image "rustlang/rust:nightly"
 
 steps:
   prettier_check:
     image: tmknom/prettier:3.0.0
+    group: format
     commands:
       - prettier -c .
 
   toml_fmt:
     image: tamasfe/taplo:0.8.1
+    group: format
     commands:
       - taplo format --check
 
   cargo_fmt:
     image: *rust_image
+    group: format
     environment:
       # store cargo data in repo folder so that it gets cached between steps
       CARGO_HOME: .cargo
@@ -22,6 +25,7 @@ steps:
 
   leptos_fmt:
     image: *rust_image
+    group: format
     commands:
       - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
       - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
