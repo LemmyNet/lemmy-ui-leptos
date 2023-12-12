@@ -56,11 +56,11 @@ steps:
     commands:
       - apt-get update && apt-get -y install libssl-dev pkg-config curl
       - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+      - *install_binstall
       - . /root/.profile
       - nvm install node
       - npm i
       - rustup target add wasm32-unknown-unknown
-      - *install_binstall
       - cargo binstall -y cargo-leptos
       - cargo leptos build
 
