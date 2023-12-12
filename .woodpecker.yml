@@ -54,6 +54,7 @@ steps:
     environment:
       CARGO_HOME: .cargo
     commands:
+      - export PATH=$PATH:~/.cargo/bin/
       - *install_binstall
       - cargo binstall -y cargo-leptos
       - apt-get update && apt-get -y install libssl-dev pkg-config
