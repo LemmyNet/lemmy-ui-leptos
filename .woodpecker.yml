@@ -55,7 +55,8 @@ steps:
       CARGO_HOME: .cargo
     commands:
       - *install_binstall
-      - .cargo/bin/cargo-binstall -y cargo-leptos
+      - cp .cargo/bin/cargo-binstall /usr/local/cargo/bin
+      - cargo-binstall -y cargo-leptos
       - apt-get update && apt-get -y install libssl-dev pkg-config
       - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
       - . /root/.profile
