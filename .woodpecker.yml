@@ -55,6 +55,8 @@ steps:
       CARGO_HOME: .cargo
     commands:
       - *install_binstall
+      - ls /usr/local/cargo/bin
+      - ls .cargo/bin
       - cp .cargo/bin/cargo-binstall /usr/local/cargo/bin
       - cargo-binstall -y cargo-leptos
       - apt-get update && apt-get -y install libssl-dev pkg-config
