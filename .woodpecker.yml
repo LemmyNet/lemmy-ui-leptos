@@ -1,5 +1,6 @@
 variables:
   - &rust_image "rustlang/rust:nightly"
+  - &install_binstall "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash"
 
 steps:
   prettier_check:
@@ -27,9 +28,7 @@ steps:
     image: *rust_image
     group: format
     commands:
-      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - cp cargo-binstall /usr/local/cargo/bin
+      - *install_binstall
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
 
@@ -37,9 +36,7 @@ steps:
     group: format
     image: *rust_image
     commands:
-      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - cp cargo-binstall /usr/local/cargo/bin
+      - *install_binstall
       - cargo binstall -y cargo-machete
       - cargo machete
 
@@ -63,9 +60,7 @@ steps:
       - nvm install node
       - npm i
       - rustup target add wasm32-unknown-unknown
-      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - cp cargo-binstall /usr/local/cargo/bin
+      - *install_binstall
       - cargo binstall -y cargo-leptos
       - cargo leptos build
 
