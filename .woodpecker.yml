@@ -1,6 +1,6 @@
 variables:
   - &rust_image "rustlang/rust:nightly"
-  - &install_binstall "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash"
+  - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
 
 steps:
   # prettier_check:
@@ -52,12 +52,9 @@ steps:
   cargo_build:
     image: *rust_image
     environment:
-      CARGO_HOME: ".cargo"
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
-      - ls /usr/local/cargo/bin
-      - ls .cargo/bin
-      - cp .cargo/bin/cargo-binstall /usr/local/cargo/bin
       - cargo-binstall -y cargo-leptos
       - apt-get update && apt-get -y install libssl-dev pkg-config
       - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
