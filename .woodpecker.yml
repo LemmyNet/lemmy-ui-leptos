@@ -52,7 +52,7 @@ steps:
   cargo_build:
     image: *rust_image
     environment:
-      CARGO_HOME: .cargo
+      CARGO_HOME: ".cargo"
     commands:
       - *install_binstall
       - ls /usr/local/cargo/bin
