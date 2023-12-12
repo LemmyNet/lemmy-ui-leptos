@@ -35,7 +35,6 @@ serde = { version = "1", features = ["derive"] }
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.4", features = ["http"] }
 cfg-if = "1.0"
-#getrandom = { version = "0.2", features = ["js"] }
 lemmy_api_common = { tag = "0.19.0-rc.3", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
