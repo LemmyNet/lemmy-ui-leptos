@@ -1,68 +1,58 @@
 // use actix_web::web;
 use crate::ui::components::post::post_listings::PostListings;
-use lemmy_api_common::{
-  lemmy_db_views::structs::PaginationCursor,
-  post::{GetPosts, GetPostsResponse},
-};
+use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::GetPosts};
 use leptos::*;
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
 
-  let next_page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-  let refresh = create_rw_signal(true);
+  let posts = create_resource(cursor_string, move |_cursor_string| async move {
+    let form = GetPosts {
+      type_: None,
+      sort: None,
+      community_name: None,
+      community_id: None,
+      page: None,
+      limit: None,
+      saved_only: None,
+      disliked_only: None,
+      liked_only: None,
+      page_cursor: page_cursor(),
+    };
 
-  let posts = create_resource(
-    move || cursor_string(),
-    move |cursor_string| async move {
-      let form = GetPosts {
-        type_: None,
-        sort: None,
-        community_name: None,
-        community_id: None,
-        page: None,
-        limit: None,
-        saved_only: None,
-        disliked_only: None,
-        liked_only: None,
-        page_cursor: page_cursor(),
-      };
-
-      let result = {
-        #[cfg(not(feature = "ssr"))]
-        {
-          use crate::lemmy_client::*;
-          Some((Fetch {}).list_posts(form).await)
-        }
-        #[cfg(feature = "ssr")]
-        {
-          use crate::lemmy_client::LemmyClient;
-          use actix_web::web;
-          use leptos_actix::extract;
-
-          extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
-            .await
-            .ok()
-        }
-      };
-
-      match result {
-        Some(Ok(o)) => {
-          next_page_cursor.set(o.next_page.clone());
-          Some(o)
-        }
-        _ => None,
+    let result = {
+      #[cfg(not(feature = "ssr"))]
+      {
+        use crate::lemmy_client::*;
+        Some((Fetch {}).list_posts(form).await)
       }
-    },
-  );
+      #[cfg(feature = "ssr")]
+      {
+        use crate::lemmy_client::LemmyClient;
+        use actix_web::web;
+        use leptos_actix::extract;
 
-  let err_msg = " Error loading this post.";
+        extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
+          .await
+          .ok()
+      }
+    };
+
+    match result {
+      Some(Ok(o)) => Some(o),
+      Some(Err(e)) => {
+        error.set(Some(e.to_string()));
+        None
+      }
+      _ => None,
+    }
+  });
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
@@ -109,12 +99,41 @@ pub fn HomeActivity() -> impl IntoView {
                   .get()
                   .map(|res| match res {
                       None => {
-                          view! { <div>{err_msg}</div> }
+                          view! { <div></div> }
                       }
                       Some(res) => {
                           view! {
                             <div>
                               <PostListings posts=res.posts.into() error/>
+
+                              <button
+                                class="btn"
+                                on:click=move |_| {
+                                    let mut p = prev_cursor_stack();
+                                    let s = p.pop().unwrap_or(None);
+                                    prev_cursor_stack.set(p);
+                                    page_cursor.set(s.clone());
+                                    cursor_string.set(Some(format!("{:#?}", s)));
+                                }
+                              >
+
+                                "Prev"
+                              </button>
+                              <button
+                                class="btn"
+                                on:click=move |_| {
+                                    let mut p = prev_cursor_stack();
+                                    p.push(page_cursor());
+                                    prev_cursor_stack.set(p);
+                                    page_cursor.set(res.next_page.clone());
+                                    cursor_string
+                                        .set(Some(format!("{:#?}", res.next_page.clone())));
+                                }
+                              >
+
+                                "Next"
+                              </button>
+
                             </div>
                           }
                       }
@@ -122,32 +141,6 @@ pub fn HomeActivity() -> impl IntoView {
           }}
 
         </Suspense>
-        <button
-          class="btn"
-          on:click=move |_| {
-              let mut p = prev_cursor_stack();
-              let s = p.pop().unwrap_or(None);
-              prev_cursor_stack.set(p);
-              page_cursor.set(s);
-              refresh.set(!refresh());
-          }
-        >
-
-          "Prev"
-        </button>
-        <button
-          class="btn"
-          on:click=move |_| {
-              let mut p = prev_cursor_stack();
-              p.push(page_cursor());
-              prev_cursor_stack.set(p);
-              page_cursor.set(next_page_cursor());
-              refresh.set(!refresh());
-          }
-        >
-
-          "Next"
-        </button>
       </main>
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
         <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>

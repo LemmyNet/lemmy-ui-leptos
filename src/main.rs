@@ -2,10 +2,13 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+
+        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware};
+
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
-        use lemmy_ui_leptos::{App, server::{route_to_api, cookie_middleware}};
+
         use leptos_actix::{generate_route_list, LeptosRoutes};
         use awc::Client;
 
@@ -13,17 +16,13 @@ cfg_if! {
         async fn favicon(
             leptos_options: web::Data<leptos::LeptosOptions>,
         ) -> actix_web::Result<actix_files::NamedFile> {
-
             let leptos_options = leptos_options.into_inner();
             let site_root = &leptos_options.site_root;
-            Ok(actix_files::NamedFile::open(format!(
-                "{site_root}/favicon.svg"
-            ))?)
+            Ok(actix_files::NamedFile::open(format!("{site_root}/favicon.svg"))?)
         }
 
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
-
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             let conf = get_configuration(None).await.unwrap();
 
@@ -40,22 +39,41 @@ cfg_if! {
 
                 let client = web::Data::new(Client::new());
 
-                App::new()
-                    .route("/api/{tail:.*}", web::route()
-                           .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                           .to(route_to_api))
-                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                    .wrap(cookie_middleware())
-                    .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                    .service(Files::new("/assets", site_root))
-                    .service(favicon)
-                    .leptos_routes(
-                        leptos_options.to_owned(),
-                        routes.to_owned(),
-                        App
-                    )
-                    .app_data(web::Data::new(leptos_options.to_owned()))
-                    .app_data(client)
+                cfg_if! {
+                    if #[cfg(not(feature = "bypass_internal_proxy"))] {
+                        use lemmy_ui_leptos::server::api_service::route_to_api;
+                        App::new()
+                            .route("/api/{tail:.*}", web::route()
+                                .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
+                                .to(route_to_api))
+                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                            .wrap(cookie_middleware())
+                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                            .service(Files::new("/assets", site_root))
+                            .service(favicon)
+                            .leptos_routes(
+                                leptos_options.to_owned(),
+                                routes.to_owned(),
+                                App
+                            )
+                            .app_data(web::Data::new(leptos_options.to_owned()))
+                            .app_data(client)
+                    } else {
+                        App::new()
+                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                            .wrap(cookie_middleware())
+                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                            .service(Files::new("/assets", site_root))
+                            .service(favicon)
+                            .leptos_routes(
+                                leptos_options.to_owned(),
+                                routes.to_owned(),
+                                App
+                            )
+                            .app_data(web::Data::new(leptos_options.to_owned()))
+                            .app_data(client)
+                    }
+                }
             })
             .bind(&addr)?
             .run()
