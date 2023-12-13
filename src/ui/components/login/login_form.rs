@@ -61,25 +61,25 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-      <ActionForm class="space-y-3" action=login>
-          <TextInput
-              id="username"
-              name="username_or_email"
-              on_input=move |s| update!(| name | * name = s)
-              label="Username"
-          />
+    <ActionForm class="space-y-3" action=login>
+      <TextInput
+        id="username"
+        name="username_or_email"
+        on_input=move |s| update!(| name | * name = s)
+        label="Username"
+      />
 
-          <TextInput
-              id="password"
-              name="password"
-              on_input=move |s| update!(| password | * password = s)
-              label="Password"
-              input_type=InputType::Password
-          />
+      <TextInput
+        id="password"
+        name="password"
+        on_input=move |s| update!(| password | * password = s)
+        label="Password"
+        input_type=InputType::Password
+      />
 
-          <button class="btn btn-lg" type="submit">
-              "Login"
-          </button>
-      </ActionForm>
+      <button class="btn btn-lg" type="submit">
+        "Login"
+      </button>
+    </ActionForm>
   }
 }
