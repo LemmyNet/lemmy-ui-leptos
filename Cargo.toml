@@ -32,13 +32,9 @@ leptos_i18n = { version = "0.2", features = ["nightly"] }
 leptos_query = "0.3"
 
 serde = { version = "1", features = ["derive"] }
-serde_json = "1"
 web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.4", features = ["http"] }
-log = "0.4"
 cfg-if = "1.0"
-tracing = "0.1"
-getrandom = { version = "0.2", features = ["js"] }
 lemmy_api_common = { tag = "0.19.0-rc.3", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 
 serde_urlencoded = "0.7"
