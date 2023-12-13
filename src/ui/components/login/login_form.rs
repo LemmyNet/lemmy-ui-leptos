@@ -1,6 +1,6 @@
 use crate::{
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::{InputType, PasswordInput},
+  ui::components::common::text_input::{InputType, TextInput},
 };
 use cfg_if::cfg_if;
 use leptos::*;
@@ -61,37 +61,25 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <ActionForm class="space-y-3" action=login>
-      <div class="form-control w-full relative">
-        <input
-          id="username"
-          type="text"
-          required
-          name="username_or_email"
-          class="peer input input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50"
-          placeholder=" "
-          value=name
-          on:input=move |ev| update!(| name | * name = event_target_value(& ev))
-        />
-        <label
-          class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-neutral/50 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
-          for="username"
-        >
-          Username
-        </label>
-      </div>
+      <ActionForm class="space-y-3" action=login>
+          <TextInput
+              id="username"
+              name="username_or_email"
+              on_input=move |s| update!(| name | * name = s)
+              label="Username"
+          />
 
-      <PasswordInput
-        id="password"
-        name="password"
-        on_input=move |s| update!(| password | * password = s)
-        label="Password"
-        input_type=InputType::Password
-      />
+          <TextInput
+              id="password"
+              name="password"
+              on_input=move |s| update!(| password | * password = s)
+              label="Password"
+              input_type=InputType::Password
+          />
 
-      <button class="btn btn-lg" type="submit">
-        "Login"
-      </button>
-    </ActionForm>
+          <button class="btn btn-lg" type="submit">
+              "Login"
+          </button>
+      </ActionForm>
   }
 }

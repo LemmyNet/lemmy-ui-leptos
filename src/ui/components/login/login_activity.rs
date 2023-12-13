@@ -4,8 +4,8 @@ use leptos::*;
 #[component]
 pub fn LoginActivity() -> impl IntoView {
   view! {
-    <main class="mx-auto max-w-screen-md p-4">
-      <LoginForm/>
-    </main>
+      <main class="mx-auto max-w-screen-md p-4">
+          <LoginForm/>
+      </main>
   }
 }
