@@ -1,7 +1,7 @@
 use crate::i18n::*;
 use leptos::*;
-use leptos_icons::*;
 use leptos_router::*;
+use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 
 #[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
@@ -33,7 +33,7 @@ pub fn TopNav() -> impl IntoView {
 
   let logout_action = create_server_action::<LogoutAction>();
   let _logout_is_success =
-    Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
+    Signal::derive(move || logout_action.value().get().is_some_and(|res| res.is_ok()));
 
   // create_isomorphic_effect(move |_| {
   //   if logout_is_success() {
@@ -78,7 +78,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <a href="//join-lemmy.org/donate">
                 <span title=t!(i18n, donate)>
-                  <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+                  <Heart />
                 </span>
               </a>
             </li>
@@ -89,7 +89,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <A href="/search">
                 <span title=t!(i18n, search)>
-                  <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+                  <MagnifyingGlass />
                 </span>
               </A>
             </li>
@@ -126,7 +126,7 @@ pub fn TopNav() -> impl IntoView {
           // <li>
           // <A href="/inbox">
           // <span title=t!(i18n, unread_messages)>
-          // <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+          // <Bell />
           // </span>
           // </A>
           // </li>

@@ -9,7 +9,7 @@ pub fn PostListings(
 ) -> impl IntoView {
   view! {
     <table class="table">
-      <For each=posts key=|pv| pv.post.id let:pv>
+      <For each=move || posts.get() key=|pv| pv.post.id let:pv>
         <PostListing post_view=pv.into() error/>
       </For>
     </table>

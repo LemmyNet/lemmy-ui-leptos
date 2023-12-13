@@ -7,28 +7,12 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.5", features = ["nightly"] }
+leptos = "0.5"
 leptos_actix = { version = "0.5", optional = true }
-leptos_meta = { version = "0.5", features = ["nightly"] }
-leptos_router = { version = "0.5", features = ["nightly"] }
-leptos_icons = { version = "0.1", features = [
-  "ChBell",
-  "ChSearch",
-  "ChMenuHamburger",
-  "ChHeart",
-  "ChEye",
-  "ChEyeSlash",
-  "ChArrowUp",
-  "ChArrowDown",
-  "ChNotes",
-  "ChStar",
-  "ChCopy",
-  "ChMenuKebab",
-  "ChFlag",
-  "ChBlock",
-
-] }
-leptos_i18n = { version = "0.2", features = ["nightly"] }
+leptos_meta = "0.5"
+leptos_router = "0.5"
+phosphor-leptos = "0.2"
+leptos_i18n = "0.2"
 leptos_query = "0.3"
 
 serde = { version = "1", features = ["derive"] }

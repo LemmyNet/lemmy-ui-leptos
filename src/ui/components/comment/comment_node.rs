@@ -3,6 +3,5 @@ use leptos::*;
 
 #[component]
 pub fn CommentNode(comment_view: MaybeSignal<CommentView>) -> impl IntoView {
-  let cv = comment_view();
-  view! { <div>{cv.creator.name} - {cv.comment.content}</div> }
+  view! { <div>{with!(|comment_view| format!("{} - {}", comment_view.creator.name, comment_view.comment.content))}</div> }
 }

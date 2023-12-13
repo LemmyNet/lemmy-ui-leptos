@@ -5,8 +5,8 @@ use lemmy_api_common::{
   post::*, //{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
 };
 use leptos::*;
-use leptos_icons::*;
-use leptos_router::*; //{ActionForm, A};
+use leptos_router::*;
+use phosphor_leptos::{ArrowDown, ArrowUp, Copy, DotsThreeVertical, Flag, Note, Prohibit, Star};
 
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {
@@ -81,7 +81,7 @@ pub fn PostListing(
   post_view: MaybeSignal<PostView>,
   error: RwSignal<Option<String>>,
 ) -> impl IntoView {
-  let post_view = create_rw_signal(post_view().clone());
+  let post_view = create_rw_signal(post_view.get());
 
   let vote_action = create_server_action::<VotePostFn>();
 
@@ -143,103 +143,102 @@ pub fn PostListing(
     <tr>
       <td class="flex flex-col text-center">
         <ActionForm action=vote_action>
-          <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
+          <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
             type="hidden"
             name="score"
-            value=move || if Some(1) == post_view().my_vote { 0 } else { 1 }
+            value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
           />
           <button
             type="submit"
-            class=move || if Some(1) == post_view().my_vote { " text-accent" } else { "" }
+            class=move || if Some(1) == post_view.get().my_vote { " text-accent" } else { "" }
             title="Up vote"
           >
-            <Icon icon=Icon::from(ChIcon::ChArrowUp) class="h-6 w-6"/>
+            <ArrowUp />
           </button>
         </ActionForm>
-        <span class="block text-sm">{move || post_view().counts.score}</span>
+        <span class="block text-sm">{move || post_view.get().counts.score}</span>
         <ActionForm action=vote_action>
-          <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
+          <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
             type="hidden"
             name="score"
-            value=move || if Some(-1) == post_view().my_vote { 0 } else { -1 }
+            value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
           />
           <button
             type="submit"
-            class=move || if Some(-1) == post_view().my_vote { " text-accent" } else { "" }
+            class=move || if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" }
             title="Down vote"
           >
-            <Icon icon=Icon::from(ChIcon::ChArrowDown) class="h-6 w-6"/>
+            <ArrowDown />
           </button>
         </ActionForm>
       </td>
       <td>
 
         {move || {
-            if let Some(d) = post_view().post.url {
+            if let Some(d) = post_view.get().post.url {
                 let u = d.inner().to_string();
                 view! {
                   <span>
-                    <a href=u>{move || format!("{:#?}", post_view().post.thumbnail_url)}</a>
+                    <a href=u>{move || format!("{:#?}", post_view.get().post.thumbnail_url)}</a>
                   </span>
                 }
             } else {
-                view! { <span>{move || format!("{:#?}", post_view().post.thumbnail_url)}</span> }
+                view! { <span>{move || format!("{:#?}", post_view.get().post.thumbnail_url)}</span> }
             }
         }}
 
       </td>
       <td>
-        <A href=move || format!("/post/{}", post_view().post.id) class="block">
-          <span class="text-lg">{move || post_view().post.name}</span>
+        <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
+          <span class="text-lg">{move || post_view.get().post.name}</span>
         </A>
         <span class="block">
-          <A href=move || format!("/u/{}", post_view().creator.name) class="text-sm inline-block">
-            {post_view().creator.name}
+          <A href=move || format!("/u/{}", post_view.get().creator.name) class="text-sm inline-block">
+            {post_view.get().creator.name}
           </A>
           " to "
-          <A class="text-sm inline-block" href=format!("/c/{}", post_view().community.name)>
-            {post_view().community.title}
+          <A class="text-sm inline-block" href=format!("/c/{}", post_view.get().community.name)>
+            {post_view.get().community.title}
           </A>
         </span>
         <span class="block">
-          <span title=move || format!("{} comments", post_view().unread_comments)>
+          <span title=move || format!("{} comments", post_view.get().unread_comments)>
             <A
-              href=move || format!("/post/{}?scrollToComments=true", post_view().post.id)
+              href=move || format!("/post/{}?scrollToComments=true", post_view.get().post.id)
               class="text-xs inline-block whitespace-nowrap align-top"
             >
-
-              <Icon icon=Icon::from(ChIcon::ChNotes) class="h-6 w-6 inline-block"/>
+              <Note />
               " "
-              {post_view().unread_comments}
+              {post_view.get().unread_comments}
             </A>
           </span>
           <ActionForm action=save_post_action class="inline-block align-top">
-            <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", !post_view().saved)/>
+            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+            <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
             <button
               type="submit"
               title="Save post"
-              class=move || if post_view().saved { " text-accent" } else { "" }
+              class=move || if post_view.get().saved { " text-accent" } else { "" }
             >
-              <Icon icon=Icon::from(ChIcon::ChStar) class="h-6 w-6"/>
+              <Star />
             </button>
           </ActionForm>
           <span title="Cross post">
             <A href="/create_post" class="inline-block align-top">
-              <Icon icon=Icon::from(ChIcon::ChCopy) class="h-6 w-6"/>
+              <Copy />
             </A>
           </span>
 
           <div class="dropdown inline-block align-top">
             <label tabindex="0">
-              <Icon icon=Icon::from(ChIcon::ChMenuKebab) class="h-6 w-6"/>
+              <DotsThreeVertical />
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
                 <ActionForm action=report_post_action>
-                  <input type="hidden" name="post_id" value=format!("{}", post_view().post.id)/>
+                  <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
                     class="input input-bordered"
                     type="text"
@@ -247,7 +246,7 @@ pub fn PostListing(
                     placeholder="reason"
                   />
                   <button title="Report post" type="submit">
-                    <Icon icon=Icon::from(ChIcon::ChFlag) class="h-6 w-6"/>
+                    <Flag />
                     "Report post"
                   </button>
                 </ActionForm>
@@ -257,11 +256,11 @@ pub fn PostListing(
                   <input
                     type="hidden"
                     name="person_id"
-                    value=format!("{}", post_view().creator.id.0)
+                    value=format!("{}", post_view.get().creator.id.0)
                   />
                   <input type="hidden" name="block"/>
                   <button title="Block user" type="submit">
-                    <Icon icon=Icon::from(ChIcon::ChBlock) class="h-6 w-6"/>
+                    <Prohibit />
                     "Block user"
                   </button>
                 </ActionForm>

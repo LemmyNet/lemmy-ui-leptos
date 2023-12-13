@@ -19,7 +19,7 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
       // <Script>eruda.init();</Script>
       <Title text="Brand from env"/>
 
-      <div class="flex flex-col h-screen" data-theme=move || ui_theme()>
+      <div class="flex flex-col h-screen" data-theme=ui_theme>
         <TopNav/>
         <Outlet/>
         <BottomNav/>

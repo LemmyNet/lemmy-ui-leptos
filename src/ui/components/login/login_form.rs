@@ -40,12 +40,12 @@ pub fn LoginForm() -> impl IntoView {
   let password = RwSignal::new(String::new());
 
   let login = create_server_action::<LoginAction>();
-  let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
+  let login_is_success = Signal::derive(move || login.value().get().is_some_and(|res| res.is_ok()));
 
   let QueryResult { refetch, .. } = use_site_state();
 
   create_isomorphic_effect(move |_| {
-    if login_is_success() {
+    if login_is_success.get() {
       refetch();
 
       cfg_if! {
