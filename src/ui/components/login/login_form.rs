@@ -1,6 +1,6 @@
 use crate::{
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::PasswordInput,
+  ui::components::common::text_input::{InputType, TextInput},
 };
 use cfg_if::cfg_if;
 use leptos::*;
@@ -40,12 +40,12 @@ pub fn LoginForm() -> impl IntoView {
   let password = RwSignal::new(String::new());
 
   let login = create_server_action::<LoginAction>();
-  let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
+  let login_is_success = Signal::derive(move || login.value().get().is_some_and(|res| res.is_ok()));
 
   let QueryResult { refetch, .. } = use_site_state();
 
   create_isomorphic_effect(move |_| {
-    if login_is_success() {
+    if login_is_success.get() {
       refetch();
 
       cfg_if! {
@@ -62,26 +62,19 @@ pub fn LoginForm() -> impl IntoView {
 
   view! {
     <ActionForm class="space-y-3" action=login>
-      <div class="form-control w-full">
-        <label class="label" for="username">
-          <span class="label-text">Username</span>
-        </label>
-        <input
-          id="username"
-          type="text"
-          required
-          name="username_or_email"
-          class="input input-bordered"
-          placeholder="Username"
-          value=name
-          on:input=move |ev| update!(| name | * name = event_target_value(& ev))
-        />
-      </div>
+      <TextInput
+        id="username"
+        name="username_or_email"
+        on_input=move |s| update!(| name | * name = s)
+        label="Username"
+      />
 
-      <PasswordInput
+      <TextInput
         id="password"
         name="password"
         on_input=move |s| update!(| password | * password = s)
+        label="Password"
+        input_type=InputType::Password
       />
 
       <button class="btn btn-lg" type="submit">
