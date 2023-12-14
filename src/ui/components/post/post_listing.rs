@@ -140,168 +140,143 @@ pub fn PostListing(
   });
 
   view! {
-      <tr>
-          <td class="flex flex-col text-center">
-              <ActionForm action=vote_action>
+    <tr>
+      <td class="flex flex-col text-center">
+        <ActionForm action=vote_action>
+          <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+          <input
+            type="hidden"
+            name="score"
+            value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
+          />
+          <button
+            type="submit"
+            class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
+
+            title="Up vote"
+          >
+            <ArrowUp/>
+          </button>
+        </ActionForm>
+        <span class="block text-sm">{move || post_view.get().counts.score}</span>
+        <ActionForm action=vote_action>
+          <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+          <input
+            type="hidden"
+            name="score"
+            value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
+          />
+          <button
+            type="submit"
+            class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
+
+            title="Down vote"
+          >
+            <ArrowDown/>
+          </button>
+        </ActionForm>
+      </td>
+      <td>
+
+        {move || {
+            if let Some(d) = post_view.get().post.url {
+                let u = d.inner().to_string();
+                view! {
+                  <span>
+                    <a href=u>{move || format!("{:#?}", post_view.get().post.thumbnail_url)}</a>
+                  </span>
+                }
+            } else {
+                view! {
+                  <span>{move || format!("{:#?}", post_view.get().post.thumbnail_url)}</span>
+                }
+            }
+        }}
+
+      </td>
+      <td>
+        <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
+          <span class="text-lg">{move || post_view.get().post.name}</span>
+        </A>
+        <span class="block">
+          <A
+            href=move || format!("/u/{}", post_view.get().creator.name)
+            class="text-sm inline-block"
+          >
+            {post_view.get().creator.name}
+          </A>
+          " to "
+          <A class="text-sm inline-block" href=format!("/c/{}", post_view.get().community.name)>
+            {post_view.get().community.title}
+          </A>
+        </span>
+        <span class="block">
+          <span title=move || format!("{} comments", post_view.get().unread_comments)>
+            <A
+              href=move || { format!("/post/{}?scrollToComments=true", post_view.get().post.id) }
+
+              class="text-xs inline-block whitespace-nowrap align-top"
+            >
+              <Note/>
+              " "
+              {post_view.get().unread_comments}
+            </A>
+          </span>
+          <ActionForm action=save_post_action class="inline-block align-top">
+            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+            <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
+            <button
+              type="submit"
+              title="Save post"
+              class=move || if post_view.get().saved { " text-accent" } else { "" }
+            >
+              <Star/>
+            </button>
+          </ActionForm>
+          <span title="Cross post">
+            <A href="/create_post" class="inline-block align-top">
+              <Copy/>
+            </A>
+          </span>
+
+          <div class="dropdown inline-block align-top">
+            <label tabindex="0">
+              <DotsThreeVertical/>
+            </label>
+            <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+              <li>
+                <ActionForm action=report_post_action>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
-                      type="hidden"
-                      name="score"
-                      value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
+                    class="input input-bordered"
+                    type="text"
+                    name="reason"
+                    placeholder="reason"
                   />
-                  <button
-                      type="submit"
-                      class=move || {
-                          if Some(1) == post_view.get().my_vote { " text-accent" } else { "" }
-                      }
-                      title="Up vote"
-                  >
-                      <ArrowUp/>
+                  <button title="Report post" type="submit">
+                    <Flag/>
+                    "Report post"
                   </button>
-              </ActionForm>
-              <span class="block text-sm">{move || post_view.get().counts.score}</span>
-              <ActionForm action=vote_action>
-                  <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+                </ActionForm>
+              </li>
+              <li>
+                <ActionForm action=block_user_action class="inline-block">
                   <input
-                      type="hidden"
-                      name="score"
-                      value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
+                    type="hidden"
+                    name="person_id"
+                    value=format!("{}", post_view.get().creator.id.0)
                   />
-                  <button
-                      type="submit"
-                      class=move || {
-                          if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" }
-                      }
-                      title="Down vote"
-                  >
-                      <ArrowDown/>
+                  <input type="hidden" name="block"/>
+                  <button title="Block user" type="submit">
+                    <Prohibit/>
+                    "Block user"
                   </button>
-              </ActionForm>
-          </td>
-          <td>
-
-              {move || {
-                  if let Some(d) = post_view.get().post.url {
-                      let u = d.inner().to_string();
-                      view! {
-                          <span>
-                              <a href=u>
-                                  {move || format!("{:#?}", post_view.get().post.thumbnail_url)}
-                              </a>
-                          </span>
-                      }
-                  } else {
-                      view! {
-                          <span>
-                              {move || format!("{:#?}", post_view.get().post.thumbnail_url)}
-                          </span>
-                      }
-                  }
-              }}
-
-          </td>
-          <td>
-              <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
-                  <span class="text-lg">{move || post_view.get().post.name}</span>
-              </A>
-              <span class="block">
-                  <A
-                      href=move || format!("/u/{}", post_view.get().creator.name)
-                      class="text-sm inline-block"
-                  >
-                      {post_view.get().creator.name}
-                  </A>
-                  " to "
-                  <A
-                      class="text-sm inline-block"
-                      href=format!("/c/{}", post_view.get().community.name)
-                  >
-                      {post_view.get().community.title}
-                  </A>
-              </span>
-              <span class="block">
-                  <span title=move || format!("{} comments", post_view.get().unread_comments)>
-                      <A
-                          href=move || {
-                              format!("/post/{}?scrollToComments=true", post_view.get().post.id)
-                          }
-                          class="text-xs inline-block whitespace-nowrap align-top"
-                      >
-                          <Note/>
-                          " "
-                          {post_view.get().unread_comments}
-                      </A>
-                  </span>
-                  <ActionForm action=save_post_action class="inline-block align-top">
-                      <input
-                          type="hidden"
-                          name="post_id"
-                          value=format!("{}", post_view.get().post.id)
-                      />
-                      <input
-                          type="hidden"
-                          name="save"
-                          value=move || format!("{}", !post_view.get().saved)
-                      />
-                      <button
-                          type="submit"
-                          title="Save post"
-                          class=move || if post_view.get().saved { " text-accent" } else { "" }
-                      >
-                          <Star/>
-                      </button>
-                  </ActionForm>
-                  <span title="Cross post">
-                      <A href="/create_post" class="inline-block align-top">
-                          <Copy/>
-                      </A>
-                  </span>
-
-                  <div class="dropdown inline-block align-top">
-                      <label tabindex="0">
-                          <DotsThreeVertical/>
-                      </label>
-                      <ul
-                          tabindex="0"
-                          class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow"
-                      >
-                          <li>
-                              <ActionForm action=report_post_action>
-                                  <input
-                                      type="hidden"
-                                      name="post_id"
-                                      value=format!("{}", post_view.get().post.id)
-                                  />
-                                  <input
-                                      class="input input-bordered"
-                                      type="text"
-                                      name="reason"
-                                      placeholder="reason"
-                                  />
-                                  <button title="Report post" type="submit">
-                                      <Flag/>
-                                      "Report post"
-                                  </button>
-                              </ActionForm>
-                          </li>
-                          <li>
-                              <ActionForm action=block_user_action class="inline-block">
-                                  <input
-                                      type="hidden"
-                                      name="person_id"
-                                      value=format!("{}", post_view.get().creator.id.0)
-                                  />
-                                  <input type="hidden" name="block"/>
-                                  <button title="Block user" type="submit">
-                                      <Prohibit/>
-                                      "Block user"
-                                  </button>
-                              </ActionForm>
-                          </li>
-                      </ul>
-                  </div>
-              </span>
-          </td>
-      </tr>
+                </ActionForm>
+              </li>
+            </ul>
+          </div>
+        </span>
+      </td>
+    </tr>
   }
 }
