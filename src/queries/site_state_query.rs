@@ -15,9 +15,11 @@ async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   })
   .await??;
 
+  logging::log!("SITE JWT {:#?}", jwt);
+
   let result = (Fetch {}).get_site(jwt).await?;
 
-  logging::log!("coop {:#?}", result);
+  // logging::log!("coop {:#?}", result);
 
   Ok(result)
 

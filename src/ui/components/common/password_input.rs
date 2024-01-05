@@ -20,7 +20,7 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
           type=move || show_password.with(|s| if *s { "text " } else { "password" })
           id=id
           class="input input-bordered join-item w-full"
-          required
+          
           name=name
           disabled=move || disabled.get().unwrap_or(false)
           on:input=move |e| {
