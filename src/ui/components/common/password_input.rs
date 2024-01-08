@@ -6,6 +6,7 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
   #[prop(optional)] disabled: MaybeProp<bool>,
   #[prop(into)] id: &'static str,
   #[prop(into)] name: &'static str,
+  #[prop(optional)] validation_class: MaybeSignal<String>,
   on_input: F,
 ) -> impl IntoView {
   let (show_password, set_show_password) = create_signal(false);
@@ -19,7 +20,7 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
         <input
           type=move || show_password.with(|s| if *s { "text " } else { "password" })
           id=id
-          class="input input-bordered join-item w-full"
+          class=move || format!("input input-bordered join-item w-full {}", validation_class.get())
           
           name=name
           disabled=move || disabled.get().unwrap_or(false)

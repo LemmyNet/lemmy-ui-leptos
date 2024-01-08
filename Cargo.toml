@@ -116,7 +116,7 @@ watch = false
 bin-features = ["ssr", "bypass_internal_proxy"]
 bin-default-features = false
 
-lib-features = ["hydrate", "bypass_internal_proxy"]
+lib-features = ["csr", "hydrate", "bypass_internal_proxy"]
 lib-default-features = false
 lib-profile-release = "wasm-release"
 

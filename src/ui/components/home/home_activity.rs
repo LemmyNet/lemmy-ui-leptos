@@ -1,5 +1,5 @@
-use crate::{ui::components::post::post_listings::PostListings, queries::site_state_query::use_site_state};
-use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::GetPosts, lemmy_db_schema::{newtypes::PostId, source::person::Person}, site::GetSiteResponse};
+use crate::{ui::components::post::post_listings::PostListings, queries::site_state_query::use_site_state, errors::LemmyAppError};
+use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::{GetPosts, GetPostsResponse}, lemmy_db_schema::{newtypes::PostId, source::person::Person}, site::GetSiteResponse};
 use leptos::*;
 use leptos_query::QueryResult;
 
@@ -53,11 +53,12 @@ pub fn HomeActivity() -> impl IntoView {
       page_cursor: page_cursor(),
     };
 
-    let result = {
+    let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
       // #[cfg(not(feature = "ssr"))]
       // {
         use crate::lemmy_client::*;
         Some((Fetch {}).list_posts(form).await)
+        // Some(Ok(GetPostsResponse { posts: vec![], next_page: None }))
       // }
       // #[cfg(feature = "ssr")]
       // {
@@ -129,7 +130,7 @@ pub fn HomeActivity() -> impl IntoView {
                       Some(res) => {
                           view! {
                             <div>
-                              <PostListings posts=res.posts.into() error/>
+                              // <PostListings posts=res.posts.into() error/>
 
                               <button
                                 class="btn"

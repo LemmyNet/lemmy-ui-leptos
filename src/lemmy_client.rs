@@ -69,7 +69,17 @@ mod private_trait {
 #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
   async fn login(&self, form: Login) -> LemmyAppResult<LoginResponse> {
-    self.make_request(HttpType::Post, "user/login", form).await
+    leptos::logging::log!("FORM {:#?}", form);
+
+    let r = self.make_request(HttpType::Post, "user/login", form).await;
+
+    if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
+      leptos::logging::log!("JW {:#?}", s.clone().into_inner());
+    }
+    
+    leptos::logging::log!("LOGIN {:#?}", r);
+
+    r
   }
 
   async fn get_comments(&self, form: GetComments) -> LemmyAppResult<GetCommentsResponse> {
@@ -77,7 +87,8 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn list_posts(&self, form: GetPosts) -> LemmyAppResult<GetPostsResponse> {
-    self.make_request(HttpType::Get, "post/list", form).await
+    // self.make_request(HttpType::Get, "post/list", form).await
+    Ok(GetPostsResponse { posts: vec![], next_page: None })
   }
 
   async fn get_post(&self, form: GetPost) -> LemmyAppResult<GetPostResponse> {
