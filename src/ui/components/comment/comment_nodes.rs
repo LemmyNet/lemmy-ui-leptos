@@ -6,7 +6,7 @@ use leptos::*;
 pub fn CommentNodes(comments: MaybeSignal<Vec<CommentView>>) -> impl IntoView {
   view! {
     <ul>
-      <For each=comments key=|cv| cv.comment.id let:cv>
+      <For each=move || comments.get() key=|cv| cv.comment.id let:cv>
         <li>
           <CommentNode comment_view=cv.into()/>
         </li>

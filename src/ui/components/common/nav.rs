@@ -4,6 +4,7 @@ use leptos::*;
 use leptos_icons::*;
 use leptos_query::*;
 use leptos_router::*;
+use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 
 #[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
@@ -129,7 +130,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <a href="//join-lemmy.org/donate">
                 <span title=t!(i18n, donate)>
-                  <Icon icon=Icon::from(ChIcon::ChHeart) class="h-6 w-6"/>
+                  <Heart/>
                 </span>
               </a>
             </li>
@@ -140,7 +141,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <A href="/search">
                 <span title=t!(i18n, search)>
-                  <Icon icon=Icon::from(ChIcon::ChSearch) class="h-6 w-6"/>
+                  <MagnifyingGlass/>
                 </span>
               </A>
             </li>

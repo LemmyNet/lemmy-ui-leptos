@@ -3,7 +3,7 @@ use crate::{
   i18n::*,
   lemmy_errors::LemmyErrorType,
   queries::site_state_query::use_site_state,
-  ui::components::common::password_input::PasswordInput,
+  ui::components::common::text_input::{InputType, TextInput},
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::{
@@ -331,11 +331,11 @@ pub fn LoginForm() -> impl IntoView {
   //     refetch();
   //     logging::log!("REFETCH");
 
-  //     // cfg_if! {
-  //     //   if #[cfg(feature = "ssr")] {
-  //     //     leptos_actix::redirect("/");
-  //     //   } else {
-  //         let navigate = leptos_router::use_navigate();
+      // cfg_if! {
+      //   if #[cfg(feature = "ssr")] {
+      //     leptos_actix::redirect("/");
+      //   } else {
+      //     let navigate = leptos_router::use_navigate();
 
   //         navigate("/", leptos_router::NavigateOptions { replace: true, ..Default::default() })
   //       // }
@@ -489,36 +489,27 @@ pub fn LoginForm() -> impl IntoView {
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
-      <main role="main" class="w-full h-full flex-grow p-3 overflow-auto">
-        {move || {
-            error
-                .get()
-                .map(|err| {
-                    view! {
-                      <div class=move || format!("alert {}", error_type.get())>
-                        <span>{err}</span>
-                      </div>
-                    }
-                })
-        }}
-    <ActionForm class="space-y-3" on:submit=on_submit action=login>
-      <div class="form-control w-full">
-        <label class="label" for="username">
-          <span class="label-text">Username</span>
-        </label>
-        <input
-          id="username"
-          type="text"
+    <main role="main" class="w-full h-full flex-grow p-3 overflow-auto">
+      {move || {
+          error
+              .get()
+              .map(|err| {
+                  view! {
+                    <div class=move || format!("alert {}", error_type.get())>
+                      <span>{err}</span>
+                    </div>
+                  }
+              })
+      }}
+    <ActionForm class="space-y-3" action=login>
+      <TextInput
+        id="username"
+        name="username_or_email"
+        on_input=move |s| update!(| name | * name = s)
+        label="Username"
+      />
 
-          name="username_or_email"
-          class=move || format!("input input-bordered {}", username_validation.get())
-          placeholder="Username"
-          value=name
-          on:input=move |ev| update!(| name | *name = event_target_value(& ev))
-        />
-      </div>
-
-      <PasswordInput
+      <TextInput
         id="password"
         name="password"
         validation_class=password_validation.into()

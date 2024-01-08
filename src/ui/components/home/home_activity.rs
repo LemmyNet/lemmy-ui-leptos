@@ -50,7 +50,7 @@ pub fn HomeActivity() -> impl IntoView {
       saved_only: None,
       disliked_only: None,
       liked_only: None,
-      page_cursor: page_cursor(),
+      page_cursor: page_cursor.get(),
     };
 
     let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
@@ -72,15 +72,16 @@ pub fn HomeActivity() -> impl IntoView {
       // }
     };
 
-    match result {
-      Some(Ok(o)) => Some(o),
-      Some(Err(e)) => {
-        error.set(Some(e.to_string()));
-        None
+      match result {
+        Some(Ok(o)) => Some(o),
+        Some(Err(e)) => {
+          error.set(Some(e.to_string()));
+          None
+        }
+        _ => None,
       }
-      _ => None,
-    }
-  });
+    },
+  );
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
@@ -135,7 +136,7 @@ pub fn HomeActivity() -> impl IntoView {
                               <button
                                 class="btn"
                                 on:click=move |_| {
-                                    let mut p = prev_cursor_stack();
+                                    let mut p = prev_cursor_stack.get();
                                     let s = p.pop().unwrap_or(None);
                                     prev_cursor_stack.set(p);
                                     page_cursor.set(s.clone());
@@ -148,8 +149,8 @@ pub fn HomeActivity() -> impl IntoView {
                               <button
                                 class="btn"
                                 on:click=move |_| {
-                                    let mut p = prev_cursor_stack();
-                                    p.push(page_cursor());
+                                    let mut p = prev_cursor_stack.get();
+                                    p.push(page_cursor.get());
                                     prev_cursor_stack.set(p);
                                     page_cursor.set(res.next_page.clone());
                                     cursor_string

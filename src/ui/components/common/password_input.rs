@@ -48,3 +48,4 @@ pub fn PasswordInput<F: Fn(String) + 'static>(
     </div>
   }
 }
+
