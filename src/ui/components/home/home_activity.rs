@@ -30,16 +30,16 @@ pub fn HomeActivity() -> impl IntoView {
 
   // let authenticated_user = expect_context::<Signal<Option<Person>>>();
 
-  let QueryResult { data, refetch, .. } = use_site_state();
+  // let QueryResult { data, refetch, .. } = use_site_state();
 
-  let my_user = Signal::<Option<Person>>::derive(move || {
-    data().map_or_else(
-      || None,
-      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-    )
-  });
+  // let my_user = Signal::<Option<Person>>::derive(move || {
+  //   data.get().map_or_else(
+  //     || None,
+  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+  //   )
+  // });
 
-  let posts = create_resource(move || (cursor_string(), my_user()), move |(_cursor_string, _authenticated_user)| async move {
+  let posts = create_resource(move || (cursor_string.get()/* , my_user.get() */), move |(_cursor_string/* , _authenticated_user */)| async move {
     let form = GetPosts {
       type_: None,
       sort: None,
@@ -131,7 +131,7 @@ pub fn HomeActivity() -> impl IntoView {
                       Some(res) => {
                           view! {
                             <div>
-                              // <PostListings posts=res.posts.into() error/>
+                              <PostListings posts=res.posts.into() error/>
 
                               <button
                                 class="btn"

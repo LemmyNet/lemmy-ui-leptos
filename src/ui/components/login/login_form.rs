@@ -125,7 +125,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 pub async fn login(
   username_or_email: String,
   password: String,
-  is_ssr: bool,
+  // is_ssr: bool,
 ) -> Result<(), ServerFnError> {
   use actix_session::Session;
   use leptos_actix::{extract, redirect};
@@ -158,9 +158,9 @@ pub async fn login(
 
       match cookie_res {
         Ok(o) => {
-          if is_ssr {
+          // if is_ssr {
             redirect("/");
-          }
+          // }
           Ok(())
         }
         Err(e) => Err(e),
@@ -177,12 +177,12 @@ pub async fn login(
       // }
     }
     Err(e) => {
-      if is_ssr {
+      // if is_ssr {
         redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
         Ok(())
-      } else {
-        Err(ServerFnError::ServerError(serde_json::to_string(&e)?))
-      }
+      // } else {
+      //   Err(ServerFnError::ServerError(serde_json::to_string(&e)?))
+      // }
     }
   }
   // }
@@ -211,10 +211,10 @@ pub fn LoginForm() -> impl IntoView {
   let login = create_server_action::<LoginAction>();
   // let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
 
-  #[cfg(feature = "ssr")]
-  let is_ssr = create_rw_signal::<bool>(true);
-  #[cfg(not(feature = "ssr"))]
-  let is_ssr = create_rw_signal::<bool>(false);
+  // #[cfg(feature = "ssr")]
+  // let is_ssr = create_rw_signal::<bool>(true);
+  // #[cfg(not(feature = "ssr"))]
+  // let is_ssr = create_rw_signal::<bool>(false);
 
   // let QueryResult { refetch, .. } = expect_context::<QueryResult<Result<GetSiteResponse, ServerFnError>, RefetchFn>>();
 
@@ -501,7 +501,8 @@ pub fn LoginForm() -> impl IntoView {
                   }
               })
       }}
-    <ActionForm class="space-y-3" action=login>
+
+    <ActionForm class="space-y-3" action=login on:submit=on_submit>
       <TextInput
         id="username"
         name="username_or_email"
@@ -514,9 +515,11 @@ pub fn LoginForm() -> impl IntoView {
         name="password"
         validation_class=password_validation.into()
         on_input=move |s| update!(| password | *password = s)
+        input_type=InputType::Password
+        label="Password"
       />
 
-      <input name="is_ssr" type="hidden" value=move || format!("{}", is_ssr.get())/>
+      // <input name="is_ssr" type="hidden" value=move || format!("{}", is_ssr.get())/>
 
       <button class="btn btn-lg" type="submit">
         "Login"

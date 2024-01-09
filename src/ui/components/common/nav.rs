@@ -1,7 +1,7 @@
 use crate::{i18n::*, queries::site_state_query::*};
 use lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
-use leptos_icons::*;
+// use leptos_icons::*;
 use leptos_query::*;
 use leptos_router::*;
 use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
@@ -51,14 +51,14 @@ pub fn TopNav() -> impl IntoView {
   // });
 
   let my_user = Signal::<Option<Person>>::derive(move || {
-    data().map_or_else(
+    data.get().map_or_else(
       || None,
       |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
     )
   });
 
   let instance_name = Signal::derive(move || {
-    data().map_or_else(
+    data.get().map_or_else(
       || Some(String::from("Lemmy")),
       |res| Some(res.ok()?.site_view.site.name),
     )
@@ -66,10 +66,10 @@ pub fn TopNav() -> impl IntoView {
 
   let logout_action = create_server_action::<LogoutAction>();
   let logout_is_success =
-    Signal::derive(move || logout_action.value()().is_some_and(|res| res.is_ok()));
+    Signal::derive(move || logout_action.value().get().is_some());
 
   create_isomorphic_effect(move |_| {
-    if logout_is_success() {
+    if logout_is_success.get() {
       logging::log!("LOGOUT");
       refetch();
     }
@@ -179,7 +179,7 @@ pub fn TopNav() -> impl IntoView {
                 <li>
                   <A href="/inbox">
                     <span title=t!(i18n, unread_messages)>
-                      <Icon icon=Icon::from(ChIcon::ChBell) class="h-6 w-6"/>
+                      <Bell class="h-6 w-6" />
                     </span>
                   </A>
                 </li>
@@ -252,7 +252,7 @@ pub fn BottomNav() -> impl IntoView {
   // });
 
   let instance_api_version = Signal::derive(move || {
-    data().map_or_else(|| Some(String::from("n/a")), |res| Some(res.ok()?.version))
+    data.get().map_or_else(|| Some(String::from("n/a")), |res| Some(res.ok()?.version))
   });
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");

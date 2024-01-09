@@ -61,7 +61,7 @@ mod private_trait {
     ) -> LemmyAppResult<Response>
     where
       Response: Serializable + for<'de> Deserialize<'de>,
-      Form: Serialize + std::clone::Clone + 'static,
+      Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
       Request: Into<LemmyRequest<Form>>;
   }
 }
@@ -87,8 +87,8 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn list_posts(&self, form: GetPosts) -> LemmyAppResult<GetPostsResponse> {
-    // self.make_request(HttpType::Get, "post/list", form).await
-    Ok(GetPostsResponse { posts: vec![], next_page: None })
+    self.make_request(HttpType::Get, "post/list", form).await
+    // Ok(GetPostsResponse { posts: vec![], next_page: None })
   }
 
   async fn get_post(&self, form: GetPost) -> LemmyAppResult<GetPostResponse> {
@@ -112,7 +112,18 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn like_post(&self, form: CreatePostLike) -> LemmyAppResult<PostResponse> {
-    self.make_request(HttpType::Post, "post/like", form).await
+    leptos::logging::log!("FORM {:#?}", form);
+
+    let r = self.make_request(HttpType::Post, "post/like", form).await;
+
+    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
+    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
+    // }
+    
+    leptos::logging::log!("LIKE {:#?}", r);
+
+    r
+
   }
 }
 
@@ -134,103 +145,119 @@ cfg_if! {
             }
         }
 
-        #[async_trait(?Send)]
-        impl private_trait::LemmyClient for awc::Client {
-            async fn make_request<Response, Form, Request>(
-                &self,
-                method: HttpType,
-                path: &str,
-                req: Request,
-            ) -> LemmyAppResult<Response>
-            where
-                Response: Serializable + for<'de> Deserialize<'de>,
-                Form: Serialize + std::clone::Clone,
-                Request: Into<LemmyRequest<Form>>
-            {
-                let LemmyRequest {body, jwt} = req.into();
-                let route = &build_route(path);
+        // #[async_trait(?Send)]
+        // impl private_trait::LemmyClient for awc::Client {
+        //     async fn make_request<Response, Form, Request>(
+        //         &self,
+        //         method: HttpType,
+        //         path: &str,
+        //         req: Request,
+        //     ) -> LemmyAppResult<Response>
+        //     where
+        //         Response: Serializable + for<'de> Deserialize<'de>,
+        //         Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+        //         Request: Into<LemmyRequest<Form>>,
 
-                let mut r = match method {
-                    HttpType::Get =>
-                        self
-                            .get(route)
-                            .maybe_bearer_auth(jwt.clone())
-                            .query(&body)?
-                            .send(),
-                    HttpType::Post =>
-                        self
-                            .post(route)
-                            .maybe_bearer_auth(jwt.clone())
-                            .send_json(&body),
-                    HttpType::Put =>
-                        self
-                            .put(route)
-                            .maybe_bearer_auth(jwt.clone())
-                            .send_json(&body)
-                }.await?;
+        //     // where
+        //     //     Response: Serializable + for<'de> Deserialize<'de>,
+        //     //     Form: Serialize + std::clone::Clone + std::fmt::Debug,
+        //     //     Request: Into<LemmyRequest<Form>>
+        //     {
 
-                match r.status().as_u16() {
-                  400..=499 | 500..=599 => {
-                    // let s = String::from(std::str::from_utf8(&r.body().await?)?);
-                    let api_result = r.json::<LemmyErrorType>().await;
 
-                    match api_result {
-                      Ok(le) => {
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError { inner: Some(le) } })
+        //         let LemmyRequest {body, jwt} = req.into();
+                
 
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le), context: SpanTrace::capture() })
+        //         leptos::logging::log!("BODY {:#?} JWT {:#?} ", body, jwt);
 
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
-                      },
-                      Err(e) => {
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown }, context: SpanTrace::capture() )
 
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown(e.to_string()))})
-                        // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown)})
-                      },
-                    }
-                    // return Err(e.into());
-                    // return Err(s.into());
-                  },
-                  _ => {
-                    // Ok(())
-                  },
-                };
 
-                r.json::<Response>().await.map_err(Into::into)
+        //         let route = &build_route(path);
 
-                // leptos::logging::log!("TEST {:#?}", thingy);
+        //         let mut r = match method {
+        //             HttpType::Get =>
+        //                 self
+        //                     .get(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .query(&body)?
+        //                     .send(),
+        //             HttpType::Post =>
+        //                 self
+        //                     .post(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .send_json(&body),
+        //             HttpType::Put =>
+        //                 self
+        //                     .put(route)
+        //                     .maybe_bearer_auth(jwt.clone())
+        //                     .send_json(&body)
+        //         }.await?;
 
-                // leptos::logging::log!("result {:#?}", r);
+        //         match r.status().as_u16() {
+        //           400..=499 | 500..=599 => {
+        //             // let s = String::from(std::str::from_utf8(&r.body().await?)?);
+        //             let api_result = r.json::<LemmyErrorType>().await;
 
-                // let b = r.body().await.ok();
+        //             match api_result {
+        //               Ok(le) => {
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError { inner: Some(le) } })
 
-                // leptos::logging::log!("body {:#?}", b);
+        //                 return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le), context: SpanTrace::capture() })
 
-                // match method {
-                //   HttpType::Get =>
-                //       self
-                //           .get(route)
-                //           .maybe_bearer_auth(jwt)
-                //           .query(&body)?
-                //           .send(),
-                //   HttpType::Post =>
-                //       self
-                //           .post(route)
-                //           .maybe_bearer_auth(jwt)
-                //           .send_json(&body),
-                //   HttpType::Put =>
-                //       self
-                //           .put(route)
-                //           .maybe_bearer_auth(jwt)
-                //           .send_json(&body)
-                // }.await?.json::<Response>().await.map_err(Into::into)
-            }
-        }
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown})
+        //               },
+        //               Err(e) => {
+        //                 return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown }, context: SpanTrace::capture() )
 
-        impl LemmyClient for awc::Client {}
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown(e.to_string()))})
+        //                 // return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(LemmyErrorType::Unknown)})
+        //               },
+        //             }
+        //             // return Err(e.into());
+        //             // return Err(s.into());
+        //           },
+        //           _ => {
+        //             // Ok(())
+        //           },
+        //         };
+
+        //         r.json::<Response>().await.map_err(Into::into)
+
+        //         // leptos::logging::log!("TEST {:#?}", thingy);
+
+        //         // leptos::logging::log!("result {:#?}", r);
+
+        //         // let b = r.body().await.ok();
+
+        //         // leptos::logging::log!("body {:#?}", b);
+
+        //         // match method {
+        //         //   HttpType::Get =>
+        //         //       self
+        //         //           .get(route)
+        //         //           .maybe_bearer_auth(jwt)
+        //         //           .query(&body)?
+        //         //           .send(),
+        //         //   HttpType::Post =>
+        //         //       self
+        //         //           .post(route)
+        //         //           .maybe_bearer_auth(jwt)
+        //         //           .send_json(&body),
+        //         //   HttpType::Put =>
+        //         //       self
+        //         //           .put(route)
+        //         //           .maybe_bearer_auth(jwt)
+        //         //           .send_json(&body)
+        //         // }.await?.json::<Response>().await.map_err(Into::into)
+        //     }
+        // }
+
+        // impl LemmyClient for awc::Client {}
+
+        use actix_session::Session;
+        use leptos_actix::{extract, redirect};
 
         #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
@@ -242,10 +269,24 @@ cfg_if! {
             ) -> LemmyAppResult<Response>
             where
                 Response: Serializable + for<'de> Deserialize<'de>,
-                Form: Serialize + std::clone::Clone + 'static,
-                Request: Into<LemmyRequest<Form>>
+                Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+                Request: Into<LemmyRequest<Form>>,
+
+                
+                // Response: Serializable + for<'de> Deserialize<'de>,
+                // Form: Serialize + std::clone::Clone + 'static,
+                // Request: Into<LemmyRequest<Form>>
             {
                 let LemmyRequest {body, jwt} = req.into();
+
+                let jwt = extract(|session: Session| async move {
+                  session.get::<String>("jwt")
+                })
+                .await??;
+            
+
+                leptos::logging::log!("BODY {:#?} JWT {:#?} ", body, jwt);
+
                 let route = build_route(path);
 
                 use actix_web::web;
