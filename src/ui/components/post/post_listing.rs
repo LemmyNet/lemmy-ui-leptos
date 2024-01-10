@@ -1,88 +1,135 @@
-use crate::lemmy_client::*;
+use crate::{
+  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  i18n::*,
+  lemmy_client::*,
+  lemmy_errors::LemmyErrorType,
+  queries::site_state_query::use_site_state,
+  ui::components::common::text_input::{InputType, TextInput},
+};
 use lemmy_api_common::{
   lemmy_db_schema::newtypes::{PersonId, PostId},
-  lemmy_db_views::structs::*,   //PostView,
-  person::*,                    //{BlockPerson, BlockPersonResponse},
-  post::*, //{CreatePostLike, CreatePostReport, PostReportResponse, PostResponse, SavePost},
+  lemmy_db_views::structs::*,
+  person::*,
+  post::*,
 };
 use leptos::*;
 use leptos_router::*;
 use phosphor_leptos::{ArrowDown, ArrowUp, Copy, DotsThreeVertical, Flag, Note, Prohibit, Star};
+use web_sys::SubmitEvent;
 
 #[server(VotePostFn, "/serverfn")]
-pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {
-  // use actix_web::web;
-  // use leptos_actix::extract;
-
+pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostResponse>, ServerFnError> {
   let form = CreatePostLike {
     post_id: PostId(post_id),
     score,
   };
+  let result = (Fetch {}).like_post(form).await;
 
-  Ok((Fetch {}).like_post(form).await?)
+  use leptos_actix::redirect;
 
-  // Ok(extract(|client: web::Data<awc::Client>| async move { client.like_post(form).await }).await??)
+  match result {
+    Ok(o) => Ok(Some(o)),
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+      Ok(None)
+    }
+  }
 }
 
 #[server(SavePostFn, "/serverfn")]
-pub async fn save_post_fn(post_id: i32, save: bool) -> Result<PostResponse, ServerFnError> {
-  // use crate::lemmy_client::*;
-  // use actix_web::web;
-  // use leptos_actix::extract;
-
+pub async fn save_post_fn(post_id: i32, save: bool) -> Result<Option<PostResponse>, ServerFnError> {
   let form = SavePost {
     post_id: PostId(post_id),
     save,
   };
+  let result = (Fetch {}).save_post(form).await;
 
-  Ok((Fetch {}).save_post(form).await?)
-  
-  // Ok(extract(|client: web::Data<awc::Client>| async move { client.save_post(form).await }).await??)
+  use leptos_actix::redirect;
+
+  match result {
+    Ok(o) => Ok(Some(o)),
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+      Ok(None)
+    }
+  }
 }
 
 #[server(BlockUserFn, "/serverfn")]
 pub async fn block_user_fn(
   person_id: i32,
   block: bool,
-) -> Result<BlockPersonResponse, ServerFnError> {
-  // use crate::lemmy_client::*;
-  // use actix_web::web;
-  // use leptos_actix::extract;
-
+) -> Result<Option<BlockPersonResponse>, ServerFnError> {
   let form = BlockPerson {
     person_id: PersonId(person_id),
     block,
   };
+  let result = (Fetch {}).block_user(form).await;
 
+  use leptos_actix::redirect;
 
-  Ok((Fetch {}).block_user(form).await?)
+  match result {
+    Ok(o) => Ok(Some(o)),
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+      Ok(None)
+    }
+  }
+}
 
-  // Ok(
-  //   extract(|client: web::Data<awc::Client>| async move { client.block_user(form).await })
-  //     .await??,
-  // )
+fn validate_report(form: &CreatePostReport) -> Option<LemmyAppErrorType> {
+  if form.reason.len() == 0 {
+    return Some(LemmyAppErrorType::MissingReason);
+  }
+  None
+}
+
+async fn try_report(form: CreatePostReport) -> Result<PostReportResponse, LemmyAppError> {
+  let val = validate_report(&form);
+
+  match val {
+    None => {
+      let result = (Fetch {}).report_post(form).await;
+
+      match result {
+        Ok(o) => {
+          Ok(o)
+        }
+        Err(e) => {
+          Err(e)
+        }
+      }
+    }
+    Some(e) =>
+    {
+      Err(LemmyAppError {
+        error_type: e.clone(),
+        content: format!("{}", form.post_id.0),
+      })
+    }
+  }
 }
 
 #[server(ReportPostFn, "/serverfn")]
 pub async fn report_post_fn(
   post_id: i32,
   reason: String,
-) -> Result<PostReportResponse, ServerFnError> {
-  // use crate::lemmy_client::*;
-  // use actix_web::web;
-  // use leptos_actix::extract;
-
+) -> Result<Option<PostReportResponse>, ServerFnError> {
   let form = CreatePostReport {
     post_id: PostId(post_id),
     reason,
   };
+  let result = try_report(form).await;
 
-  Ok((Fetch {}).report_post(form).await?)
+  use leptos_actix::redirect;
 
-  // Ok(
-  //   extract(|client: web::Data<awc::Client>| async move { client.report_post(form).await })
-  //     .await??,
-  // )
+  match result {
+    Ok(o) => Ok(Some(o)),
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+      Ok(None)
+    }
+  }
 }
 
 #[component]
@@ -94,64 +141,166 @@ pub fn PostListing(
 
   let vote_action = create_server_action::<VotePostFn>();
 
-  create_effect(move |_| {
-    error.set(None);
-    match vote_action.value().get() {
-      None => {}
-      Some(Ok(o)) => {
-        post_view.set(o.post_view);
-      }
-      Some(Err(e)) => {
-        error.set(Some(e.to_string()));
-      }
-    }
-  });
+  let on_vote_submit = move |ev: SubmitEvent, score: i16| {
+    ev.prevent_default();
+
+    create_resource(
+      move || (post_view.get()),
+      move |(post_view)| async move {
+        let form = CreatePostLike {
+          post_id: post_view.post.id,
+          score: 1, //score,
+        };
+
+        let result = (Fetch {}).like_post(form).await;
+
+        match result {
+          Ok(o) => {}
+          Err(e) => {
+            error.set(Some(message_from_error(&e)));
+          }
+        }
+      },
+    );
+  };
+
+  let on_up_vote_submit = move |ev: SubmitEvent| {
+    let score = if Some(1) == post_view.get().my_vote { 0 } else { 1 };
+    on_vote_submit(ev, score);
+  };
+
+  let on_down_vote_submit = move |ev: SubmitEvent| {
+    let score = if Some(-1) == post_view.get().my_vote { 0 } else { -1 };
+    on_vote_submit(ev, score);
+  };
 
   let save_post_action = create_server_action::<SavePostFn>();
 
-  create_effect(move |_| {
-    error.set(None);
-    match save_post_action.value().get() {
-      None => {}
-      Some(Ok(o)) => {
-        post_view.set(o.post_view);
-      }
-      Some(Err(e)) => {
-        error.set(Some(e.to_string()));
-      }
-    }
-  });
+  let on_save_submit = move |ev: SubmitEvent| {
+    ev.prevent_default();
+
+    create_resource(
+      move || (post_view.get()),
+      move |(post_view)| async move {
+        let form = SavePost {
+          post_id: post_view.post.id,
+          save: !post_view.saved,
+        };
+
+        let result = (Fetch {}).save_post(form).await;
+
+        match result {
+          Ok(o) => {}
+          Err(e) => {
+            error.set(Some(message_from_error(&e)));
+          }
+        }
+      },
+    );
+  };
 
   let block_user_action = create_server_action::<BlockUserFn>();
 
-  create_effect(move |_| {
-    error.set(None);
-    match block_user_action.value().get() {
-      None => {}
-      Some(Ok(_o)) => {}
-      Some(Err(e)) => {
-        error.set(Some(e.to_string()));
+  let on_block_submit = move |ev: SubmitEvent| {
+    ev.prevent_default();
+
+    create_resource(
+      move || (post_view.get()),
+      move |(post_view)| async move {
+        let form = BlockPerson {
+          person_id: post_view.creator.id,
+          block: true,
+        };
+
+        let result = (Fetch {}).block_user(form).await;
+
+        match result {
+          Ok(o) => {}
+          Err(e) => {
+            error.set(Some(message_from_error(&e)));
+          }
+        }
+      },
+    );
+  };
+
+  let report_post_action = create_server_action::<ReportPostFn>();
+  let report_validation = create_rw_signal::<String>("".into());
+
+  let query = use_query_map();
+  let ssr_error = move || query.with(|params| params.get("error").cloned());
+
+  if let Some(e) = ssr_error() {
+    let le = serde_json::from_str::<LemmyAppError>(&e[..]);
+
+    match le {
+      Ok(e) => {
+        error.set(Some(message_from_error(&e)));
+
+        match e {
+          LemmyAppError {
+            error_type: LemmyAppErrorType::MissingReason,
+            content: c,
+          } => {
+            let id = format!("{}", post_view.get().post.id);
+            if c.eq(&id) {
+              report_validation.set("input-error".to_string());
+            }
+          }
+          _ => {
+            report_validation.set("".to_string());
+          }
+        }
+      }
+      Err(_) => {
+        logging::log!("error decoding error - log and ignore in UI?");
       }
     }
-  });
+  }
 
-  let report_post_action = create_server_action::<BlockUserFn>();
+  let reason = RwSignal::new(String::new());
 
-  create_effect(move |_| {
-    error.set(None);
-    match report_post_action.value().get() {
-      None => {}
-      Some(Ok(_o)) => {}
-      Some(Err(e)) => {
-        error.set(Some(e.to_string()));
-      }
-    }
-  });
+  let on_report_submit = move |ev: SubmitEvent| {
+    ev.prevent_default();
+
+    create_resource(
+      move || (post_view.get(), reason.get()),
+      move |(post_view, reason)| async move {
+        let form = CreatePostReport {
+          post_id: post_view.post.id,
+          reason: reason,
+        };
+
+        let result = try_report(form).await;
+
+        match result {
+          Ok(o) => {}
+          Err(e) => {
+            error.set(Some(message_from_error(&e)));
+
+            let id = format!("{}", post_view.post.id);
+
+            match e {
+              LemmyAppError {
+                error_type: LemmyAppErrorType::MissingReason,
+                content: id,
+              } => {
+                report_validation.set("input-error".to_string());
+              }
+              _ => {
+                report_validation.set("".to_string());
+              }
+            }
+          }
+        }
+      },
+    );
+  };
 
   view! {
     <tr>
       <td class="flex flex-col text-center">
-        <ActionForm action=vote_action>
+        <ActionForm action=vote_action on:submit=on_up_vote_submit>
           <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
             type="hidden"
@@ -161,14 +310,13 @@ pub fn PostListing(
           <button
             type="submit"
             class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
-
             title="Up vote"
           >
             <ArrowUp/>
           </button>
         </ActionForm>
         <span class="block text-sm">{move || post_view.get().counts.score}</span>
-        <ActionForm action=vote_action>
+        <ActionForm action=vote_action on:submit=on_down_vote_submit>
           <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
             type="hidden"
@@ -178,7 +326,6 @@ pub fn PostListing(
           <button
             type="submit"
             class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
-
             title="Down vote"
           >
             <ArrowDown/>
@@ -186,13 +333,12 @@ pub fn PostListing(
         </ActionForm>
       </td>
       <td>
-
         {move || {
             if let Some(d) = post_view.get().post.url {
                 let u = d.inner().to_string();
                 view! {
                   <span>
-                    <img class="h-24 w-24" src=u/>
+                    // <img class="h-24 w-24" src=u/>
                     // <a href=u>{move || format!("{:#?}", post_view().post.thumbnail_url)}</a>
                   </span>
                 }
@@ -202,7 +348,6 @@ pub fn PostListing(
                 }
             }
         }}
-
       </td>
       <td>
         <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
@@ -224,15 +369,14 @@ pub fn PostListing(
           <span title=move || format!("{} comments", post_view.get().unread_comments)>
             <A
               href=move || { format!("/post/{}?scrollToComments=true", post_view.get().post.id) }
-
-              class="text-xs inline-block whitespace-nowrap align-top"
+              class="text-xs whitespace-nowrap align-top"
             >
-              <Note/>
+              <Note class="inline-block"/>
               " "
               {post_view.get().unread_comments}
             </A>
           </span>
-          <ActionForm action=save_post_action class="inline-block align-top">
+          <ActionForm action=save_post_action  on:submit=on_save_submit class="inline-block align-top">
             <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
             <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
             <button
@@ -255,31 +399,32 @@ pub fn PostListing(
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
-                <ActionForm action=report_post_action>
+                <ActionForm class="block" action=report_post_action  on:submit=on_report_submit>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
-                    class="input input-bordered"
+                    class=move || format!("input input-bordered {}", report_validation.get())
                     type="text"
+                    on:input=move |e| update!(|reason| *reason = event_target_value(&e))
                     name="reason"
                     placeholder="reason"
                   />
-                  <button title="Report post" type="submit">
-                    <Flag/>
-                    "Report post"
+                  <button class="text-xs whitespace-nowrap align-top" title="Report post" type="submit">
+                    <Flag class="inline-block"/>
+                    " Report post"
                   </button>
                 </ActionForm>
               </li>
               <li>
-                <ActionForm action=block_user_action class="inline-block">
+                <ActionForm action=block_user_action on:submit=on_block_submit>
                   <input
                     type="hidden"
                     name="person_id"
                     value=format!("{}", post_view.get().creator.id.0)
                   />
-                  <input type="hidden" name="block"/>
-                  <button title="Block user" type="submit">
-                    <Prohibit/>
-                    "Block user"
+                  <input type="hidden" name="block" value="true"/>
+                  <button class="text-xs whitespace-nowrap align-top" title="Block user" type="submit">
+                    <Prohibit class="inline-block"/>
+                    " Block user"
                   </button>
                 </ActionForm>
               </li>

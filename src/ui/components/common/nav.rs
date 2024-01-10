@@ -259,8 +259,8 @@ pub fn BottomNav() -> impl IntoView {
 
   view! {
     <nav class="container navbar mx-auto">
-      <div class="navbar-start"></div>
-      <div class="navbar-end ">
+      <div class="navbar-start w-auto"></div>
+      <div class="navbar-end grow w-auto">
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
             <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
@@ -312,6 +312,7 @@ pub fn BottomNav() -> impl IntoView {
           </li>
           <li>
             <a href="//join-lemmy.org" class="text-md">
+              // "j"
               "join-lemmy.org"
             </a>
           </li>

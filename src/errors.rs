@@ -1,3 +1,10 @@
+use crate::{
+  // errors::{LemmyAppError, LemmyAppErrorType},
+  i18n::*,
+  lemmy_errors::LemmyErrorType,
+  queries::site_state_query::use_site_state,
+  ui::components::common::text_input::{InputType, TextInput},
+};
 use leptos::{leptos_dom::logging, ServerFnError};
 use leptos_router::ParamsError;
 use serde::{Deserialize, Serialize};
@@ -12,7 +19,7 @@ use std::{
   num::ParseIntError, error::Error,
 };
 
-use crate::lemmy_errors::LemmyErrorType;
+// use crate::lemmy_errors::LemmyErrorType;
 
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
@@ -37,6 +44,35 @@ pub enum LemmyAppErrorType {
   EmptyPassword,
   MissingToken,
 
+  MissingReason,
+}
+
+pub fn message_from_error(error: &LemmyAppError) -> String {
+  let i18n = use_i18n();
+
+  match error {
+    LemmyAppError {
+      error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
+      ..
+    } => t!(i18n, invalid_login)().to_string(),
+    LemmyAppError {
+      error_type: LemmyAppErrorType::EmptyUsername,
+      ..
+    } => t!(i18n, empty_username)().to_string(),
+    LemmyAppError {
+      error_type: LemmyAppErrorType::EmptyPassword,
+      ..
+    } => t!(i18n, empty_password)().to_string(),
+    LemmyAppError {
+      error_type: LemmyAppErrorType::MissingReason,
+      ..
+    } => t!(i18n, empty_reason)().to_string(),
+    LemmyAppError {
+      error_type: LemmyAppErrorType::Unknown,
+      ..
+    } => t!(i18n, unknown)().to_string(),
+    _ => t!(i18n, unknown)().to_string(),
+  }
 }
 
 #[derive(/* Debug, Clone,  */Serialize, Deserialize/* , PartialEq */)]

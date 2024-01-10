@@ -1,5 +1,5 @@
 use crate::{
-  errors::{LemmyAppError, LemmyAppErrorType},
+  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
   lemmy_errors::LemmyErrorType,
   queries::site_state_query::use_site_state,
@@ -17,29 +17,29 @@ use leptos_router::*;
 use wasm_cookies::CookieOptions;
 use web_sys::SubmitEvent;
 
-fn message_from_error(error: &LemmyAppError) -> String {
-  let i18n = use_i18n();
+// fn message_from_error(error: &LemmyAppError) -> String {
+//   let i18n = use_i18n();
 
-  match error {
-    LemmyAppError {
-      error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
-      ..
-    } => t!(i18n, invalid_login)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::EmptyUsername,
-      ..
-    } => t!(i18n, empty_username)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::EmptyPassword,
-      ..
-    } => t!(i18n, empty_password)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::Unknown,
-      ..
-    } => t!(i18n, unknown)().to_string(),
-    _ => t!(i18n, unknown)().to_string(),
-  }
-}
+//   match error {
+//     LemmyAppError {
+//       error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
+//       ..
+//     } => t!(i18n, invalid_login)().to_string(),
+//     LemmyAppError {
+//       error_type: LemmyAppErrorType::EmptyUsername,
+//       ..
+//     } => t!(i18n, empty_username)().to_string(),
+//     LemmyAppError {
+//       error_type: LemmyAppErrorType::EmptyPassword,
+//       ..
+//     } => t!(i18n, empty_password)().to_string(),
+//     LemmyAppError {
+//       error_type: LemmyAppErrorType::Unknown,
+//       ..
+//     } => t!(i18n, unknown)().to_string(),
+//     _ => t!(i18n, unknown)().to_string(),
+//   }
+// }
 
 fn validate_login(form: &Login) -> Option<LemmyAppErrorType> {
   if form.username_or_email.len() == 0 {
@@ -506,7 +506,7 @@ pub fn LoginForm() -> impl IntoView {
       <TextInput
         id="username"
         name="username_or_email"
-        on_input=move |s| update!(| name | * name = s)
+        on_input=move |s| update!(|name| *name = s)
         label="Username"
       />
 
@@ -514,7 +514,7 @@ pub fn LoginForm() -> impl IntoView {
         id="password"
         name="password"
         validation_class=password_validation.into()
-        on_input=move |s| update!(| password | *password = s)
+        on_input=move |s| update!(|password| *password = s)
         input_type=InputType::Password
         label="Password"
       />

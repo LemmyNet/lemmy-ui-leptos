@@ -1,8 +1,16 @@
-use crate::{ui::components::post::post_listings::PostListings, queries::site_state_query::use_site_state, errors::LemmyAppError};
-use lemmy_api_common::{lemmy_db_views::structs::PaginationCursor, post::{GetPosts, GetPostsResponse}, lemmy_db_schema::{newtypes::PostId, source::person::Person}, site::GetSiteResponse};
+use crate::{
+  errors::{message_from_error, LemmyAppError, LemmyAppErrorType}, queries::site_state_query::use_site_state,
+  ui::components::post::post_listings::PostListings,
+};
+use lemmy_api_common::{
+  lemmy_db_schema::{newtypes::PostId, source::person::Person},
+  lemmy_db_views::structs::PaginationCursor,
+  post::{GetPosts, GetPostsResponse},
+  site::GetSiteResponse,
+};
 use leptos::*;
 use leptos_query::QueryResult;
-
+use leptos_router::use_query_map;
 
 // impl From<PaginationCursor> for String {
 //   fn from(value: PaginationCursor) -> Self {
@@ -18,7 +26,6 @@ use leptos_query::QueryResult;
 //   }
 // }
 
-
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let error = create_rw_signal::<Option<String>>(None);
@@ -27,6 +34,32 @@ pub fn HomeActivity() -> impl IntoView {
   let cursor_string = create_rw_signal::<Option<String>>(None);
 
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
+
+  let query = use_query_map();
+  let ssr_error = move || query.with(|params| params.get("error").cloned());
+
+  if let Some(e) = ssr_error() {
+    let le = serde_json::from_str::<LemmyAppError>(&e[..]);
+
+    match le {
+      Ok(e) => {
+        error.set(Some(message_from_error(&e)));
+
+        // match e {
+        //   LemmyAppError {
+        //     error_type: LemmyAppErrorType::MissingReason,
+        //     ..
+        //   } => {
+        //     // report_validation.set("input-error".to_string());
+        //   }
+        //   _ => {}
+        // }
+      }
+      Err(_) => {
+        logging::log!("error decoding error - log and ignore in UI?");
+      }
+    }
+  }
 
   // let authenticated_user = expect_context::<Signal<Option<Person>>>();
 
@@ -39,7 +72,9 @@ pub fn HomeActivity() -> impl IntoView {
   //   )
   // });
 
-  let posts = create_resource(move || (cursor_string.get()/* , my_user.get() */), move |(_cursor_string/* , _authenticated_user */)| async move {
+  let posts = create_resource(
+    move || (cursor_string.get()/* , my_user.get() */),
+    move |(_cursor_string/* , _authenticated_user */)| async move {
     let form = GetPosts {
       type_: None,
       sort: None,
@@ -85,7 +120,9 @@ pub fn HomeActivity() -> impl IntoView {
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
-      <main role="main" class="w-full h-full flex-grow p-3 overflow-auto">
+    <div class="container mx-auto overflow-auto">
+    <div class="w-full flex flex-col sm:flex-row flex-grow">
+      <main role="main" class="w-full h-full flex-grow p-3">
         {move || {
             error
                 .get()
@@ -175,6 +212,8 @@ pub fn HomeActivity() -> impl IntoView {
           <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:py-12 lg:px-8 lg:flex lg:items-center lg:justify-between"></div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
   }
 }
