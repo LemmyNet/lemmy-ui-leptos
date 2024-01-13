@@ -392,6 +392,7 @@ pub fn HomeActivity() -> impl IntoView {
                         })
                             .to_string()
                     }
+
                     on:click=on_sort_click(SortType::Active)
                   >
                     <span>{t!(i18n, active)}</span>
@@ -401,6 +402,7 @@ pub fn HomeActivity() -> impl IntoView {
                         (if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" })
                             .to_string()
                     }
+
                     on:click=on_sort_click(SortType::Hot)
                   >
                     <span>{t!(i18n, hot)}</span>
@@ -410,6 +412,7 @@ pub fn HomeActivity() -> impl IntoView {
                         (if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" })
                             .to_string()
                     }
+
                     on:click=on_sort_click(SortType::New)
                   >
                     <span>{t!(i18n, new)}</span>
@@ -437,6 +440,17 @@ pub fn HomeActivity() -> impl IntoView {
                           }
                           Some(res) => {
                               view! {
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+
                                 // view! {
                                 // <div class="alert alert-error">
                                 // {move || {

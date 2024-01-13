@@ -337,31 +337,31 @@ pub fn PostListing(
         </ActionForm>
       </td>
       <td>
-        <a href=
-          {move || {
+        <a href=move || {
             if let Some(d) = post_view.get().post.url {
-              d.inner().to_string()
+                d.inner().to_string()
             } else {
-              format!("/post/{}", post_view.get().post.id)
+                format!("/post/{}", post_view.get().post.id)
             }
-          }}
-        >
+        }>
+
           {move || {
-            if let Some(t) = post_view.get().post.thumbnail_url {
-              let h = t.inner().to_string();
-              view! {
-                <span class="block w-24 truncate">
-                  <img class="w-24" src=h/>
-                </span>
+              if let Some(t) = post_view.get().post.thumbnail_url {
+                  let h = t.inner().to_string();
+                  view! {
+                    <span class="block w-24 truncate">
+                      <img class="w-24" src=h/>
+                    </span>
+                  }
+              } else {
+                  view! {
+                    <span class="block w-24 truncate">
+                      <img class="w-24"/>
+                    </span>
+                  }
               }
-            } else {
-              view! {
-                <span class="block w-24 truncate">
-                  <img class="w-24"/>
-                </span>
-              }
-            }
           }}
+
         </a>
       </td>
       <td>
