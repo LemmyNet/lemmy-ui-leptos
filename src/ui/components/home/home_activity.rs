@@ -494,6 +494,17 @@ pub fn HomeActivity() -> impl IntoView {
                                 // })
                                 // }}
                                 // </div>
+
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
                                 // }
 
                                 <div>
