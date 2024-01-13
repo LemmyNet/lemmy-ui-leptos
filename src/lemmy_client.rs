@@ -2,13 +2,12 @@ use crate::{
   errors::{LemmyAppResult, LemmyAppErrorType, LemmyAppError},
   host::{get_host, get_https},
 };
-// use actix_web::http::StatusCode;
+use crate::lemmy_errors::{LemmyError, LemmyErrorExt, LemmyErrorType};
 use async_trait::async_trait;
 use cfg_if::cfg_if;
-use lemmy_api_common::{comment::*, person::*, post::*, site::*};
+use lemmy_api_common::{comment::*, person::*, post::*, site::*, community::*};
 use leptos::{Serializable, leptos_dom::logging};
 use serde::{Deserialize, Serialize};
-use crate::lemmy_errors::{LemmyError, LemmyErrorExt, LemmyErrorType};
 use tracing_error::SpanTrace;
 
 #[derive(Clone)]
@@ -69,17 +68,35 @@ mod private_trait {
 #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
   async fn login(&self, form: Login) -> LemmyAppResult<LoginResponse> {
-    leptos::logging::log!("FORM {:#?}", form);
+    // leptos::logging::log!("FORM {:#?}", form);
 
     let r = self.make_request(HttpType::Post, "user/login", form).await;
 
-    if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
-      leptos::logging::log!("JW {:#?}", s.clone().into_inner());
-    }
+    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
+    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
+    // }
     
-    leptos::logging::log!("LOGIN {:#?}", r);
+    // leptos::logging::log!("LOGIN {:#?}", r);
 
     r
+  }
+
+  async fn logout(&self, form: ()) -> LemmyAppResult<()> {
+    // leptos::logging::log!("FORM {:#?}", form);
+
+    let r = self.make_request(HttpType::Post, "user/logout", form).await;
+
+    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
+    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
+    // }
+    
+    // leptos::logging::log!("LOGIN {:#?}", r);
+
+    r
+  }
+
+  async fn list_communities(&self, form: ListCommunities) -> LemmyAppResult<ListCommunitiesResponse> {
+    self.make_request(HttpType::Get, "community/list", form).await
   }
 
   async fn get_comments(&self, form: GetComments) -> LemmyAppResult<GetCommentsResponse> {
@@ -87,7 +104,13 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn list_posts(&self, form: GetPosts) -> LemmyAppResult<GetPostsResponse> {
-    self.make_request(HttpType::Get, "post/list", form).await
+    let r = self.make_request(HttpType::Get, "post/list", form).await;
+
+    // leptos::logging::log!("LIST {:#?}", r);
+
+    r
+
+
     // Ok(GetPostsResponse { posts: vec![], next_page: None })
   }
 
@@ -96,7 +119,13 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn get_site(&self, jwt: Option<String>) -> LemmyAppResult<GetSiteResponse> {
-    self.make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt)).await
+    leptos::logging::log!("JWT {:#?}", jwt.clone());
+
+    let r: Result<GetSiteResponse, LemmyAppError>  = self.make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt)).await;
+    
+    // leptos::logging::log!("SITE {:#?}", r.clone().ok().unwrap().my_user);
+    
+    r
   }
 
   async fn report_post(&self, form: CreatePostReport) -> LemmyAppResult<PostReportResponse> {
@@ -112,7 +141,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn like_post(&self, form: CreatePostLike) -> LemmyAppResult<PostResponse> {
-    leptos::logging::log!("FORM {:#?}", form);
+    // leptos::logging::log!("FORM {:#?}", form);
 
     let r = self.make_request(HttpType::Post, "post/like", form).await;
 
@@ -120,7 +149,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
     //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
     // }
     
-    leptos::logging::log!("LIKE {:#?}", r);
+    // leptos::logging::log!("LIKE {:#?}", r);
 
     r
 
@@ -129,6 +158,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
+
         pub struct Fetch;
 
         trait MaybeBearerAuth {
@@ -285,7 +315,7 @@ cfg_if! {
                 .await??;
             
 
-                leptos::logging::log!("BODY {:#?} JWT {:#?} ", body, jwt);
+                leptos::logging::log!("make JWT {:#?} ", jwt);
 
                 let route = build_route(path);
 
@@ -389,10 +419,10 @@ cfg_if! {
             }
         }
 
-
         impl LemmyClient for Fetch {}
 
     } else {
+
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
         use gloo_net::http::{Request, RequestBuilder};
@@ -518,6 +548,7 @@ cfg_if! {
             let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
             format!("{}?{}", build_route(path), form_str)
         }
+
     }
 }
 

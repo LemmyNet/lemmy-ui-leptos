@@ -1,16 +1,25 @@
 use crate::{
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType}, queries::site_state_query::use_site_state,
+  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  i18n::*,
+  queries::site_state_query::use_site_state,
   ui::components::post::post_listings::PostListings,
 };
 use lemmy_api_common::{
-  lemmy_db_schema::{newtypes::PostId, source::person::Person},
+  community::*,
+  lemmy_db_schema::{
+    newtypes::PostId,
+    source::{community::Community, person::Person},
+    ListingType, SortType,
+  },
   lemmy_db_views::structs::PaginationCursor,
+  lemmy_db_views_actor::structs::CommunityView,
   post::{GetPosts, GetPostsResponse},
   site::GetSiteResponse,
 };
-use leptos::*;
+use leptos::{svg::A, *};
 use leptos_query::QueryResult;
-use leptos_router::use_query_map;
+use leptos_router::*;
+use web_sys::*;
 
 // impl From<PaginationCursor> for String {
 //   fn from(value: PaginationCursor) -> Self {
@@ -28,38 +37,129 @@ use leptos_router::use_query_map;
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
+  let i18n = use_i18n();
+
   let error = create_rw_signal::<Option<String>>(None);
+  let error_content = create_rw_signal::<Option<String>>(None);
 
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
-
   let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
+
+  let list_signal = create_rw_signal::<Option<ListingType>>(None);
+  let sort_signal = create_rw_signal::<Option<SortType>>(None);
 
   let query = use_query_map();
   let ssr_error = move || query.with(|params| params.get("error").cloned());
 
   if let Some(e) = ssr_error() {
-    let le = serde_json::from_str::<LemmyAppError>(&e[..]);
+    if e.len() > 0 {
+      let r = serde_json::from_str::<LemmyAppError>(&e[..]);
 
-    match le {
-      Ok(e) => {
-        error.set(Some(message_from_error(&e)));
-
-        // match e {
-        //   LemmyAppError {
-        //     error_type: LemmyAppErrorType::MissingReason,
-        //     ..
-        //   } => {
-        //     // report_validation.set("input-error".to_string());
-        //   }
-        //   _ => {}
-        // }
+      match r {
+        Ok(e) => {
+          error.set(Some(message_from_error(&e)));
+          error_content.set(Some(e.content));
+        }
+        Err(_) => {
+          logging::log!("error decoding error - log and ignore in UI?");
+        }
       }
-      Err(_) => {
+    }
+  }
+
+  let list = create_rw_signal::<Option<ListingType>>(None);
+  let ssr_list = move || {
+    query.with(|params| {
+      // logging::log!("listquery CHANGE {:#?}", params);
+      params.get("list").cloned()
+    })
+  };
+  let sort = create_rw_signal::<Option<SortType>>(None);
+  let ssr_sort = move || {
+    query.with(|params| {
+      // logging::log!("sortquery CHANGE {:#?}", params);
+      params.get("sort").cloned()
+    })
+  };
+
+  if let Some(t) = ssr_list() {
+    let r = serde_json::from_str::<ListingType>(&t[..]);
+
+    match r {
+      Ok(o) => {
+        list_signal.set(Some(o));
+        // logging::log!("list {:#?}", o);
+      }
+      Err(e) => {
+        // error.set(Some(
+        //   "error decoding error - log and ignore in UI?".to_string(),
+        // ));
         logging::log!("error decoding error - log and ignore in UI?");
       }
     }
   }
+
+  let on_list_click = move |lt: ListingType| {
+    move |me: MouseEvent| {
+      let r = serde_json::to_string::<ListingType>(&lt);
+
+      match r {
+        Ok(o) => {
+          let navigate = leptos_router::use_navigate();
+          navigate(
+            &format!("/?list={}&sort={}", o, ssr_sort().unwrap_or("".to_string()))[..],
+            Default::default(),
+          );
+        }
+        Err(e) => {
+          // error.set(Some(
+          //   "error decoding error - log and ignore in UI?".to_string(),
+          // ));
+          logging::log!("error decoding error - log and ignore in UI?");
+        }
+      }
+    }
+  };
+
+  if let Some(s) = ssr_sort() {
+    let r = serde_json::from_str::<SortType>(&s[..]);
+
+    match r {
+      Ok(o) => {
+        sort_signal.set(Some(o));
+        // logging::log!("sort {:#?}", o);
+      }
+      Err(e) => {
+        // error.set(Some(
+        //   "error decoding error - log and ignore in UI?".to_string(),
+        // ));
+        // logging::log!("error decoding error - log and ignore in UI?");
+      }
+    }
+  }
+
+  let on_sort_click = move |lt: SortType| {
+    move |me: MouseEvent| {
+      let r = serde_json::to_string::<SortType>(&lt);
+
+      match r {
+        Ok(o) => {
+          let navigate = leptos_router::use_navigate();
+          navigate(
+            &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
+            Default::default(),
+          );
+        }
+        Err(e) => {
+          // error.set(Some(
+          //   "error decoding error - log and ignore in UI?".to_string(),
+          // ));
+          logging::log!("error decoding error - log and ignore in UI?");
+        }
+      }
+    }
+  };
 
   // let authenticated_user = expect_context::<Signal<Option<Person>>>();
 
@@ -73,47 +173,142 @@ pub fn HomeActivity() -> impl IntoView {
   // });
 
   let posts = create_resource(
-    move || (cursor_string.get()/* , my_user.get() */),
-    move |(_cursor_string/* , _authenticated_user */)| async move {
-    let form = GetPosts {
-      type_: None,
-      sort: None,
-      community_name: None,
-      community_id: None,
-      page: None,
-      limit: None,
-      saved_only: None,
-      disliked_only: None,
-      liked_only: None,
-      page_cursor: page_cursor.get(),
-    };
+    move || {
+      (
+        cursor_string.get(),
+        ssr_list(),
+        ssr_sort(), /* , my_user.get() */
+      )
+    },
+    move |(_cursor_string, list, sort /* , _authenticated_user */)| async move {
+      let l = {
+        if let Some(t) = list.clone() {
+          if t.len() > 0 {
+            let r = serde_json::from_str::<ListingType>(&t[..]);
 
-    let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
-      // #[cfg(not(feature = "ssr"))]
-      // {
+            match r {
+              Ok(o) => {
+                // logging::log!("K list {:#?}", o);
+                list_signal.set(Some(o));
+                Some(o)
+              }
+              Err(e) => {
+                // error.set(Some(
+                //   "error decoding error - log and ignore in UI?".to_string(),
+                // ));
+                logging::log!(
+                  "LIST error decoding error - log and ignore in UI? {:#?}",
+                  list
+                );
+                None
+              }
+            }
+          } else {
+            None
+          }
+        } else {
+          None
+        }
+      };
+
+      let s = {
+        if let Some(t) = sort.clone() {
+          if t.len() > 0 {
+            let r = serde_json::from_str::<SortType>(&t[..]);
+
+            match r {
+              Ok(o) => {
+                // logging::log!("K sort {:#?}", o);
+                sort_signal.set(Some(o));
+                Some(o)
+              }
+              Err(e) => {
+                // error.set(Some(
+                //   "error decoding error - log and ignore in UI?".to_string(),
+                // ));
+                logging::log!(
+                  "SORT error decoding error - log and ignore in UI? {:#?}",
+                  sort
+                );
+                None
+              }
+            }
+          } else {
+            None
+          }
+        } else {
+          None
+        }
+      };
+
+      let form = GetPosts {
+        type_: l,
+        sort: s,
+        community_name: None,
+        community_id: None,
+        page: None,
+        limit: None,
+        saved_only: None,
+        disliked_only: None,
+        liked_only: None,
+        page_cursor: page_cursor.get(),
+      };
+
+      let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
         use crate::lemmy_client::*;
         Some((Fetch {}).list_posts(form).await)
-        // Some(Ok(GetPostsResponse { posts: vec![], next_page: None }))
-      // }
-      // #[cfg(feature = "ssr")]
-      // {
-      //   use crate::lemmy_client::LemmyClient;
-      //   use actix_web::web;
-      //   use leptos_actix::extract;
-
-      //   extract(|client: web::Data<awc::Client>| async move { client.list_posts(form).await })
-      //     .await
-      //     .ok()
-      // }
-    };
+      };
 
       match result {
         Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
-          error.set(Some(e.to_string()));
+          leptos::logging::log!("Err {:#?}", e);
+          error.set(Some(message_from_error(&e)));
+          error_content.set(Some(e.content));
           None
         }
-        _ => None,
+        None => {
+          leptos::logging::log!("Nun");
+          error.set(Some(t!(i18n, unknown)().to_string()));
+          error_content.set(None);
+          None
+        },
+      }
+    },
+  );
+
+  let trending = create_resource(
+    move || {
+      (/* , my_user.get() */)
+    },
+    move |(/* , _authenticated_user */)| async move {
+      let form = ListCommunities {
+        type_:Some(ListingType::Local),
+        sort:Some(SortType::Hot),
+        limit:Some(6),
+        show_nsfw: None,
+        page: None
+      };
+
+      let result: Option<Result<ListCommunitiesResponse, LemmyAppError>> = {
+        use crate::lemmy_client::*;
+        Some((Fetch {}).list_communities(form).await)
+      };
+
+      match result {
+        Some(Ok(o)) => Some(o),
+        Some(Err(e)) => {
+          leptos::logging::log!("Err {:#?}", e);
+          error.set(Some(message_from_error(&e)));
+          error_content.set(Some(e.content));
+          None
+        }
+        None => {
+          leptos::logging::log!("Nun");
+          error.set(Some(t!(i18n, unknown)().to_string()));
+          error_content.set(None);
+          None
+        },
       }
     },
   );
@@ -122,94 +317,175 @@ pub fn HomeActivity() -> impl IntoView {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
     <div class="container mx-auto overflow-auto">
     <div class="w-full flex flex-col sm:flex-row flex-grow">
-      <main role="main" class="w-full h-full flex-grow p-3">
-        {move || {
-            error
-                .get()
-                .map(|err| {
-                    view! {
-                      <div class="alert alert-error">
-                        <span>{err}</span>
-                      </div>
-                    }
-                })
-        }}
+      <Transition fallback=|| { view! { <div> "Loading..." </div> } }>
+        <main role="main" class="w-full h-full flex-grow p-3">
+          // <Show
+          //   when=move || error.get().is_some()
+          //   fallback=move || {
+          //     view! {
+          //       <div class="hidden">
+          //       </div>
+          //     }
+          //   }
+          // >
+          //   <div class="alert alert-error">
+          //     // <span>{error.get()} " - " {error_content.get()}</span>
+          //   </div>
+          // </Show>
 
-        <div class="join">
-          <button class="btn join-item">"Posts"</button>
-          <button class="btn join-item">"Comments"</button>
-        </div>
-        <div class="join">
-          <button class="btn join-item">"Subscribed"</button>
-          <button class="btn join-item">"Local"</button>
-          <button class="btn join-item">"All"</button>
-        </div>
-        <div class="dropdown">
-          <label tabindex="0" class="btn">
-            "Sort type"
-          </label>
-          <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-            <li>
-              <span>Item 1</span>
-            </li>
-            <li>
-              <span>Item 2</span>
-            </li>
-          </ul>
-        </div>
+          // { move || { error.get().map(|err| {
+          //   view! {
+          //   }
+          // })}}
+          <div class="join mr-3">
+            <button class="btn join-item">"Posts"</button>
+            <button class="btn join-item">"Comments"</button>
+          </div>
+          <div class="join mr-3">
+            <A href=format!("/?list={}&sort={}", "\"Subscribed\"", if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::Subscribed) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::Subscribed)>"Subscribed"</A>
+            <A href=format!("/?list={}&sort={}", "\"Local\"", if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::Local) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::Local)>"Local"</A>
+            <A href=format!("/?list={}&sort={}", "\"All\"", if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::All) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::All)>"All"</A>
+          </div>
+          <div class="dropdown">
+            <label tabindex="0" class="btn">
+              "Sort type"
+            </label>
+            <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+              <li class=move || format!("{}", if Some(SortType::Active) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::Active)>
+                <span>{t!(i18n, active)}</span>
+              </li>
+              <li class=move || format!("{}", if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::Hot)>
+                <span>{t!(i18n, hot)}</span>
+              </li>
+              <li class=move || format!("{}", if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::New)>
+                <span>{t!(i18n, new)}</span>
+              </li>
+            </ul>
+          </div>
+          { move || { posts.get().map(|res| match res {
+            None => {
+            //   view! {
+            //     <div class="alert alert-error">
+            //       {move || {
+            //         error.get().map(|err| {
+            //           view! {
+            //             <span>{err}</span>
+            //           }
+            //         })
+            //       }}
+            //     </div>
+              view! { <div> "No posts for this type of query at the moment" </div> }
+              // }
+            }
+            Some(res) => {
+              view! {
+                <div>
+                  <PostListings posts=res.posts.into() error/>
+                  <button
+                    class="btn"
+                    on:click=move |_| {
+                        let mut p = prev_cursor_stack.get();
+                        let s = p.pop().unwrap_or(None);
+                        prev_cursor_stack.set(p);
+                        page_cursor.set(s.clone());
+                        cursor_string.set(Some(format!("{:#?}", s)));
+                    }
+                  >"Prev"</button>
+                  <button
+                    class="btn"
+                    on:click=move |_| {
+                        let mut p = prev_cursor_stack.get();
+                        p.push(page_cursor.get());
+                        prev_cursor_stack.set(p);
+                        page_cursor.set(res.next_page.clone());
+                        cursor_string
+                            .set(Some(format!("{:#?}", res.next_page.clone())));
+                    }
+                  >"Next"</button>
+                </div>
+              }
+            }
+          })}}
+        </main>
+      </Transition>
+      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
+        // <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>
         <Transition fallback=|| { view! { "Loading..." } }>
           {move || {
-              posts
-                  .get()
-                  .map(|res| match res {
-                      None => {
-                          view! { <div></div> }
-                      }
-                      Some(res) => {
-                          view! {
-                            <div>
-                              <PostListings posts=res.posts.into() error/>
-
-                              <button
-                                class="btn"
-                                on:click=move |_| {
-                                    let mut p = prev_cursor_stack.get();
-                                    let s = p.pop().unwrap_or(None);
-                                    prev_cursor_stack.set(p);
-                                    page_cursor.set(s.clone());
-                                    cursor_string.set(Some(format!("{:#?}", s)));
-                                }
-                              >
-
-                                "Prev"
-                              </button>
-                              <button
-                                class="btn"
-                                on:click=move |_| {
-                                    let mut p = prev_cursor_stack.get();
-                                    p.push(page_cursor.get());
-                                    prev_cursor_stack.set(p);
-                                    page_cursor.set(res.next_page.clone());
-                                    cursor_string
-                                        .set(Some(format!("{:#?}", res.next_page.clone())));
-                                }
-                              >
-
-                                "Next"
-                              </button>
-
-                            </div>
+            trending.get().map(|r| match r {
+              None => {
+                  view! { <div class="hidden"></div> }
+              }
+              Some(c) => {
+                let c_signal = create_rw_signal(c.communities);
+                view! {
+                  <div class="card w-full bg-base-300 text-base-content">
+                    <figure>
+                      <div class="card-body bg-info">
+                        <h2 class="card-title text-info-content">"Trending Communities"</h2>
+                      </div>
+                    </figure>
+                    <div class="card-body">
+                      <p> "Description" </p> 
+                      <p>
+                        <For
+                          each=move || c_signal.get()
+                          key=|community| community.community.id
+                          children=move |cv: CommunityView| {
+                            view! {
+                              <span class="badge badge-neutral inline-block whitespace-nowrap"> { cv.community.title } </span> " "
+                            }
                           }
-                      }
-                  })
+                        />
+                      </p>
+                    </div>
+                  </div>
+                      // <div class="bg-gray-50 rounded-xl border my-3 w-full">
+                  // <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:py-12 lg:px-8 lg:flex lg:items-center lg:justify-between">
+                  // <div>
+                  //   <For
+                  //     each=move || c_signal.get()
+                  //     key=|community| community.community.id
+                  //     children=move |cv: CommunityView| {
+                  //       view! {
+                  //         <span> { cv.community.title } </span>
+                  //       }
+                  //     }
+                  //   />
+                  // </div>
+                  // </div>
+                  // </div>
+                }
+              }
+            })
           }}
-
         </Transition>
-      </main>
-      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
-        <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>
-        <div class="bg-gray-50 rounded-xl border my-3 w-full">
-          <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:py-12 lg:px-8 lg:flex lg:items-center lg:justify-between"></div>
+        <div class="card w-full bg-base-300 text-base-content">
+          <figure>
+            <div class="card-body bg-neutral">
+              <h2 class="card-title text-neutral-content">"Brand Name"</h2>
+            </div>
+          </figure>
+          <div class="card-body">
+            <p> "Description" </p> 
+            <p>
+              <span class="badge badge-neutral inline-block whitespace-nowrap">"1 user / day"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"2 users / week"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"5 users / month"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"13 users / 6 months"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"220 users"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"4 Communities"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"14 Posts"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"174 Comments"</span>
+              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"Modlog"</span>
+            </p>
+            <h3 class="card-title"> "Admins"</h3>
+            <p>
+              <span class="badge badge-primary inline-block whitespace-nowrap">"1 user / day"</span>
+              " " <span class="badge badge-primary inline-block whitespace-nowrap">"2 users / week"</span>
+              " " <span class="badge badge-primary inline-block whitespace-nowrap">"5 users / month"</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>

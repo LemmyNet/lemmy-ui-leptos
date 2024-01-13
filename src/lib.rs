@@ -67,7 +67,7 @@ pub fn App() -> impl IntoView {
           <Route path="create_community" view=PostActivity/>
 
           <Route path="search" view=PostActivity/>
-          <Route path="login" view=LoginActivity/>
+          <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
           <Route path="signup" view=PostActivity/>
 
           <Route path="inbox" view=PostActivity/>
@@ -78,7 +78,7 @@ pub fn App() -> impl IntoView {
           <Route path="modlog" view=PostActivity/>
           <Route path="instances" view=PostActivity/>
 
-          <Route path="post/:id" view=PostActivity/>
+          <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
         </Route>
       </Routes>
     </Router>

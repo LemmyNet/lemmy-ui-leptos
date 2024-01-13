@@ -145,17 +145,19 @@ pub fn PostListing(
     ev.prevent_default();
 
     create_resource(
-      move || (post_view.get()),
-      move |(post_view)| async move {
+      move || (),
+      move |()| async move {
         let form = CreatePostLike {
-          post_id: post_view.post.id,
-          score: 1, //score,
+          post_id: post_view.get().post.id,
+          score,
         };
 
         let result = (Fetch {}).like_post(form).await;
 
         match result {
-          Ok(o) => {}
+          Ok(o) => {
+            post_view.set(o.post_view);
+          }
           Err(e) => {
             error.set(Some(message_from_error(&e)));
           }
@@ -180,17 +182,19 @@ pub fn PostListing(
     ev.prevent_default();
 
     create_resource(
-      move || (post_view.get()),
-      move |(post_view)| async move {
+      move || (),
+      move |()| async move {
         let form = SavePost {
-          post_id: post_view.post.id,
-          save: !post_view.saved,
+          post_id: post_view.get().post.id,
+          save: !post_view.get().saved,
         };
 
         let result = (Fetch {}).save_post(form).await;
 
         match result {
-          Ok(o) => {}
+          Ok(o) => {
+            post_view.set(o.post_view);
+          }
           Err(e) => {
             error.set(Some(message_from_error(&e)));
           }
@@ -205,10 +209,10 @@ pub fn PostListing(
     ev.prevent_default();
 
     create_resource(
-      move || (post_view.get()),
-      move |(post_view)| async move {
+      move || (),
+      move |()| async move {
         let form = BlockPerson {
-          person_id: post_view.creator.id,
+          person_id: post_view.get().creator.id,
           block: true,
         };
 
@@ -264,11 +268,11 @@ pub fn PostListing(
     ev.prevent_default();
 
     create_resource(
-      move || (post_view.get(), reason.get()),
-      move |(post_view, reason)| async move {
+      move || (),
+      move |()| async move {
         let form = CreatePostReport {
-          post_id: post_view.post.id,
-          reason: reason,
+          post_id: post_view.get().post.id,
+          reason: reason.get(),
         };
 
         let result = try_report(form).await;
@@ -278,7 +282,7 @@ pub fn PostListing(
           Err(e) => {
             error.set(Some(message_from_error(&e)));
 
-            let id = format!("{}", post_view.post.id);
+            let id = format!("{}", post_view.get().post.id);
 
             match e {
               LemmyAppError {

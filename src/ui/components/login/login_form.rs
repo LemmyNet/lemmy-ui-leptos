@@ -121,7 +121,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
   }
 }
 
-#[server(LoginAction, "/serverfn")]
+#[server(LoginFn, "/serverfn")]
 pub async fn login(
   username_or_email: String,
   password: String,
@@ -208,7 +208,7 @@ pub fn LoginForm() -> impl IntoView {
   let name = RwSignal::new(String::new());
   let password = RwSignal::new(String::new());
 
-  let login = create_server_action::<LoginAction>();
+  let login = create_server_action::<LoginFn>();
   // let login_is_success = Signal::derive(move || login.value()().is_some_and(|res| res.is_ok()));
 
   // #[cfg(feature = "ssr")]

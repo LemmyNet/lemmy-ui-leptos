@@ -5,7 +5,7 @@ use crate::{
   queries::site_state_query::use_site_state,
   ui::components::common::text_input::{InputType, TextInput},
 };
-use leptos::{leptos_dom::logging, ServerFnError};
+use leptos::*;
 use leptos_router::ParamsError;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
@@ -50,7 +50,7 @@ pub enum LemmyAppErrorType {
 pub fn message_from_error(error: &LemmyAppError) -> String {
   let i18n = use_i18n();
 
-  match error {
+  let s = match error {
     LemmyAppError {
       error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
       ..
@@ -68,14 +68,22 @@ pub fn message_from_error(error: &LemmyAppError) -> String {
       ..
     } => t!(i18n, empty_reason)().to_string(),
     LemmyAppError {
+      error_type: LemmyAppErrorType::InternalServerError,
+      ..
+    } => t!(i18n, internal)().to_string(),
+    LemmyAppError {
       error_type: LemmyAppErrorType::Unknown,
       ..
     } => t!(i18n, unknown)().to_string(),
-    _ => t!(i18n, unknown)().to_string(),
-  }
+    _ => "t!(i18n, unknown)()".to_string(),
+  };
+
+  logging::log!("{s}");
+
+  s
 }
 
-#[derive(/* Debug, Clone,  */Serialize, Deserialize/* , PartialEq */)]
+#[derive(/* Debug, */Clone, Serialize, Deserialize/* , PartialEq */)]
 pub struct LemmyAppError {
   pub error_type: LemmyAppErrorType,
   // pub inner: anyhow::Error,
@@ -110,11 +118,11 @@ impl serde::ser::StdError for LemmyAppError {
 
 impl std::fmt::Debug for LemmyAppError {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    f.debug_struct("LemmyAppError")
-      .field("message", &self.error_type)
+    f.debug_struct("debug LemmyAppError")
+      .field("error_type", &self.error_type)
       // .field("inner", &self.inner)
       // .field("context", &self.context)
-      .field("context", &self.content)
+      .field("content", &self.content)
       .finish()
   }
 }
@@ -122,7 +130,7 @@ impl std::fmt::Debug for LemmyAppError {
 impl std::fmt::Display for LemmyAppError {
   fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
     // leptos::logging::log!("woop {}", SpanTrace::capture());
-    leptos::logging::log!("woop {:#?}", &self);
+    // leptos::logging::log!("woop {:#?}", &self);
     match &self.error_type {
         // LemmyAppErrorType::ApiError { inner } => {                                                                                  
         //   write!(f, "{}: {{ {} }}", &self.error_type, inner)
@@ -249,7 +257,7 @@ impl From<awc::error::SendRequestError> for LemmyAppError {
       error_type: LemmyAppErrorType::InternalServerError,
       // inner: anyhow::anyhow!("{}", value),
       // context: SpanTrace::capture(),
-      content: format!("{} {:#?}", value, value.source()),
+      content: format!("{} - source: {:#?}", value, value.source()),
       // content: "".to_string(),
     }
   }

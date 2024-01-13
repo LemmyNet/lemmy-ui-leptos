@@ -1,21 +1,123 @@
-use crate::{i18n::*, queries::site_state_query::*};
+use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*};
 use lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 // use leptos_icons::*;
 use leptos_query::*;
 use leptos_router::*;
 use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
+use web_sys::SubmitEvent;
 
-#[server(LogoutAction, "/serverfn")]
+#[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
   use actix_session::Session;
-  use leptos_actix::extract;
+  use leptos_actix::{extract, redirect};
 
-  extract(|session: Session| async move {
-    // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
-    session.purge();
-  })
-  .await
+  let result = (Fetch {}).logout(()).await;
+
+  match result {
+    Ok(()) => {
+      let cookie_res =
+        extract(|session: Session| async move {
+          // session.purge();
+          session.remove("jwt");
+        })
+        .await;
+
+      match cookie_res {
+        Ok(o) => {
+          redirect("/");
+          Ok(())
+        }
+        Err(e) => Err(e),
+      }
+    }
+    Err(e) => {
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+      Ok(())
+    }
+  }
+
+}
+
+#[server(ChangeLangFn, "/serverfn")]
+pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
+  let i18n = use_i18n();
+
+  // use actix_session::Session;
+  // use leptos_actix::{extract, redirect};
+
+  // let result = (Fetch {}).logout(()).await;
+
+  if lang.eq(&"FR".to_string()) {
+    i18n.set_locale(Locale::fr);
+  }
+
+  if lang.eq(&"EN".to_string()) {
+    i18n.set_locale(Locale::en);
+  }
+
+  // i18n.
+  Ok(())
+
+  // match result {
+  //    => {
+  //     let cookie_res =
+  //       extract(|session: Session| async move {
+  //         // session.purge();
+  //         session.remove("jwt");
+  //       })
+  //       .await;
+
+  //     match cookie_res {
+  //       Ok(o) => {
+  //         redirect("/");
+  //         Ok(())
+  //       }
+  //       Err(e) => Err(e),
+  //     }
+  //   }
+  //   Err(e) => {
+  //     redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+  //     Ok(())
+  //   }
+  // }
+
+}
+
+#[server(ChangeThemeFn, "/serverfn")]
+pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
+  // let i18n = use_i18n();
+
+  use actix_session::Session;
+  use leptos_actix::{extract, redirect};
+
+  // let result = (Fetch {}).logout(()).await;
+
+  // i18n.set_locale(lang);
+  // Ok(())
+
+  // match result {
+  //    => {
+      let cookie_res =
+        extract(|session: Session| async move {
+          session.insert("theme", theme);
+        })
+        .await;
+
+      match cookie_res {
+        Ok(o) => {
+          // redirect("/");
+          Ok(())
+        }
+        Err(e) => Err(e),
+      }
+  //   }
+  //   Err(e) => {
+  //     redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+  //     Ok(())
+  //   }
+  // }
+
 }
 
 #[component]
@@ -64,7 +166,7 @@ pub fn TopNav() -> impl IntoView {
     )
   });
 
-  let logout_action = create_server_action::<LogoutAction>();
+  let logout_action = create_server_action::<LogoutFn>();
   let logout_is_success =
     Signal::derive(move || logout_action.value().get().is_some());
 
@@ -75,11 +177,62 @@ pub fn TopNav() -> impl IntoView {
     }
   });
 
+  let on_logout_submit = move |ev: SubmitEvent| {
+    ev.prevent_default();
+
+    create_resource(
+      move || (),
+      move |()| async move {
+        let result = (Fetch {}).logout(()).await;
+
+        match result {
+          Ok(o) => {
+            #[cfg(not(feature = "ssr"))]
+            {
+              wasm_cookies::delete("jwt");
+              // wasm_cookies::set(
+              //   "jwt",
+              //   "",
+              //   &wasm_cookies::cookies::CookieOptions {
+              //     same_site: wasm_cookies::cookies::SameSite::Strict,
+              //     secure: true,
+              //     expires: Some(std::borrow::Cow::Borrowed("Sat, 01 Jan 2024 19:24:51 GMT")),
+              //     domain: None,
+              //     path: None,
+              //   },
+              // );
+            }
+
+            let QueryResult { data, refetch, .. } = use_site_state();
+
+            refetch();
+          }
+          Err(e) => {
+            // error.set(Some(message_from_error(&e)));
+
+            // match e {
+            //   _ => {
+            //     report_validation.set("".to_string());
+            //   }
+            // }
+          }
+        }
+      },
+    );
+  };
+
+
   let ui_theme = expect_context::<RwSignal<String>>();
 
   let change_theme = move |theme_name: &'static str| {
     move |_| {
       ui_theme.set(theme_name.to_string());
+    }
+  };
+
+  let change_lang = move |lang: Locale| {
+    move |_| {
+      i18n.set_locale(lang);
     }
   };
 
@@ -147,6 +300,19 @@ pub fn TopNav() -> impl IntoView {
             </li>
             <li class="z-[1]">
               <details>
+                <summary>"Lang"</summary>
+                <ul>
+                  <li on:click=change_lang(Locale::fr)>
+                    <span>"FR"</span>
+                  </li>
+                  <li on:click=change_lang(Locale::en)>
+                    <span>"EN"</span>
+                  </li>
+                </ul>
+              </details>
+            </li>
+            <li class="z-[1]">
+              <details>
                 <summary>"Theme"</summary>
                 <ul>
                   <li on:click=change_theme("dark")>
@@ -202,7 +368,7 @@ pub fn TopNav() -> impl IntoView {
                       </li>
                       <div class="divider my-0"></div>
                       <li>
-                        <ActionForm action=logout_action>
+                        <ActionForm action=logout_action on:submit=on_logout_submit>
                           <button type="submit">{t!(i18n, logout)}</button>
                         </ActionForm>
                       </li>
