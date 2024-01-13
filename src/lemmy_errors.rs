@@ -8,6 +8,7 @@ use tracing_error::SpanTrace;
 #[cfg(feature = "full")]
 use ts_rs::TS;
 
+#[allow(dead_code)]
 pub type LemmyResult<T> = Result<T, LemmyError>;
 
 pub struct LemmyError {
@@ -16,6 +17,7 @@ pub struct LemmyError {
   pub context: SpanTrace,
 }
 
+#[allow(dead_code)]
 pub const MAX_API_PARAM_ELEMENTS: usize = 1000;
 
 impl<T> From<T> for LemmyError

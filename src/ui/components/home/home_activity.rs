@@ -1,24 +1,16 @@
 use crate::{
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  errors::{message_from_error, LemmyAppError},
   i18n::*,
-  queries::site_state_query::use_site_state,
   ui::components::post::post_listings::PostListings,
 };
 use lemmy_api_common::{
   community::*,
-  lemmy_db_schema::{
-    newtypes::PostId,
-    source::{community::Community, person::Person},
-    ListingType,
-    SortType,
-  },
+  lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views::structs::PaginationCursor,
   lemmy_db_views_actor::structs::CommunityView,
   post::{GetPosts, GetPostsResponse},
-  site::GetSiteResponse,
 };
-use leptos::{svg::A, *};
-use leptos_query::QueryResult;
+use leptos::*;
 use leptos_router::*;
 use web_sys::*;
 
@@ -54,7 +46,7 @@ pub fn HomeActivity() -> impl IntoView {
   let ssr_error = move || query.with(|params| params.get("error").cloned());
 
   if let Some(e) = ssr_error() {
-    if e.len() > 0 {
+    if !e.is_empty() {
       let r = serde_json::from_str::<LemmyAppError>(&e[..]);
 
       match r {
@@ -69,9 +61,9 @@ pub fn HomeActivity() -> impl IntoView {
     }
   }
 
-  let list = create_rw_signal::<Option<ListingType>>(None);
+  let _list = create_rw_signal::<Option<ListingType>>(None);
   let ssr_list = move || query.with(|params| params.get("list").cloned());
-  let sort = create_rw_signal::<Option<SortType>>(None);
+  let _sort = create_rw_signal::<Option<SortType>>(None);
   let ssr_sort = move || query.with(|params| params.get("sort").cloned());
 
   if let Some(t) = ssr_list() {
@@ -81,14 +73,14 @@ pub fn HomeActivity() -> impl IntoView {
       Ok(o) => {
         list_signal.set(Some(o));
       }
-      Err(e) => {
+      Err(_e) => {
         logging::log!("error decoding error - log and ignore in UI?");
       }
     }
   }
 
   let on_list_click = move |lt: ListingType| {
-    move |me: MouseEvent| {
+    move |_me: MouseEvent| {
       let r = serde_json::to_string::<ListingType>(&lt);
 
       match r {
@@ -99,7 +91,7 @@ pub fn HomeActivity() -> impl IntoView {
             Default::default(),
           );
         }
-        Err(e) => {
+        Err(_e) => {
           logging::log!("error decoding error - log and ignore in UI?");
         }
       }
@@ -113,7 +105,7 @@ pub fn HomeActivity() -> impl IntoView {
       Ok(o) => {
         sort_signal.set(Some(o));
       }
-      Err(e) => {
+      Err(_e) => {
         // error.set(Some(
         //   "error decoding error - log and ignore in UI?".to_string(),
         // ));
@@ -123,7 +115,7 @@ pub fn HomeActivity() -> impl IntoView {
   }
 
   let on_sort_click = move |lt: SortType| {
-    move |me: MouseEvent| {
+    move |_me: MouseEvent| {
       let r = serde_json::to_string::<SortType>(&lt);
 
       match r {
@@ -134,7 +126,7 @@ pub fn HomeActivity() -> impl IntoView {
             Default::default(),
           );
         }
-        Err(e) => {
+        Err(_e) => {
           // error.set(Some(
           //   "error decoding error - log and ignore in UI?".to_string(),
           // ));
@@ -164,7 +156,7 @@ pub fn HomeActivity() -> impl IntoView {
     move |(_cursor_string, list, sort /* , _authenticated_user */)| async move {
       let l = {
         if let Some(t) = list.clone() {
-          if t.len() > 0 {
+          if !t.is_empty() {
             let r = serde_json::from_str::<ListingType>(&t[..]);
 
             match r {
@@ -172,7 +164,7 @@ pub fn HomeActivity() -> impl IntoView {
                 list_signal.set(Some(o));
                 Some(o)
               }
-              Err(e) => {
+              Err(_e) => {
                 // error.set(Some(
                 //   "error decoding error - log and ignore in UI?".to_string(),
                 // ));
@@ -193,7 +185,7 @@ pub fn HomeActivity() -> impl IntoView {
 
       let s = {
         if let Some(t) = sort.clone() {
-          if t.len() > 0 {
+          if !t.is_empty() {
             let r = serde_json::from_str::<SortType>(&t[..]);
 
             match r {
@@ -201,7 +193,7 @@ pub fn HomeActivity() -> impl IntoView {
                 sort_signal.set(Some(o));
                 Some(o)
               }
-              Err(e) => {
+              Err(_e) => {
                 // error.set(Some(
                 //   "error decoding error - log and ignore in UI?".to_string(),
                 // ));
@@ -393,40 +385,31 @@ pub fn HomeActivity() -> impl IntoView {
                 <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
                   <li
                     class=move || {
-                        format!(
-                            "{}",
-                            if Some(SortType::Active) == sort_signal.get() {
-                                "btn-active"
-                            } else {
-                                ""
-                            },
-                        )
+                        (if Some(SortType::Active) == sort_signal.get() {
+                            "btn-active"
+                        } else {
+                            ""
+                        })
+                            .to_string()
                     }
-
                     on:click=on_sort_click(SortType::Active)
                   >
                     <span>{t!(i18n, active)}</span>
                   </li>
                   <li
                     class=move || {
-                        format!(
-                            "{}",
-                            if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" },
-                        )
+                        (if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" })
+                            .to_string()
                     }
-
                     on:click=on_sort_click(SortType::Hot)
                   >
                     <span>{t!(i18n, hot)}</span>
                   </li>
                   <li
                     class=move || {
-                        format!(
-                            "{}",
-                            if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" },
-                        )
+                        (if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" })
+                            .to_string()
                     }
-
                     on:click=on_sort_click(SortType::New)
                   >
                     <span>{t!(i18n, new)}</span>
@@ -454,6 +437,17 @@ pub fn HomeActivity() -> impl IntoView {
                           }
                           Some(res) => {
                               view! {
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+
                                 // view! {
                                 // <div class="alert alert-error">
                                 // {move || {

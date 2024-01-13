@@ -23,7 +23,7 @@ pub async fn logout() -> Result<(), ServerFnError> {
       .await;
 
       match cookie_res {
-        Ok(o) => {
+        Ok(_o) => {
           redirect("/");
           Ok(())
         }
@@ -52,15 +52,12 @@ pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
   use actix_session::Session;
-  use leptos_actix::{extract, redirect};
+  use leptos_actix::extract;
 
-  let cookie_res = extract(|session: Session| async move {
-    session.insert("theme", theme);
-  })
-  .await;
+  let cookie_res = extract(|session: Session| async move { session.insert("theme", theme) }).await;
 
   match cookie_res {
-    Ok(o) => {
+    Ok(_o) => {
       // redirect("/");
       Ok(())
     }
@@ -107,7 +104,7 @@ pub fn TopNav() -> impl IntoView {
         let result = (Fetch {}).logout(()).await;
 
         match result {
-          Ok(o) => {
+          Ok(_o) => {
             #[cfg(not(feature = "ssr"))]
             {
               wasm_cookies::delete("jwt");
@@ -124,10 +121,10 @@ pub fn TopNav() -> impl IntoView {
               // );
             }
 
-            let QueryResult { data, refetch, .. } = use_site_state();
+            let QueryResult { refetch, .. } = use_site_state();
             refetch();
           }
-          Err(e) => {
+          Err(_e) => {
             // error.set(Some(message_from_error(&e)));
 
             // match e {

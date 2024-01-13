@@ -1,17 +1,8 @@
 use crate::{
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
-  i18n::*,
   lemmy_client::*,
-  lemmy_errors::LemmyErrorType,
-  queries::site_state_query::use_site_state,
-  ui::components::common::text_input::{InputType, TextInput},
 };
-use lemmy_api_common::{
-  lemmy_db_schema::newtypes::{PersonId, PostId},
-  lemmy_db_views::structs::*,
-  person::*,
-  post::*,
-};
+use lemmy_api_common::{lemmy_db_views::structs::*, person::*, post::*};
 use leptos::*;
 use leptos_router::*;
 use phosphor_leptos::{ArrowDown, ArrowUp, Copy, DotsThreeVertical, Flag, Note, Prohibit, Star};
@@ -19,6 +10,8 @@ use web_sys::SubmitEvent;
 
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostResponse>, ServerFnError> {
+  use lemmy_api_common::lemmy_db_schema::newtypes::PostId;
+
   let form = CreatePostLike {
     post_id: PostId(post_id),
     score,
@@ -38,6 +31,8 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostRespons
 
 #[server(SavePostFn, "/serverfn")]
 pub async fn save_post_fn(post_id: i32, save: bool) -> Result<Option<PostResponse>, ServerFnError> {
+  use lemmy_api_common::lemmy_db_schema::newtypes::PostId;
+
   let form = SavePost {
     post_id: PostId(post_id),
     save,
@@ -60,6 +55,8 @@ pub async fn block_user_fn(
   person_id: i32,
   block: bool,
 ) -> Result<Option<BlockPersonResponse>, ServerFnError> {
+  use lemmy_api_common::lemmy_db_schema::newtypes::PersonId;
+
   let form = BlockPerson {
     person_id: PersonId(person_id),
     block,
@@ -78,7 +75,7 @@ pub async fn block_user_fn(
 }
 
 fn validate_report(form: &CreatePostReport) -> Option<LemmyAppErrorType> {
-  if form.reason.len() == 0 {
+  if form.reason.is_empty() {
     return Some(LemmyAppErrorType::MissingReason);
   }
   None
@@ -108,6 +105,8 @@ pub async fn report_post_fn(
   post_id: i32,
   reason: String,
 ) -> Result<Option<PostReportResponse>, ServerFnError> {
+  use lemmy_api_common::lemmy_db_schema::newtypes::PostId;
+
   let form = CreatePostReport {
     post_id: PostId(post_id),
     reason,
@@ -220,7 +219,7 @@ pub fn PostListing(
         let result = (Fetch {}).block_user(form).await;
 
         match result {
-          Ok(o) => {}
+          Ok(_o) => {}
           Err(e) => {
             error.set(Some(message_from_error(&e)));
           }
@@ -279,16 +278,16 @@ pub fn PostListing(
         let result = try_report(form).await;
 
         match result {
-          Ok(o) => {}
+          Ok(_o) => {}
           Err(e) => {
             error.set(Some(message_from_error(&e)));
 
-            let id = format!("{}", post_view.get().post.id);
+            let _id = format!("{}", post_view.get().post.id);
 
             match e {
               LemmyAppError {
                 error_type: LemmyAppErrorType::MissingReason,
-                content: id,
+                content: _id,
               } => {
                 report_validation.set("input-error".to_string());
               }
@@ -338,26 +337,32 @@ pub fn PostListing(
         </ActionForm>
       </td>
       <td>
-        {move || {
+        <a href=
+          {move || {
             if let Some(d) = post_view.get().post.url {
-                let u = d.inner().to_string();
-                view! {
-                  <span class="block w-24 truncate">
-                    // <img class="h-24 w-24" src=u/>
-                    <a href=u.clone()>{move || format!("{}", u)}</a>
-                  </span>
-                }
+              d.inner().to_string()
             } else {
-                view! {
-                  // <img class="h-24 w-24" src=u/>
-
-                  <span class="block w-24 truncate">
-                    {move || format!("{:#?}", post_view.get().post.thumbnail_url)}
-                  </span>
-                }
+              format!("/post/{}", post_view.get().post.id)
             }
-        }}
-
+          }}
+        >
+          {move || {
+            if let Some(t) = post_view.get().post.thumbnail_url {
+              let h = t.inner().to_string();
+              view! {
+                <span class="block w-24 truncate">
+                  <img class="w-24" src=h/>
+                </span>
+              }
+            } else {
+              view! {
+                <span class="block w-24 truncate">
+                  <img class="w-24"/>
+                </span>
+              }
+            }
+          }}
+        </a>
       </td>
       <td>
         <A href=move || format!("/post/{}", post_view.get().post.id) class="block">

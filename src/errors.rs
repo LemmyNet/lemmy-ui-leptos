@@ -1,16 +1,9 @@
-use crate::{
-  i18n::*,
-  lemmy_errors::LemmyErrorType,
-  queries::site_state_query::use_site_state,
-  ui::components::common::text_input::{InputType, TextInput},
-};
+use crate::{i18n::*, lemmy_errors::LemmyErrorType};
 use leptos::*;
-use leptos_router::ParamsError;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
-use std::{error::Error, num::ParseIntError};
+use std::num::ParseIntError;
 use strum_macros::{Display, EnumIter};
-use tracing_error::SpanTrace;
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
 
@@ -162,9 +155,10 @@ impl From<awc::error::JsonPayloadError> for LemmyAppError {
 #[cfg(feature = "ssr")]
 impl From<awc::error::SendRequestError> for LemmyAppError {
   fn from(value: awc::error::SendRequestError) -> Self {
+    use std::error::Error;
     Self {
       error_type: LemmyAppErrorType::InternalServerError,
-      content: format!("{} - source: {:#?}", value, value.source()),
+      content: format!("{} - source: {:?}", value, value.source()),
     }
   }
 }

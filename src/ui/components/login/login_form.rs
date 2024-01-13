@@ -1,20 +1,13 @@
 use crate::{
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
-  lemmy_errors::LemmyErrorType,
   queries::site_state_query::use_site_state,
   ui::components::common::text_input::{InputType, TextInput},
 };
-use cfg_if::cfg_if;
-use lemmy_api_common::{
-  person::{Login, LoginResponse},
-  site::GetSiteResponse,
-};
+use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::*;
-use leptos_i18n::t;
-use leptos_query::{QueryResult, RefetchFn};
+use leptos_query::QueryResult;
 use leptos_router::*;
-use wasm_cookies::CookieOptions;
 use web_sys::SubmitEvent;
 
 fn validate_login(form: &Login) -> Option<LemmyAppErrorType> {
@@ -38,7 +31,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
       match result {
         Ok(LoginResponse { ref jwt, .. }) => {
-          if let Some(jwt_string) = jwt {
+          if let Some(_jwt_string) = jwt {
             result
           } else {
             Err(LemmyAppError {
@@ -77,7 +70,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
           .await;
 
       match cookie_res {
-        Ok(o) => {
+        Ok(_o) => {
           redirect("/");
           Ok(())
         }
@@ -93,7 +86,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
-  let i18n = use_i18n();
+  let _i18n = use_i18n();
 
   let query = use_query_map();
 
@@ -110,7 +103,7 @@ pub fn LoginForm() -> impl IntoView {
   let username_validation = create_rw_signal::<String>("".into());
   let password_validation = create_rw_signal::<String>("".into());
 
-  let QueryResult { refetch, .. } = use_site_state();
+  let QueryResult { .. } = use_site_state();
 
   if let Some(e) = ssr_error() {
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);
@@ -144,6 +137,7 @@ pub fn LoginForm() -> impl IntoView {
   let on_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
+    #[cfg(not(feature = "ssr"))]
     create_resource(
       move || (name, password),
       move |(name, password)| async move {
@@ -157,21 +151,21 @@ pub fn LoginForm() -> impl IntoView {
 
         match result {
           Ok(LoginResponse { jwt, .. }) => {
-            #[cfg(not(feature = "ssr"))]
-            {
-              use wasm_cookies::set;
-              set(
-                "jwt",
-                &jwt.clone().unwrap().to_string()[..],
-                &CookieOptions {
-                  same_site: wasm_cookies::cookies::SameSite::Strict,
-                  secure: true,
-                  expires: Some(std::borrow::Cow::Borrowed("Sat, 04 Jan 2025 19:24:51 GMT")),
-                  domain: None,
-                  path: None,
-                },
-              );
-            }
+            // #[cfg(not(feature = "ssr"))]
+            // {
+            use wasm_cookies::{cookies::CookieOptions, set};
+            set(
+              "jwt",
+              &jwt.clone().unwrap().to_string()[..],
+              &CookieOptions {
+                same_site: wasm_cookies::cookies::SameSite::Strict,
+                secure: true,
+                expires: Some(std::borrow::Cow::Borrowed("Sat, 04 Jan 2025 19:24:51 GMT")),
+                domain: None,
+                path: None,
+              },
+            );
+            // }
 
             let navigate = leptos_router::use_navigate();
             navigate("/", Default::default());

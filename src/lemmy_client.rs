@@ -1,14 +1,13 @@
 use crate::{
   errors::{LemmyAppError, LemmyAppErrorType, LemmyAppResult},
   host::{get_host, get_https},
-  lemmy_errors::{LemmyError, LemmyErrorExt, LemmyErrorType},
+  lemmy_errors::LemmyErrorType,
 };
 use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
-use leptos::{leptos_dom::logging, Serializable};
+use leptos::Serializable;
 use serde::{Deserialize, Serialize};
-use tracing_error::SpanTrace;
 
 #[derive(Clone)]
 pub enum HttpType {
@@ -181,7 +180,7 @@ cfg_if! {
         }
 
         use actix_session::Session;
-        use leptos_actix::{extract, redirect};
+
 
         #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
@@ -196,7 +195,7 @@ cfg_if! {
                 Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
                 Request: Into<LemmyRequest<Form>>,
             {
-                let LemmyRequest {body, jwt} = req.into();
+                let LemmyRequest {body, jwt: _} = req.into();
 
                 let jwt = extract(|session: Session| async move {
                   session.get::<String>("jwt")
@@ -209,7 +208,7 @@ cfg_if! {
 
                 use actix_web::web;
                 use awc::Client;
-                use leptos_actix::{extract, redirect};
+                use leptos_actix::{extract};
 
                 let result = extract(|self: web::Data<Client>| async move {
                   let mut r = match method {
@@ -306,7 +305,7 @@ cfg_if! {
                     }
                 });
 
-                let mut r = match method {
+                let r = match method {
                   HttpType::Get =>
                       Request::get(&build_fetch_query(path, body))
                           .maybe_bearer_auth(jwt.as_deref())

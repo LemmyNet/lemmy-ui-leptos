@@ -1,22 +1,9 @@
 use crate::{
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  errors::LemmyAppError,
   lemmy_client::*,
   ui::components::{comment::comment_nodes::CommentNodes, post::post_listing::PostListing},
 };
-use lemmy_api_common::{
-  comment::GetComments,
-  community::*,
-  lemmy_db_schema::{
-    newtypes::PostId,
-    source::{community::Community, person::Person},
-    ListingType,
-    SortType,
-  },
-  lemmy_db_views::structs::PaginationCursor,
-  lemmy_db_views_actor::structs::CommunityView,
-  post::{GetPost, GetPosts, GetPostsResponse},
-  site::GetSiteResponse,
-};
+use lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost};
 use leptos::*;
 use leptos_router::{use_params_map, ParamsMap};
 use std::num::ParseIntError;

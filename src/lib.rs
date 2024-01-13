@@ -1,4 +1,4 @@
-#![allow(warnings)]
+// #![allow(warnings)]
 
 mod config;
 mod errors;
@@ -14,7 +14,6 @@ mod ui;
 use crate::{
   i18n::*,
   layout::Layout,
-  queries::site_state_query::use_site_state,
   ui::components::{
     communities::communities_activity::CommunitiesActivity,
     home::home_activity::HomeActivity,
@@ -23,10 +22,9 @@ use crate::{
   },
 };
 use cfg_if::cfg_if;
-use lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_meta::*;
-use leptos_query::{provide_query_client, QueryResult};
+use leptos_query::provide_query_client;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
