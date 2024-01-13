@@ -424,9 +424,7 @@ pub fn HomeActivity() -> impl IntoView {
                       .get()
                       .map(|res| match res {
                           None => {
-                              view! {
-                                <div>"No posts for this type of query at the moment"</div>
-                              }
+                              view! { <div>"No posts for this type of query at the moment"</div> }
                           }
                           Some(res) => {
                               view! {
