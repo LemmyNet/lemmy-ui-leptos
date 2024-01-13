@@ -425,88 +425,11 @@ pub fn HomeActivity() -> impl IntoView {
                       .map(|res| match res {
                           None => {
                               view! {
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
                                 <div>"No posts for this type of query at the moment"</div>
                               }
                           }
                           Some(res) => {
                               view! {
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-
-                                // view! {
-                                // <div class="alert alert-error">
-                                // {move || {
-                                // error.get().map(|err| {
-                                // view! {
-                                // <span>{err}</span>
-                                // }
-                                // })
-                                // }}
-                                // </div>
-                                // }
-
                                 <div>
                                   <PostListings posts=res.posts.into() error/>
                                   <button
