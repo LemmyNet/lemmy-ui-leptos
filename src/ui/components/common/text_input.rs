@@ -29,9 +29,13 @@ pub fn TextInput(
         }
 
         id=id
-        // class="peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50"
-        class=move || format!("peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50 {}", validation_class.get())
-        // required
+        class=move || {
+            format!(
+                "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50 {}",
+                validation_class.get(),
+            )
+        }
+
         placeholder=" "
         name=move || name.get()
         disabled=move || disabled.get().unwrap_or(false)

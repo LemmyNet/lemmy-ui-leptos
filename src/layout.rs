@@ -8,7 +8,7 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
   let ui_theme = expect_context::<RwSignal<String>>();
 
   #[cfg(feature = "ssr")]
-  let theme = None::<String>; 
+  let theme = None::<String>;
   // let theme = {
 
   //   create_resource(|| (), |_| async move {
@@ -37,16 +37,12 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
   // }.get();
 
   #[cfg(not(feature = "ssr"))]
-  // let theme = None::<String>; 
+  // let theme = None::<String>;
   let theme = {
     if let Some(r) = wasm_cookies::get("theme") {
       match r {
-        Ok(o) => {
-          Some(o)
-        }
-        _ => {
-          None
-        },
+        Ok(o) => Some(o),
+        _ => None,
       }
     } else {
       None

@@ -92,21 +92,14 @@ async fn try_report(form: CreatePostReport) -> Result<PostReportResponse, LemmyA
       let result = (Fetch {}).report_post(form).await;
 
       match result {
-        Ok(o) => {
-          Ok(o)
-        }
-        Err(e) => {
-          Err(e)
-        }
+        Ok(o) => Ok(o),
+        Err(e) => Err(e),
       }
     }
-    Some(e) =>
-    {
-      Err(LemmyAppError {
-        error_type: e.clone(),
-        content: format!("{}", form.post_id.0),
-      })
-    }
+    Some(e) => Err(LemmyAppError {
+      error_type: e.clone(),
+      content: format!("{}", form.post_id.0),
+    }),
   }
 }
 
@@ -167,12 +160,20 @@ pub fn PostListing(
   };
 
   let on_up_vote_submit = move |ev: SubmitEvent| {
-    let score = if Some(1) == post_view.get().my_vote { 0 } else { 1 };
+    let score = if Some(1) == post_view.get().my_vote {
+      0
+    } else {
+      1
+    };
     on_vote_submit(ev, score);
   };
 
   let on_down_vote_submit = move |ev: SubmitEvent| {
-    let score = if Some(-1) == post_view.get().my_vote { 0 } else { -1 };
+    let score = if Some(-1) == post_view.get().my_vote {
+      0
+    } else {
+      -1
+    };
     on_vote_submit(ev, score);
   };
 
@@ -341,17 +342,22 @@ pub fn PostListing(
             if let Some(d) = post_view.get().post.url {
                 let u = d.inner().to_string();
                 view! {
-                  <span>
+                  <span class="block w-24 truncate">
                     // <img class="h-24 w-24" src=u/>
-                    // <a href=u>{move || format!("{:#?}", post_view().post.thumbnail_url)}</a>
+                    <a href=u.clone()>{move || format!("{}", u)}</a>
                   </span>
                 }
             } else {
                 view! {
-                  <span>{move || format!("{:#?}", post_view.get().post.thumbnail_url)}</span>
+                  // <img class="h-24 w-24" src=u/>
+
+                  <span class="block w-24 truncate">
+                    {move || format!("{:#?}", post_view.get().post.thumbnail_url)}
+                  </span>
                 }
             }
         }}
+
       </td>
       <td>
         <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
@@ -380,7 +386,11 @@ pub fn PostListing(
               {post_view.get().unread_comments}
             </A>
           </span>
-          <ActionForm action=save_post_action  on:submit=on_save_submit class="inline-block align-top">
+          <ActionForm
+            action=save_post_action
+            on:submit=on_save_submit
+            class="inline-block align-top"
+          >
             <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
             <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
             <button
@@ -403,16 +413,20 @@ pub fn PostListing(
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
-                <ActionForm class="block" action=report_post_action  on:submit=on_report_submit>
+                <ActionForm class="block" action=report_post_action on:submit=on_report_submit>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
                     class=move || format!("input input-bordered {}", report_validation.get())
                     type="text"
-                    on:input=move |e| update!(|reason| *reason = event_target_value(&e))
+                    on:input=move |e| update!(| reason | * reason = event_target_value(& e))
                     name="reason"
                     placeholder="reason"
                   />
-                  <button class="text-xs whitespace-nowrap align-top" title="Report post" type="submit">
+                  <button
+                    class="text-xs whitespace-nowrap align-top"
+                    title="Report post"
+                    type="submit"
+                  >
                     <Flag class="inline-block"/>
                     " Report post"
                   </button>
@@ -426,7 +440,11 @@ pub fn PostListing(
                     value=format!("{}", post_view.get().creator.id.0)
                   />
                   <input type="hidden" name="block" value="true"/>
-                  <button class="text-xs whitespace-nowrap align-top" title="Block user" type="submit">
+                  <button
+                    class="text-xs whitespace-nowrap align-top"
+                    title="Block user"
+                    type="submit"
+                  >
                     <Prohibit class="inline-block"/>
                     " Block user"
                   </button>

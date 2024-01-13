@@ -9,7 +9,8 @@ use lemmy_api_common::{
   lemmy_db_schema::{
     newtypes::PostId,
     source::{community::Community, person::Person},
-    ListingType, SortType,
+    ListingType,
+    SortType,
   },
   lemmy_db_views::structs::PaginationCursor,
   lemmy_db_views_actor::structs::CommunityView,
@@ -69,19 +70,9 @@ pub fn HomeActivity() -> impl IntoView {
   }
 
   let list = create_rw_signal::<Option<ListingType>>(None);
-  let ssr_list = move || {
-    query.with(|params| {
-      // logging::log!("listquery CHANGE {:#?}", params);
-      params.get("list").cloned()
-    })
-  };
+  let ssr_list = move || query.with(|params| params.get("list").cloned());
   let sort = create_rw_signal::<Option<SortType>>(None);
-  let ssr_sort = move || {
-    query.with(|params| {
-      // logging::log!("sortquery CHANGE {:#?}", params);
-      params.get("sort").cloned()
-    })
-  };
+  let ssr_sort = move || query.with(|params| params.get("sort").cloned());
 
   if let Some(t) = ssr_list() {
     let r = serde_json::from_str::<ListingType>(&t[..]);
@@ -89,12 +80,8 @@ pub fn HomeActivity() -> impl IntoView {
     match r {
       Ok(o) => {
         list_signal.set(Some(o));
-        // logging::log!("list {:#?}", o);
       }
       Err(e) => {
-        // error.set(Some(
-        //   "error decoding error - log and ignore in UI?".to_string(),
-        // ));
         logging::log!("error decoding error - log and ignore in UI?");
       }
     }
@@ -113,9 +100,6 @@ pub fn HomeActivity() -> impl IntoView {
           );
         }
         Err(e) => {
-          // error.set(Some(
-          //   "error decoding error - log and ignore in UI?".to_string(),
-          // ));
           logging::log!("error decoding error - log and ignore in UI?");
         }
       }
@@ -128,7 +112,6 @@ pub fn HomeActivity() -> impl IntoView {
     match r {
       Ok(o) => {
         sort_signal.set(Some(o));
-        // logging::log!("sort {:#?}", o);
       }
       Err(e) => {
         // error.set(Some(
@@ -161,8 +144,6 @@ pub fn HomeActivity() -> impl IntoView {
     }
   };
 
-  // let authenticated_user = expect_context::<Signal<Option<Person>>>();
-
   // let QueryResult { data, refetch, .. } = use_site_state();
 
   // let my_user = Signal::<Option<Person>>::derive(move || {
@@ -188,7 +169,6 @@ pub fn HomeActivity() -> impl IntoView {
 
             match r {
               Ok(o) => {
-                // logging::log!("K list {:#?}", o);
                 list_signal.set(Some(o));
                 Some(o)
               }
@@ -218,7 +198,6 @@ pub fn HomeActivity() -> impl IntoView {
 
             match r {
               Ok(o) => {
-                // logging::log!("K sort {:#?}", o);
                 sort_signal.set(Some(o));
                 Some(o)
               }
@@ -226,10 +205,6 @@ pub fn HomeActivity() -> impl IntoView {
                 // error.set(Some(
                 //   "error decoding error - log and ignore in UI?".to_string(),
                 // ));
-                logging::log!(
-                  "SORT error decoding error - log and ignore in UI? {:#?}",
-                  sort
-                );
                 None
               }
             }
@@ -272,7 +247,7 @@ pub fn HomeActivity() -> impl IntoView {
           error.set(Some(t!(i18n, unknown)().to_string()));
           error_content.set(None);
           None
-        },
+        }
       }
     },
   );
@@ -315,181 +290,348 @@ pub fn HomeActivity() -> impl IntoView {
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
-    <div class="container mx-auto overflow-auto">
-    <div class="w-full flex flex-col sm:flex-row flex-grow">
-      <Transition fallback=|| { view! { <div> "Loading..." </div> } }>
-        <main role="main" class="w-full h-full flex-grow p-3">
-          // <Show
-          //   when=move || error.get().is_some()
-          //   fallback=move || {
-          //     view! {
-          //       <div class="hidden">
-          //       </div>
-          //     }
-          //   }
-          // >
-          //   <div class="alert alert-error">
-          //     // <span>{error.get()} " - " {error_content.get()}</span>
-          //   </div>
-          // </Show>
-
-          // { move || { error.get().map(|err| {
-          //   view! {
-          //   }
-          // })}}
-          <div class="join mr-3">
-            <button class="btn join-item">"Posts"</button>
-            <button class="btn join-item">"Comments"</button>
-          </div>
-          <div class="join mr-3">
-            <A href=format!("/?list={}&sort={}", "\"Subscribed\"", if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::Subscribed) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::Subscribed)>"Subscribed"</A>
-            <A href=format!("/?list={}&sort={}", "\"Local\"", if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::Local) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::Local)>"Local"</A>
-            <A href=format!("/?list={}&sort={}", "\"All\"", if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" }) class=move || format!("btn join-item {}", if Some(ListingType::All) == list_signal.get() { "btn-active" } else { "" }) on:click=on_list_click(ListingType::All)>"All"</A>
-          </div>
-          <div class="dropdown">
-            <label tabindex="0" class="btn">
-              "Sort type"
-            </label>
-            <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-              <li class=move || format!("{}", if Some(SortType::Active) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::Active)>
-                <span>{t!(i18n, active)}</span>
-              </li>
-              <li class=move || format!("{}", if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::Hot)>
-                <span>{t!(i18n, hot)}</span>
-              </li>
-              <li class=move || format!("{}", if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" }) on:click=on_sort_click(SortType::New)>
-                <span>{t!(i18n, new)}</span>
-              </li>
-            </ul>
-          </div>
-          { move || { posts.get().map(|res| match res {
-            None => {
-            //   view! {
-            //     <div class="alert alert-error">
-            //       {move || {
-            //         error.get().map(|err| {
-            //           view! {
-            //             <span>{err}</span>
-            //           }
-            //         })
-            //       }}
-            //     </div>
-              view! { <div> "No posts for this type of query at the moment" </div> }
+      <div class="container mx-auto overflow-auto">
+        <div class="w-full flex flex-col sm:flex-row flex-grow">
+          <Transition fallback=|| {
+              view! { <div>"Loading..."</div> }
+          }>
+            <main role="main" class="w-full h-full flex-grow p-3">
+              // <Show
+              // when=move || error.get().is_some()
+              // fallback=move || {
+              // view! {
+              // <div class="hidden">
+              // </div>
               // }
-            }
-            Some(res) => {
-              view! {
-                <div>
-                  <PostListings posts=res.posts.into() error/>
-                  <button
-                    class="btn"
-                    on:click=move |_| {
-                        let mut p = prev_cursor_stack.get();
-                        let s = p.pop().unwrap_or(None);
-                        prev_cursor_stack.set(p);
-                        page_cursor.set(s.clone());
-                        cursor_string.set(Some(format!("{:#?}", s)));
+              // }
+              // >
+              // <div class="alert alert-error">
+              // // <span>{error.get()} " - " {error_content.get()}</span>
+              // </div>
+              // </Show>
+
+              // { move || { error.get().map(|err| {
+              // view! {
+              // }
+              // })}}
+              <div class="join mr-3">
+                <button class="btn join-item">"Posts"</button>
+                <button class="btn join-item">"Comments"</button>
+              </div>
+              <div class="join mr-3">
+                <A
+                  href=format!(
+                      "/?list={}&sort={}",
+                      "\"Subscribed\"",
+                      if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                  )
+
+                  class=move || {
+                      format!(
+                          "btn join-item {}",
+                          if Some(ListingType::Subscribed) == list_signal.get() {
+                              "btn-active"
+                          } else {
+                              ""
+                          },
+                      )
+                  }
+
+                  on:click=on_list_click(ListingType::Subscribed)
+                >
+                  "Subscribed"
+                </A>
+                <A
+                  href=format!(
+                      "/?list={}&sort={}",
+                      "\"Local\"",
+                      if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
+                  )
+
+                  class=move || {
+                      format!(
+                          "btn join-item {}",
+                          if Some(ListingType::Local) == list_signal.get() {
+                              "btn-active"
+                          } else {
+                              ""
+                          },
+                      )
+                  }
+
+                  on:click=on_list_click(ListingType::Local)
+                >
+                  "Local"
+                </A>
+                <A
+                  href=format!(
+                      "/?list={}&sort={}",
+                      "\"All\"",
+                      if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
+                  )
+
+                  class=move || {
+                      format!(
+                          "btn join-item {}",
+                          if Some(ListingType::All) == list_signal.get() {
+                              "btn-active"
+                          } else {
+                              ""
+                          },
+                      )
+                  }
+
+                  on:click=on_list_click(ListingType::All)
+                >
+                  "All"
+                </A>
+              </div>
+              <div class="dropdown">
+                <label tabindex="0" class="btn">
+                  "Sort type"
+                </label>
+                <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+                  <li
+                    class=move || {
+                        format!(
+                            "{}",
+                            if Some(SortType::Active) == sort_signal.get() {
+                                "btn-active"
+                            } else {
+                                ""
+                            },
+                        )
                     }
-                  >"Prev"</button>
-                  <button
-                    class="btn"
-                    on:click=move |_| {
-                        let mut p = prev_cursor_stack.get();
-                        p.push(page_cursor.get());
-                        prev_cursor_stack.set(p);
-                        page_cursor.set(res.next_page.clone());
-                        cursor_string
-                            .set(Some(format!("{:#?}", res.next_page.clone())));
+
+                    on:click=on_sort_click(SortType::Active)
+                  >
+                    <span>{t!(i18n, active)}</span>
+                  </li>
+                  <li
+                    class=move || {
+                        format!(
+                            "{}",
+                            if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" },
+                        )
                     }
-                  >"Next"</button>
-                </div>
-              }
-            }
-          })}}
-        </main>
-      </Transition>
-      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
-        // <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>
-        <Transition fallback=|| { view! { "Loading..." } }>
-          {move || {
-            trending.get().map(|r| match r {
-              None => {
-                  view! { <div class="hidden"></div> }
-              }
-              Some(c) => {
-                let c_signal = create_rw_signal(c.communities);
-                view! {
-                  <div class="card w-full bg-base-300 text-base-content">
-                    <figure>
-                      <div class="card-body bg-info">
-                        <h2 class="card-title text-info-content">"Trending Communities"</h2>
-                      </div>
-                    </figure>
-                    <div class="card-body">
-                      <p> "Description" </p> 
-                      <p>
-                        <For
-                          each=move || c_signal.get()
-                          key=|community| community.community.id
-                          children=move |cv: CommunityView| {
-                            view! {
-                              <span class="badge badge-neutral inline-block whitespace-nowrap"> { cv.community.title } </span> " "
-                            }
+
+                    on:click=on_sort_click(SortType::Hot)
+                  >
+                    <span>{t!(i18n, hot)}</span>
+                  </li>
+                  <li
+                    class=move || {
+                        format!(
+                            "{}",
+                            if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" },
+                        )
+                    }
+
+                    on:click=on_sort_click(SortType::New)
+                  >
+                    <span>{t!(i18n, new)}</span>
+                  </li>
+                </ul>
+              </div>
+              {move || {
+                  posts
+                      .get()
+                      .map(|res| match res {
+                          None => {
+                              view! {
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+                                <div>"No posts for this type of query at the moment"</div>
+                              }
                           }
-                        />
-                      </p>
-                    </div>
-                  </div>
-                      // <div class="bg-gray-50 rounded-xl border my-3 w-full">
-                  // <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:py-12 lg:px-8 lg:flex lg:items-center lg:justify-between">
-                  // <div>
-                  //   <For
-                  //     each=move || c_signal.get()
-                  //     key=|community| community.community.id
-                  //     children=move |cv: CommunityView| {
-                  //       view! {
-                  //         <span> { cv.community.title } </span>
-                  //       }
-                  //     }
-                  //   />
-                  // </div>
-                  // </div>
-                  // </div>
-                }
-              }
-            })
-          }}
-        </Transition>
-        <div class="card w-full bg-base-300 text-base-content">
-          <figure>
-            <div class="card-body bg-neutral">
-              <h2 class="card-title text-neutral-content">"Brand Name"</h2>
+                          Some(res) => {
+                              view! {
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+
+                                // view! {
+                                // <div class="alert alert-error">
+                                // {move || {
+                                // error.get().map(|err| {
+                                // view! {
+                                // <span>{err}</span>
+                                // }
+                                // })
+                                // }}
+                                // </div>
+                                // }
+
+                                <div>
+                                  <PostListings posts=res.posts.into() error/>
+                                  <button
+                                    class="btn"
+                                    on:click=move |_| {
+                                        let mut p = prev_cursor_stack.get();
+                                        let s = p.pop().unwrap_or(None);
+                                        prev_cursor_stack.set(p);
+                                        page_cursor.set(s.clone());
+                                        cursor_string.set(Some(format!("{:#?}", s)));
+                                    }
+                                  >
+
+                                    "Prev"
+                                  </button>
+                                  <button
+                                    class="btn"
+                                    on:click=move |_| {
+                                        let mut p = prev_cursor_stack.get();
+                                        p.push(page_cursor.get());
+                                        prev_cursor_stack.set(p);
+                                        page_cursor.set(res.next_page.clone());
+                                        cursor_string
+                                            .set(Some(format!("{:#?}", res.next_page.clone())));
+                                    }
+                                  >
+
+                                    "Next"
+                                  </button>
+                                </div>
+                              }
+                          }
+                      })
+              }}
+
+            </main>
+          </Transition>
+          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
+            <Transition fallback=|| {
+                view! { "Loading..." }
+            }>
+              {move || {
+                  trending
+                      .get()
+                      .map(|r| match r {
+                          None => {
+                              view! { <div class="hidden"></div> }
+                          }
+                          Some(c) => {
+                              let c_signal = create_rw_signal(c.communities);
+                              view! {
+                                <div class="card w-full bg-base-300 text-base-content">
+                                  <figure>
+                                    <div class="card-body bg-info">
+                                      <h2 class="card-title text-info-content">
+                                        "Trending Communities"
+                                      </h2>
+                                    </div>
+                                  </figure>
+                                  <div class="card-body">
+                                    <p>"Description"</p>
+                                    <p>
+                                      <For
+                                        each=move || c_signal.get()
+                                        key=|community| community.community.id
+                                        children=move |cv: CommunityView| {
+                                            view! {
+                                              <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                                {cv.community.title}
+                                              </span>
+                                              " "
+                                            }
+                                        }
+                                      />
+
+                                    </p>
+                                  </div>
+                                </div>
+                              }
+                          }
+                      })
+              }}
+
+            </Transition>
+            <div class="card w-full bg-base-300 text-base-content">
+              <figure>
+                <div class="card-body bg-neutral">
+                  <h2 class="card-title text-neutral-content">"Brand Name"</h2>
+                </div>
+              </figure>
+              <div class="card-body">
+                <p>"Description"</p>
+                <p>
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "1 user / day"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "2 users / week"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "5 users / month"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "13 users / 6 months"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "220 users"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "4 Communities"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">"14 Posts"</span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                    "174 Comments"
+                  </span>
+                  " "
+                  <span class="badge badge-neutral inline-block whitespace-nowrap">"Modlog"</span>
+                </p>
+                <h3 class="card-title">"Admins"</h3>
+                <p>
+                  <span class="badge badge-primary inline-block whitespace-nowrap">
+                    "1 user / day"
+                  </span>
+                  " "
+                  <span class="badge badge-primary inline-block whitespace-nowrap">
+                    "2 users / week"
+                  </span>
+                  " "
+                  <span class="badge badge-primary inline-block whitespace-nowrap">
+                    "5 users / month"
+                  </span>
+                </p>
+              </div>
             </div>
-          </figure>
-          <div class="card-body">
-            <p> "Description" </p> 
-            <p>
-              <span class="badge badge-neutral inline-block whitespace-nowrap">"1 user / day"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"2 users / week"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"5 users / month"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"13 users / 6 months"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"220 users"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"4 Communities"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"14 Posts"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"174 Comments"</span>
-              " " <span class="badge badge-neutral inline-block whitespace-nowrap">"Modlog"</span>
-            </p>
-            <h3 class="card-title"> "Admins"</h3>
-            <p>
-              <span class="badge badge-primary inline-block whitespace-nowrap">"1 user / day"</span>
-              " " <span class="badge badge-primary inline-block whitespace-nowrap">"2 users / week"</span>
-              " " <span class="badge badge-primary inline-block whitespace-nowrap">"5 users / month"</span>
-            </p>
           </div>
         </div>
       </div>
-    </div>
-    </div>
     </div>
   }
 }

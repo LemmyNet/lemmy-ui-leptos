@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumIter};
 use std::{
   fmt,
   fmt::{Debug, Display},
 };
+use strum_macros::{Display, EnumIter};
 use tracing_error::SpanTrace;
 #[cfg(feature = "full")]
 use ts_rs::TS;
@@ -16,7 +16,6 @@ pub struct LemmyError {
   pub context: SpanTrace,
 }
 
-/// Maximum number of items in an array passed as API parameter. See [[LemmyErrorType::TooManyItems]]
 pub const MAX_API_PARAM_ELEMENTS: usize = 1000;
 
 impl<T> From<T> for LemmyError
@@ -26,7 +25,6 @@ where
   fn from(t: T) -> Self {
     let cause = t.into();
     LemmyError {
-      // error_type: LemmyErrorType::Unknown(format!("{}", &cause)),
       error_type: LemmyErrorType::Unknown,
       inner: cause,
       context: SpanTrace::capture(),
@@ -47,36 +45,15 @@ impl Debug for LemmyError {
 impl Display for LemmyError {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "{}: ", &self.error_type)?;
-    // print anyhow including trace
-    // https://docs.rs/anyhow/latest/anyhow/struct.Error.html#display-representations
-    // this will print the anyhow trace (only if it exists)
-    // and if RUST_BACKTRACE=1, also a full backtrace
     writeln!(f, "{:?}", self.inner)?;
     fmt::Display::fmt(&self.context, f)
   }
 }
 
-// impl actix_web::error::ResponseError for LemmyError {
-//   fn status_code(&self) -> http::StatusCode {
-//     if self.error_type == LemmyErrorType::IncorrectLogin {
-//       return http::StatusCode::UNAUTHORIZED;
-//     }
-//     match self.inner.downcast_ref::<diesel::result::Error>() {
-//       Some(diesel::result::Error::NotFound) => http::StatusCode::NOT_FOUND,
-//       _ => http::StatusCode::BAD_REQUEST,
-//     }
-//   }
-
-//   fn error_response(&self) -> actix_web::HttpResponse {
-//     actix_web::HttpResponse::build(self.status_code()).json(&self.error_type)
-//   }
-// }
-
 #[derive(Default, Display, Debug, Serialize, Deserialize, Clone, PartialEq, EnumIter)]
 #[cfg_attr(feature = "full", derive(TS))]
 #[cfg_attr(feature = "full", ts(export))]
 #[serde(tag = "error", content = "message", rename_all = "snake_case")]
-// TODO: order these based on the crate they belong to (utils, federation, db, api)
 pub enum LemmyErrorType {
   ReportReasonRequired,
   ReportTooLong,
@@ -114,7 +91,6 @@ pub enum LemmyErrorType {
   PersonIsBlocked,
   DownvotesAreDisabled,
   InstanceIsPrivate,
-  /// Password must be between 10 and 60 characters
   InvalidPassword,
   SiteDescriptionLengthOverflow,
   HoneypotFailed,
@@ -221,9 +197,7 @@ pub enum LemmyErrorType {
   CouldntSendWebmention,
   ContradictingFilters,
   InstanceBlockAlreadyExists,
-  /// `jwt` cookie must be marked secure and httponly
   AuthCookieInsecure,
-  /// Thrown when an API call is submitted with more than 1000 array elements, see [[MAX_API_PARAM_ELEMENTS]]
   TooManyItems,
   CommunityHasNoFollowers,
   BanExpirationInPast,
@@ -269,54 +243,7 @@ impl<T> LemmyErrorExt2<T> for Result<T, LemmyError> {
       e
     })
   }
-  // this function can't be an impl From or similar because it would conflict with one of the other broad Into<> implementations
   fn into_anyhow(self) -> Result<T, anyhow::Error> {
     self.map_err(|e| e.inner)
   }
 }
-
-// #[cfg(test)]
-// mod tests {
-//   #![allow(clippy::unwrap_used)]
-//   #![allow(clippy::indexing_slicing)]
-//   use super::*;
-//   use actix_web::{body::MessageBody, ResponseError};
-//   use std::fs::read_to_string;
-//   use strum::IntoEnumIterator;
-
-//   #[test]
-//   fn deserializes_no_message() {
-//     let err = LemmyError::from(LemmyErrorType::Banned).error_response();
-//     let json = String::from_utf8(err.into_body().try_into_bytes().unwrap().to_vec()).unwrap();
-//     assert_eq!(&json, "{\"error\":\"banned\"}")
-//   }
-
-//   #[test]
-//   fn deserializes_with_message() {
-//     let reg_banned = LemmyErrorType::PersonIsBannedFromSite(String::from("reason"));
-//     let err = LemmyError::from(reg_banned).error_response();
-//     let json = String::from_utf8(err.into_body().try_into_bytes().unwrap().to_vec()).unwrap();
-//     assert_eq!(
-//       &json,
-//       "{\"error\":\"person_is_banned_from_site\",\"message\":\"reason\"}"
-//     )
-//   }
-
-//   /// Check if errors match translations. Disabled because many are not translated at all.
-//   #[test]
-//   #[ignore]
-//   fn test_translations_match() {
-//     #[derive(Deserialize)]
-//     struct Err {
-//       error: String,
-//     }
-
-//     let translations = read_to_string("translations/translations/en.json").unwrap();
-//     LemmyErrorType::iter().for_each(|e| {
-//       let msg = serde_json::to_string(&e).unwrap();
-//       let msg: Err = serde_json::from_str(&msg).unwrap();
-//       let msg = msg.error;
-//       assert!(translations.contains(&format!("\"{msg}\"")), "{msg}");
-//     });
-//   }
-// }

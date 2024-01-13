@@ -11,7 +11,6 @@ pub fn CommentNodes(comments: MaybeSignal<Vec<CommentView>>) -> impl IntoView {
           <CommentNode comment_view=cv.into()/>
         </li>
       </For>
-
     </ul>
   }
 }

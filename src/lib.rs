@@ -14,11 +14,13 @@ mod ui;
 use crate::{
   i18n::*,
   layout::Layout,
+  queries::site_state_query::use_site_state,
   ui::components::{
+    communities::communities_activity::CommunitiesActivity,
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
-  }, queries::site_state_query::use_site_state,
+  },
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::lemmy_db_schema::source::person::Person;
@@ -38,21 +40,6 @@ pub fn App() -> impl IntoView {
   let ui_theme = create_rw_signal::<String>(String::from("retro"));
   provide_context(ui_theme);
 
-  // let authenticated_user = create_rw_signal::<Option<Person>>(None);
-  // provide_context(authenticated_user);
-
-  // let QueryResult { data, refetch, .. } = use_site_state();
-
-  // let authenticated_user = Signal::derive(move || {
-  //   data().map_or_else(
-  //     || None,
-  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-  //   )
-  // });
-
-  // provide_context(authenticated_user);
-  // provide_context(refetch);
-
   let (is_routing, set_is_routing) = create_signal(false);
 
   view! {
@@ -60,23 +47,23 @@ pub fn App() -> impl IntoView {
       <Routes>
         <Route path="/" view=move || view! { <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
           <Route path="" view=HomeActivity ssr=SsrMode::Async/>
-          <Route path="home" view=PostActivity/>
+          <Route path="home" view=HomeActivity ssr=SsrMode::Async/>
 
-          <Route path="communities" view=PostActivity/>
-          <Route path="create_post" view=PostActivity/>
-          <Route path="create_community" view=PostActivity/>
+          <Route path="communities" view=CommunitiesActivity/>
+          <Route path="create_post" view=CommunitiesActivity/>
+          <Route path="create_community" view=CommunitiesActivity/>
 
-          <Route path="search" view=PostActivity/>
+          <Route path="search" view=CommunitiesActivity/>
           <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
-          <Route path="signup" view=PostActivity/>
+          <Route path="signup" view=CommunitiesActivity/>
 
-          <Route path="inbox" view=PostActivity/>
-          <Route path="u/:id" view=PostActivity/>
-          <Route path="settings" view=PostActivity/>
-          <Route path="logout" view=PostActivity/>
+          <Route path="inbox" view=CommunitiesActivity/>
+          <Route path="u/:id" view=CommunitiesActivity/>
+          <Route path="settings" view=CommunitiesActivity/>
+          <Route path="logout" view=CommunitiesActivity/>
 
-          <Route path="modlog" view=PostActivity/>
-          <Route path="instances" view=PostActivity/>
+          <Route path="modlog" view=CommunitiesActivity/>
+          <Route path="instances" view=CommunitiesActivity/>
 
           <Route path="post/:id" view=PostActivity ssr=SsrMode::Async/>
         </Route>
@@ -85,7 +72,6 @@ pub fn App() -> impl IntoView {
   }
 }
 
-// Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {
     if #[cfg(feature = "hydrate")] {
         use wasm_bindgen::prelude::wasm_bindgen;
