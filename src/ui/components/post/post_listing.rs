@@ -303,7 +303,7 @@ pub fn PostListing(
 
   view! {
     <tr>
-      <td class="flex flex-col text-center">
+      <td class="flex flex-col text-center w-12">
         <ActionForm action=vote_action on:submit=on_up_vote_submit>
           <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
@@ -336,7 +336,7 @@ pub fn PostListing(
           </button>
         </ActionForm>
       </td>
-      <td>
+      <td class="w-28">
         <a href=move || {
             if let Some(d) = post_view.get().post.url {
                 d.inner().to_string()
@@ -364,7 +364,7 @@ pub fn PostListing(
 
         </a>
       </td>
-      <td>
+      <td class="w-full">
         <A href=move || format!("/post/{}", post_view.get().post.id) class="block">
           <span class="text-lg">{move || post_view.get().post.name}</span>
         </A>

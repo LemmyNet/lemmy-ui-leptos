@@ -103,7 +103,7 @@ pub fn LoginForm() -> impl IntoView {
   let username_validation = create_rw_signal::<String>("".into());
   let password_validation = create_rw_signal::<String>("".into());
 
-  let QueryResult { .. } = use_site_state();
+  // let QueryResult { .. } = use_site_state();
 
   if let Some(e) = ssr_error() {
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);

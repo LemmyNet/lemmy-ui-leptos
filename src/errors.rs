@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
 use std::num::ParseIntError;
 use strum_macros::{Display, EnumIter};
+use wasm_cookies::*;
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
 
@@ -142,6 +143,15 @@ impl From<gloo_net::Error> for LemmyAppError {
   }
 }
 
+#[cfg(not(feature = "ssr"))]
+impl From<FromUrlEncodingError> for LemmyAppError {
+  fn from(value: FromUrlEncodingError) -> Self {
+    Self {
+      error_type: LemmyAppErrorType::InternalServerError,
+      content: format!("{:#?}", value),
+    }
+  }
+}
 #[cfg(feature = "ssr")]
 impl From<awc::error::JsonPayloadError> for LemmyAppError {
   fn from(value: awc::error::JsonPayloadError) -> Self {

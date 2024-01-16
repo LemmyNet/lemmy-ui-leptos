@@ -1507,7 +1507,6 @@ dependencies = [
  "actix-session",
  "actix-web",
  "anyhow",
- "async-trait",
  "awc",
  "cfg-if",
  "gloo-net 0.4.0",

@@ -1,5 +1,5 @@
-use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*};
-use lemmy_api_common::lemmy_db_schema::source::person::Person;
+use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*, errors::LemmyAppError, cookie::{set_cookie, remove_cookie}};
+use lemmy_api_common::{lemmy_db_schema::source::person::Person, site::GetSiteResponse};
 use leptos::*;
 // use leptos_icons::*;
 use leptos_query::*;
@@ -58,7 +58,6 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 
   match cookie_res {
     Ok(_o) => {
-      // redirect("/");
       Ok(())
     }
     Err(e) => Err(e),
@@ -69,7 +68,9 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, refetch, .. } = use_site_state();
+  let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
+
+  // let QueryResult { data, refetch, .. } = use_site_state();
 
   let my_user = Signal::<Option<Person>>::derive(move || {
     data.get().map_or_else(
@@ -86,14 +87,14 @@ pub fn TopNav() -> impl IntoView {
   });
 
   let logout_action = create_server_action::<LogoutFn>();
-  let logout_is_success = Signal::derive(move || logout_action.value().get().is_some());
+  // let logout_is_success = Signal::derive(move || logout_action.value().get().is_some());
 
-  create_isomorphic_effect(move |_| {
-    if logout_is_success.get() {
-      logging::log!("LOGOUT");
-      refetch();
-    }
-  });
+  // create_isomorphic_effect(move |_| {
+  //   if logout_is_success.get() {
+  //     logging::log!("LOGOUT");
+  //     refetch();
+  //   }
+  // });
 
   let on_logout_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
@@ -121,8 +122,8 @@ pub fn TopNav() -> impl IntoView {
               // );
             }
 
-            let QueryResult { refetch, .. } = use_site_state();
-            refetch();
+            // let QueryResult { refetch, .. } = use_site_state();
+            // refetch();
           }
           Err(_e) => {
             // error.set(Some(message_from_error(&e)));
@@ -138,11 +139,15 @@ pub fn TopNav() -> impl IntoView {
     );
   };
 
-  let ui_theme = expect_context::<RwSignal<String>>();
+  let ui_theme = expect_context::<RwSignal<Option<String>>>();
+  let theme_action = create_server_action::<ChangeThemeFn>();
 
-  let change_theme = move |theme_name: &'static str| {
-    move |_| {
-      ui_theme.set(theme_name.to_string());
+  let on_theme_submit = move |theme_name: &'static str| {
+    move |ev: SubmitEvent| {
+      ev.prevent_default();
+      // remove_cookie("theme").await;
+      spawn_local(async move { set_cookie("theme", theme_name.clone()).await; });
+      ui_theme.set(Some(theme_name.to_string()));
     }
   };
 
@@ -155,7 +160,7 @@ pub fn TopNav() -> impl IntoView {
   view! {
     <nav class="navbar container mx-auto">
       <div class="navbar-start">
-        <ul class="menu menu-horizontal flex-nowrap">
+        <ul class="menu menu-horizontal flex-nowrap items-center">
           <li>
             <A href="/" class="text-xl whitespace-nowrap">
               <Transition fallback=|| {
@@ -188,7 +193,7 @@ pub fn TopNav() -> impl IntoView {
         </ul>
       </div>
       <div class="navbar-end">
-        <ul class="menu menu-horizontal flex-nowrap">
+        <ul class="menu menu-horizontal flex-nowrap items-center">
           <li>
             <A href="/search">
               <span title=t!(i18n, search)>
@@ -213,14 +218,23 @@ pub fn TopNav() -> impl IntoView {
             <details>
               <summary>"Theme"</summary>
               <ul>
-                <li on:click=change_theme("dark")>
-                  <span>"Dark"</span>
+                <li>
+                  <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
+                    <input type="hidden" name="theme" value="dark"/>
+                    <button type="submit">"Dark"</button>
+                  </ActionForm>
                 </li>
-                <li on:click=change_theme("light")>
-                  <span>"Light"</span>
+                <li>
+                  <ActionForm action=theme_action on:submit=on_theme_submit("light")>
+                    <input type="hidden" name="theme" value="light"/>
+                    <button type="submit">"Light"</button>
+                  </ActionForm>
                 </li>
-                <li on:click=change_theme("retro")>
-                  <span>"Retro"</span>
+                <li>
+                  <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
+                    <input type="hidden" name="theme" value="retro"/>
+                    <button type="submit">"Retro"</button>
+                  </ActionForm>
                 </li>
               </ul>
             </details>
@@ -288,7 +302,9 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult { data, .. } = use_site_state();
+  let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
+
+  // let QueryResult { data, .. } = use_site_state();
 
   let instance_api_version = Signal::derive(move || {
     data
@@ -302,7 +318,7 @@ pub fn BottomNav() -> impl IntoView {
     <nav class="container navbar mx-auto">
       <div class="navbar-start w-auto"></div>
       <div class="navbar-end grow w-auto">
-        <ul class="menu menu-horizontal flex-nowrap">
+        <ul class="menu menu-horizontal flex-nowrap items-center">
           <li>
             <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
               "FE: "

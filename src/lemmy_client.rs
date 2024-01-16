@@ -1,9 +1,9 @@
 use crate::{
   errors::{LemmyAppError, LemmyAppErrorType, LemmyAppResult},
   host::{get_host, get_https},
-  lemmy_errors::LemmyErrorType,
+  lemmy_errors::LemmyErrorType, cookie::get_cookie,
 };
-use async_trait::async_trait;
+// use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
 use leptos::Serializable;
@@ -45,11 +45,11 @@ impl<R: Serialize> From<R> for LemmyRequest<R> {
 mod private_trait {
   use super::{HttpType, LemmyRequest};
   use crate::errors::LemmyAppResult;
-  use async_trait::async_trait;
+  // use async_trait::async_trait;
   use leptos::Serializable;
   use serde::{Deserialize, Serialize};
 
-  #[async_trait(?Send)]
+  // #[async_trait(?Send)]
   pub trait LemmyClient {
     async fn make_request<Response, Form, Request>(
       &self,
@@ -64,7 +64,7 @@ mod private_trait {
   }
 }
 
-#[async_trait(?Send)]
+// #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
   async fn login(&self, form: Login) -> LemmyAppResult<LoginResponse> {
     // leptos::logging::log!("FORM {:#?}", form);
@@ -182,7 +182,7 @@ cfg_if! {
         use actix_session::Session;
 
 
-        #[async_trait(?Send)]
+        // #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
             async fn make_request<Response, Form, Request>(
                 &self,
@@ -197,10 +197,12 @@ cfg_if! {
             {
                 let LemmyRequest {body, jwt: _} = req.into();
 
-                let jwt = extract(|session: Session| async move {
-                  session.get::<String>("jwt")
-                })
-                .await??;
+                let jwt = get_cookie("jwt").await?; // { Ok(o) => o, _ => None };
+                    
+                // let jwt = extract(|session: Session| async move {
+                //   session.get::<String>("jwt")
+                // })
+                // .await??;
 
                 leptos::logging::log!("make JWT {:#?} ", jwt);
 
@@ -210,21 +212,21 @@ cfg_if! {
                 use awc::Client;
                 use leptos_actix::{extract};
 
-                let result = extract(|self: web::Data<Client>| async move {
+                let result = extract(|client: web::Data<Client>| async move {
                   let mut r = match method {
                       HttpType::Get =>
-                          self
+                          client
                               .get(&route)
                               .maybe_bearer_auth(jwt.clone())
                               .query(&body)?
                               .send(),
                       HttpType::Post =>
-                          self
+                          client
                               .post(&route)
                               .maybe_bearer_auth(jwt.clone())
                               .send_json(&body),
                       HttpType::Put =>
-                          self
+                          client
                               .put(&route)
                               .maybe_bearer_auth(jwt.clone())
                               .send_json(&body)
@@ -280,7 +282,7 @@ cfg_if! {
             }
         }
 
-        #[async_trait(?Send)]
+        // #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
             async fn make_request<Response, Form, Req>(
                 &self,
@@ -295,7 +297,10 @@ cfg_if! {
             {
                 let LemmyRequest { body, .. } = req.into();
                 let route = &build_route(path);
-                let jwt = get("jwt").and_then(Result::ok);
+
+                let jwt = get_cookie("jwt").await?;
+
+                // let jwt = get("jwt").and_then(Result::ok);
 
                 let abort_controller = AbortController::new().ok();
                 let abort_signal = abort_controller.as_ref().map(AbortController::signal);

@@ -1,6 +1,7 @@
-// #![allow(warnings)]
+#![allow(warnings)]
 
 mod config;
+mod cookie;
 mod errors;
 mod host;
 mod layout;
@@ -35,7 +36,7 @@ pub fn App() -> impl IntoView {
   provide_i18n_context();
   provide_query_client();
 
-  let ui_theme = create_rw_signal::<String>(String::from("retro"));
+  let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
 
   let (is_routing, set_is_routing) = create_signal(false);

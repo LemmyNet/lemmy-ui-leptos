@@ -38,7 +38,7 @@ actix-web = { version = "4", features = ["macros"], optional = true }
 actix-proxy = { version = "0.2", optional = true }
 actix-http = { version = "3", optional = true }
 awc = { version = "3.2", optional = true }
-async-trait = "0.1"
+# async-trait = "0.1"
 actix-session = { version = "0.8", features = [
   "cookie-session",
 ], optional = true }
