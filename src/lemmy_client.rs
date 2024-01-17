@@ -122,7 +122,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn get_site(&self, jwt: Option<String>) -> LemmyAppResult<GetSiteResponse> {
-    leptos::logging::log!("JWT {:#?}", jwt.clone());
+    // leptos::logging::log!("JWT {:#?}", jwt.clone());
 
     let r: Result<GetSiteResponse, LemmyAppError> = self
       .make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt))
@@ -179,7 +179,7 @@ cfg_if! {
             }
         }
 
-        use actix_session::Session;
+        // use actix_session::Session;
 
 
         // #[async_trait(?Send)]
@@ -204,7 +204,7 @@ cfg_if! {
                 // })
                 // .await??;
 
-                leptos::logging::log!("make JWT {:#?} ", jwt);
+                // leptos::logging::log!("make JWT {:#?} ", jwt);
 
                 let route = build_route(path);
 

@@ -9,7 +9,6 @@ pub fn CommentNode(comment_view: MaybeSignal<CommentView>) -> impl IntoView {
           | comment_view | format!("{} - {}", comment_view.creator.name, comment_view.comment
           .content)
       )}
-
     </div>
   }
 }

@@ -1,4 +1,4 @@
-use crate::errors::LemmyAppError;
+use crate::{errors::LemmyAppError, cookie::get_cookie};
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOption};
@@ -6,12 +6,13 @@ use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOpti
 #[server(GetSiteResource, "/serverfn", "GetJson")]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   use crate::lemmy_client::*;
-  use actix_session::Session;
-  use leptos_actix::extract;
+  // use actix_session::Session;
+  // use leptos_actix::extract;
 
-  let jwt = extract(|session: Session| async move { session.get::<String>("jwt") }).await??;
+  let jwt = get_cookie("jwt").await?;
+  // extract(|session: Session| async move { session.get::<String>("jwt") }).await??;
 
-  logging::log!("SITE JWT {:#?}", jwt);
+  // logging::log!("SITE JWT {:#?}", jwt);
 
   let result = (Fetch {}).get_site(jwt).await?;
 
@@ -27,11 +28,12 @@ pub fn use_site_state() -> QueryResult<Result<GetSiteResponse, LemmyAppError>, i
       use crate::lemmy_client::*;
 
       #[cfg(feature = "ssr")]
-      let jwt = {
-        use actix_session::Session;
-        use leptos_actix::extract;
-        extract(|session: Session| async move { session.get::<String>("jwt") }).await??
-      };
+      let jwt = None //{
+        // use actix_session::Session;
+        // use leptos_actix::extract;
+        // extract(|session: Session| async move { session.get::<String>("jwt") }).await??
+      // }
+      ;
 
       #[cfg(not(feature = "ssr"))]
       let jwt = {

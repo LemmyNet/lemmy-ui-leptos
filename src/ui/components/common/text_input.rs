@@ -27,7 +27,6 @@ pub fn TextInput(
         type=move || {
             if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
         }
-
         id=id
         class=move || {
             format!(
@@ -35,7 +34,6 @@ pub fn TextInput(
                 validation_class.get(),
             )
         }
-
         placeholder=" "
         name=move || name.get()
         disabled=move || disabled.get().unwrap_or(false)
@@ -44,7 +42,6 @@ pub fn TextInput(
             on_input.call(event_target_value(&e));
         }
       />
-
       <Show when=move || input_type == InputType::Password>
         <button
           type="button"

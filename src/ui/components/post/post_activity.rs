@@ -58,7 +58,7 @@ pub fn PostActivity() -> impl IntoView {
   view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Post page"</h2>
-      <Suspense fallback=|| {
+      <Transition fallback=|| {
           view! { "Loading..." }
       }>
         {move || {
@@ -92,8 +92,7 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
-
-      </Suspense>
+      </Transition>
     </main>
   }
 }

@@ -5,7 +5,7 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
 
-        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware};
+        use lemmy_ui_leptos::{App, /* server::cookie_middleware::cookie_middleware */};
 
         use actix_files::Files;
         use actix_web::*;
@@ -48,7 +48,7 @@ cfg_if! {
                                 .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
                                 .to(route_to_api))
                             .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                            .wrap(cookie_middleware())
+                            // .wrap(cookie_middleware())
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))
                             .service(favicon)
@@ -62,7 +62,7 @@ cfg_if! {
                     } else {
                         App::new()
                             .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                            .wrap(cookie_middleware())
+                            // .wrap(cookie_middleware())
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))
                             .service(favicon)

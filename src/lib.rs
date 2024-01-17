@@ -34,7 +34,7 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
-  provide_query_client();
+  // provide_query_client();
 
   let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
@@ -46,7 +46,6 @@ pub fn App() -> impl IntoView {
       <Routes>
         <Route path="/" view=move || view! { <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
           <Route path="" view=HomeActivity ssr=SsrMode::Async/>
-          <Route path="home" view=HomeActivity ssr=SsrMode::Async/>
 
           <Route path="communities" view=CommunitiesActivity/>
           <Route path="create_post" view=CommunitiesActivity/>

@@ -2,7 +2,7 @@ use crate::{
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
   queries::site_state_query::use_site_state,
-  ui::components::common::text_input::{InputType, TextInput},
+  ui::components::common::text_input::{InputType, TextInput}, cookie::set_cookie,
 };
 use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::*;
@@ -52,7 +52,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
 #[server(LoginFn, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use actix_session::Session;
+  // use actix_session::Session;
   use leptos_actix::{extract, redirect};
 
   let req = Login {
@@ -65,16 +65,18 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
   match result {
     Ok(LoginResponse { jwt, .. }) => {
-      let cookie_res =
-        extract(|session: Session| async move { session.insert("jwt", jwt.unwrap().into_inner()) })
-          .await;
 
-      match cookie_res {
+      let r = set_cookie("jwt", &jwt.unwrap_or_default().into_inner(), &std::time::Duration::from_secs(604800)).await;
+      // let cookie_res =
+      //   extract(|session: Session| async move { session.insert("jwt", jwt.unwrap().into_inner()) })
+      //     .await;
+
+      match r {
         Ok(_o) => {
           redirect("/");
           Ok(())
         }
-        Err(e) => Err(e),
+        Err(e) => Err(e.into()),
       }
     }
     Err(e) => {
