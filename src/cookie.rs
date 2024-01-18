@@ -6,8 +6,6 @@ use serde_json::Value;
 use std::time::*;
 use chrono::offset::Utc;
 use chrono::DateTime;
-// use time::OffsetDateTime;
-
 
 #[cfg(not(feature = "ssr"))]
 pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
@@ -27,82 +25,20 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
   use chrono::offset::Utc;
   use chrono::DateTime;
   let now = chrono::offset::Utc::now();
-
-      // let now = SystemTime::now();
-  let d = now + *expires;// std::time::Duration::from_secs(604800);
-
-  // let mut now = SystemTime::now();
-  // now += expires;
-  // let datetime: DateTime<Utc> = now.into();
-
-  // set(
-  //   "path",
-  //   "value",
-  //   &CookieOptions::default(),
-  //   // &CookieOptions {
-  //   //   same_site: SameSite::Strict,
-  //   //   secure: true,
-  //   //   expires: Some(std::borrow::Cow::Borrowed(&datetime.to_rfc3339()[..])),
-  //   //   domain: None,
-  //   //   path: Some("/"),
-  //   // },
-  // );
-
-  // leptos::logging::log!("{}", d.to_rfc2822());
+  let d = now + *expires;
 
   set(
     path,
     value,
-    // &CookieOptions::default(),
     &CookieOptions {
       same_site: SameSite::Strict,
-      secure: true,
-      expires: Some(std::borrow::Cow::Borrowed(&d.to_rfc2822())), //"Sat, 04 Jan 2025 19:24:51 GMT")), //&d.to_rfc3339()[..])),
-      domain: None,
+      secure: false,
+      expires: Some(std::borrow::Cow::Borrowed(&d.to_rfc2822())),
+      domain: Some("localhost"),
       path: Some("/"),
     },
   );
 
-
-
-  // use crate::wasm_bindgen::JsCast;
-  // use leptos::document;
-  // use wasm_cookies::{CookieOptions,SameSite};
-
-  // let r = //window()
-  //   document()
-  //   // .ok_or(LemmyAppError {
-  //   //   error_type: LemmyAppErrorType::Unknown,
-  //   //   content: "no document".to_string(),
-  //   // })
-  //   // ?
-  //   // .unwrap()
-  //   .dyn_into::<web_sys::HtmlDocument>()
-  //   // .map_err(|_| LemmyAppError::APIError {
-  //   //   error: String::from("DOM document could not be cast"),
-  //   // })
-  //   // ?
-  // .ok().unwrap()
-  // .set_cookie(
-  //     &wasm_cookies::cookies::set(
-  //     path, 
-  //     &value, 
-  //     // &CookieOptions::default(),
-  //     &CookieOptions {
-  //       same_site: SameSite::Strict,
-  //       secure: true,
-  //       expires: Some(std::borrow::Cow::Borrowed(&now.to_rfc3339())),
-  //       domain: None,
-  //       path: Some("/"),
-  //     },
-  //   )
-  // )
-  //   // .map_err(|_| LemmyAppError::APIError {
-  //   //   error: String::from("Cookie could not be set"),
-  //   // })
-  //   ;
-
-  // r
   Ok(())
 }
 
@@ -121,9 +57,9 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
     "value",
     &CookieOptions {
       same_site: SameSite::Strict,
-      secure: true,
+      secure: false,
       expires: Some(std::borrow::Cow::Borrowed(&d.to_rfc2822())),
-      domain: None,
+      domain: Some("localhost"),
       path: Some("/"),
     },
   );
@@ -151,8 +87,8 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
 
   cookie.set_expires(OffsetDateTime::from(d));
   cookie.set_path("/");
-  // cookie.set_domain(domain)
-  cookie.set_secure(Some(true));
+  cookie.set_domain("localhost");
+  cookie.set_secure(Some(false));
   cookie.set_same_site(Some(SameSite::Strict));
 
   if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
@@ -181,6 +117,7 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
   let mut now = OffsetDateTime::now_utc();
   now += Duration::weeks(-1);
   cookie.set_expires(now);
+  cookie.set_domain("localhost");
   cookie.set_path("/");
 
   if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {

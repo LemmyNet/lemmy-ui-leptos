@@ -1,9 +1,7 @@
 use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*, errors::LemmyAppError, cookie::{set_cookie, remove_cookie, get_cookie}};
 use chrono::Duration;
-// use actix_web::cookie::time::Duration;
 use lemmy_api_common::{lemmy_db_schema::{source::person::Person, newtypes::PostId}, site::GetSiteResponse, post::GetPost};
 use leptos::*;
-// use leptos_icons::*;
 use leptos_query::*;
 use leptos_router::*;
 use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
@@ -11,21 +9,11 @@ use web_sys::{SubmitEvent, MouseEvent};
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  // use actix_session::Session;
   use leptos_actix::{extract, redirect};
-
   let result = Fetch.logout().await;
-
   match result {
-    Ok(()) => {
+    Ok(o) => {
       let r = remove_cookie("jwt").await;
-      
-      //  = extract(|session: Session| async move {
-      //   // session.purge();
-      //   // session.remove("jwt");
-      // })
-      // .await;
-
       match r {
         Ok(_o) => {
           redirect("/");
@@ -43,29 +31,13 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[server(ChangeLangFn, "/serverfn")]
 pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
-  logging::log!("{:#?}", lang);
-
-  // provide_i18n_context();
   set_cookie("i18n_pref_locale", &lang.to_lowercase(), &std::time::Duration::from_secs(604800)).await;
-
-  // let i18n = use_i18n();
-  // if lang.eq(&"FR".to_string()) {
-  //   i18n.set_locale(Locale::fr);
-  // }
-  // if lang.eq(&"EN".to_string()) {
-  //   i18n.set_locale(Locale::en);
-  // }
   Ok(())
 }
 
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
-  // use actix_session::Session;
-  // use leptos_actix::extract;
-
   let r = set_cookie("theme", &theme, &std::time::Duration::from_secs(604800)).await;
-  // set_cookie(path, value, expires) extract(|session: Session| async move { session.insert("theme", theme) }).await;
-
   match r {
     Ok(_o) => {
       Ok(())
@@ -78,15 +50,10 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  // let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
-
-  // let QueryResult { data, refetch, .. } = use_site_state();
-
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
 
   let ssr_data = create_resource(move || (), move |()| async move {
-    // let jwt = get_cookie("jwt").await?;
-    Fetch.get_site(/* jwt */).await
+    Fetch.get_site().await
   });
 
   let data = Signal::derive(move || {
@@ -108,96 +75,27 @@ pub fn TopNav() -> impl IntoView {
   });
 
   let logout_action = create_server_action::<LogoutFn>();
-  // let logout_is_success = Signal::derive(move || logout_action.value().get().is_some());
-
-  // create_isomorphic_effect(move |_| {
-  //   if logout_is_success.get() {
-  //     logging::log!("LOGOUT");
-  //     refetch();
-  //   }
-  // });
 
   let on_logout_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_local_resource(
-      move || (),
-      move |()| async move {
-        let result = Fetch.logout().await;
-
-        match result {
-          Ok(_o) => {
-            // #[cfg(not(feature = "ssr"))]
-            // {
-              remove_cookie("jwt");
-              // set_cookie("jwt", "value", &std::time::Duration::from_secs(-604800));
-              site_data.set(Some( //create_resource(move || (), move |()| async move {
-                Fetch.get_site(/* None */).await
-              )); //}).get());
-
-              // wasm_cookies::set(
-              //   "jwt",
-              //   "",
-              //   &wasm_cookies::cookies::CookieOptions {
-              //     same_site: wasm_cookies::cookies::SameSite::Strict,
-              //     secure: true,
-              //     expires: Some(std::borrow::Cow::Borrowed("Sat, 01 Jan 2024 19:24:51 GMT")),
-              //     domain: None,
-              //     path: None,
-              //   },
-              // );
-            // }
-
-            // let QueryResult { refetch, .. } = use_site_state();
-            // refetch();
-          }
-          Err(_e) => {
-            logging::log!("logout error {:#?}", _e);
-            // error.set(Some(message_from_error(&e)));
-// 
-            // match e {
-            //   _ => {
-            //     report_validation.set("".to_string());
-            //   }
-            // }
-          }
+    create_local_resource(move || (), move |()| async move {
+      let result = Fetch.logout().await;
+      match result {
+        Ok(_o) => {
+          remove_cookie("jwt").await;
+          site_data.set(Some(Fetch.get_site().await));
         }
-      },
-    );
+        Err(_e) => {
+          logging::warn!("logout error {:#?}", _e);
+          // error.set(Some(message_from_error(&e)));
+        }
+      }
+    });
   };
 
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
   let theme_action = create_server_action::<ChangeThemeFn>();
-
-  // let act = create_multi_action(|themer: &String| {
-  //   let t = themer.clone();
-  //   let r = &t[..];
-  //   let d = std::time::Duration::from_secs(604800);
-  //   set_cookie("theme", t, d)
-  // });
-
-
-
-
-  // #[cfg(not(feature = "ssr"))]
-  // let bless = create_local_resource(move || (), move |()| async move {
-  //   use std::time::*;
-  //   use chrono::offset::Utc;
-  //   use chrono::DateTime;
-
-  //   logging::log!("YA");
-  //   logging::log!("{:#?}", get_cookie("theme").await);
-  //   logging::log!("YA");
-  //   remove_cookie("theme").await;
-  //   logging::log!("YA");
-
-  //   let mut now = SystemTime::now();
-  //   now += std::time::Duration::from_secs(604800);
-  //   let datetime: DateTime<Utc> = now.into();
-
-  //   // set_cookie("theme", "theme_name".to_string(), std::time::Duration::from_secs(604800)).await;// "datetime.to_rfc3339()".to_string()).await; 
-  // }).get();
-
 
   let on_theme_submit = move |theme_name: &'static str| {
     move |ev: SubmitEvent| {
@@ -208,48 +106,6 @@ pub fn TopNav() -> impl IntoView {
       ui_theme.set(Some(theme_name.to_string()));
     }
   };
-
-  // let _res = create_action(|theme: &String| {
-  //   let t = theme.clone();
-  //   async move {
-  //     // let r = set_cookie("theme", t, std::time::Duration::from_secs(604800)).await;
-  //   }
-  // });
-
-  // use std::time::*;
-  // use chrono::offset::Utc;
-  // use chrono::DateTime;
-  // let q = chrono::offset::Utc::now();
-
-  //     // let now = SystemTime::now();
-  // let now = q + std::time::Duration::from_secs(604800);
-  // let datetime: DateTime<Utc> = now.into();
-
-
-  // let on_theme_click = move |theme_name: &'static str| {
-  //   move |ev: MouseEvent| {
-  //     ev.prevent_default();
-  //     spawn_local(async move { 
-
-  //       // let form = GetPost {
-  //       //   id: Some(PostId(9513)),
-  //       //   comment_id: None,
-  //       // };
-  //       // Fetch.get_post(form).await;
-
-
-
-  // // #[cfg(not(feature = "ssr"))]
-  // // set_cookie("theme", theme_name.to_string(), "Sat, 04 Jan 2025 19:24:51 GMT".to_string()/* now.to_rfc3339() */).await; 
-  //       set_cookie("theme", theme_name.to_string(), std::time::Duration::from_secs(604800)).await; 
-
-  //     });
-  //     // _res.dispatch("input".to_string());
-  //   }
-  // };
-
-
-
 
   let lang_action = create_server_action::<ChangeLangFn>();
 
@@ -298,7 +154,7 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-end">
         <ul class="menu menu-horizontal flex-nowrap items-center">
           <li>
-            <A href="/search"/*  on:click=on_theme_click("light") */>
+            <A href="/search">
               <span title=t!(i18n, search)>
                 <MagnifyingGlass/>
               </span>
@@ -408,16 +264,10 @@ pub fn TopNav() -> impl IntoView {
 #[component]
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
-
-  // let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
-
-  // let QueryResult { data, .. } = use_site_state();
-
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-
+ 
   let ssr_data = create_resource(move || (), move |()| async move {
-    // let jwt = get_cookie("jwt").await?;
-    Fetch.get_site(/* jwt */).await
+    Fetch.get_site().await
   });
 
   let data = Signal::derive(move || {

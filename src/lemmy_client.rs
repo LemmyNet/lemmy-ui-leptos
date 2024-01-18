@@ -1,12 +1,13 @@
+use std::any::TypeId;
+
 use crate::{
   errors::{LemmyAppError, LemmyAppErrorType, LemmyAppResult},
   host::{get_host, get_https},
   lemmy_errors::LemmyErrorType, cookie::get_cookie,
 };
-// use async_trait::async_trait;
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
-use leptos::Serializable;
+use leptos::{Serializable, leptos_dom::logging};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
@@ -45,11 +46,9 @@ impl<R: Serialize> From<R> for LemmyRequest<R> {
 mod private_trait {
   use super::{HttpType, LemmyRequest};
   use crate::errors::LemmyAppResult;
-  // use async_trait::async_trait;
   use leptos::Serializable;
   use serde::{Deserialize, Serialize};
 
-  // #[async_trait(?Send)]
   pub trait LemmyClient {
     async fn make_request<Response, Form, Request>(
       &self,
@@ -58,49 +57,28 @@ mod private_trait {
       form: Request,
     ) -> LemmyAppResult<Response>
     where
-      Response: Serializable + for<'de> Deserialize<'de>,
+      Response: Serializable + for<'de> Deserialize<'de> + 'static,
       Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
       Request: Into<LemmyRequest<Form>>;
   }
 }
 
-// #[async_trait(?Send)]
 pub trait LemmyClient: private_trait::LemmyClient {
   async fn login(&self, form: Login) -> LemmyAppResult<LoginResponse> {
-    // leptos::logging::log!("FORM {:#?}", form);
-
-    let r = self.make_request(HttpType::Post, "user/login", form).await;
-
-    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
-    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
-    // }
-
-    // leptos::logging::log!("LOGIN {:#?}", r);
-
-    r
+    self.make_request(HttpType::Post, "user/login", form).await
   }
 
-  async fn logout(&self/* , form: () */) -> LemmyAppResult<()> {
-    // leptos::logging::log!("FORM {:#?}", form);
-
-    let r = self.make_request(HttpType::Post, "user/logout", ()/* form */).await;
-
-    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
-    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
-    // }
-
-    leptos::logging::log!("LOGOUT {:#?}", r);
-
-    r
+  async fn logout(&self) -> LemmyAppResult<()> {
+    self.make_request::<(), (), ()>(HttpType::Post, "user/logout", ()).await;
+    // TODO: do not ignore error due to not being able to decode enpty http response cleanly
+    Ok(())
   }
 
   async fn list_communities(
     &self,
     form: ListCommunities,
   ) -> LemmyAppResult<ListCommunitiesResponse> {
-    self
-      .make_request(HttpType::Get, "community/list", form)
-      .await
+    self.make_request(HttpType::Get, "community/list", form).await
   }
 
   async fn get_comments(&self, form: GetComments) -> LemmyAppResult<GetCommentsResponse> {
@@ -108,29 +86,15 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn list_posts(&self, form: GetPosts) -> LemmyAppResult<GetPostsResponse> {
-    let r = self.make_request(HttpType::Get, "post/list", form).await;
-
-    // leptos::logging::log!("LIST {:#?}", r);
-
-    r
-
-    // Ok(GetPostsResponse { posts: vec![], next_page: None })
+    self.make_request(HttpType::Get, "post/list", form).await
   }
 
   async fn get_post(&self, form: GetPost) -> LemmyAppResult<GetPostResponse> {
     self.make_request(HttpType::Get, "post", form).await
   }
 
-  async fn get_site(&self/* , jwt: Option<String> */) -> LemmyAppResult<GetSiteResponse> {
-    // leptos::logging::log!("JWT {:#?}", jwt.clone());
-
-    let r: Result<GetSiteResponse, LemmyAppError> = self
-      .make_request(HttpType::Get, "site", ()/* LemmyRequest::<()>::from_jwt(jwt) */)
-      .await;
-
-    // leptos::logging::log!("SITE {:#?}", r.clone().ok().unwrap().my_user);
-
-    r
+  async fn get_site(&self) -> LemmyAppResult<GetSiteResponse> {
+    self.make_request(HttpType::Get, "site", ()).await
   }
 
   async fn report_post(&self, form: CreatePostReport) -> LemmyAppResult<PostReportResponse> {
@@ -146,17 +110,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
   }
 
   async fn like_post(&self, form: CreatePostLike) -> LemmyAppResult<PostResponse> {
-    // leptos::logging::log!("FORM {:#?}", form);
-
-    let r = self.make_request(HttpType::Post, "post/like", form).await;
-
-    // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
-    //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
-    // }
-
-    // leptos::logging::log!("LIKE {:#?}", r);
-
-    r
+    self.make_request(HttpType::Post, "post/like", form).await
   }
 }
 
@@ -179,10 +133,6 @@ cfg_if! {
             }
         }
 
-        // use actix_session::Session;
-
-
-        // #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
             async fn make_request<Response, Form, Request>(
                 &self,
@@ -191,20 +141,13 @@ cfg_if! {
                 req: Request,
             ) -> LemmyAppResult<Response>
             where
-                Response: Serializable + for<'de> Deserialize<'de>,
+                Response: Serializable + for<'de> Deserialize<'de> + 'static,
                 Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
                 Request: Into<LemmyRequest<Form>>,
             {
                 let LemmyRequest {body, jwt: _} = req.into();
 
-                let jwt = get_cookie("jwt").await?; // { Ok(o) => o, _ => None };
-                    
-                // let jwt = extract(|session: Session| async move {
-                //   session.get::<String>("jwt")
-                // })
-                // .await??;
-
-                // leptos::logging::log!("make JWT {:#?} ", jwt);
+                let jwt = get_cookie("jwt").await?;
 
                 let route = build_route(path);
 
@@ -282,25 +225,22 @@ cfg_if! {
             }
         }
 
-        // #[async_trait(?Send)]
         impl private_trait::LemmyClient for Fetch {
-            async fn make_request<Response, Form, Req>(
+            async fn make_request<Response, Form, Request>(
                 &self,
                 method: HttpType,
                 path: &str,
-                req: Req,
+                req: Request,
             ) -> LemmyAppResult<Response>
             where
-                Response: Serializable + for<'de> Deserialize<'de>,
-                Form: Serialize,
-                Req: Into<LemmyRequest<Form>>
+                Response: Serializable + for<'de> Deserialize<'de> + 'static,
+                Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+                Request: Into<LemmyRequest<Form>>,
             {
                 let LemmyRequest { body, .. } = req.into();
                 let route = &build_route(path);
 
                 let jwt = get_cookie("jwt").await?;
-
-                // let jwt = get("jwt").and_then(Result::ok);
 
                 let abort_controller = AbortController::new().ok();
                 let abort_signal = abort_controller.as_ref().map(AbortController::signal);
@@ -312,25 +252,24 @@ cfg_if! {
 
                 let r = match method {
                   HttpType::Get =>
-                      Request::get(&build_fetch_query(path, body))
-                          .maybe_bearer_auth(jwt.as_deref())
-                          .abort_signal(abort_signal.as_ref())
-                          .build()
-                          .expect_throw("Could not parse query params"),
+                    gloo_net::http::Request::get(&build_fetch_query(path, body))
+                      .maybe_bearer_auth(jwt.as_deref())
+                      .abort_signal(abort_signal.as_ref())
+                      .build()
+                      .expect_throw("Could not parse query params"),
                   HttpType::Post =>
-                      Request::post(route)
-                          .maybe_bearer_auth(jwt.as_deref())
-                          .abort_signal(abort_signal.as_ref())
-                          .json(&body)
-                          .expect_throw("Could not parse json body"),
+                    gloo_net::http::Request::post(route)
+                      .maybe_bearer_auth(jwt.as_deref())
+                      .abort_signal(abort_signal.as_ref())
+                      .json(&body)
+                      .expect_throw("Could not parse json body"),
                   HttpType::Put =>
-                      Request::put(route)
-                          .maybe_bearer_auth(jwt.as_deref())
-                          .abort_signal(abort_signal.as_ref())
-                          .json(&body)
-                          .expect_throw("Could not parse json body")
+                    gloo_net::http::Request::put(route)
+                      .maybe_bearer_auth(jwt.as_deref())
+                      .abort_signal(abort_signal.as_ref())
+                      .json(&body)
+                      .expect_throw("Could not parse json body")
                 }.send().await?;
-
 
                 match r.status() {
                   400..=499 | 500..=599 => {

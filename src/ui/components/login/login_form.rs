@@ -52,7 +52,6 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
 #[server(LoginFn, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  // use actix_session::Session;
   use leptos_actix::{extract, redirect};
 
   let req = Login {
@@ -65,12 +64,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
   match result {
     Ok(LoginResponse { jwt, .. }) => {
-
       let r = set_cookie("jwt", &jwt.unwrap_or_default().into_inner(), &std::time::Duration::from_secs(604800)).await;
-      // let cookie_res =
-      //   extract(|session: Session| async move { session.insert("jwt", jwt.unwrap().into_inner()) })
-      //     .await;
-
       match r {
         Ok(_o) => {
           redirect("/");
@@ -107,8 +101,6 @@ pub fn LoginForm() -> impl IntoView {
   let username_validation = create_rw_signal::<String>("".into());
   let password_validation = create_rw_signal::<String>("".into());
 
-  // let QueryResult { .. } = use_site_state();
-
   if let Some(e) = ssr_error() {
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);
 
@@ -141,81 +133,48 @@ pub fn LoginForm() -> impl IntoView {
   let on_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    logging::log!("1");
-    let _res = create_local_resource(
-      move || (name.get(), password.get()),
-      move |(name, password)| async move {
-        logging::log!("2");
-        let req = Login {
-          username_or_email: name.into(),
-          password: password.into(),
-          totp_2fa_token: None,
-        };
+    let _res = create_local_resource(move || (name.get(), password.get()), move |(name, password)| async move {
+      let req = Login {
+        username_or_email: name.into(),
+        password: password.into(),
+        totp_2fa_token: None,
+      };
 
-        let result = try_login(req.clone()).await;
-        logging::log!("3");
- 
-        match result {
-          Ok(LoginResponse { jwt: Some(jwt), .. }) => {
-            logging::log!("4");
+      let result = try_login(req.clone()).await;
+        
+      match result {
+        Ok(LoginResponse { jwt: Some(jwt), .. }) => {
+          set_cookie("jwt", &jwt.clone().into_inner(), &std::time::Duration::from_secs(604800)).await;
+          site_data.set(Some(Fetch.get_site().await));          
+          let navigate = leptos_router::use_navigate();
+          navigate("/", Default::default());
+        }
+        Ok(LoginResponse { jwt: None, .. }) => {
+          error.set(Some(message_from_error(&LemmyAppError { error_type: LemmyAppErrorType::MissingToken, content: String::default() })));
+        }
+        Err(e) => {
+          error.set(Some(message_from_error(&e)));
+          password_validation.set("".to_string());
+          username_validation.set("".to_string());
 
- 
-            set_cookie("jwt", &jwt.clone().into_inner(), &std::time::Duration::from_secs(604800)).await;
-            site_data.set(Some( //create_resource(move || (), move |()| async move {
-              Fetch.get_site(/* Some(jwt.into_inner()) */).await
-            )); //}).get());
-
-            logging::log!("5");
-
-            // let r = Fetch.get_site(/* Some(jwt.into_inner()) */).await;
-
-            // #[cfg(not(feature = "ssr"))]
-            // {
-            // use wasm_cookies::{cookies::CookieOptions, set};
-            // set(
-            //   "jwt",
-            //   &jwt.clone().unwrap().to_string()[..],
-            //   &CookieOptions {
-            //     same_site: wasm_cookies::cookies::SameSite::Strict,
-            //     secure: true,
-            //     expires: Some(std::borrow::Cow::Borrowed("Sat, 04 Jan 2025 19:24:51 GMT")),
-            //     domain: None,
-            //     path: None,
-            //   },
-            // );
-            // }
-
-            // let navigate = leptos_router::use_navigate();
-            logging::log!("6");
-            // navigate("/", Default::default());
-          }
-          Ok(LoginResponse { jwt: None, .. }) => {
-            error.set(Some(message_from_error(&LemmyAppError { error_type: LemmyAppErrorType::MissingToken, content: String::default() })));
-          }
-          Err(e) => {
-            error.set(Some(message_from_error(&e)));
-            password_validation.set("".to_string());
-            username_validation.set("".to_string());
-
-            match e {
-              LemmyAppError {
-                error_type: LemmyAppErrorType::EmptyUsername,
-                ..
-              } => {
-                username_validation.set("input-error".to_string());
-              }
-              LemmyAppError {
-                error_type: LemmyAppErrorType::EmptyPassword,
-                ..
-              } => {
-                password_validation.set("input-error".to_string());
-              }
-              _ => {}
+          match e {
+            LemmyAppError {
+              error_type: LemmyAppErrorType::EmptyUsername,
+              ..
+            } => {
+              username_validation.set("input-error".to_string());
             }
+            LemmyAppError {
+              error_type: LemmyAppErrorType::EmptyPassword,
+              ..
+            } => {
+              password_validation.set("input-error".to_string());
+            }
+            _ => {}
           }
         }
-      },
-    );
+      }
+    });
   };
 
   view! {

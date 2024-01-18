@@ -6,20 +6,6 @@ use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
 pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let data = create_resource(move || (), move |()| async move {
-    // let jwt = get_cookie("jwt").await?;
-    Fetch.get_site(/* jwt */).await
-  });
-  // match data.get() {
-  //   Some(Ok(o)) => {
-      site_data.set(data.get());
-  //   }
-  //   _ => {
-  //     site_data.set(None);
-  //   }
-  // }
-
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
   let theme = create_resource(move || (), move |()| async move {
     let r = get_cookie("theme").await;

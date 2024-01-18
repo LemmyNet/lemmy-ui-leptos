@@ -37,6 +37,10 @@ pub fn HomeActivity() -> impl IntoView {
   let i18n = use_i18n();
 
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let data = create_resource(move || (), move |()| async move {
+    Fetch.get_site().await
+  });
+  site_data.set(data.get());
 
   let error = create_rw_signal::<Option<String>>(None);
   let error_content = create_rw_signal::<Option<String>>(None);
@@ -445,7 +449,6 @@ pub fn HomeActivity() -> impl IntoView {
                                         cursor_string.set(Some(format!("{:#?}", s)));
                                     }
                                   >
-
                                     "Prev"
                                   </button>
                                   <button
@@ -459,7 +462,6 @@ pub fn HomeActivity() -> impl IntoView {
                                             .set(Some(format!("{:#?}", res.next_page.clone())));
                                     }
                                   >
-
                                     "Next"
                                   </button>
                                 </div>
@@ -507,7 +509,6 @@ pub fn HomeActivity() -> impl IntoView {
                                             }
                                         }
                                       />
-
                                     </p>
                                   </div>
                                 </div>
@@ -523,57 +524,60 @@ pub fn HomeActivity() -> impl IntoView {
                   view! { <div>
                     <figure>
                       <div class="card-body bg-neutral">
-                        <h2 class="card-title text-neutral-content">"Brand Name"</h2>
+                        <h2 class="card-title text-neutral-content"> { o.site_view.site.name } </h2>
                       </div>
                     </figure>
                     <div class="card-body">
-                      <p>"Description"</p>
+                      <p>{ o.site_view.site.description }</p>
                       <p>
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "1 user / day"
+                          { o.site_view.counts.users_active_day } " user / day"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "2 users / week"
+                        { o.site_view.counts.users_active_week } " users / week"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "5 users / month"
+                        { o.site_view.counts.users_active_month } " users / month"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "13 users / 6 months"
+                        { o.site_view.counts.users_active_half_year } " users / 6 months"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "220 users"
+                        { o.site_view.counts.users } " users"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "4 Communities"
+                        { o.site_view.counts.communities } " Communities"
                         </span>
                         " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">"14 Posts"</span>
+                        <span class="badge badge-neutral inline-block whitespace-nowrap">
+                        { o.site_view.counts.posts } " Posts"
+                        </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          "174 Comments"
+                        { o.site_view.counts.comments } " Comments"
                         </span>
                         " "
                         <span class="badge badge-neutral inline-block whitespace-nowrap">"Modlog"</span>
                       </p>
                       <h3 class="card-title">"Admins"</h3>
                       <p>
-                        <span class="badge badge-primary inline-block whitespace-nowrap">
-                          "1 user / day"
-                        </span>
-                        " "
-                        <span class="badge badge-primary inline-block whitespace-nowrap">
-                          "2 users / week"
-                        </span>
-                        " "
-                        <span class="badge badge-primary inline-block whitespace-nowrap">
-                          "5 users / month"
-                        </span>
+                        <For
+                          each=move || o.admins.clone()
+                          key=|admin| admin.person.id
+                          children=move |a| {
+                            view! {
+                              <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                {a.person.name}
+                              </span>
+                              " "
+                            }
+                          }
+                        />
                       </p>
                     </div>
                   </div> }

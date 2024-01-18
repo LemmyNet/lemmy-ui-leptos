@@ -35,7 +35,6 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
-  // provide_query_client();
 
   let site_data = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
   provide_context(site_data);
