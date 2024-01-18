@@ -21,7 +21,7 @@ pub fn PostActivity() -> impl IntoView {
             id: Some(PostId(id)),
             comment_id: None,
           };
-          Fetch.get_post(form).await
+          LemmyClient.get_post(form).await
         }
       }
     },
@@ -47,13 +47,11 @@ pub fn PostActivity() -> impl IntoView {
             disliked_only: None,
             liked_only: None,
           };
-          Fetch.get_comments(form).await
+          LemmyClient.get_comments(form).await
         }
       }
     },
   );
-
-  let error = create_rw_signal::<Option<String>>(None);
 
   view! {
     <main class="mx-auto">
@@ -70,7 +68,7 @@ pub fn PostActivity() -> impl IntoView {
                     Ok(res) => {
                         view! {
                           <div>
-                            <PostListing post_view=res.post_view.into() error/>
+                            <PostListing post_view=res.post_view.into()/>
                           </div>
                         }
                     }
@@ -92,6 +90,7 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
+
       </Transition>
     </main>
   }

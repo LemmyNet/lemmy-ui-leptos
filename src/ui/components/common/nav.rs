@@ -1,16 +1,25 @@
-use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*, errors::LemmyAppError, cookie::{set_cookie, remove_cookie, get_cookie}};
+use crate::{
+  cookie::{get_cookie, remove_cookie, set_cookie},
+  errors::{message_from_error, LemmyAppError},
+  i18n::*,
+  lemmy_client::*,
+  queries::site_state_query::*,
+};
 use chrono::Duration;
-use lemmy_api_common::{lemmy_db_schema::{source::person::Person, newtypes::PostId}, site::GetSiteResponse, post::GetPost};
+use lemmy_api_common::{
+  lemmy_db_schema::{newtypes::PostId, source::person::Person},
+  post::GetPost,
+  site::GetSiteResponse,
+};
 use leptos::*;
-use leptos_query::*;
 use leptos_router::*;
 use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
-use web_sys::{SubmitEvent, MouseEvent};
+use web_sys::{MouseEvent, SubmitEvent};
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
   use leptos_actix::{extract, redirect};
-  let result = Fetch.logout().await;
+  let result = LemmyClient.logout().await;
   match result {
     Ok(o) => {
       let r = remove_cookie("jwt").await;
@@ -19,7 +28,10 @@ pub async fn logout() -> Result<(), ServerFnError> {
           redirect("/");
           Ok(())
         }
-        Err(e) => Err(e.into()),
+        Err(e) => {
+          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+          Ok(())
+        }
       }
     }
     Err(e) => {
@@ -31,18 +43,25 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[server(ChangeLangFn, "/serverfn")]
 pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
-  set_cookie("i18n_pref_locale", &lang.to_lowercase(), &std::time::Duration::from_secs(604800)).await;
+  set_cookie(
+    "i18n_pref_locale",
+    &lang.to_lowercase(),
+    &std::time::Duration::from_secs(604800),
+  )
+  .await;
   Ok(())
 }
 
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
+  use leptos_actix::{extract, redirect};
   let r = set_cookie("theme", &theme, &std::time::Duration::from_secs(604800)).await;
   match r {
-    Ok(_o) => {
+    Ok(_o) => Ok(()),
+    Err(e) => {
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
-    Err(e) => Err(e.into()),
   }
 }
 
@@ -50,15 +69,34 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
+  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
+
+  let query = use_query_map();
+  let ssr_error = move || query.with(|params| params.get("error").cloned());
+
+  if let Some(e) = ssr_error() {
+    if !e.is_empty() {
+      let r = serde_json::from_str::<LemmyAppError>(&e[..]);
+
+      match r {
+        Ok(e) => {
+          error.set(Some(e));
+        }
+        Err(_) => {
+          logging::log!("error decoding error - log and ignore in UI?");
+        }
+      }
+    }
+  }
+
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
 
-  let ssr_data = create_resource(move || (), move |()| async move {
-    Fetch.get_site().await
-  });
+  let ssr_data = create_resource(
+    move || (),
+    move |()| async move { LemmyClient.get_site().await },
+  );
 
-  let data = Signal::derive(move || {
-    site_data.get().or(ssr_data.get().or(None))
-  });
+  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
 
   let my_user = Signal::<Option<Person>>::derive(move || {
     data.get().map_or_else(
@@ -79,19 +117,22 @@ pub fn TopNav() -> impl IntoView {
   let on_logout_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_local_resource(move || (), move |()| async move {
-      let result = Fetch.logout().await;
-      match result {
-        Ok(_o) => {
-          remove_cookie("jwt").await;
-          site_data.set(Some(Fetch.get_site().await));
+    create_local_resource(
+      move || (),
+      move |()| async move {
+        let result = LemmyClient.logout().await;
+        match result {
+          Ok(_o) => {
+            remove_cookie("jwt").await;
+            site_data.set(Some(LemmyClient.get_site().await));
+          }
+          Err(e) => {
+            logging::warn!("logout error {:#?}", e);
+            error.set(Some(e));
+          }
         }
-        Err(_e) => {
-          logging::warn!("logout error {:#?}", _e);
-          // error.set(Some(message_from_error(&e)));
-        }
-      }
-    });
+      },
+    );
   };
 
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
@@ -100,9 +141,12 @@ pub fn TopNav() -> impl IntoView {
   let on_theme_submit = move |theme_name: &'static str| {
     move |ev: SubmitEvent| {
       ev.prevent_default();
-      let _res = create_local_resource(move || theme_name.to_string(), move |t| async move {
-        set_cookie("theme", &t, &std::time::Duration::from_secs(604800)).await;
-      });
+      let _res = create_local_resource(
+        move || theme_name.to_string(),
+        move |t| async move {
+          set_cookie("theme", &t, &std::time::Duration::from_secs(604800)).await;
+        },
+      );
       ui_theme.set(Some(theme_name.to_string()));
     }
   };
@@ -220,6 +264,7 @@ pub fn TopNav() -> impl IntoView {
                   }
               }
             >
+
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>
@@ -234,6 +279,7 @@ pub fn TopNav() -> impl IntoView {
                         | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
                         .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
                     )}
+
                   </summary>
                   <ul class="z-10">
                     <li>
@@ -258,6 +304,25 @@ pub fn TopNav() -> impl IntoView {
         </ul>
       </div>
     </nav>
+    <Show
+      when=move || error.get().is_some()
+      fallback=move || {
+          view! { <div class="hidden"></div> }
+      }
+    >
+      {move || {
+          error
+              .get()
+              .map(|err| {
+                  view! {
+                    <div class="container mx-auto alert alert-error">
+                      <span>{message_from_error(&err)} " - " {err.content}</span>
+                    </div>
+                  }
+              })
+      }}
+
+    </Show>
   }
 }
 
@@ -265,19 +330,25 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
- 
-  let ssr_data = create_resource(move || (), move |()| async move {
-    Fetch.get_site().await
-  });
 
-  let data = Signal::derive(move || {
-    site_data.get().or(ssr_data.get().or(None))
-  });
+  let ssr_data = create_resource(
+    move || (),
+    move |()| async move { LemmyClient.get_site().await },
+  );
+
+  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
 
   let instance_api_version = Signal::derive(move || {
-    data
-      .get()
-      .map_or_else(|| Some(String::from("n/a")), |res| Some(if res.clone().ok()?.version.is_empty() { String::from("empty") } else { res.ok()?.version }))
+    data.get().map_or_else(
+      || Some(String::from("n/a")),
+      |res| {
+        Some(if res.clone().ok()?.version.is_empty() {
+          String::from("empty")
+        } else {
+          res.ok()?.version
+        })
+      },
+    )
   });
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");

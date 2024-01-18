@@ -124,6 +124,15 @@ impl From<ser::Error> for LemmyAppError {
   }
 }
 
+impl From<serde_json::error::Error> for LemmyAppError {
+  fn from(value: serde_json::error::Error) -> Self {
+    Self {
+      error_type: LemmyAppErrorType::InternalServerError,
+      content: format!("{:#?}", value),
+    }
+  }
+}
+
 impl From<ParseIntError> for LemmyAppError {
   fn from(value: ParseIntError) -> Self {
     Self {

@@ -1,12 +1,15 @@
 use crate::{
+  cookie::set_cookie,
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
-  queries::site_state_query::use_site_state,
-  ui::components::common::text_input::{InputType, TextInput}, cookie::set_cookie, lemmy_client::*,
+  lemmy_client::*,
+  ui::components::common::text_input::{InputType, TextInput},
 };
-use lemmy_api_common::{person::{Login, LoginResponse}, site::GetSiteResponse};
+use lemmy_api_common::{
+  person::{Login, LoginResponse},
+  site::GetSiteResponse,
+};
 use leptos::*;
-use leptos_query::QueryResult;
 use leptos_router::*;
 use web_sys::SubmitEvent;
 
@@ -27,7 +30,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
     None => {
       use crate::lemmy_client::*;
 
-      let result = Fetch.login(form).await;
+      let result = LemmyClient.login(form).await;
 
       match result {
         Ok(LoginResponse { ref jwt, .. }) => {
@@ -64,13 +67,21 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
   match result {
     Ok(LoginResponse { jwt, .. }) => {
-      let r = set_cookie("jwt", &jwt.unwrap_or_default().into_inner(), &std::time::Duration::from_secs(604800)).await;
+      let r = set_cookie(
+        "jwt",
+        &jwt.unwrap_or_default().into_inner(),
+        &std::time::Duration::from_secs(604800),
+      )
+      .await;
       match r {
         Ok(_o) => {
           redirect("/");
           Ok(())
         }
-        Err(e) => Err(e.into()),
+        Err(e) => {
+          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+          Ok(())
+        }
       }
     }
     Err(e) => {
@@ -87,43 +98,37 @@ pub fn LoginForm() -> impl IntoView {
   let query = use_query_map();
 
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
 
-  let ssr_error = move || query.with(|params| params.get("error").cloned());
-
-  let name = RwSignal::new(String::new());
-  let password = RwSignal::new(String::new());
+  let name = create_rw_signal(String::new());
+  let password = create_rw_signal(String::new());
 
   let login = create_server_action::<LoginFn>();
 
-  let error = create_rw_signal::<Option<String>>(None);
-  let error_type = create_rw_signal::<String>("alert-error".into());
-
   let username_validation = create_rw_signal::<String>("".into());
   let password_validation = create_rw_signal::<String>("".into());
+
+  let ssr_error = move || query.with(|params| params.get("error").cloned());
 
   if let Some(e) = ssr_error() {
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);
 
     match le {
-      Ok(e) => {
-        error.set(Some(message_from_error(&e)));
-
-        match e {
-          LemmyAppError {
-            error_type: LemmyAppErrorType::EmptyUsername,
-            ..
-          } => {
-            username_validation.set("input-error".to_string());
-          }
-          LemmyAppError {
-            error_type: LemmyAppErrorType::EmptyPassword,
-            ..
-          } => {
-            password_validation.set("input-error".to_string());
-          }
-          _ => {}
+      Ok(e) => match e {
+        LemmyAppError {
+          error_type: LemmyAppErrorType::EmptyUsername,
+          ..
+        } => {
+          username_validation.set("input-error".to_string());
         }
-      }
+        LemmyAppError {
+          error_type: LemmyAppErrorType::EmptyPassword,
+          ..
+        } => {
+          password_validation.set("input-error".to_string());
+        }
+        _ => {}
+      },
       Err(_) => {
         logging::log!("ssr_e ERR");
       }
@@ -132,66 +137,64 @@ pub fn LoginForm() -> impl IntoView {
 
   let on_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
+    error.set(None);
 
-    let _res = create_local_resource(move || (name.get(), password.get()), move |(name, password)| async move {
-      let req = Login {
-        username_or_email: name.into(),
-        password: password.into(),
-        totp_2fa_token: None,
-      };
+    create_local_resource(
+      move || (name.get(), password.get()),
+      move |(name, password)| async move {
+        let req = Login {
+          username_or_email: name.into(),
+          password: password.into(),
+          totp_2fa_token: None,
+        };
+        let result = try_login(req.clone()).await;
+        match result {
+          Ok(LoginResponse { jwt: Some(jwt), .. }) => {
+            set_cookie(
+              "jwt",
+              &jwt.clone().into_inner(),
+              &std::time::Duration::from_secs(604800),
+            )
+            .await;
+            site_data.set(Some(LemmyClient.get_site().await));
+            let navigate = leptos_router::use_navigate();
+            navigate("/", Default::default());
+          }
+          Ok(LoginResponse { jwt: None, .. }) => {
+            error.set(Some(LemmyAppError {
+              error_type: LemmyAppErrorType::MissingToken,
+              content: String::default(),
+            }));
+          }
+          Err(e) => {
+            error.set(Some(e.clone()));
+            password_validation.set("".to_string());
+            username_validation.set("".to_string());
 
-      let result = try_login(req.clone()).await;
-        
-      match result {
-        Ok(LoginResponse { jwt: Some(jwt), .. }) => {
-          set_cookie("jwt", &jwt.clone().into_inner(), &std::time::Duration::from_secs(604800)).await;
-          site_data.set(Some(Fetch.get_site().await));          
-          let navigate = leptos_router::use_navigate();
-          navigate("/", Default::default());
-        }
-        Ok(LoginResponse { jwt: None, .. }) => {
-          error.set(Some(message_from_error(&LemmyAppError { error_type: LemmyAppErrorType::MissingToken, content: String::default() })));
-        }
-        Err(e) => {
-          error.set(Some(message_from_error(&e)));
-          password_validation.set("".to_string());
-          username_validation.set("".to_string());
-
-          match e {
-            LemmyAppError {
-              error_type: LemmyAppErrorType::EmptyUsername,
-              ..
-            } => {
-              username_validation.set("input-error".to_string());
+            match e {
+              LemmyAppError {
+                error_type: LemmyAppErrorType::EmptyUsername,
+                ..
+              } => {
+                username_validation.set("input-error".to_string());
+              }
+              LemmyAppError {
+                error_type: LemmyAppErrorType::EmptyPassword,
+                ..
+              } => {
+                password_validation.set("input-error".to_string());
+              }
+              _ => {}
             }
-            LemmyAppError {
-              error_type: LemmyAppErrorType::EmptyPassword,
-              ..
-            } => {
-              password_validation.set("input-error".to_string());
-            }
-            _ => {}
           }
         }
-      }
-    });
+      },
+    );
   };
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
       <main role="main" class="w-full h-full flex-grow p-3 overflow-auto">
-        {move || {
-            error
-                .get()
-                .map(|err| {
-                    view! {
-                      <div class=move || format!("alert {}", error_type.get())>
-                        <span>{err}</span>
-                      </div>
-                    }
-                })
-        }}
-
         <ActionForm class="space-y-3" action=login on:submit=on_submit>
           <TextInput
             id="username"

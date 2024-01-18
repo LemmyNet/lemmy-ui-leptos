@@ -13,6 +13,7 @@ pub mod server;
 mod ui;
 
 use crate::{
+  errors::LemmyAppError,
   i18n::*,
   layout::Layout,
   ui::components::{
@@ -20,13 +21,12 @@ use crate::{
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
-  }, errors::LemmyAppError,
+  },
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
-use leptos_query::provide_query_client;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -36,6 +36,8 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
 
+  let error = create_rw_signal::<Option<LemmyAppError>>(None);
+  provide_context(error);
   let site_data = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
   provide_context(site_data);
   let ui_theme = create_rw_signal::<Option<String>>(None);

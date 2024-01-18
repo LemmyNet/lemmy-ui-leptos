@@ -16,7 +16,7 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostRespons
     post_id: PostId(post_id),
     score,
   };
-  let result = Fetch.like_post(form).await;
+  let result = LemmyClient.like_post(form).await;
 
   use leptos_actix::redirect;
 
@@ -37,7 +37,7 @@ pub async fn save_post_fn(post_id: i32, save: bool) -> Result<Option<PostRespons
     post_id: PostId(post_id),
     save,
   };
-  let result = Fetch.save_post(form).await;
+  let result = LemmyClient.save_post(form).await;
 
   use leptos_actix::redirect;
 
@@ -61,7 +61,7 @@ pub async fn block_user_fn(
     person_id: PersonId(person_id),
     block,
   };
-  let result = Fetch.block_user(form).await;
+  let result = LemmyClient.block_user(form).await;
 
   use leptos_actix::redirect;
 
@@ -86,7 +86,7 @@ async fn try_report(form: CreatePostReport) -> Result<PostReportResponse, LemmyA
 
   match val {
     None => {
-      let result = Fetch.report_post(form).await;
+      let result = LemmyClient.report_post(form).await;
 
       match result {
         Ok(o) => Ok(o),
@@ -125,10 +125,9 @@ pub async fn report_post_fn(
 }
 
 #[component]
-pub fn PostListing(
-  post_view: MaybeSignal<PostView>,
-  error: RwSignal<Option<String>>,
-) -> impl IntoView {
+pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
+  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
+
   let post_view = create_rw_signal(post_view.get());
 
   let vote_action = create_server_action::<VotePostFn>();
@@ -144,14 +143,14 @@ pub fn PostListing(
           score,
         };
 
-        let result = Fetch.like_post(form).await;
+        let result = LemmyClient.like_post(form).await;
 
         match result {
           Ok(o) => {
             post_view.set(o.post_view);
           }
           Err(e) => {
-            error.set(Some(message_from_error(&e)));
+            error.set(Some(e));
           }
         }
       },
@@ -189,14 +188,14 @@ pub fn PostListing(
           save: !post_view.get().saved,
         };
 
-        let result = Fetch.save_post(form).await;
+        let result = LemmyClient.save_post(form).await;
 
         match result {
           Ok(o) => {
             post_view.set(o.post_view);
           }
           Err(e) => {
-            error.set(Some(message_from_error(&e)));
+            error.set(Some(e));
           }
         }
       },
@@ -216,12 +215,12 @@ pub fn PostListing(
           block: true,
         };
 
-        let result = Fetch.block_user(form).await;
+        let result = LemmyClient.block_user(form).await;
 
         match result {
           Ok(_o) => {}
           Err(e) => {
-            error.set(Some(message_from_error(&e)));
+            error.set(Some(e));
           }
         }
       },
@@ -238,24 +237,20 @@ pub fn PostListing(
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);
 
     match le {
-      Ok(e) => {
-        error.set(Some(message_from_error(&e)));
-
-        match e {
-          LemmyAppError {
-            error_type: LemmyAppErrorType::MissingReason,
-            content: c,
-          } => {
-            let id = format!("{}", post_view.get().post.id);
-            if c.eq(&id) {
-              report_validation.set("input-error".to_string());
-            }
-          }
-          _ => {
-            report_validation.set("".to_string());
+      Ok(e) => match e {
+        LemmyAppError {
+          error_type: LemmyAppErrorType::MissingReason,
+          content: c,
+        } => {
+          let id = format!("{}", post_view.get().post.id);
+          if c.eq(&id) {
+            report_validation.set("input-error".to_string());
           }
         }
-      }
+        _ => {
+          report_validation.set("".to_string());
+        }
+      },
       Err(_) => {
         logging::log!("error decoding error - log and ignore in UI?");
       }
@@ -280,7 +275,7 @@ pub fn PostListing(
         match result {
           Ok(_o) => {}
           Err(e) => {
-            error.set(Some(message_from_error(&e)));
+            error.set(Some(e.clone()));
 
             let _id = format!("{}", post_view.get().post.id);
 
@@ -344,7 +339,6 @@ pub fn PostListing(
                 format!("/post/{}", post_view.get().post.id)
             }
         }>
-
           {move || {
               if let Some(t) = post_view.get().post.thumbnail_url {
                   let h = t.inner().to_string();
@@ -411,7 +405,6 @@ pub fn PostListing(
               <Copy/>
             </A>
           </span>
-
           <div class="dropdown inline-block align-top">
             <label tabindex="0">
               <DotsThreeVertical/>

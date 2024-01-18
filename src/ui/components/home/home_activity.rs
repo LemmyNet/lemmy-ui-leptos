@@ -1,20 +1,19 @@
 use crate::{
-  errors::{message_from_error, LemmyAppError},
+  cookie::*,
+  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
-  ui::components::post::post_listings::PostListings, queries::site_state_query::use_site_state,
+  lemmy_client::*,
+  ui::components::post::post_listings::PostListings,
 };
-use crate::lemmy_client::*;
-use crate::cookie::*;
-
 use lemmy_api_common::{
   community::*,
-  lemmy_db_schema::{ListingType, SortType, source::person::Person},
+  lemmy_db_schema::{source::person::Person, ListingType, SortType},
   lemmy_db_views::structs::PaginationCursor,
   lemmy_db_views_actor::structs::CommunityView,
-  post::{GetPosts, GetPostsResponse}, site::GetSiteResponse,
+  post::{GetPosts, GetPostsResponse},
+  site::GetSiteResponse,
 };
 use leptos::*;
-use leptos_query::QueryResult;
 use leptos_router::*;
 use web_sys::*;
 
@@ -36,14 +35,14 @@ use web_sys::*;
 pub fn HomeActivity() -> impl IntoView {
   let i18n = use_i18n();
 
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let data = create_resource(move || (), move |()| async move {
-    Fetch.get_site().await
-  });
-  site_data.set(data.get());
+  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
 
-  let error = create_rw_signal::<Option<String>>(None);
-  let error_content = create_rw_signal::<Option<String>>(None);
+  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let data = create_resource(
+    move || (),
+    move |()| async move { LemmyClient.get_site().await },
+  );
+  site_data.set(data.get());
 
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
@@ -53,23 +52,6 @@ pub fn HomeActivity() -> impl IntoView {
   let sort_signal = create_rw_signal::<Option<SortType>>(None);
 
   let query = use_query_map();
-  let ssr_error = move || query.with(|params| params.get("error").cloned());
-
-  if let Some(e) = ssr_error() {
-    if !e.is_empty() {
-      let r = serde_json::from_str::<LemmyAppError>(&e[..]);
-
-      match r {
-        Ok(e) => {
-          error.set(Some(message_from_error(&e)));
-          error_content.set(Some(e.content));
-        }
-        Err(_) => {
-          logging::log!("error decoding error - log and ignore in UI?");
-        }
-      }
-    }
-  }
 
   // let _list = create_rw_signal::<Option<ListingType>>(None);
   let ssr_list = move || query.with(|params| params.get("list").cloned());
@@ -101,8 +83,8 @@ pub fn HomeActivity() -> impl IntoView {
             Default::default(),
           );
         }
-        Err(_e) => {
-          logging::log!("error decoding error - log and ignore in UI?");
+        Err(e) => {
+          error.set(Some(e.into()));
         }
       }
     }
@@ -115,11 +97,8 @@ pub fn HomeActivity() -> impl IntoView {
       Ok(o) => {
         sort_signal.set(Some(o));
       }
-      Err(_e) => {
-        // error.set(Some(
-        //   "error decoding error - log and ignore in UI?".to_string(),
-        // ));
-        // logging::log!("error decoding error - log and ignore in UI?");
+      Err(e) => {
+        error.set(Some(e.into()));
       }
     }
   }
@@ -136,34 +115,16 @@ pub fn HomeActivity() -> impl IntoView {
             Default::default(),
           );
         }
-        Err(_e) => {
-          // error.set(Some(
-          //   "error decoding error - log and ignore in UI?".to_string(),
-          // ));
-          logging::log!("error decoding error - log and ignore in UI?");
+        Err(e) => {
+          error.set(Some(e.into()));
         }
       }
     }
   };
 
-  // let QueryResult { data, refetch, .. } = use_site_state();
-
-  // let my_user = Signal::<Option<Person>>::derive(move || {
-  //   data.get().map_or_else(
-  //     || None,
-  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-  //   )
-  // });
-
   let posts = create_resource(
-    move || {
-      (
-        cursor_string.get(),
-        ssr_list(),
-        ssr_sort(), /* , my_user.get() */
-      )
-    },
-    move |(_cursor_string, list, sort /* , _authenticated_user */)| async move {
+    move || (cursor_string.get(), ssr_list(), ssr_sort()),
+    move |(_cursor_string, list, sort)| async move {
       let l = {
         if let Some(t) = list.clone() {
           if !t.is_empty() {
@@ -174,14 +135,8 @@ pub fn HomeActivity() -> impl IntoView {
                 list_signal.set(Some(o));
                 Some(o)
               }
-              Err(_e) => {
-                // error.set(Some(
-                //   "error decoding error - log and ignore in UI?".to_string(),
-                // ));
-                logging::log!(
-                  "LIST error decoding error - log and ignore in UI? {:#?}",
-                  list
-                );
+              Err(e) => {
+                error.set(Some(e.into()));
                 None
               }
             }
@@ -203,10 +158,8 @@ pub fn HomeActivity() -> impl IntoView {
                 sort_signal.set(Some(o));
                 Some(o)
               }
-              Err(_e) => {
-                // error.set(Some(
-                //   "error decoding error - log and ignore in UI?".to_string(),
-                // ));
+              Err(e) => {
+                error.set(Some(e.into()));
                 None
               }
             }
@@ -233,21 +186,22 @@ pub fn HomeActivity() -> impl IntoView {
 
       let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
         use crate::lemmy_client::*;
-        Some(Fetch.list_posts(form).await)
+        Some(LemmyClient.list_posts(form).await)
       };
 
       match result {
         Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
           leptos::logging::log!("Err {:#?}", e);
-          error.set(Some(message_from_error(&e)));
-          error_content.set(Some(e.content));
+          error.set(Some(e));
           None
         }
         None => {
           leptos::logging::log!("Nun");
-          error.set(Some(t!(i18n, unknown)().to_string()));
-          error_content.set(None);
+          error.set(Some(LemmyAppError {
+            error_type: LemmyAppErrorType::Unknown,
+            content: String::default(),
+          }));
           None
         }
       }
@@ -255,36 +209,34 @@ pub fn HomeActivity() -> impl IntoView {
   );
 
   let trending = create_resource(
-    move || {
-      (/* , my_user.get() */)
-    },
-    move |(/* , _authenticated_user */)| async move {
+    move || (),
+    move |()| async move {
       let form = ListCommunities {
-        type_:Some(ListingType::Local),
-        sort:Some(SortType::Hot),
-        limit:Some(6),
+        type_: Some(ListingType::Local),
+        sort: Some(SortType::Hot),
+        limit: Some(6),
         show_nsfw: None,
-        page: None
+        page: None,
       };
 
-      let result: Option<Result<ListCommunitiesResponse, LemmyAppError>> = {
-        Some(Fetch.list_communities(form).await)
-      };
+      let result: Option<Result<ListCommunitiesResponse, LemmyAppError>> =
+        { Some(LemmyClient.list_communities(form).await) };
 
       match result {
         Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
           leptos::logging::log!("Err {:#?}", e);
-          error.set(Some(message_from_error(&e)));
-          error_content.set(Some(e.content));
+          error.set(Some(e));
           None
         }
         None => {
           leptos::logging::log!("Nun");
-          error.set(Some(t!(i18n, unknown)().to_string()));
-          error_content.set(None);
+          error.set(Some(LemmyAppError {
+            error_type: LemmyAppErrorType::Unknown,
+            content: String::default(),
+          }));
           None
-        },
+        }
       }
     },
   );
@@ -297,24 +249,6 @@ pub fn HomeActivity() -> impl IntoView {
               view! { <div>"Loading..."</div> }
           }>
             <main role="main" class="w-full h-full flex-grow p-3">
-              // <Show
-              // when=move || error.get().is_some()
-              // fallback=move || {
-              // view! {
-              // <div class="hidden">
-              // </div>
-              // }
-              // }
-              // >
-              // <div class="alert alert-error">
-              // // <span>{error.get()} " - " {error_content.get()}</span>
-              // </div>
-              // </Show>
-
-              // { move || { error.get().map(|err| {
-              // view! {
-              // }
-              // })}}
               <div class="join mr-3">
                 <button class="btn join-item">"Posts"</button>
                 <button class="btn join-item">"Comments"</button>
@@ -438,7 +372,7 @@ pub fn HomeActivity() -> impl IntoView {
                           Some(res) => {
                               view! {
                                 <div>
-                                  <PostListings posts=res.posts.into() error/>
+                                  <PostListings posts=res.posts.into()/>
                                   <button
                                     class="btn"
                                     on:click=move |_| {
@@ -449,6 +383,7 @@ pub fn HomeActivity() -> impl IntoView {
                                         cursor_string.set(Some(format!("{:#?}", s)));
                                     }
                                   >
+
                                     "Prev"
                                   </button>
                                   <button
@@ -462,6 +397,7 @@ pub fn HomeActivity() -> impl IntoView {
                                             .set(Some(format!("{:#?}", res.next_page.clone())));
                                     }
                                   >
+
                                     "Next"
                                   </button>
                                 </div>
@@ -509,6 +445,7 @@ pub fn HomeActivity() -> impl IntoView {
                                             }
                                         }
                                       />
+
                                     </p>
                                   </div>
                                 </div>
@@ -519,73 +456,86 @@ pub fn HomeActivity() -> impl IntoView {
 
             </Transition>
             <div class="card w-full bg-base-300 text-base-content mb-3">
-              { move || site_data.get().map(|m| match m {
-                Ok(o) => {
-                  view! { <div>
-                    <figure>
-                      <div class="card-body bg-neutral">
-                        <h2 class="card-title text-neutral-content"> { o.site_view.site.name } </h2>
-                      </div>
-                    </figure>
-                    <div class="card-body">
-                      <p>{ o.site_view.site.description }</p>
-                      <p>
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                          { o.site_view.counts.users_active_day } " user / day"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.users_active_week } " users / week"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.users_active_month } " users / month"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.users_active_half_year } " users / 6 months"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.users } " users"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.communities } " Communities"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.posts } " Posts"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                        { o.site_view.counts.comments } " Comments"
-                        </span>
-                        " "
-                        <span class="badge badge-neutral inline-block whitespace-nowrap">"Modlog"</span>
-                      </p>
-                      <h3 class="card-title">"Admins"</h3>
-                      <p>
-                        <For
-                          each=move || o.admins.clone()
-                          key=|admin| admin.person.id
-                          children=move |a| {
-                            view! {
-                              <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                {a.person.name}
-                              </span>
-                              " "
-                            }
+              {move || {
+                  site_data
+                      .get()
+                      .map(|m| match m {
+                          Ok(o) => {
+                              view! {
+                                <div>
+                                  <figure>
+                                    <div class="card-body bg-neutral">
+                                      <h2 class="card-title text-neutral-content">
+                                        {o.site_view.site.name}
+                                      </h2>
+                                    </div>
+                                  </figure>
+                                  <div class="card-body">
+                                    <p>{o.site_view.site.description}</p>
+                                    <p>
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.users_active_day} " user / day"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.users_active_week} " users / week"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.users_active_month} " users / month"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.users_active_half_year}
+                                        " users / 6 months"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.users} " users"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.communities} " Communities"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.posts} " Posts"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        {o.site_view.counts.comments} " Comments"
+                                      </span>
+                                      " "
+                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                        "Modlog"
+                                      </span>
+                                    </p>
+                                    <h3 class="card-title">"Admins"</h3>
+                                    <p>
+                                      <For
+                                        each=move || o.admins.clone()
+                                        key=|admin| admin.person.id
+                                        children=move |a| {
+                                            view! {
+                                              <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                                {a.person.name}
+                                              </span>
+                                              " "
+                                            }
+                                        }
+                                      />
+
+                                    </p>
+                                  </div>
+                                </div>
+                              }
                           }
-                        />
-                      </p>
-                    </div>
-                  </div> }
-                }
-                _ => {
-                  view! { <div class="hidden"></div> }
-                }
-              })}
+                          _ => {
+                              view! { <div class="hidden"></div> }
+                          }
+                      })
+              }}
+
             </div>
           </div>
         </div>

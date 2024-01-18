@@ -15,7 +15,6 @@ leptos_meta = "0.5"
 leptos_router = "0.5"
 phosphor-leptos = "0.2"
 leptos_i18n = "0.2"
-leptos_query = "0.3"
 
 serde = { version = "1", features = ["derive"] }
 serde_urlencoded = "0"
@@ -39,10 +38,6 @@ actix-web = { version = "4", features = ["macros"], optional = true }
 actix-proxy = { version = "0.2", optional = true }
 actix-http = { version = "3", optional = true }
 awc = { version = "3.2", optional = true }
-# async-trait = "0.1"
-# actix-session = { version = "0.8", features = [
-#   "cookie-session",
-# ], optional = true }
 
 [package.metadata.cargo-machete]
 ignored = ["strum"]
@@ -58,22 +53,23 @@ hydrate = [
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
-  "leptos_query/hydrate",
 ]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
+csr = [
+  "leptos/csr", 
+  "leptos_meta/csr", 
+  "leptos_router/csr", 
+  "leptos_i18n/csr"]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "leptos_query/ssr",
   "dep:leptos_actix",
   "dep:actix-http",
   "dep:actix-web",
   "dep:actix-files",
   "dep:actix-proxy",
   "dep:awc",
-  # "dep:actix-session",
 ]
 bypass_internal_proxy = []
 

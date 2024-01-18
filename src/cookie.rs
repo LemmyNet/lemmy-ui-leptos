@@ -1,16 +1,10 @@
 use crate::errors::*;
-use cfg_if::cfg_if;
-use leptos::Serializable;
-use serde::Serialize;
-use serde_json::Value;
-use std::time::*;
-use chrono::offset::Utc;
-use chrono::DateTime;
+use std::time::Duration;
 
 #[cfg(not(feature = "ssr"))]
 pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
   let r = wasm_cookies::get(path);
-  
+
   match r {
     Some(Ok(r)) => Ok(Some(r)),
     Some(Err(e)) => Err(e.into()),
@@ -20,11 +14,9 @@ pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
 
 #[cfg(not(feature = "ssr"))]
 pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(), LemmyAppError> {
-  use wasm_cookies::{cookies::*, set};
-
   use chrono::offset::Utc;
-  use chrono::DateTime;
-  let now = chrono::offset::Utc::now();
+  use wasm_cookies::{cookies::*, set};
+  let now = Utc::now();
   let d = now + *expires;
 
   set(
@@ -46,10 +38,9 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
 pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
   // wasm_cookies::delete(path);
 
-  use wasm_cookies::{cookies::*, set};
   use chrono::offset::Utc;
-  use chrono::DateTime;
-  let now = chrono::offset::Utc::now();
+  use wasm_cookies::{cookies::*, set};
+  let now = Utc::now();
   let d = now - std::time::Duration::from_secs(604800);
 
   set(
@@ -70,10 +61,7 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
 #[cfg(feature = "ssr")]
 pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(), LemmyAppError> {
   use actix_web::{
-    cookie::{
-      time::OffsetDateTime,
-      Cookie, SameSite,
-    },
+    cookie::{time::OffsetDateTime, Cookie, SameSite},
     http::{header, header::HeaderValue},
   };
   use leptos::{expect_context, logging};
@@ -82,10 +70,12 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
   let response = expect_context::<ResponseOptions>();
 
   let mut cookie = Cookie::build(path, value).finish();
-  let now = SystemTime::now();
+  let now = OffsetDateTime::now_utc();
+
+  let s = std::time::SystemTime::now();
   let d = now + *expires;
 
-  cookie.set_expires(OffsetDateTime::from(d));
+  cookie.set_expires(OffsetDateTime::from(s));
   cookie.set_path("/");
   cookie.set_domain("localhost");
   cookie.set_secure(Some(false));
@@ -102,10 +92,7 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
 #[cfg(feature = "ssr")]
 pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
   use actix_web::{
-    cookie::{
-      time::{Duration, OffsetDateTime},
-      Cookie,
-    },
+    cookie::{time::OffsetDateTime, Cookie},
     http::{header, header::HeaderValue},
   };
   use leptos::expect_context;
@@ -114,9 +101,10 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
   let response = expect_context::<ResponseOptions>();
 
   let mut cookie = Cookie::build(path, "").finish();
-  let mut now = OffsetDateTime::now_utc();
-  now += Duration::weeks(-1);
-  cookie.set_expires(now);
+  let now = OffsetDateTime::now_utc();
+
+  let d = now - Duration::from_secs(604800);
+  cookie.set_expires(d);
   cookie.set_domain("localhost");
   cookie.set_path("/");
 
@@ -141,7 +129,8 @@ pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
     } else {
       None
     }
-  }).await?;
+  })
+  .await?;
 
   Ok(cookie_value.clone())
 }

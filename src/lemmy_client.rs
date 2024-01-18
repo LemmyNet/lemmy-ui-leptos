@@ -1,14 +1,14 @@
-use std::any::TypeId;
-
 use crate::{
+  cookie::get_cookie,
   errors::{LemmyAppError, LemmyAppErrorType, LemmyAppResult},
   host::{get_host, get_https},
-  lemmy_errors::LemmyErrorType, cookie::get_cookie,
+  lemmy_errors::LemmyErrorType,
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
-use leptos::{Serializable, leptos_dom::logging};
+use leptos::{leptos_dom::logging, Serializable};
 use serde::{Deserialize, Serialize};
+use std::any::TypeId;
 
 #[derive(Clone)]
 pub enum HttpType {
@@ -49,7 +49,7 @@ mod private_trait {
   use leptos::Serializable;
   use serde::{Deserialize, Serialize};
 
-  pub trait LemmyClient {
+  pub trait PrivateFetch {
     async fn make_request<Response, Form, Request>(
       &self,
       method: HttpType,
@@ -63,13 +63,15 @@ mod private_trait {
   }
 }
 
-pub trait LemmyClient: private_trait::LemmyClient {
+pub trait PublicFetch: private_trait::PrivateFetch {
   async fn login(&self, form: Login) -> LemmyAppResult<LoginResponse> {
     self.make_request(HttpType::Post, "user/login", form).await
   }
 
   async fn logout(&self) -> LemmyAppResult<()> {
-    self.make_request::<(), (), ()>(HttpType::Post, "user/logout", ()).await;
+    self
+      .make_request::<(), (), ()>(HttpType::Post, "user/logout", ())
+      .await;
     // TODO: do not ignore error due to not being able to decode enpty http response cleanly
     Ok(())
   }
@@ -78,7 +80,9 @@ pub trait LemmyClient: private_trait::LemmyClient {
     &self,
     form: ListCommunities,
   ) -> LemmyAppResult<ListCommunitiesResponse> {
-    self.make_request(HttpType::Get, "community/list", form).await
+    self
+      .make_request(HttpType::Get, "community/list", form)
+      .await
   }
 
   async fn get_comments(&self, form: GetComments) -> LemmyAppResult<GetCommentsResponse> {
@@ -117,7 +121,7 @@ pub trait LemmyClient: private_trait::LemmyClient {
 cfg_if! {
     if #[cfg(feature = "ssr")] {
 
-        pub struct Fetch;
+        pub struct LemmyClient;
 
         trait MaybeBearerAuth {
             fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self;
@@ -133,7 +137,7 @@ cfg_if! {
             }
         }
 
-        impl private_trait::LemmyClient for Fetch {
+        impl private_trait::PrivateFetch for LemmyClient {
             async fn make_request<Response, Form, Request>(
                 &self,
                 method: HttpType,
@@ -200,7 +204,7 @@ cfg_if! {
             }
         }
 
-        impl LemmyClient for Fetch {}
+        impl PublicFetch for LemmyClient {}
 
     } else {
 
@@ -209,7 +213,7 @@ cfg_if! {
         use gloo_net::http::{Request, RequestBuilder};
         use wasm_cookies::get;
 
-        pub struct Fetch;
+        pub struct LemmyClient;
 
         trait MaybeBearerAuth {
             fn maybe_bearer_auth(self, token: Option<&str>) -> Self;
@@ -225,7 +229,7 @@ cfg_if! {
             }
         }
 
-        impl private_trait::LemmyClient for Fetch {
+        impl private_trait::PrivateFetch for LemmyClient {
             async fn make_request<Response, Form, Request>(
                 &self,
                 method: HttpType,
@@ -291,7 +295,7 @@ cfg_if! {
             }
         }
 
-        impl LemmyClient for Fetch {}
+        impl PublicFetch for LemmyClient {}
 
         fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
             let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
