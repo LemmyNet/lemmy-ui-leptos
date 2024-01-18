@@ -264,7 +264,7 @@ pub fn TopNav() -> impl IntoView {
                   }
               }
             >
-            
+
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>

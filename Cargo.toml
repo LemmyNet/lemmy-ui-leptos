@@ -54,12 +54,7 @@ hydrate = [
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
 ]
-csr = [
-  "leptos/csr", 
-  "leptos_meta/csr", 
-  "leptos_router/csr", 
-  "leptos_i18n/csr",
-]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
