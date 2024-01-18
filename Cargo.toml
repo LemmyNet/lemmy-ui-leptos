@@ -52,13 +52,14 @@ hydrate = [
   "leptos/hydrate",
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
-  "leptos_i18n/hydrate",
+  "leptos_i18n/hydrate"
 ]
 csr = [
   "leptos/csr", 
   "leptos_meta/csr", 
   "leptos_router/csr", 
-  "leptos_i18n/csr"]
+  "leptos_i18n/csr"
+]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
@@ -69,7 +70,7 @@ ssr = [
   "dep:actix-web",
   "dep:actix-files",
   "dep:actix-proxy",
-  "dep:awc",
+  "dep:awc"
 ]
 bypass_internal_proxy = []
 

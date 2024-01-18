@@ -264,7 +264,6 @@ pub fn TopNav() -> impl IntoView {
                   }
               }
             >
-
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>
@@ -310,6 +309,7 @@ pub fn TopNav() -> impl IntoView {
           view! { <div class="hidden"></div> }
       }
     >
+
       {move || {
           error
               .get()
