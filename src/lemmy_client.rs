@@ -80,16 +80,16 @@ pub trait LemmyClient: private_trait::LemmyClient {
     r
   }
 
-  async fn logout(&self, form: ()) -> LemmyAppResult<()> {
+  async fn logout(&self/* , form: () */) -> LemmyAppResult<()> {
     // leptos::logging::log!("FORM {:#?}", form);
 
-    let r = self.make_request(HttpType::Post, "user/logout", form).await;
+    let r = self.make_request(HttpType::Post, "user/logout", ()/* form */).await;
 
     // if let Ok(LoginResponse { jwt: Some(ref s), .. }) = r {
     //   leptos::logging::log!("JW {:#?}", s.clone().into_inner());
     // }
 
-    // leptos::logging::log!("LOGIN {:#?}", r);
+    leptos::logging::log!("LOGOUT {:#?}", r);
 
     r
   }
@@ -121,11 +121,11 @@ pub trait LemmyClient: private_trait::LemmyClient {
     self.make_request(HttpType::Get, "post", form).await
   }
 
-  async fn get_site(&self, jwt: Option<String>) -> LemmyAppResult<GetSiteResponse> {
+  async fn get_site(&self/* , jwt: Option<String> */) -> LemmyAppResult<GetSiteResponse> {
     // leptos::logging::log!("JWT {:#?}", jwt.clone());
 
     let r: Result<GetSiteResponse, LemmyAppError> = self
-      .make_request(HttpType::Get, "site", LemmyRequest::<()>::from_jwt(jwt))
+      .make_request(HttpType::Get, "site", ()/* LemmyRequest::<()>::from_jwt(jwt) */)
       .await;
 
     // leptos::logging::log!("SITE {:#?}", r.clone().ok().unwrap().my_user);

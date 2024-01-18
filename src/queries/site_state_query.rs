@@ -1,11 +1,11 @@
 use crate::{errors::LemmyAppError, cookie::get_cookie};
+use crate::lemmy_client::*;
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOption};
 
 #[server(GetSiteResource, "/serverfn", "GetJson")]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
-  use crate::lemmy_client::*;
   // use actix_session::Session;
   // use leptos_actix::extract;
 
@@ -14,7 +14,7 @@ async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
 
   // logging::log!("SITE JWT {:#?}", jwt);
 
-  let result = (Fetch {}).get_site(jwt).await?;
+  let result = Fetch.get_site(/* jwt */).await?;
 
   // logging::log!("coop {:#?}", result);
 
@@ -25,23 +25,25 @@ pub fn use_site_state() -> QueryResult<Result<GetSiteResponse, LemmyAppError>, i
   use_query(
     || (),
     |_| async move {
-      use crate::lemmy_client::*;
+      // use crate::lemmy_client::*;
 
-      #[cfg(feature = "ssr")]
-      let jwt = None //{
-        // use actix_session::Session;
-        // use leptos_actix::extract;
-        // extract(|session: Session| async move { session.get::<String>("jwt") }).await??
-      // }
-      ;
+      // let jwt = get_cookie("jwt").await?;
 
-      #[cfg(not(feature = "ssr"))]
-      let jwt = {
-        use wasm_cookies::get;
-        get("jwt").and_then(Result::ok)
-      };
+      // #[cfg(feature = "ssr")]
+      // let jwt = None //{
+      //   // use actix_session::Session;
+      //   // use leptos_actix::extract;
+      //   // extract(|session: Session| async move { session.get::<String>("jwt") }).await??
+      // // }
+      // ;
 
-      (Fetch {}).get_site(jwt).await
+      // #[cfg(not(feature = "ssr"))]
+      // let jwt = {
+      //   use wasm_cookies::get;
+      //   get("jwt").and_then(Result::ok)
+      // };
+
+      Fetch.get_site(/* jwt */).await
       // get_site().await
     },
     QueryOptions {

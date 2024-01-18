@@ -21,7 +21,7 @@ pub fn PostActivity() -> impl IntoView {
             id: Some(PostId(id)),
             comment_id: None,
           };
-          (Fetch {}).get_post(form).await
+          Fetch.get_post(form).await
         }
       }
     },
@@ -47,7 +47,7 @@ pub fn PostActivity() -> impl IntoView {
             disliked_only: None,
             liked_only: None,
           };
-          (Fetch {}).get_comments(form).await
+          Fetch.get_comments(form).await
         }
       }
     },

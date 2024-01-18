@@ -2,9 +2,9 @@ use crate::{
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   i18n::*,
   queries::site_state_query::use_site_state,
-  ui::components::common::text_input::{InputType, TextInput}, cookie::set_cookie,
+  ui::components::common::text_input::{InputType, TextInput}, cookie::set_cookie, lemmy_client::*,
 };
-use lemmy_api_common::person::{Login, LoginResponse};
+use lemmy_api_common::{person::{Login, LoginResponse}, site::GetSiteResponse};
 use leptos::*;
 use leptos_query::QueryResult;
 use leptos_router::*;
@@ -27,7 +27,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
     None => {
       use crate::lemmy_client::*;
 
-      let result = (Fetch {}).login(form).await;
+      let result = Fetch.login(form).await;
 
       match result {
         Ok(LoginResponse { ref jwt, .. }) => {
@@ -92,6 +92,8 @@ pub fn LoginForm() -> impl IntoView {
 
   let query = use_query_map();
 
+  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+
   let ssr_error = move || query.with(|params| params.get("error").cloned());
 
   let name = RwSignal::new(String::new());
@@ -139,38 +141,56 @@ pub fn LoginForm() -> impl IntoView {
   let on_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    #[cfg(not(feature = "ssr"))]
-    create_resource(
-      move || (name, password),
+    logging::log!("1");
+    let _res = create_local_resource(
+      move || (name.get(), password.get()),
       move |(name, password)| async move {
+        logging::log!("2");
         let req = Login {
-          username_or_email: name.get().into(),
-          password: password.get().into(),
+          username_or_email: name.into(),
+          password: password.into(),
           totp_2fa_token: None,
         };
 
         let result = try_login(req.clone()).await;
-
+        logging::log!("3");
+ 
         match result {
-          Ok(LoginResponse { jwt, .. }) => {
+          Ok(LoginResponse { jwt: Some(jwt), .. }) => {
+            logging::log!("4");
+
+ 
+            set_cookie("jwt", &jwt.clone().into_inner(), &std::time::Duration::from_secs(604800)).await;
+            site_data.set(Some( //create_resource(move || (), move |()| async move {
+              Fetch.get_site(/* Some(jwt.into_inner()) */).await
+            )); //}).get());
+
+            logging::log!("5");
+
+            // let r = Fetch.get_site(/* Some(jwt.into_inner()) */).await;
+
             // #[cfg(not(feature = "ssr"))]
             // {
-            use wasm_cookies::{cookies::CookieOptions, set};
-            set(
-              "jwt",
-              &jwt.clone().unwrap().to_string()[..],
-              &CookieOptions {
-                same_site: wasm_cookies::cookies::SameSite::Strict,
-                secure: true,
-                expires: Some(std::borrow::Cow::Borrowed("Sat, 04 Jan 2025 19:24:51 GMT")),
-                domain: None,
-                path: None,
-              },
-            );
+            // use wasm_cookies::{cookies::CookieOptions, set};
+            // set(
+            //   "jwt",
+            //   &jwt.clone().unwrap().to_string()[..],
+            //   &CookieOptions {
+            //     same_site: wasm_cookies::cookies::SameSite::Strict,
+            //     secure: true,
+            //     expires: Some(std::borrow::Cow::Borrowed("Sat, 04 Jan 2025 19:24:51 GMT")),
+            //     domain: None,
+            //     path: None,
+            //   },
+            // );
             // }
 
-            let navigate = leptos_router::use_navigate();
-            navigate("/", Default::default());
+            // let navigate = leptos_router::use_navigate();
+            logging::log!("6");
+            // navigate("/", Default::default());
+          }
+          Ok(LoginResponse { jwt: None, .. }) => {
+            error.set(Some(message_from_error(&LemmyAppError { error_type: LemmyAppErrorType::MissingToken, content: String::default() })));
           }
           Err(e) => {
             error.set(Some(message_from_error(&e)));

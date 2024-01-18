@@ -1,4 +1,5 @@
 use crate::{i18n::*, lemmy_client::*, queries::site_state_query::*, errors::LemmyAppError, cookie::{set_cookie, remove_cookie, get_cookie}};
+use chrono::Duration;
 // use actix_web::cookie::time::Duration;
 use lemmy_api_common::{lemmy_db_schema::{source::person::Person, newtypes::PostId}, site::GetSiteResponse, post::GetPost};
 use leptos::*;
@@ -13,7 +14,7 @@ pub async fn logout() -> Result<(), ServerFnError> {
   // use actix_session::Session;
   use leptos_actix::{extract, redirect};
 
-  let result = (Fetch {}).logout(()).await;
+  let result = Fetch.logout().await;
 
   match result {
     Ok(()) => {
@@ -77,9 +78,20 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
+  // let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
 
   // let QueryResult { data, refetch, .. } = use_site_state();
+
+  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+
+  let ssr_data = create_resource(move || (), move |()| async move {
+    // let jwt = get_cookie("jwt").await?;
+    Fetch.get_site(/* jwt */).await
+  });
+
+  let data = Signal::derive(move || {
+    site_data.get().or(ssr_data.get().or(None))
+  });
 
   let my_user = Signal::<Option<Person>>::derive(move || {
     data.get().map_or_else(
@@ -108,16 +120,21 @@ pub fn TopNav() -> impl IntoView {
   let on_logout_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_resource(
+    create_local_resource(
       move || (),
       move |()| async move {
-        let result = (Fetch {}).logout(()).await;
+        let result = Fetch.logout().await;
 
         match result {
           Ok(_o) => {
             // #[cfg(not(feature = "ssr"))]
             // {
               remove_cookie("jwt");
+              // set_cookie("jwt", "value", &std::time::Duration::from_secs(-604800));
+              site_data.set(Some( //create_resource(move || (), move |()| async move {
+                Fetch.get_site(/* None */).await
+              )); //}).get());
+
               // wasm_cookies::set(
               //   "jwt",
               //   "",
@@ -135,8 +152,9 @@ pub fn TopNav() -> impl IntoView {
             // refetch();
           }
           Err(_e) => {
+            logging::log!("logout error {:#?}", _e);
             // error.set(Some(message_from_error(&e)));
-
+// 
             // match e {
             //   _ => {
             //     report_validation.set("".to_string());
@@ -217,7 +235,7 @@ pub fn TopNav() -> impl IntoView {
   //       //   id: Some(PostId(9513)),
   //       //   comment_id: None,
   //       // };
-  //       // (Fetch {}).get_post(form).await;
+  //       // Fetch.get_post(form).await;
 
 
 
@@ -346,7 +364,6 @@ pub fn TopNav() -> impl IntoView {
                   }
               }
             >
-
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>
@@ -361,7 +378,6 @@ pub fn TopNav() -> impl IntoView {
                         | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
                         .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
                     )}
-
                   </summary>
                   <ul class="z-10">
                     <li>
@@ -393,14 +409,25 @@ pub fn TopNav() -> impl IntoView {
 pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
+  // let data: Signal<Option<Result<GetSiteResponse, LemmyAppError>>> = Signal::derive(|| None);
 
   // let QueryResult { data, .. } = use_site_state();
+
+  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+
+  let ssr_data = create_resource(move || (), move |()| async move {
+    // let jwt = get_cookie("jwt").await?;
+    Fetch.get_site(/* jwt */).await
+  });
+
+  let data = Signal::derive(move || {
+    site_data.get().or(ssr_data.get().or(None))
+  });
 
   let instance_api_version = Signal::derive(move || {
     data
       .get()
-      .map_or_else(|| Some(String::from("n/a")), |res| Some(res.ok()?.version))
+      .map_or_else(|| Some(String::from("n/a")), |res| Some(if res.clone().ok()?.version.is_empty() { String::from("empty") } else { res.ok()?.version }))
   });
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");

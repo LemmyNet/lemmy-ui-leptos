@@ -108,7 +108,26 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
 
 #[cfg(not(feature = "ssr"))]
 pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
-  let r = wasm_cookies::delete(path);
+  // wasm_cookies::delete(path);
+
+  use wasm_cookies::{cookies::*, set};
+  use chrono::offset::Utc;
+  use chrono::DateTime;
+  let now = chrono::offset::Utc::now();
+  let d = now - std::time::Duration::from_secs(604800);
+
+  set(
+    path,
+    "value",
+    &CookieOptions {
+      same_site: SameSite::Strict,
+      secure: true,
+      expires: Some(std::borrow::Cow::Borrowed(&d.to_rfc2822())),
+      domain: None,
+      path: Some("/"),
+    },
+  );
+
   Ok(())
 }
 
@@ -187,5 +206,5 @@ pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
     }
   }).await?;
 
-  Ok(cookie_value)
+  Ok(cookie_value.clone())
 }

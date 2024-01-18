@@ -20,9 +20,10 @@ use crate::{
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
-  },
+  }, errors::LemmyAppError,
 };
 use cfg_if::cfg_if;
+use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
@@ -36,6 +37,8 @@ pub fn App() -> impl IntoView {
   provide_i18n_context();
   // provide_query_client();
 
+  let site_data = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
+  provide_context(site_data);
   let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
 

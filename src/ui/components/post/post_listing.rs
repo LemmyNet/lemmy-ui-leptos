@@ -16,7 +16,7 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostRespons
     post_id: PostId(post_id),
     score,
   };
-  let result = (Fetch {}).like_post(form).await;
+  let result = Fetch.like_post(form).await;
 
   use leptos_actix::redirect;
 
@@ -37,7 +37,7 @@ pub async fn save_post_fn(post_id: i32, save: bool) -> Result<Option<PostRespons
     post_id: PostId(post_id),
     save,
   };
-  let result = (Fetch {}).save_post(form).await;
+  let result = Fetch.save_post(form).await;
 
   use leptos_actix::redirect;
 
@@ -61,7 +61,7 @@ pub async fn block_user_fn(
     person_id: PersonId(person_id),
     block,
   };
-  let result = (Fetch {}).block_user(form).await;
+  let result = Fetch.block_user(form).await;
 
   use leptos_actix::redirect;
 
@@ -86,7 +86,7 @@ async fn try_report(form: CreatePostReport) -> Result<PostReportResponse, LemmyA
 
   match val {
     None => {
-      let result = (Fetch {}).report_post(form).await;
+      let result = Fetch.report_post(form).await;
 
       match result {
         Ok(o) => Ok(o),
@@ -144,7 +144,7 @@ pub fn PostListing(
           score,
         };
 
-        let result = (Fetch {}).like_post(form).await;
+        let result = Fetch.like_post(form).await;
 
         match result {
           Ok(o) => {
@@ -189,7 +189,7 @@ pub fn PostListing(
           save: !post_view.get().saved,
         };
 
-        let result = (Fetch {}).save_post(form).await;
+        let result = Fetch.save_post(form).await;
 
         match result {
           Ok(o) => {
@@ -216,7 +216,7 @@ pub fn PostListing(
           block: true,
         };
 
-        let result = (Fetch {}).block_user(form).await;
+        let result = Fetch.block_user(form).await;
 
         match result {
           Ok(_o) => {}
