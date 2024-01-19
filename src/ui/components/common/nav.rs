@@ -46,7 +46,7 @@ pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
   set_cookie(
     "i18n_pref_locale",
     &lang.to_lowercase(),
-    &std::time::Duration::from_secs(604800),
+    &core::time::Duration::from_secs(604800),
   )
   .await;
   Ok(())
@@ -55,7 +55,7 @@ pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
   use leptos_actix::{extract, redirect};
-  let r = set_cookie("theme", &theme, &std::time::Duration::from_secs(604800)).await;
+  let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
   match r {
     Ok(_o) => Ok(()),
     Err(e) => {
@@ -144,7 +144,7 @@ pub fn TopNav() -> impl IntoView {
       let _res = create_local_resource(
         move || theme_name.to_string(),
         move |t| async move {
-          set_cookie("theme", &t, &std::time::Duration::from_secs(604800)).await;
+          set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
         },
       );
       ui_theme.set(Some(theme_name.to_string()));

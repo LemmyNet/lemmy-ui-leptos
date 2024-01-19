@@ -38,11 +38,32 @@ pub fn HomeActivity() -> impl IntoView {
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
 
   let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let data = create_resource(
+  let ssr_data = create_resource(
     move || (),
     move |()| async move { LemmyClient.get_site().await },
   );
-  site_data.set(data.get());
+  // site_data.set(data.get());
+
+  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+
+  let my_user = Signal::<Option<Person>>::derive(move || {
+    data.get().map_or_else(
+      || None,
+      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+    )
+  });
+
+  // let title = Signal::derive(move || site_data.get().map(|m| match m { 
+  //   Ok(o) => {
+  //     if let Some(s) = o.site_view.site.description {
+  //       format!("{} - {}", o.site_view.site.name, s)
+  //     } else {
+  //       o.site_view.site.name
+  //     }
+  //   }
+  //   _ => { "Lemmy".to_string() }
+  // }).unwrap_or("Lemmy".to_string()));
+
 
   let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
   let cursor_string = create_rw_signal::<Option<String>>(None);
@@ -58,18 +79,18 @@ pub fn HomeActivity() -> impl IntoView {
   // let _sort = create_rw_signal::<Option<SortType>>(None);
   let ssr_sort = move || query.with(|params| params.get("sort").cloned());
 
-  if let Some(t) = ssr_list() {
-    let r = serde_json::from_str::<ListingType>(&t[..]);
+  // if let Some(t) = ssr_list() {
+  //   let r = serde_json::from_str::<ListingType>(&t[..]);
 
-    match r {
-      Ok(o) => {
-        list_signal.set(Some(o));
-      }
-      Err(_e) => {
-        logging::log!("error decoding error - log and ignore in UI?");
-      }
-    }
-  }
+  //   match r {
+  //     Ok(o) => {
+  //       list_signal.set(Some(o));
+  //     }
+  //     Err(_e) => {
+  //       logging::log!("error decoding error - log and ignore in UI?");
+  //     }
+  //   }
+  // }
 
   let on_list_click = move |lt: ListingType| {
     move |_me: MouseEvent| {
@@ -90,18 +111,18 @@ pub fn HomeActivity() -> impl IntoView {
     }
   };
 
-  if let Some(s) = ssr_sort() {
-    let r = serde_json::from_str::<SortType>(&s[..]);
+  // if let Some(s) = ssr_sort() {
+  //   let r = serde_json::from_str::<SortType>(&s[..]);
 
-    match r {
-      Ok(o) => {
-        sort_signal.set(Some(o));
-      }
-      Err(e) => {
-        error.set(Some(e.into()));
-      }
-    }
-  }
+  //   match r {
+  //     Ok(o) => {
+  //       sort_signal.set(Some(o));
+  //     }
+  //     Err(e) => {
+  //       error.set(Some(e.into()));
+  //     }
+  //   }
+  // }
 
   let on_sort_click = move |lt: SortType| {
     move |_me: MouseEvent| {
@@ -123,8 +144,8 @@ pub fn HomeActivity() -> impl IntoView {
   };
 
   let posts = create_resource(
-    move || (cursor_string.get(), ssr_list(), ssr_sort()),
-    move |(_cursor_string, list, sort)| async move {
+    move || (my_user.get(), cursor_string.get(), ssr_list(), ssr_sort()),
+    move |(_my_user, _cursor_string, list, sort)| async move {
       let l = {
         if let Some(t) = list.clone() {
           if !t.is_empty() {
@@ -245,123 +266,123 @@ pub fn HomeActivity() -> impl IntoView {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
       <div class="container mx-auto overflow-auto">
         <div class="w-full flex flex-col sm:flex-row flex-grow">
-          <Transition fallback=|| {
-              view! { <div>"Loading..."</div> }
-          }>
-            <main role="main" class="w-full h-full flex-grow p-3">
-              <div class="join mr-3">
-                <button class="btn join-item">"Posts"</button>
-                <button class="btn join-item">"Comments"</button>
-              </div>
-              <div class="join mr-3">
-                <A
-                  href=format!(
-                      "/?list={}&sort={}",
-                      "\"Subscribed\"",
-                      if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                  )
+          <main role="main" class="w-full h-full flex-grow p-3">
+            <div class="join mr-3">
+              <button class="btn join-item">"Posts"</button>
+              <button class="btn join-item">"Comments"</button>
+            </div>
+            <div class="join mr-3">
+              <A
+                href=format!(
+                    "/?list={}&sort={}",
+                    "\"Subscribed\"",
+                    if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                )
 
-                  class=move || {
-                      format!(
-                          "btn join-item {}",
-                          if Some(ListingType::Subscribed) == list_signal.get() {
-                              "btn-active"
-                          } else {
-                              ""
-                          },
-                      )
-                  }
-
-                  on:click=on_list_click(ListingType::Subscribed)
-                >
-                  "Subscribed"
-                </A>
-                <A
-                  href=format!(
-                      "/?list={}&sort={}",
-                      "\"Local\"",
-                      if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
-                  )
-
-                  class=move || {
-                      format!(
-                          "btn join-item {}",
-                          if Some(ListingType::Local) == list_signal.get() {
-                              "btn-active"
-                          } else {
-                              ""
-                          },
-                      )
-                  }
-
-                  on:click=on_list_click(ListingType::Local)
-                >
-                  "Local"
-                </A>
-                <A
-                  href=format!(
-                      "/?list={}&sort={}",
-                      "\"All\"",
-                      if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
-                  )
-
-                  class=move || {
-                      format!(
-                          "btn join-item {}",
-                          if Some(ListingType::All) == list_signal.get() {
-                              "btn-active"
-                          } else {
-                              ""
-                          },
-                      )
-                  }
-
-                  on:click=on_list_click(ListingType::All)
-                >
-                  "All"
-                </A>
-              </div>
-              <div class="dropdown">
-                <label tabindex="0" class="btn">
-                  "Sort type"
-                </label>
-                <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-                  <li
-                    class=move || {
-                        (if Some(SortType::Active) == sort_signal.get() {
+                class=move || {
+                    format!(
+                        "btn join-item {}",
+                        if Some(ListingType::Subscribed) == list_signal.get() {
                             "btn-active"
                         } else {
                             ""
-                        })
-                            .to_string()
-                    }
+                        },
+                    )
+                }
 
-                    on:click=on_sort_click(SortType::Active)
-                  >
-                    <span>{t!(i18n, active)}</span>
-                  </li>
-                  <li
-                    class=move || {
-                        (if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" })
-                            .to_string()
-                    }
+                on:click=on_list_click(ListingType::Subscribed)
+              >
+                "Subscribed"
+              </A>
+              <A
+                href=format!(
+                    "/?list={}&sort={}",
+                    "\"Local\"",
+                    if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
+                )
 
-                    on:click=on_sort_click(SortType::Hot)
-                  >
-                    <span>{t!(i18n, hot)}</span>
-                  </li>
-                  <li
-                    class=move || {
-                        (if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" })
-                            .to_string()
-                    }
+                class=move || {
+                    format!(
+                        "btn join-item {}",
+                        if Some(ListingType::Local) == list_signal.get() {
+                            "btn-active"
+                        } else {
+                            ""
+                        },
+                    )
+                }
 
-                    on:click=on_sort_click(SortType::New)
-                  >
-                    <span>{t!(i18n, new)}</span>
-                  </li>
-                </ul>
-              </div>
+                on:click=on_list_click(ListingType::Local)
+              >
+                "Local"
+              </A>
+              <A
+                href=format!(
+                    "/?list={}&sort={}",
+                    "\"All\"",
+                    if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
+                )
+
+                class=move || {
+                    format!(
+                        "btn join-item {}",
+                        if Some(ListingType::All) == list_signal.get() {
+                            "btn-active"
+                        } else {
+                            ""
+                        },
+                    )
+                }
+
+                on:click=on_list_click(ListingType::All)
+              >
+                "All"
+              </A>
+            </div>
+            <div class="dropdown">
+              <label tabindex="0" class="btn">
+                "Sort type"
+              </label>
+              <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+                <li
+                  class=move || {
+                      (if Some(SortType::Active) == sort_signal.get() {
+                          "btn-active"
+                      } else {
+                          ""
+                      })
+                          .to_string()
+                  }
+
+                  on:click=on_sort_click(SortType::Active)
+                >
+                  <span>{t!(i18n, active)}</span>
+                </li>
+                <li
+                  class=move || {
+                      (if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" })
+                          .to_string()
+                  }
+
+                  on:click=on_sort_click(SortType::Hot)
+                >
+                  <span>{t!(i18n, hot)}</span>
+                </li>
+                <li
+                  class=move || {
+                      (if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" })
+                          .to_string()
+                  }
+
+                  on:click=on_sort_click(SortType::New)
+                >
+                  <span>{t!(i18n, new)}</span>
+                </li>
+              </ul>
+            </div>
+            <Transition fallback=|| {
+                view! { <div>"Loading..."</div> }
+            }>
               {move || {
                   posts
                       .get()
@@ -405,9 +426,8 @@ pub fn HomeActivity() -> impl IntoView {
                           }
                       })
               }}
-
-            </main>
-          </Transition>
+            </Transition>
+          </main>
           <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
             <Transition fallback=|| {
                 view! { "Loading..." }
@@ -455,14 +475,17 @@ pub fn HomeActivity() -> impl IntoView {
               }}
 
             </Transition>
-            <div class="card w-full bg-base-300 text-base-content mb-3">
+            <Transition fallback=|| {
+                view! { "Loading..." }
+            }>
+            // <div>
               {move || {
-                  site_data
-                      .get()
+                  site_data.get().or(data.get())
+                      // .get()
                       .map(|m| match m {
                           Ok(o) => {
                               view! {
-                                <div>
+                                <div class="card w-full bg-base-300 text-base-content mb-3">
                                   <figure>
                                     <div class="card-body bg-neutral">
                                       <h2 class="card-title text-neutral-content">
@@ -530,13 +553,17 @@ pub fn HomeActivity() -> impl IntoView {
                                 </div>
                               }
                           }
+                          Err(e) => {
+                              view! { <div> { e.to_string() } </div> }
+                          }
                           _ => {
-                              view! { <div class="hidden"></div> }
+                              view! { <div> "other" </div> }
                           }
                       })
               }}
 
-            </div>
+            // </div>
+            </Transition>
           </div>
         </div>
       </div>

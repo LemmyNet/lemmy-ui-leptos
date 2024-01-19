@@ -6,7 +6,7 @@ use crate::{
 use lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost};
 use leptos::*;
 use leptos_router::{use_params_map, ParamsMap};
-use std::num::ParseIntError;
+use core::num::ParseIntError;
 
 #[component]
 pub fn PostActivity() -> impl IntoView {

@@ -70,7 +70,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
       let r = set_cookie(
         "jwt",
         &jwt.unwrap_or_default().into_inner(),
-        &std::time::Duration::from_secs(604800),
+        &core::time::Duration::from_secs(604800),
       )
       .await;
       match r {
@@ -153,18 +153,22 @@ pub fn LoginForm() -> impl IntoView {
             set_cookie(
               "jwt",
               &jwt.clone().into_inner(),
-              &std::time::Duration::from_secs(604800),
+              &core::time::Duration::from_secs(604800),
             )
             .await;
             site_data.set(Some(LemmyClient.get_site().await));
-            let navigate = leptos_router::use_navigate();
-            navigate("/", Default::default());
+            set_timeout(move || {
+              let navigate = leptos_router::use_navigate();
+              navigate("/", Default::default());  
+            }, core::time::Duration::from_secs(1))
+            // Ok(())
           }
           Ok(LoginResponse { jwt: None, .. }) => {
             error.set(Some(LemmyAppError {
               error_type: LemmyAppErrorType::MissingToken,
               content: String::default(),
             }));
+            // Err(())
           }
           Err(e) => {
             error.set(Some(e.clone()));
@@ -186,6 +190,7 @@ pub fn LoginForm() -> impl IntoView {
               }
               _ => {}
             }
+            // Err(())
           }
         }
       },

@@ -11,6 +11,23 @@ use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
 pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
+  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let data = create_resource(
+    move || (),
+    move |()| async move { LemmyClient.get_site().await },
+  );
+  // site_data.set(data.get());
+  let title = Signal::derive(move || site_data.get().or(data.get()).map(|m| match m { 
+    Ok(o) => {
+      if let Some(s) = o.site_view.site.description {
+        format!("{} - {}", o.site_view.site.name, s)
+      } else {
+        o.site_view.site.name
+      }
+    }
+    _ => { "Lemmy".to_string() }
+  }).unwrap_or("Lemmy".to_string()));
+
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
   let theme = create_resource(
     move || (),
@@ -32,7 +49,7 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
     // debug where there is no visible console (mobile/live/desktop)
     // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
     // <Script>eruda.init();</Script>
-    <Title text="Brand ite info"/>
+    <Title text=move || title.get()/>
     <Transition fallback=|| {
         view! { <div>"Loading..."</div> }
     }>

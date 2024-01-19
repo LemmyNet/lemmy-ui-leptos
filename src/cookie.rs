@@ -1,5 +1,5 @@
 use crate::errors::*;
-use std::time::Duration;
+use core::time::Duration;
 
 #[cfg(not(feature = "ssr"))]
 pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
@@ -41,7 +41,7 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
   use chrono::offset::Utc;
   use wasm_cookies::{cookies::*, set};
   let now = Utc::now();
-  let d = now - std::time::Duration::from_secs(604800);
+  let d = now - core::time::Duration::from_secs(604800);
 
   set(
     path,

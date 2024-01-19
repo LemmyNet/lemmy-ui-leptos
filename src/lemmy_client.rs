@@ -8,7 +8,7 @@ use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
 use leptos::{leptos_dom::logging, Serializable};
 use serde::{Deserialize, Serialize};
-use std::any::TypeId;
+use core::any::TypeId;
 
 #[derive(Clone)]
 pub enum HttpType {
@@ -58,7 +58,7 @@ mod private_trait {
     ) -> LemmyAppResult<Response>
     where
       Response: Serializable + for<'de> Deserialize<'de> + 'static,
-      Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+      Form: Serialize + core::clone::Clone + 'static + core::fmt::Debug,
       Request: Into<LemmyRequest<Form>>;
   }
 }
@@ -124,11 +124,11 @@ cfg_if! {
         pub struct LemmyClient;
 
         trait MaybeBearerAuth {
-            fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self;
+            fn maybe_bearer_auth(self, token: Option<impl core::fmt::Display>) -> Self;
         }
 
         impl MaybeBearerAuth for awc::ClientRequest {
-            fn maybe_bearer_auth(self, token: Option<impl std::fmt::Display>) -> Self {
+            fn maybe_bearer_auth(self, token: Option<impl core::fmt::Display>) -> Self {
                 if let Some(token) = token {
                     self.bearer_auth(token)
                 } else {
@@ -146,7 +146,7 @@ cfg_if! {
             ) -> LemmyAppResult<Response>
             where
                 Response: Serializable + for<'de> Deserialize<'de> + 'static,
-                Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+                Form: Serialize + core::clone::Clone + 'static + core::fmt::Debug,
                 Request: Into<LemmyRequest<Form>>,
             {
                 let LemmyRequest {body, jwt: _} = req.into();
@@ -238,7 +238,7 @@ cfg_if! {
             ) -> LemmyAppResult<Response>
             where
                 Response: Serializable + for<'de> Deserialize<'de> + 'static,
-                Form: Serialize + std::clone::Clone + 'static + std::fmt::Debug,
+                Form: Serialize + core::clone::Clone + 'static + core::fmt::Debug,
                 Request: Into<LemmyRequest<Form>>,
             {
                 let LemmyRequest { body, .. } = req.into();

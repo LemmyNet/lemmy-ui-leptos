@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{
+use core::{
   fmt,
   fmt::{Debug, Display},
 };

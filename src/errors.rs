@@ -2,7 +2,7 @@ use crate::{i18n::*, lemmy_errors::LemmyErrorType};
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
-use std::num::ParseIntError;
+use core::num::ParseIntError;
 use strum_macros::{Display, EnumIter};
 use wasm_cookies::*;
 
@@ -70,8 +70,8 @@ pub struct LemmyAppError {
 
 impl serde::ser::StdError for LemmyAppError {}
 
-impl std::fmt::Debug for LemmyAppError {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Debug for LemmyAppError {
+  fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
     f.debug_struct("debug LemmyAppError")
       .field("error_type", &self.error_type)
       .field("content", &self.content)
@@ -79,8 +79,8 @@ impl std::fmt::Debug for LemmyAppError {
   }
 }
 
-impl std::fmt::Display for LemmyAppError {
-  fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl core::fmt::Display for LemmyAppError {
+  fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
     match &self.error_type {
       LemmyAppErrorType::ApiError(inner) => {
         write!(
@@ -203,8 +203,8 @@ impl From<actix_http::error::PayloadError> for LemmyAppError {
 }
 
 #[cfg(feature = "ssr")]
-impl From<std::str::Utf8Error> for LemmyAppError {
-  fn from(value: std::str::Utf8Error) -> Self {
+impl From<core::str::Utf8Error> for LemmyAppError {
+  fn from(value: core::str::Utf8Error) -> Self {
     Self {
       error_type: LemmyAppErrorType::InternalServerError,
       content: format!("{:#?}", value),
