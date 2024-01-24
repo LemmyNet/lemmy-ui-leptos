@@ -21,6 +21,15 @@ cfg_if! {
             Ok(actix_files::NamedFile::open(format!("{site_root}/favicon.svg"))?)
         }
 
+        #[actix_web::get("icons.svg")]
+        async fn icons(
+            leptos_options: web::Data<leptos::LeptosOptions>
+        ) -> actix_web::Result<actix_files::NamedFile> {
+            let leptos_options = leptos_options.into_inner();
+            let site_root = &leptos_options.site_root;
+            Ok(actix_files::NamedFile::open(format!("{site_root}/icons.svg"))?)
+        }
+
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
             // Setting this to None means we'll be using cargo-leptos and its env vars.
@@ -51,6 +60,7 @@ cfg_if! {
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))
                             .service(favicon)
+                            .service(icons)
                             .leptos_routes(
                                 leptos_options.to_owned(),
                                 routes.to_owned(),
@@ -65,6 +75,7 @@ cfg_if! {
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))
                             .service(favicon)
+                            .service(icons)
                             .leptos_routes(
                                 leptos_options.to_owned(),
                                 routes.to_owned(),
