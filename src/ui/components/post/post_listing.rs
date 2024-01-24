@@ -1,3 +1,7 @@
+use crate::ui::components::common::icon::{
+  Icon,
+  IconType::{Block, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+};
 use lemmy_api_common::{
   lemmy_db_schema::newtypes::*, //{PersonId, PostId},
   lemmy_db_views::structs::*,   //PostView,
@@ -6,7 +10,6 @@ use lemmy_api_common::{
 };
 use leptos::*;
 use leptos_router::*;
-use phosphor_leptos::{ArrowDown, ArrowUp, Copy, DotsThreeVertical, Flag, Note, Prohibit, Star};
 
 #[server(VotePostFn, "/serverfn")]
 pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, ServerFnError> {
@@ -155,7 +158,7 @@ pub fn PostListing(
 
             title="Up vote"
           >
-            <ArrowUp/>
+            <Icon icon=Upvote/>
           </button>
         </ActionForm>
         <span class="block text-sm">{move || post_view.get().counts.score}</span>
@@ -172,7 +175,7 @@ pub fn PostListing(
 
             title="Down vote"
           >
-            <ArrowDown/>
+            <Icon icon=Downvote/>
           </button>
         </ActionForm>
       </td>
@@ -217,8 +220,6 @@ pub fn PostListing(
 
               class="text-xs inline-block whitespace-nowrap align-top"
             >
-              <Note/>
-              " "
               {post_view.get().unread_comments}
             </A>
           </span>
@@ -230,18 +231,18 @@ pub fn PostListing(
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
             >
-              <Star/>
+              <Icon icon=Save/>
             </button>
           </ActionForm>
           <span title="Cross post">
             <A href="/create_post" class="inline-block align-top">
-              <Copy/>
+              <Icon icon=Crosspost/>
             </A>
           </span>
 
           <div class="dropdown inline-block align-top">
             <label tabindex="0">
-              <DotsThreeVertical/>
+              <Icon icon=VerticalDots/>
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
@@ -254,7 +255,7 @@ pub fn PostListing(
                     placeholder="reason"
                   />
                   <button title="Report post" type="submit">
-                    <Flag/>
+                    <Icon icon=Report/>
                     "Report post"
                   </button>
                 </ActionForm>
@@ -268,7 +269,7 @@ pub fn PostListing(
                   />
                   <input type="hidden" name="block"/>
                   <button title="Block user" type="submit">
-                    <Prohibit/>
+                    <Icon icon=Block/>
                     "Block user"
                   </button>
                 </ActionForm>

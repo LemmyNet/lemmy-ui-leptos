@@ -1,7 +1,12 @@
-use crate::i18n::*;
+use crate::{
+  i18n::*,
+  ui::components::common::icon::{
+    Icon,
+    IconType::{Donate, Notifications, Search},
+  },
+};
 use leptos::*;
 use leptos_router::*;
-use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 
 #[server(LogoutAction, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
@@ -78,7 +83,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <a href="//join-lemmy.org/donate">
                 <span title=t!(i18n, donate)>
-                  <Heart/>
+                  <Icon icon=Donate/>
                 </span>
               </a>
             </li>
@@ -89,7 +94,7 @@ pub fn TopNav() -> impl IntoView {
             <li>
               <A href="/search">
                 <span title=t!(i18n, search)>
-                  <MagnifyingGlass/>
+                  <Icon icon=Search/>
                 </span>
               </A>
             </li>
@@ -126,7 +131,7 @@ pub fn TopNav() -> impl IntoView {
           // <li>
           // <A href="/inbox">
           // <span title=t!(i18n, unread_messages)>
-          // <Bell />
+          // <Icon icon=Notifications/>
           // </span>
           // </A>
           // </li>
