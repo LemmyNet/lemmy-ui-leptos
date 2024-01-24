@@ -8,7 +8,7 @@ If you don't have `cargo-leptos` installed you can install it with:
 
 Then run:
 
-`npm i`
+`pnpm i`
 
 to install daisyUI.
 
