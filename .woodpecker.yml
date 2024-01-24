@@ -59,7 +59,7 @@ steps:
       - apt-get update && apt-get -y install libssl-dev pkg-config
       - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
       - . /root/.profile
-      - nvm install lts
+      - nvm install --lts
       - npm install -g pnpm
       - pnpm install
       - rustup target add wasm32-unknown-unknown
