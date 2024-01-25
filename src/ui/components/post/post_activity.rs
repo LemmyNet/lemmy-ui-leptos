@@ -11,54 +11,47 @@ use core::num::ParseIntError;
 #[component]
 pub fn PostActivity() -> impl IntoView {
   let params = use_params_map();
+
+  let post_id = move || params.get().get("id").cloned().unwrap_or_default();
+
   let post = create_resource(
-    move || post_id_from_params(params),
-    move |id| async move {
-      match id {
-        Err(e) => Err(LemmyAppError::from(e)),
-        Ok(id) => {
-          let form = GetPost {
-            id: Some(PostId(id)),
-            comment_id: None,
-          };
-          LemmyClient.get_post(form).await
-        }
-      }
+    move || post_id(),
+    move |id_string| async move {
+      let id = id_string.parse::<i32>()?;
+      let form = GetPost {
+        id: Some(PostId(id)),
+        comment_id: None,
+      };
+      LemmyClient.get_post(form).await
     },
   );
 
   let comments = create_resource(
-    move || post_id_from_params(params),
-    move |id| async move {
-      match id {
-        Err(e) => Err(LemmyAppError::from(e)),
-        Ok(id) => {
-          let form = GetComments {
-            post_id: Some(PostId(id)),
-            community_id: None,
-            type_: None,
-            sort: None,
-            max_depth: Some(8),
-            page: None,
-            limit: None,
-            community_name: None,
-            parent_id: None,
-            saved_only: None,
-            disliked_only: None,
-            liked_only: None,
-          };
-          LemmyClient.get_comments(form).await
-        }
-      }
+    move || post_id(),
+    move |id_string| async move {
+      let id = id_string.parse::<i32>()?;
+      let form = GetComments {
+        post_id: Some(PostId(id)),
+        community_id: None,
+        type_: None,
+        sort: None,
+        max_depth: Some(8),
+        page: None,
+        limit: None,
+        community_name: None,
+        parent_id: None,
+        saved_only: None,
+        disliked_only: None,
+        liked_only: None,
+      };
+      LemmyClient.get_comments(form).await
     },
   );
 
   view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Post page"</h2>
-      <Transition fallback=|| {
-          view! { "Loading..." }
-      }>
+      <Transition fallback=|| { view! { "Loading..." } }>
         {move || {
             post.get()
                 .map(|res| match res {
@@ -74,6 +67,8 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
+      </Transition>
+      <Transition fallback=|| { view! { "Loading..." } }>
         {move || {
             comments
                 .get()
@@ -90,17 +85,7 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
-
       </Transition>
     </main>
   }
-}
-
-fn post_id_from_params(params: Memo<ParamsMap>) -> Result<i32, ParseIntError> {
-  params
-    .get()
-    .get("id")
-    .cloned()
-    .unwrap_or_default()
-    .parse::<i32>()
 }

@@ -89,14 +89,16 @@ pub fn TopNav() -> impl IntoView {
     }
   }
 
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let user = expect_context::<RwSignal<Option<bool>>>();
 
-  let ssr_data = create_resource(
-    move || (),
-    move |()| async move { LemmyClient.get_site().await },
+  let data = create_resource(
+    move || (user.get()),
+    move |(_user)| async move { LemmyClient.get_site().await },
   );
 
-  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  // let data = Signal::derive(move || ssr_data.get().or(None));
 
   let my_user = Signal::<Option<Person>>::derive(move || {
     data.get().map_or_else(
@@ -124,7 +126,8 @@ pub fn TopNav() -> impl IntoView {
         match result {
           Ok(_o) => {
             remove_cookie("jwt").await;
-            site_data.set(Some(LemmyClient.get_site().await));
+            user.set(Some(false));
+            // site_data.set(Some(LemmyClient.get_site().await));
           }
           Err(e) => {
             logging::warn!("logout error {:#?}", e);
@@ -169,6 +172,7 @@ pub fn TopNav() -> impl IntoView {
               <Transition fallback=|| {
                   view! { "Loading..." }
               }>{move || instance_name}</Transition>
+              // " "
             </A>
           </li>
           <li>
@@ -251,7 +255,25 @@ pub fn TopNav() -> impl IntoView {
           <Transition fallback=|| {
               view! { "Loading..." }
           }>
+            // { move || data.get().map(|m| {
+            //   if let Ok(o) = m {
+            //     if let Some(s) = o.my_user {
+            //       view! {
+            //           <div> {s.local_user_view.person.name} </div>
+            //       }
+            //     } else {
+            //       view! {
+            //         <div><A href="/login">{t!(i18n, login)}</A></div>
+            //       }
+            //     }
+            //   } else {
+            //     view! {
+            //         <div> "Err" </div>
+            //     }
+            //   }
+            // })}
             <Show
+              // when=move || true
               when=move || with!(| my_user | my_user.is_some())
               fallback=move || {
                   view! {

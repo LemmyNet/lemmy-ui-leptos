@@ -8,7 +8,7 @@ use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
 use leptos::{leptos_dom::logging, Serializable};
 use serde::{Deserialize, Serialize};
-use core::any::TypeId;
+// use core::any::TypeId;
 
 #[derive(Clone)]
 pub enum HttpType {
@@ -121,13 +121,17 @@ pub trait PublicFetch: private_trait::PrivateFetch {
 cfg_if! {
     if #[cfg(feature = "ssr")] {
 
+        use actix_web::web;
+        use awc::{Client, ClientRequest};
+        use leptos_actix::{extract};
+
         pub struct LemmyClient;
 
         trait MaybeBearerAuth {
             fn maybe_bearer_auth(self, token: Option<impl core::fmt::Display>) -> Self;
         }
 
-        impl MaybeBearerAuth for awc::ClientRequest {
+        impl MaybeBearerAuth for ClientRequest {
             fn maybe_bearer_auth(self, token: Option<impl core::fmt::Display>) -> Self {
                 if let Some(token) = token {
                     self.bearer_auth(token)
@@ -149,54 +153,54 @@ cfg_if! {
                 Form: Serialize + core::clone::Clone + 'static + core::fmt::Debug,
                 Request: Into<LemmyRequest<Form>>,
             {
-                let LemmyRequest {body, jwt: _} = req.into();
+                let LemmyRequest {body, ..} = req.into();
 
                 let jwt = get_cookie("jwt").await?;
 
                 let route = build_route(path);
 
-                use actix_web::web;
-                use awc::Client;
-                use leptos_actix::{extract};
+                let query = serde_urlencoded::to_string(&body).unwrap_or("".to_string());
+                let query = format!("{}?{}&cache_bust={}", route, query, chrono::offset::Utc::now().to_rfc3339());
+
+                // leptos::logging::log!("{}", query);
+
 
                 let result = extract(|client: web::Data<Client>| async move {
-                  let mut r = match method {
-                      HttpType::Get =>
-                          client
-                              .get(&route)
-                              .maybe_bearer_auth(jwt.clone())
-                              .query(&body)?
-                              .send(),
-                      HttpType::Post =>
-                          client
-                              .post(&route)
-                              .maybe_bearer_auth(jwt.clone())
-                              .send_json(&body),
-                      HttpType::Put =>
-                          client
-                              .put(&route)
-                              .maybe_bearer_auth(jwt.clone())
-                              .send_json(&body)
-                  }.await?;
+                    let mut r = match method {
+                        HttpType::Get => client
+                            // .get(&route)
+                            .get(&query)
+                            .maybe_bearer_auth(jwt.clone())
+                            // .query(&body)?
+                            .send(),
+                        HttpType::Post => client
+                            .post(&route)
+                            .maybe_bearer_auth(jwt.clone())
+                            .send_json(&body),
+                        HttpType::Put => client
+                            .put(&route)
+                            .maybe_bearer_auth(jwt.clone())
+                            .send_json(&body)
+                    }.await?;
 
-                  match r.status().as_u16() {
-                    400..=499 | 500..=599 => {
-                      let api_result = r.json::<LemmyErrorType>().await;
+                    match r.status().as_u16() {
+                        400..=499 | 500..=599 => {
+                            let api_result = r.json::<LemmyErrorType>().await;
 
-                      match api_result {
-                        Ok(le) => {
-                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                            match api_result {
+                                Ok(le) => {
+                                  return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                                },
+                                Err(e) => {
+                                  return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                                },
+                            }
                         },
-                        Err(e) => {
-                          return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                        _ => {
                         },
-                      }
-                    },
-                    _ => {
-                    },
-                  };
+                    };
 
-                  r.json::<Response>().await.map_err(Into::into)
+                    r.json::<Response>().await.map_err(Into::into)
 
                 }).await?;
 
@@ -210,8 +214,7 @@ cfg_if! {
 
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
-        use gloo_net::http::{Request, RequestBuilder};
-        use wasm_cookies::get;
+        use gloo_net::{http, http::{Request, RequestBuilder}};
 
         pub struct LemmyClient;
 
@@ -255,40 +258,39 @@ cfg_if! {
                 });
 
                 let r = match method {
-                  HttpType::Get =>
-                    gloo_net::http::Request::get(&build_fetch_query(path, body))
-                      .maybe_bearer_auth(jwt.as_deref())
-                      .abort_signal(abort_signal.as_ref())
-                      .build()
-                      .expect_throw("Could not parse query params"),
-                  HttpType::Post =>
-                    gloo_net::http::Request::post(route)
-                      .maybe_bearer_auth(jwt.as_deref())
-                      .abort_signal(abort_signal.as_ref())
-                      .json(&body)
-                      .expect_throw("Could not parse json body"),
-                  HttpType::Put =>
-                    gloo_net::http::Request::put(route)
-                      .maybe_bearer_auth(jwt.as_deref())
-                      .abort_signal(abort_signal.as_ref())
-                      .json(&body)
-                      .expect_throw("Could not parse json body")
+                    HttpType::Get => http::Request::
+                        get(&format!("{}&cache_bust={}", build_fetch_query(path, body), chrono::offset::Utc::now().to_rfc3339()))
+                      // get(&build_fetch_query(path, body))
+                        .maybe_bearer_auth(jwt.as_deref())
+                        .abort_signal(abort_signal.as_ref())
+                        .build()
+                        .expect_throw("Could not parse query params"),
+                    HttpType::Post => http::Request::post(route)
+                        .maybe_bearer_auth(jwt.as_deref())
+                        .abort_signal(abort_signal.as_ref())
+                        .json(&body)
+                        .expect_throw("Could not parse json body"),
+                    HttpType::Put => http::Request::put(route)
+                        .maybe_bearer_auth(jwt.as_deref())
+                        .abort_signal(abort_signal.as_ref())
+                        .json(&body)
+                        .expect_throw("Could not parse json body")
                 }.send().await?;
 
                 match r.status() {
-                  400..=499 | 500..=599 => {
-                    let api_result = r.json::<LemmyErrorType>().await;
-                    match api_result {
-                      Ok(le) => {
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
-                      },
-                      Err(e) => {
-                        return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
-                      },
-                    }
-                  },
-                  _ => {
-                  },
+                    400..=499 | 500..=599 => {
+                        let api_result = r.json::<LemmyErrorType>().await;
+                        match api_result {
+                            Ok(le) => {
+                                return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                            },
+                            Err(e) => {
+                                return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                            },
+                        }
+                    },
+                    _ => {
+                    },
                 };
 
                 r.json::<Response>().await.map_err(Into::into)
@@ -298,7 +300,7 @@ cfg_if! {
         impl PublicFetch for LemmyClient {}
 
         fn build_fetch_query<T: Serialize>(path: &str, form: T) -> String {
-            let form_str = serde_urlencoded::to_string(&form).unwrap_or(path.to_string());
+            let form_str = serde_urlencoded::to_string(&form).unwrap_or("".to_string());
             format!("{}?{}", build_route(path), form_str)
         }
 

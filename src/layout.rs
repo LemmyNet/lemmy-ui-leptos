@@ -10,23 +10,37 @@ use leptos_meta::*;
 use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
-pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let data = create_resource(
+pub fn Layout(/* is_routing: ReadSignal<bool> */) -> impl IntoView {
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  let title = create_resource(
     move || (),
-    move |()| async move { LemmyClient.get_site().await },
+    move |()| async move { 
+      match LemmyClient.get_site().await { 
+        Ok(o) => {
+          if let Some(s) = o.site_view.site.description {
+            format!("{} - {}", o.site_view.site.name, s)
+          } else {
+            o.site_view.site.name
+          }
+        }
+        _ => { "Lemmy".to_string() }
+      }
+    },
   );
   // site_data.set(data.get());
-  let title = Signal::derive(move || site_data.get().or(data.get()).map(|m| match m { 
-    Ok(o) => {
-      if let Some(s) = o.site_view.site.description {
-        format!("{} - {}", o.site_view.site.name, s)
-      } else {
-        o.site_view.site.name
-      }
-    }
-    _ => { "Lemmy".to_string() }
-  }).unwrap_or("Lemmy".to_string()));
+
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+
+  // let title = Signal::derive(move || site_data.get().or(data.get()).map(|m| match m { 
+  //   Ok(o) => {
+  //     if let Some(s) = o.site_view.site.description {
+  //       format!("{} - {}", o.site_view.site.name, s)
+  //     } else {
+  //       o.site_view.site.name
+  //     }
+  //   }
+  //   _ => { "Lemmy".to_string() }
+  // }).unwrap_or("Lemmy".to_string()));
 
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
   let theme = create_resource(
@@ -39,7 +53,7 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
       }
     },
   );
-  ui_theme.set(theme.get());
+  // ui_theme.set(theme.get());
 
   view! {
     <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
@@ -49,14 +63,17 @@ pub fn Layout(is_routing: ReadSignal<bool>) -> impl IntoView {
     // debug where there is no visible console (mobile/live/desktop)
     // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
     // <Script>eruda.init();</Script>
-    <Title text=move || title.get()/>
+    // <Transition fallback=|| { view! { <Title /> } }>
+    //   <Title text=move || title.get().unwrap_or("Lemmy".to_string())/>
+    // </Transition>
     <Transition fallback=|| {
-        view! { <div>"Loading..."</div> }
+      view! { <div>"Loading..."</div> }
     }>
       <div
         class="flex flex-col h-screen"
         data-theme=move || ui_theme.get().unwrap_or(theme.get().unwrap_or("retro".to_string()))
       >
+        <Title text=move || title.get().unwrap_or("Lemmy".to_string())/>
         <TopNav/>
         <Outlet/>
         <BottomNav/>

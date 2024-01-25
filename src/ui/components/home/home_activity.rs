@@ -36,22 +36,24 @@ pub fn HomeActivity() -> impl IntoView {
   let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
+  let user = expect_context::<RwSignal<Option<bool>>>();
 
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
   let ssr_data = create_resource(
-    move || (),
-    move |()| async move { LemmyClient.get_site().await },
+    move || (user.get()),
+    move |(_user)| async move { LemmyClient.get_site().await },
   );
   // site_data.set(data.get());
 
-  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  let data = Signal::derive(move || ssr_data.get().or(None));
 
-  let my_user = Signal::<Option<Person>>::derive(move || {
-    data.get().map_or_else(
-      || None,
-      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-    )
-  });
+  // let my_user = Signal::<Option<Person>>::derive(move || {
+  //   data.get().map_or_else(
+  //     || None,
+  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+  //   )
+  // });
 
   // let title = Signal::derive(move || site_data.get().map(|m| match m { 
   //   Ok(o) => {
@@ -78,6 +80,9 @@ pub fn HomeActivity() -> impl IntoView {
   let ssr_list = move || query.with(|params| params.get("list").cloned());
   // let _sort = create_rw_signal::<Option<SortType>>(None);
   let ssr_sort = move || query.with(|params| params.get("sort").cloned());
+
+  let ssr_prev = move || query.get().get("prev").cloned();
+  let ssr_from = move || query.get().get("from").cloned();
 
   // if let Some(t) = ssr_list() {
   //   let r = serde_json::from_str::<ListingType>(&t[..]);
@@ -143,9 +148,28 @@ pub fn HomeActivity() -> impl IntoView {
     }
   };
 
+  // let on_prev_click = move |c: PaginationCursor| {
+  //   move |_me: MouseEvent| {
+  //     let r = serde_json::to_string::<SortType>(&lt);
+
+  //     match r {
+  //       Ok(o) => {
+  //         let navigate = leptos_router::use_navigate();
+  //         navigate(
+  //           &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
+  //           Default::default(),
+  //         );
+  //       }
+  //       Err(e) => {
+  //         error.set(Some(e.into()));
+  //       }
+  //     }
+  //   }
+  // };
+
   let posts = create_resource(
-    move || (my_user.get(), cursor_string.get(), ssr_list(), ssr_sort()),
-    move |(_my_user, _cursor_string, list, sort)| async move {
+    move || (user.get(), cursor_string.get(), ssr_list(), ssr_sort(), ssr_from()),
+    move |(_user, _cursor_string, list, sort, from)| async move {
       let l = {
         if let Some(t) = list.clone() {
           if !t.is_empty() {
@@ -192,6 +216,30 @@ pub fn HomeActivity() -> impl IntoView {
         }
       };
 
+      let f = {
+        if let Some(t) = from.clone() {
+          if !t.is_empty() {
+            Some(PaginationCursor(t))
+            // let r = serde_json::from_str::<SortType>(&t[..]);
+
+            // match r {
+            //   Ok(o) => {
+            //     // sort_signal.set(Some(o));
+            //     Some(o)
+            //   }
+            //   Err(e) => {
+            //     error.set(Some(e.into()));
+            //     None
+            //   }
+            // }
+          } else {
+            None
+          }
+        } else {
+          None
+        }
+      };
+
       let form = GetPosts {
         type_: l,
         sort: s,
@@ -202,7 +250,8 @@ pub fn HomeActivity() -> impl IntoView {
         saved_only: None,
         disliked_only: None,
         liked_only: None,
-        page_cursor: page_cursor.get(),
+        // page_cursor: page_cursor.get(),
+        page_cursor: f,
       };
 
       let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
@@ -246,12 +295,12 @@ pub fn HomeActivity() -> impl IntoView {
       match result {
         Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
-          leptos::logging::log!("Err {:#?}", e);
+          // leptos::logging::log!("Err {:#?}", e);
           error.set(Some(e));
           None
         }
         None => {
-          leptos::logging::log!("Nun");
+          // leptos::logging::log!("Nun");
           error.set(Some(LemmyAppError {
             error_type: LemmyAppErrorType::Unknown,
             content: String::default(),
@@ -394,33 +443,113 @@ pub fn HomeActivity() -> impl IntoView {
                               view! {
                                 <div>
                                   <PostListings posts=res.posts.into()/>
-                                  <button
-                                    class="btn"
-                                    on:click=move |_| {
-                                        let mut p = prev_cursor_stack.get();
-                                        let s = p.pop().unwrap_or(None);
-                                        prev_cursor_stack.set(p);
-                                        page_cursor.set(s.clone());
-                                        cursor_string.set(Some(format!("{:#?}", s)));
-                                    }
+                                  <A
+                                    href=format!(
+                                        "/?list={}&sort={}&prev={}&from={}",
+                                        "",
+                                        if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                                        {
+                                          // if let Some(p) = ssr_from().clone() { 
+                                            if let Some(ref s) = ssr_prev() { 
+                                              leptos::logging::log!("p1 {}", s);
+                                              let mut st = s.split(",").collect::<Vec<_>>();
+                                              st.pop();
+                                              st.join(",").to_string()
+                                            } else { 
+                                              "".to_string() 
+                                            }  
+                                          // } else { 
+                                          //   "".to_string() 
+                                          // }  
+                                        },
+                                        {
+                                          // if let Some(p) = ssr_from().clone() { 
+                                            if let Some(ref s) = ssr_prev() { 
+                                              leptos::logging::log!("p2 {}", s);
+                                              let mut st = s.split(",").collect::<Vec<_>>();
+                                              st.pop().unwrap()
+                                              // st.join(",").to_string()
+                                            } else { 
+                                              "" 
+                                            }  
+                                          // } else { 
+                                          //   "".to_string() 
+                                          // }  
+                                        },
+                                    )
+                                    class="btn"                    
+                                    // on:click=on_prev_click(pv.)
                                   >
-
                                     "Prev"
-                                  </button>
-                                  <button
-                                    class="btn"
-                                    on:click=move |_| {
-                                        let mut p = prev_cursor_stack.get();
-                                        p.push(page_cursor.get());
-                                        prev_cursor_stack.set(p);
-                                        page_cursor.set(res.next_page.clone());
-                                        cursor_string
-                                            .set(Some(format!("{:#?}", res.next_page.clone())));
-                                    }
-                                  >
+                                  </A>
+                                  
+                                  // <A
+                                  //   href=format!(
+                                  //       "/?list={}&sort={}&prev={}&from={}",
+                                  //       "\"Subscribed\"",
+                                  //       if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                                  //       {
+                                  //         .split(",").collect::<Vec<_>>()
+                                  //       }
+                                  //       if let Some(p) = ssr_next() { p } else { "".to_string() } //if let Some(p) = ssr_prev() { p } else { res.next_page.i } },
+                                  //   )
+                                  //   class="btn"                    
+                                  //   // on:click=on_prev_click(res.)
+                                  // >
+                                  //   "Prev"
+                                  // </A>
+                  
+                                  // <button
+                                  //   class="btn"
+                                  //   on:click=move |_| {
+                                  //       let mut p = prev_cursor_stack.get();
+                                  //       let s = p.pop().unwrap_or(None);
+                                  //       prev_cursor_stack.set(p);
+                                  //       page_cursor.set(s.clone());
+                                  //       cursor_string.set(Some(format!("{:#?}", s)));
+                                  //   }
+                                  // >
 
+                                  // </button>
+                                  // <button
+                                  //   class="btn"
+                                  //   on:click=move |_| {
+                                  //       let mut p = prev_cursor_stack.get();
+                                  //       p.push(page_cursor.get());
+                                  //       prev_cursor_stack.set(p);
+                                  //       page_cursor.set(res.next_page.clone());
+                                  //       cursor_string
+                                  //           .set(Some(format!("{:#?}", res.next_page.clone())));
+                                  //   }
+                                  // >
+
+                                  // </button>
+                                  <A
+                                    href=format!(
+                                        "/?list={}&sort={}&prev={}&from={}",
+                                        "",
+                                        if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                                        {
+                                          if let Some(p) = ssr_from().clone() { 
+                                            if let Some(ref s) = ssr_prev() { 
+                                              leptos::logging::log!("n1 {}", s);
+                                              let mut st = s.split(",").collect::<Vec<_>>();
+                                              st.push(&p);
+                                              st.join(",").to_string()
+                                            } else { 
+                                              "".to_string() 
+                                            }  
+                                          } else { 
+                                            "".to_string() 
+                                          }  
+                                        },
+                                        if let Some(p) = res.next_page { p.0 } else { ssr_from().unwrap() }
+                                    )
+                                    class="btn"                    
+                                    // on:click=on_prev_click(pv.)
+                                  >
                                     "Next"
-                                  </button>
+                                  </A>
                                 </div>
                               }
                           }
@@ -480,7 +609,9 @@ pub fn HomeActivity() -> impl IntoView {
             }>
             // <div>
               {move || {
-                  site_data.get().or(data.get())
+                  // site_data.get().or(
+                    data.get()
+                  // )
                       // .get()
                       .map(|m| match m {
                           Ok(o) => {

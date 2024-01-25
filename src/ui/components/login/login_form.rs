@@ -97,8 +97,9 @@ pub fn LoginForm() -> impl IntoView {
 
   let query = use_query_map();
 
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
+  let user = expect_context::<RwSignal<Option<bool>>>();
 
   let name = create_rw_signal(String::new());
   let password = create_rw_signal(String::new());
@@ -135,6 +136,11 @@ pub fn LoginForm() -> impl IntoView {
     }
   }
 
+  // let go_home = move || {
+  //   let navigate = leptos_router::use_navigate();
+  //   navigate("/", Default::default());
+  // };
+
   let on_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
     error.set(None);
@@ -156,11 +162,18 @@ pub fn LoginForm() -> impl IntoView {
               &core::time::Duration::from_secs(604800),
             )
             .await;
-            site_data.set(Some(LemmyClient.get_site().await));
-            set_timeout(move || {
-              let navigate = leptos_router::use_navigate();
-              navigate("/", Default::default());  
-            }, core::time::Duration::from_secs(1))
+            // site_data.set(Some(LemmyClient.get_site().await));
+            user.set(Some(true));
+            leptos_router::use_navigate()("/communities", Default::default());
+            // window().location().set_href("/");
+            // let r = window().history().unwrap().push_state_with_url(&"".to_string().into(), "home", Some("/community"));
+
+            // leptos::logging::log!("{:#?}", r);
+
+
+              // let navigate = leptos_router::use_navigate();
+
+            // set_timeout(go_home, core::time::Duration::from_secs(1))
             // Ok(())
           }
           Ok(LoginResponse { jwt: None, .. }) => {

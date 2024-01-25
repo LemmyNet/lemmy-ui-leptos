@@ -38,17 +38,19 @@ pub fn App() -> impl IntoView {
 
   let error = create_rw_signal::<Option<LemmyAppError>>(None);
   provide_context(error);
+  let user = create_rw_signal::<Option<bool>>(None);
+  provide_context(user);
   let site_data = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
   provide_context(site_data);
   let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
 
-  let (is_routing, set_is_routing) = create_signal(false);
+  // let (is_routing, set_is_routing) = create_signal(false);
 
   view! {
-    <Router set_is_routing>
+    <Router /* set_is_routing */>
       <Routes>
-        <Route path="/" view=move || view! { <Layout is_routing/> } ssr=SsrMode::PartiallyBlocked>
+        <Route path="/" view=move || view! { <Layout /* is_routing *//> }>
           <Route path="" view=HomeActivity ssr=SsrMode::Async/>
 
           <Route path="communities" view=CommunitiesActivity/>
