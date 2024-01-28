@@ -80,7 +80,6 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
   cookie.set_same_site(Some(SameSite::Strict));
 
   if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
-    logging::log!("{:#?}", cookie);
     response.insert_header(header::SET_COOKIE, cookie);
   }
 

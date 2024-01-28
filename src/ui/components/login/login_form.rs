@@ -126,7 +126,6 @@ pub fn LoginForm() -> impl IntoView {
         _ => {}
       },
       Err(_) => {
-        logging::log!("ssr_e ERR");
       }
     }
   }

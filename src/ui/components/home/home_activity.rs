@@ -155,7 +155,6 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
           None
         }
         None => {
-          leptos::logging::log!("Nun");
           error.set(Some(LemmyAppError {
             error_type: LemmyAppErrorType::Unknown,
             content: String::default(),
@@ -308,7 +307,6 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
                   site_signal
                       .get()
                       .map(|s| {
-                          logging::log!("why {}", s.site_view.site.name);
                           posts
                               .get()
                               .map(|res| match res {
