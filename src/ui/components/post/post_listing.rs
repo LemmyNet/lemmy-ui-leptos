@@ -311,7 +311,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
             title="Up vote"
           >
-            <ArrowUp/>
+            <Icon icon=Upvote/>
           </button>
         </ActionForm>
         <span class="block text-sm">{move || post_view.get().counts.score}</span>
@@ -327,7 +327,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
             title="Down vote"
           >
-            <ArrowDown/>
+            <Icon icon=Downvote/>
           </button>
         </ActionForm>
       </td>
@@ -397,7 +397,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
             >
-              <Star/>
+              <Icon icon=Save/>
             </button>
           </ActionForm>
           <span title="Cross post">
@@ -407,7 +407,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </span>
           <div class="dropdown">// inline-block">// align-top">
             <label tabindex="0">
-              <DotsThreeVertical/>
+              <Icon icon=VerticalDots/>
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
