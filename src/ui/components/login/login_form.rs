@@ -125,8 +125,7 @@ pub fn LoginForm() -> impl IntoView {
         }
         _ => {}
       },
-      Err(_) => {
-      }
+      Err(_) => {}
     }
   }
 
