@@ -1,30 +1,24 @@
 use crate::{
-  cookie::{get_cookie, remove_cookie, set_cookie},
+  cookie::{remove_cookie, set_cookie},
   errors::{message_from_error, LemmyAppError},
   i18n::*,
   lemmy_client::*,
-  queries::site_state_query::*,
   ui::components::common::icon::{
     Icon,
     IconType::{Donate, Notifications, Search},
   },
 };
-use chrono::Duration;
-use lemmy_api_common::{
-  lemmy_db_schema::{newtypes::PostId, source::person::Person},
-  post::GetPost,
-  site::{GetSiteResponse, MyUserInfo},
-};
+use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_router::*;
-use web_sys::{MouseEvent, SubmitEvent};
+use web_sys::SubmitEvent;
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  use leptos_actix::{extract, redirect};
+  use leptos_actix::redirect;
   let result = LemmyClient.logout().await;
   match result {
-    Ok(o) => {
+    Ok(_o) => {
       let r = remove_cookie("jwt").await;
       match r {
         Ok(_o) => {
@@ -46,7 +40,7 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
 #[server(ChangeLangFn, "/serverfn")]
 pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
-  set_cookie(
+  let _ = set_cookie(
     "i18n_pref_locale",
     &lang.to_lowercase(),
     &core::time::Duration::from_secs(604800),
@@ -57,7 +51,7 @@ pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
 
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
-  use leptos_actix::{extract, redirect};
+  use leptos_actix::redirect;
   let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
   match r {
     Ok(_o) => Ok(()),
@@ -105,7 +99,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
         let result = LemmyClient.logout().await;
         match result {
           Ok(_o) => {
-            remove_cookie("jwt").await;
+            let _ = remove_cookie("jwt").await;
             user.set(Some(false));
           }
           Err(e) => {
@@ -126,7 +120,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
       let _res = create_local_resource(
         move || theme_name.to_string(),
         move |t| async move {
-          set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
+          let _ = set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
         },
       );
       ui_theme.set(Some(theme_name.to_string()));

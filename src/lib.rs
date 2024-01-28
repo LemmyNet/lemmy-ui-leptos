@@ -1,4 +1,4 @@
-#![allow(warnings)]
+// #![allow(warnings)]
 
 mod config;
 mod cookie;
@@ -48,7 +48,7 @@ pub fn App() -> impl IntoView {
 
   let ssr_site = create_resource(
     move || (user.get()),
-    move |(_user)| async move { LemmyClient.get_site().await },
+    move |_user| async move { LemmyClient.get_site().await },
   );
 
   let site_signal = create_rw_signal::<Option<GetSiteResponse>>(None);

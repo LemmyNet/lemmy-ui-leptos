@@ -1,20 +1,14 @@
 use crate::{
   cookie::get_cookie,
-  errors::LemmyAppError,
-  lemmy_client::*,
   ui::components::common::nav::{BottomNav, TopNav},
 };
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
-use leptos_router::{Outlet, RoutingProgress};
+use leptos_router::Outlet;
 
 #[component]
-pub fn Layout(
-  site_signal: RwSignal<Option<GetSiteResponse>>, /* is_routing: ReadSignal<bool> */
-) -> impl IntoView {
-  let user = expect_context::<RwSignal<Option<bool>>>();
-
+pub fn Layout(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
   let title = move || match site_signal.get() {
     Some(o) => {
       if let Some(s) = o.site_view.site.description {

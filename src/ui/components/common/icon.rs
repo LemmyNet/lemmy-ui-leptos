@@ -1,5 +1,4 @@
 use leptos::*;
-use std::fmt::format;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum IconType {

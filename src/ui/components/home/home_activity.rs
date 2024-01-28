@@ -1,13 +1,12 @@
 use crate::{
-  cookie::*,
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  errors::{LemmyAppError, LemmyAppErrorType},
   i18n::*,
   lemmy_client::*,
   ui::components::post::post_listings::PostListings,
 };
 use lemmy_api_common::{
   community::*,
-  lemmy_db_schema::{source::person::Person, ListingType, SortType},
+  lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views::structs::PaginationCursor,
   lemmy_db_views_actor::structs::CommunityView,
   post::{GetPosts, GetPostsResponse},
@@ -18,16 +17,13 @@ use leptos_router::*;
 use web_sys::*;
 
 #[component]
-pub fn HomeActivity(
-  site_signal: RwSignal<Option<GetSiteResponse>>, /*  Resource<Option<bool>, Result<GetSiteResponse, LemmyAppError>> */
-) -> impl IntoView {
+pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
   let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
   let query = use_query_map();
-  let query_signal = create_rw_signal(query.get());
 
   let list_func = move || {
     serde_json::from_str::<ListingType>(

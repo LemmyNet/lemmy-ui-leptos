@@ -1,14 +1,10 @@
 use crate::{
   cookie::set_cookie,
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  errors::{LemmyAppError, LemmyAppErrorType},
   i18n::*,
-  lemmy_client::*,
   ui::components::common::text_input::{InputType, TextInput},
 };
-use lemmy_api_common::{
-  person::{Login, LoginResponse},
-  site::GetSiteResponse,
-};
+use lemmy_api_common::person::{Login, LoginResponse};
 use leptos::*;
 use leptos_router::*;
 use web_sys::SubmitEvent;
@@ -55,7 +51,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
 #[server(LoginFn, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use leptos_actix::{extract, redirect};
+  use leptos_actix::redirect;
 
   let req = Login {
     username_or_email: username_or_email.into(),
@@ -150,7 +146,7 @@ pub fn LoginForm() -> impl IntoView {
         let result = try_login(req.clone()).await;
         match result {
           Ok(LoginResponse { jwt: Some(jwt), .. }) => {
-            set_cookie(
+            let _ = set_cookie(
               "jwt",
               &jwt.clone().into_inner(),
               &core::time::Duration::from_secs(604800),

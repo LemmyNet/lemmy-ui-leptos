@@ -6,7 +6,7 @@ use crate::{
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
-use leptos::{leptos_dom::logging, Serializable};
+use leptos::Serializable;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone)]
@@ -22,15 +22,6 @@ pub enum HttpType {
 pub struct LemmyRequest<R: Serialize> {
   pub body: Option<R>,
   pub jwt: Option<String>,
-}
-
-impl<R: Serialize> LemmyRequest<R> {
-  pub fn from_jwt(jwt: Option<String>) -> Self {
-    Self {
-      body: None::<R>,
-      jwt,
-    }
-  }
 }
 
 impl<R: Serialize> From<R> for LemmyRequest<R> {
@@ -68,7 +59,7 @@ pub trait PublicFetch: private_trait::PrivateFetch {
   }
 
   async fn logout(&self) -> LemmyAppResult<()> {
-    self
+    let _ = self
       .make_request::<(), (), ()>(HttpType::Post, "user/logout", ())
       .await;
     // TODO: do not ignore error due to not being able to decode enpty http response cleanly
@@ -216,7 +207,7 @@ cfg_if! {
 
         use leptos::wasm_bindgen::UnwrapThrowExt;
         use web_sys::AbortController;
-        use gloo_net::{http, http::{Request, RequestBuilder}};
+        use gloo_net::{http, http::RequestBuilder};
 
         pub struct LemmyClient;
 

@@ -4,7 +4,6 @@ use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
 use strum_macros::{Display, EnumIter};
-use wasm_cookies::*;
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
 
@@ -153,8 +152,8 @@ impl From<gloo_net::Error> for LemmyAppError {
 }
 
 #[cfg(not(feature = "ssr"))]
-impl From<FromUrlEncodingError> for LemmyAppError {
-  fn from(value: FromUrlEncodingError) -> Self {
+impl From<wasm_cookies::FromUrlEncodingError> for LemmyAppError {
+  fn from(value: wasm_cookies::FromUrlEncodingError) -> Self {
     Self {
       error_type: LemmyAppErrorType::InternalServerError,
       content: format!("{:#?}", value),
@@ -181,16 +180,6 @@ impl From<awc::error::SendRequestError> for LemmyAppError {
     }
   }
 }
-
-// #[cfg(feature = "ssr")]
-// impl From<actix_session::SessionGetError> for LemmyAppError {
-//   fn from(value: actix_session::SessionGetError) -> Self {
-//     Self {
-//       error_type: LemmyAppErrorType::InternalServerError,
-//       content: format!("{:#?}", value),
-//     }
-//   }
-// }
 
 #[cfg(feature = "ssr")]
 impl From<actix_http::error::PayloadError> for LemmyAppError {

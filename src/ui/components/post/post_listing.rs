@@ -1,5 +1,5 @@
 use crate::{
-  errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
+  errors::{LemmyAppError, LemmyAppErrorType},
   lemmy_client::*,
   ui::components::common::icon::{
     Icon,
