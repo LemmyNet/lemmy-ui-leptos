@@ -374,13 +374,13 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             {post_view.get().community.title}
           </A>
         </span>
-        <span class="block">
-          <span title=move || format!("{} comments", post_view.get().unread_comments)>
+        <span class="flex items-center gap-x-1">
+          <span class="flex items-center" title=move || format!("{} comments", post_view.get().unread_comments)>
             <A
-              href=move || { format!("/post/{}?scrollToComments=true", post_view.get().post.id) }
-              class="text-xs whitespace-nowrap align-top"
+              href=move || { format!("/post/{}", post_view.get().post.id) }
+              class="text-xs whitespace-nowrap"// align-top"
             >
-              <Note class="inline-block"/>
+              <Note class="inline"/>
               " "
               {post_view.get().unread_comments}
             </A>
@@ -388,7 +388,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           <ActionForm
             action=save_post_action
             on:submit=on_save_submit
-            class="inline-block align-top"
+            class="flex items-center"// align-top"
           >
             <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
             <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
@@ -401,17 +401,17 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             </button>
           </ActionForm>
           <span title="Cross post">
-            <A href="/create_post" class="inline-block align-top">
+            <A href="/create_post">// class="inline-block align-top">
               <Copy/>
             </A>
           </span>
-          <div class="dropdown inline-block align-top">
+          <div class="dropdown">// inline-block">// align-top">
             <label tabindex="0">
               <DotsThreeVertical/>
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
-                <ActionForm class="block" action=report_post_action on:submit=on_report_submit>
+                <ActionForm /* class="block"  */action=report_post_action on:submit=on_report_submit>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
                     class=move || format!("input input-bordered {}", report_validation.get())
@@ -421,7 +421,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     placeholder="reason"
                   />
                   <button
-                    class="text-xs whitespace-nowrap align-top"
+                    class="text-xs whitespace-nowrap"// align-top"
                     title="Report post"
                     type="submit"
                   >
@@ -439,7 +439,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                   />
                   <input type="hidden" name="block" value="true"/>
                   <button
-                    class="text-xs whitespace-nowrap align-top"
+                    class="text-xs whitespace-nowrap"// align-top"
                     title="Block user"
                     type="submit"
                   >

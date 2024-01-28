@@ -162,7 +162,7 @@ cfg_if! {
                 let query = serde_urlencoded::to_string(&body).unwrap_or("".to_string());
                 let query = format!("{}?{}&cache_bust={}", route, query, chrono::offset::Utc::now().to_rfc3339());
 
-                // leptos::logging::log!("{}", query);
+                leptos::logging::log!("{}", query);
 
 
                 let result = extract(|client: web::Data<Client>| async move {

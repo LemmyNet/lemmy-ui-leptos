@@ -9,7 +9,7 @@ use chrono::Duration;
 use lemmy_api_common::{
   lemmy_db_schema::{newtypes::PostId, source::person::Person},
   post::GetPost,
-  site::GetSiteResponse,
+  site::{GetSiteResponse, MyUserInfo},
 };
 use leptos::*;
 use leptos_router::*;
@@ -66,7 +66,7 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 }
 
 #[component]
-pub fn TopNav() -> impl IntoView {
+pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
   let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
@@ -89,30 +89,30 @@ pub fn TopNav() -> impl IntoView {
     }
   }
 
-  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
-  let data = create_resource(
-    move || (user.get()),
-    move |(_user)| async move { LemmyClient.get_site().await },
-  );
+  // let data = create_resource(
+  //   move || (user.get()),
+  //   move |(_user)| async move { LemmyClient.get_site().await },
+  // );
 
-  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
-  // let data = Signal::derive(move || ssr_data.get().or(None));
+  // // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  // // let data = site_signal;
 
-  let my_user = Signal::<Option<Person>>::derive(move || {
-    data.get().map_or_else(
-      || None,
-      |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-    )
-  });
+  // let my_user = Signal::<Option<Person>>::derive(move || {
+  //   data.get().map_or_else(
+  //     || None,
+  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
+  //   )
+  // });
 
-  let instance_name = Signal::derive(move || {
-    data.get().map_or_else(
-      || Some(String::from("Lemmy")),
-      |res| Some(res.ok()?.site_view.site.name),
-    )
-  });
+  // let instance_name = Signal::derive(move || {
+  //   data.get().map_or_else(
+  //     || Some(String::from("Lemmy")),
+  //     |res| Some(res.ok()?.site_view.site.name),
+  //   )
+  // });
 
   let logout_action = create_server_action::<LogoutFn>();
 
@@ -171,7 +171,7 @@ pub fn TopNav() -> impl IntoView {
             <A href="/" class="text-xl whitespace-nowrap">
               <Transition fallback=|| {
                   view! { "Loading..." }
-              }>{move || instance_name}</Transition>
+              }>{move || site_signal.get().map(|m| m.site_view.site.name)/*  instance_name */}</Transition>
               // " "
             </A>
           </li>
@@ -274,7 +274,8 @@ pub fn TopNav() -> impl IntoView {
             // })}
             <Show
               // when=move || true
-              when=move || with!(| my_user | my_user.is_some())
+              when=move || if let Some(GetSiteResponse { my_user: Some(_), .. }) = site_signal.get() { true } else { false }
+              // when=move || site_signal.get().map(|m| m.my_user.is_some() /*  with!(| my_user | my_user.is_some() */).unwrap()
               fallback=move || {
                   view! {
                     <li>
@@ -297,17 +298,19 @@ pub fn TopNav() -> impl IntoView {
               <li>
                 <details>
                   <summary>
-                    {with!(
-                        | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                        .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                    )}
+                    { move || site_signal.get().map(|m| m.my_user.map(|n| n.clone().local_user_view.person.display_name.unwrap_or(n.local_user_view.person.name))) }
+                    // {with!(
+                    //     | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
+                    //     .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
+                    // )}
 
                   </summary>
                   <ul class="z-10">
                     <li>
-                      <A href=with!(
-                          | my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      )>{t!(i18n, profile)}</A>
+                      <A href=move || format!("/u/{}", if let Some(GetSiteResponse { my_user: Some(m), .. }) = site_signal.get() { m.local_user_view.person.name } else { String::default() }) //.map(|m| m.my_user.map(|n| n.local_user_view.person.name)))
+                      // with!(| my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
+                      // )
+                      >{t!(i18n, profile)}</A>
                     </li>
                     <li>
                       <A href="/settings">{t!(i18n, settings)}</A>
@@ -350,29 +353,29 @@ pub fn TopNav() -> impl IntoView {
 }
 
 #[component]
-pub fn BottomNav() -> impl IntoView {
+pub fn BottomNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
   let i18n = use_i18n();
-  let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
 
-  let ssr_data = create_resource(
-    move || (),
-    move |()| async move { LemmyClient.get_site().await },
-  );
+  // let ssr_data = create_resource(
+  //   move || (),
+  //   move |()| async move { LemmyClient.get_site().await },
+  // );
 
-  let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
+  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
 
-  let instance_api_version = Signal::derive(move || {
-    data.get().map_or_else(
-      || Some(String::from("n/a")),
-      |res| {
-        Some(if res.clone().ok()?.version.is_empty() {
-          String::from("empty")
-        } else {
-          res.ok()?.version
-        })
-      },
-    )
-  });
+  // let instance_api_version = Signal::derive(move || {
+  //   data.get().map_or_else(
+  //     || Some(String::from("n/a")),
+  //     |res| {
+  //       Some(if res.clone().ok()?.version.is_empty() {
+  //         String::from("empty")
+  //       } else {
+  //         res.ok()?.version
+  //       })
+  //     },
+  //   )
+  // });
 
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -392,7 +395,8 @@ pub fn BottomNav() -> impl IntoView {
               "BE: "
               <Transition fallback=|| {
                   view! { "Loading..." }
-              }>{move || instance_api_version}</Transition>
+              }>{ move || site_signal.get().map(|m| m.version) }</Transition>
+              // }>{move || instance_api_version}</Transition>
             </a>
           </li>
           <li>

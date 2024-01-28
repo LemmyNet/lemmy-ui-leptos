@@ -17,36 +17,26 @@ use leptos::*;
 use leptos_router::*;
 use web_sys::*;
 
-// impl From<PaginationCursor> for String {
-//   fn from(value: PaginationCursor) -> Self {
-//     Self::APIError {
-//       error: value.to_string(),
-//     }
-//   }
-// }
-
-// impl fmt::Display for PaginationCursor {
-//   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//     write!(f, "{}", self.)
-//   }
-// }
-
 #[component]
-pub fn HomeActivity() -> impl IntoView {
+pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<Option<bool>, Result<GetSiteResponse, LemmyAppError>> */) -> impl IntoView {
   let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
-  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let ssr_data = create_resource(
-    move || (user.get()),
-    move |(_user)| async move { LemmyClient.get_site().await },
-  );
-  // site_data.set(data.get());
+  // // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
+  // let ssr_data = create_resource(
+  //   move || (user.get()),
+  //   move |(_user)| async move { LemmyClient.get_site().await },
+  // );
+  // // site_data.set(data.get());
 
   // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
-  let data = Signal::derive(move || ssr_data.get().or(None));
+  // let data = Signal::derive(move || ssr_data.get().or(None));
+  logging::log!("ping {:#?}", site_signal.get().is_some());
+
+
+  let data = site_signal;
 
   // let my_user = Signal::<Option<Person>>::derive(move || {
   //   data.get().map_or_else(
@@ -67,22 +57,42 @@ pub fn HomeActivity() -> impl IntoView {
   // }).unwrap_or("Lemmy".to_string()));
 
 
-  let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
-  let cursor_string = create_rw_signal::<Option<String>>(None);
-  let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
+  // let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
+  // let cursor_string = create_rw_signal::<Option<String>>(None);
+  // let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
 
-  let list_signal = create_rw_signal::<Option<ListingType>>(None);
-  let sort_signal = create_rw_signal::<Option<SortType>>(None);
+  // let list_signal = create_rw_signal::<Option<ListingType>>(None);
+  // let sort_signal = create_rw_signal::<Option<SortType>>(None);
 
   let query = use_query_map();
+  let query_signal = create_rw_signal(query.get());
 
-  // let _list = create_rw_signal::<Option<ListingType>>(None);
-  let ssr_list = move || query.with(|params| params.get("list").cloned());
-  // let _sort = create_rw_signal::<Option<SortType>>(None);
-  let ssr_sort = move || query.with(|params| params.get("sort").cloned());
+  let list_func = move || {
+    serde_json::from_str::<ListingType>(&query.get().get("list").cloned().unwrap_or("\"Local\"".to_string())).ok()
+  };
 
+  let sort_func = move || {
+    serde_json::from_str::<SortType>(&query.get().get("sort").cloned().unwrap_or("\"Active\"".to_string())).ok()
+  };
+
+  let ssr_list = move || query.get().get("list").cloned();
+  let ssr_sort = move || query.get().get("sort").cloned();
   let ssr_prev = move || query.get().get("prev").cloned();
   let ssr_from = move || query.get().get("from").cloned();
+
+  // let query_func = move || {
+  //   Some(query.get())
+  // };
+
+
+  // query_params.insert("key".into(), "value".into());
+  // query_params.insert("key".into(), "rfefe".into());
+
+  // logging::error!("{}", query_params.to_query_string());
+
+  // query_params.remove("key".into());
+
+  // logging::error!("{}", query_params.to_query_string());
 
   // if let Some(t) = ssr_list() {
   //   let r = serde_json::from_str::<ListingType>(&t[..]);
@@ -103,11 +113,18 @@ pub fn HomeActivity() -> impl IntoView {
 
       match r {
         Ok(o) => {
+          let mut query_params = query.get();
+          query_params.insert("list".into(), o);
+
           let navigate = leptos_router::use_navigate();
           navigate(
-            &format!("/?list={}&sort={}", o, ssr_sort().unwrap_or("".to_string()))[..],
+            &format!("{}", query_params.to_query_string()),
             Default::default(),
           );
+          // navigate(
+          //   &format!("/?list={}&sort={}", o, ssr_sort().unwrap_or("".to_string()))[..],
+          //   Default::default(),
+          // );
         }
         Err(e) => {
           error.set(Some(e.into()));
@@ -135,11 +152,20 @@ pub fn HomeActivity() -> impl IntoView {
 
       match r {
         Ok(o) => {
+          let mut query_params = query.get();
+          query_params.insert("sort".into(), o);
+
           let navigate = leptos_router::use_navigate();
           navigate(
-            &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
+            &format!("{}", query_params.to_query_string()),
             Default::default(),
           );
+
+          // let navigate = leptos_router::use_navigate();
+          // navigate(
+          //   &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
+          //   Default::default(),
+          // );
         }
         Err(e) => {
           error.set(Some(e.into()));
@@ -148,28 +174,12 @@ pub fn HomeActivity() -> impl IntoView {
     }
   };
 
-  // let on_prev_click = move |c: PaginationCursor| {
-  //   move |_me: MouseEvent| {
-  //     let r = serde_json::to_string::<SortType>(&lt);
-
-  //     match r {
-  //       Ok(o) => {
-  //         let navigate = leptos_router::use_navigate();
-  //         navigate(
-  //           &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
-  //           Default::default(),
-  //         );
-  //       }
-  //       Err(e) => {
-  //         error.set(Some(e.into()));
-  //       }
-  //     }
-  //   }
-  // };
-
   let posts = create_resource(
-    move || (user.get(), cursor_string.get(), ssr_list(), ssr_sort(), ssr_from()),
-    move |(_user, _cursor_string, list, sort, from)| async move {
+    move || (user.get(), ssr_list(), ssr_sort(), ssr_from()),
+    move |(_user, list, sort, from)| async move {
+
+      // logging::log!("ping {:#?} {:#?} {:#?} {:#?}", user.get(), ssr_list(), ssr_sort(), ssr_from());
+
       let l = {
         if let Some(t) = list.clone() {
           if !t.is_empty() {
@@ -177,7 +187,8 @@ pub fn HomeActivity() -> impl IntoView {
 
             match r {
               Ok(o) => {
-                list_signal.set(Some(o));
+
+                // list_signal.set(Some(o));
                 Some(o)
               }
               Err(e) => {
@@ -200,7 +211,7 @@ pub fn HomeActivity() -> impl IntoView {
 
             match r {
               Ok(o) => {
-                sort_signal.set(Some(o));
+                // sort_signal.set(Some(o));
                 Some(o)
               }
               Err(e) => {
@@ -250,7 +261,6 @@ pub fn HomeActivity() -> impl IntoView {
         saved_only: None,
         disliked_only: None,
         liked_only: None,
-        // page_cursor: page_cursor.get(),
         page_cursor: f,
       };
 
@@ -295,12 +305,10 @@ pub fn HomeActivity() -> impl IntoView {
       match result {
         Some(Ok(o)) => Some(o),
         Some(Err(e)) => {
-          // leptos::logging::log!("Err {:#?}", e);
           error.set(Some(e));
           None
         }
         None => {
-          // leptos::logging::log!("Nun");
           error.set(Some(LemmyAppError {
             error_type: LemmyAppErrorType::Unknown,
             content: String::default(),
@@ -310,6 +318,12 @@ pub fn HomeActivity() -> impl IntoView {
       }
     },
   );
+
+  // let mut query_params = query.get();
+  // query_params.insert("prev".into(), st.join(",").to_string());
+  // query_params.insert("from".into(), p.into());
+
+  // query.get().to_query_string()
 
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
@@ -321,17 +335,87 @@ pub fn HomeActivity() -> impl IntoView {
               <button class="btn join-item">"Comments"</button>
             </div>
             <div class="join mr-3">
+              {move || { 
+              //   query_func().map(|mut query_params| {
+              //   //  match m {
+              //   // None => {
+              //   //     view! { <span></span> }
+              //   // }
+              //   // Some(res) => {
+              //     // let mut query_params = query.get();
+              //     query_params.insert("list".into(), "\"Subscribed\"".into());
+
+              //     view! {
+              //       <span><A
+              //         href=move || format!("{}", query_params.to_query_string())
+              //         class=move || {
+              //             format!(
+              //                 "btn join-item {}",
+              //                 if Some(ListingType::Subscribed) == list_func() {
+              //                     "btn-active"
+              //                 } else {
+              //                     ""
+              //                 },
+              //             )
+              //         }
+              //       >
+              //         "Subscribed"
+              //       </A></span>
+
+              //     }
+              //   // }
+
+              // })}}
+                
+              // )
+                let mut query_params = query.get();
+                query_params.insert("list".into(), "\"Subscribed\"".into());
+
+                view! {
+                  <A
+                    href=move || format!("{}", query_params.to_query_string())
+      
+                      // format!(
+                      //     "/?list={}&sort={}",
+                      //     "\"Subscribed\"",
+                      //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                      // )
+                    // }
+    
+                    class=move || {
+                        format!(
+                            "btn join-item {}",
+                            if Some(ListingType::Subscribed) == list_func() {
+                                "btn-active"
+                            } else {
+                                ""
+                            },
+                        )
+                    }
+    
+                    // on:click=on_list_click(ListingType::Subscribed)
+                  >
+                    "Subscribed"
+                  </A>
+                }
+              }}
               <A
-                href=format!(
-                    "/?list={}&sort={}",
-                    "\"Subscribed\"",
-                    if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                )
+                href=move || {
+                  let mut query_params = query.get();
+                  query_params.insert("list".into(), "\"Local\"".into());
+                  query_params.to_query_string()
+                }
+   
+                // href=format!(
+                //     "/?list={}&sort={}",
+                //     "\"Local\"",
+                //     if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
+                // )
 
                 class=move || {
                     format!(
                         "btn join-item {}",
-                        if Some(ListingType::Subscribed) == list_signal.get() {
+                        if Some(ListingType::Local) == list_func() {
                             "btn-active"
                         } else {
                             ""
@@ -339,43 +423,27 @@ pub fn HomeActivity() -> impl IntoView {
                     )
                 }
 
-                on:click=on_list_click(ListingType::Subscribed)
-              >
-                "Subscribed"
-              </A>
-              <A
-                href=format!(
-                    "/?list={}&sort={}",
-                    "\"Local\"",
-                    if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
-                )
-
-                class=move || {
-                    format!(
-                        "btn join-item {}",
-                        if Some(ListingType::Local) == list_signal.get() {
-                            "btn-active"
-                        } else {
-                            ""
-                        },
-                    )
-                }
-
-                on:click=on_list_click(ListingType::Local)
+                // on:click=on_list_click(ListingType::Local)
               >
                 "Local"
               </A>
               <A
-                href=format!(
-                    "/?list={}&sort={}",
-                    "\"All\"",
-                    if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
-                )
+                href=move || {
+                  let mut query_params = query.get();
+                  query_params.insert("list".into(), "\"All\"".into());
+                  query_params.to_query_string()
+                }
+   
+                // href=format!(
+                //     "/?list={}&sort={}",
+                //     "\"All\"",
+                //     if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
+                // )
 
                 class=move || {
                     format!(
                         "btn join-item {}",
-                        if Some(ListingType::All) == list_signal.get() {
+                        if Some(ListingType::All) == list_func() {
                             "btn-active"
                         } else {
                             ""
@@ -383,7 +451,7 @@ pub fn HomeActivity() -> impl IntoView {
                     )
                 }
 
-                on:click=on_list_click(ListingType::All)
+                // on:click=on_list_click(ListingType::All)
               >
                 "All"
               </A>
@@ -395,7 +463,7 @@ pub fn HomeActivity() -> impl IntoView {
               <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
                 <li
                   class=move || {
-                      (if Some(SortType::Active) == sort_signal.get() {
+                      (if Some(SortType::Active) == sort_func() {
                           "btn-active"
                       } else {
                           ""
@@ -409,7 +477,7 @@ pub fn HomeActivity() -> impl IntoView {
                 </li>
                 <li
                   class=move || {
-                      (if Some(SortType::Hot) == sort_signal.get() { "btn-active" } else { "" })
+                      (if Some(SortType::Hot) == sort_func() { "btn-active" } else { "" })
                           .to_string()
                   }
 
@@ -419,7 +487,7 @@ pub fn HomeActivity() -> impl IntoView {
                 </li>
                 <li
                   class=move || {
-                      (if Some(SortType::New) == sort_signal.get() { "btn-active" } else { "" })
+                      (if Some(SortType::New) == sort_func() { "btn-active" } else { "" })
                           .to_string()
                   }
 
@@ -433,6 +501,10 @@ pub fn HomeActivity() -> impl IntoView {
                 view! { <div>"Loading..."</div> }
             }>
               {move || {
+                  site_signal.get().map(|s| {
+                    
+                  logging::log!("why {}", s.site_view.site.name);
+
                   posts
                       .get()
                       .map(|res| match res {
@@ -443,117 +515,83 @@ pub fn HomeActivity() -> impl IntoView {
                               view! {
                                 <div>
                                   <PostListings posts=res.posts.into()/>
-                                  <A
-                                    href=format!(
-                                        "/?list={}&sort={}&prev={}&from={}",
-                                        "",
-                                        if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                                        {
-                                          // if let Some(p) = ssr_from().clone() { 
-                                            if let Some(ref s) = ssr_prev() { 
-                                              leptos::logging::log!("p1 {}", s);
-                                              let mut st = s.split(",").collect::<Vec<_>>();
-                                              st.pop();
-                                              st.join(",").to_string()
-                                            } else { 
-                                              "".to_string() 
-                                            }  
-                                          // } else { 
-                                          //   "".to_string() 
-                                          // }  
-                                        },
-                                        {
-                                          // if let Some(p) = ssr_from().clone() { 
-                                            if let Some(ref s) = ssr_prev() { 
-                                              leptos::logging::log!("p2 {}", s);
-                                              let mut st = s.split(",").collect::<Vec<_>>();
-                                              st.pop().unwrap()
-                                              // st.join(",").to_string()
-                                            } else { 
-                                              "" 
-                                            }  
-                                          // } else { 
-                                          //   "".to_string() 
-                                          // }  
-                                        },
-                                    )
-                                    class="btn"                    
-                                    // on:click=on_prev_click(pv.)
-                                  >
-                                    "Prev"
-                                  </A>
-                                  
-                                  // <A
-                                  //   href=format!(
-                                  //       "/?list={}&sort={}&prev={}&from={}",
-                                  //       "\"Subscribed\"",
-                                  //       if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                                  //       {
-                                  //         .split(",").collect::<Vec<_>>()
-                                  //       }
-                                  //       if let Some(p) = ssr_next() { p } else { "".to_string() } //if let Some(p) = ssr_prev() { p } else { res.next_page.i } },
-                                  //   )
-                                  //   class="btn"                    
-                                  //   // on:click=on_prev_click(res.)
-                                  // >
-                                  //   "Prev"
-                                  // </A>
-                  
-                                  // <button
-                                  //   class="btn"
-                                  //   on:click=move |_| {
-                                  //       let mut p = prev_cursor_stack.get();
-                                  //       let s = p.pop().unwrap_or(None);
-                                  //       prev_cursor_stack.set(p);
-                                  //       page_cursor.set(s.clone());
-                                  //       cursor_string.set(Some(format!("{:#?}", s)));
-                                  //   }
-                                  // >
+                                  {move || {
+                                    if let Some(s) = ssr_prev() {
+                                      if !s.is_empty() {
+                                        let mut st = s.split(",").collect::<Vec<_>>();
+                                        let p = st.pop().unwrap_or("");
 
-                                  // </button>
-                                  // <button
-                                  //   class="btn"
-                                  //   on:click=move |_| {
-                                  //       let mut p = prev_cursor_stack.get();
-                                  //       p.push(page_cursor.get());
-                                  //       prev_cursor_stack.set(p);
-                                  //       page_cursor.set(res.next_page.clone());
-                                  //       cursor_string
-                                  //           .set(Some(format!("{:#?}", res.next_page.clone())));
-                                  //   }
-                                  // >
+                                        let mut query_params = query.get();
+                                        query_params.insert("prev".into(), st.join(",").to_string());
+                                        query_params.insert("from".into(), p.into());
 
-                                  // </button>
-                                  <A
-                                    href=format!(
-                                        "/?list={}&sort={}&prev={}&from={}",
-                                        "",
-                                        if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                                        {
-                                          if let Some(p) = ssr_from().clone() { 
-                                            if let Some(ref s) = ssr_prev() { 
-                                              leptos::logging::log!("n1 {}", s);
-                                              let mut st = s.split(",").collect::<Vec<_>>();
-                                              st.push(&p);
-                                              st.join(",").to_string()
-                                            } else { 
-                                              "".to_string() 
-                                            }  
-                                          } else { 
-                                            "".to_string() 
-                                          }  
-                                        },
-                                        if let Some(p) = res.next_page { p.0 } else { ssr_from().unwrap() }
-                                    )
-                                    class="btn"                    
-                                    // on:click=on_prev_click(pv.)
-                                  >
-                                    "Next"
-                                  </A>
+                                        view! {
+                                          <span><A 
+                                            href=format!("{}", query_params.to_query_string())
+                                            // href=format!(
+                                            //     "/?list={}&sort={}&prev={}&from={}",
+                                            //     "",
+                                            //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                                            //     {
+                                            //       st.join(",").to_string()
+                                            //     },
+                                            //     {
+                                            //       p
+                                            //     },
+                                            // )
+                                            class="btn"                    
+                                          >
+                                            "Prev"
+                                          </A></span>
+                                        }
+                                      } else {
+                                        view! { <span></span> }
+                                      }
+                                    } else {
+                                      view! { <span></span> }
+                                    }
+                                  }}
+                                  {move || {
+                                    if let Some(n) = res.next_page.clone() {
+                                      let s = ssr_prev().unwrap_or_default();
+                                      let mut st = s.split(",").collect::<Vec<_>>();
+                                      let f = ssr_from().unwrap_or_default();
+                                      st.push(&f);
+
+                                      let mut query_params = query.get();
+                                      query_params.insert("prev".into(), st.join(",").to_string());
+                                      query_params.insert("from".into(), n.0);
+                                      view! {
+                                        <span><A 
+                                          href=format!("{}", query_params.to_query_string())
+                                          // href=format!(
+                                          //     "/?list={}&sort={}&prev={}&from={}",
+                                          //     "",
+                                          //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
+                                          //     {
+                                          //       st.join(",").to_string()
+                                          //     },
+                                          //     {
+                                          //       n.0
+                                          //     },
+                                          // )
+                                          class="btn"                    
+                                        >
+                                          "Next"
+                                        </A></span>
+                                      }
+                                    } else {
+                                      view! { <span></span> }
+                                    }
+
+                                  }}
                                 </div>
                               }
                           }
                       })
+
+                  })
+
               }}
             </Transition>
           </main>
@@ -580,22 +618,25 @@ pub fn HomeActivity() -> impl IntoView {
                                     </div>
                                   </figure>
                                   <div class="card-body">
-                                    <p>"Description"</p>
                                     <p>
                                       <For
                                         each=move || c_signal.get()
                                         key=|community| community.community.id
                                         children=move |cv: CommunityView| {
                                             view! {
-                                              <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                              <A class="text-l font-bold link link-accent whitespace-nowrap" href=format!("/c/{}", cv.community.name)>
+                                              // <span class="badge badge-neutral inline-block whitespace-nowrap">
                                                 {cv.community.title}
-                                              </span>
+                                              // </span>
+                                              </A>
                                               " "
                                             }
                                         }
                                       />
 
                                     </p>
+                                    <A class="btn" href="/create_community">"Create a community"</A>
+                                    <A class="btn" href="/communities">"Explore communities"</A>
                                   </div>
                                 </div>
                               }
@@ -613,8 +654,8 @@ pub fn HomeActivity() -> impl IntoView {
                     data.get()
                   // )
                       // .get()
-                      .map(|m| match m {
-                          Ok(o) => {
+                      .map(|o| {// match m {
+                          //  Ok(o) => {
                               view! {
                                 <div class="card w-full bg-base-300 text-base-content mb-3">
                                   <figure>
@@ -683,13 +724,13 @@ pub fn HomeActivity() -> impl IntoView {
                                   </div>
                                 </div>
                               }
-                          }
-                          Err(e) => {
-                              view! { <div> { e.to_string() } </div> }
-                          }
-                          _ => {
-                              view! { <div> "other" </div> }
-                          }
+                          // }
+                          // Err(e) => {
+                          //     view! { <div> { e.to_string() } </div> }
+                          // }
+                          // _ => {
+                          //     view! { <div> "other" </div> }
+                          // }
                       })
               }}
 

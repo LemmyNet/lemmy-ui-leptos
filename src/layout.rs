@@ -10,23 +10,44 @@ use leptos_meta::*;
 use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
-pub fn Layout(/* is_routing: ReadSignal<bool> */) -> impl IntoView {
+pub fn Layout(site_signal: RwSignal<Option<GetSiteResponse>> /* is_routing: ReadSignal<bool> */) -> impl IntoView {
+  let user = expect_context::<RwSignal<Option<bool>>>();
+
+  // let ssr_site = create_resource(
+  //   move || (user.get()),
+  //   move |(_user)| async move { LemmyClient.get_site().await.ok() },
+  // );
+
+  // let site_signal = create_rw_signal(ssr_site.get());
+
   // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let title = create_resource(
-    move || (),
-    move |()| async move { 
-      match LemmyClient.get_site().await { 
-        Ok(o) => {
-          if let Some(s) = o.site_view.site.description {
-            format!("{} - {}", o.site_view.site.name, s)
-          } else {
-            o.site_view.site.name
-          }
+  let title = move || {
+    match site_signal.get() { 
+      Some(o) => {
+        if let Some(s) = o.site_view.site.description {
+          format!("{} - {}", o.site_view.site.name, s)
+        } else {
+          o.site_view.site.name
         }
-        _ => { "Lemmy".to_string() }
       }
-    },
-  );
+      _ => { "Lemmy".to_string() }
+    }
+  };
+  // let title = create_resource(
+  //   move || (),
+  //   move |()| async move { 
+  //     match LemmyClient.get_site().await { 
+  //       Ok(o) => {
+  //         if let Some(s) = o.site_view.site.description {
+  //           format!("{} - {}", o.site_view.site.name, s)
+  //         } else {
+  //           o.site_view.site.name
+  //         }
+  //       }
+  //       _ => { "Lemmy".to_string() }
+  //     }
+  //   },
+  // );
   // site_data.set(data.get());
 
   // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
@@ -73,10 +94,10 @@ pub fn Layout(/* is_routing: ReadSignal<bool> */) -> impl IntoView {
         class="flex flex-col h-screen"
         data-theme=move || ui_theme.get().unwrap_or(theme.get().unwrap_or("retro".to_string()))
       >
-        <Title text=move || title.get().unwrap_or("Lemmy".to_string())/>
-        <TopNav/>
+        <Title text=/* move ||  */title/* .get().unwrap_or("Lemmy".to_string()) *//>
+        <TopNav site_signal/>
         <Outlet/>
-        <BottomNav/>
+        <BottomNav site_signal/>
       </div>
     </Transition>
   }

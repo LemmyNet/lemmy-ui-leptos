@@ -71,11 +71,13 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
 
   let mut cookie = Cookie::build(path, value).finish();
   let now = OffsetDateTime::now_utc();
-
-  let s = std::time::SystemTime::now();
   let d = now + *expires;
 
-  cookie.set_expires(OffsetDateTime::from(s));
+  // let s = std::time::SystemTime::now();
+
+  // logging::log!("{:#?}", d);
+
+  cookie.set_expires(OffsetDateTime::from(d));
   cookie.set_path("/");
   cookie.set_domain("localhost");
   cookie.set_secure(Some(false));
@@ -102,8 +104,8 @@ pub async fn remove_cookie(path: &str) -> Result<(), LemmyAppError> {
 
   let mut cookie = Cookie::build(path, "").finish();
   let now = OffsetDateTime::now_utc();
-
   let d = now - Duration::from_secs(604800);
+
   cookie.set_expires(d);
   cookie.set_domain("localhost");
   cookie.set_path("/");
