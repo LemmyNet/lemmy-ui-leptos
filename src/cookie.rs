@@ -73,10 +73,6 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
   let now = OffsetDateTime::now_utc();
   let d = now + *expires;
 
-  // let s = std::time::SystemTime::now();
-
-  // logging::log!("{:#?}", d);
-
   cookie.set_expires(OffsetDateTime::from(d));
   cookie.set_path("/");
   cookie.set_domain("localhost");

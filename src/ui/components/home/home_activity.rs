@@ -18,133 +18,43 @@ use leptos_router::*;
 use web_sys::*;
 
 #[component]
-pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<Option<bool>, Result<GetSiteResponse, LemmyAppError>> */) -> impl IntoView {
+pub fn HomeActivity(
+  site_signal: RwSignal<Option<GetSiteResponse>>, /*  Resource<Option<bool>, Result<GetSiteResponse, LemmyAppError>> */
+) -> impl IntoView {
   let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
-  // // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  // let ssr_data = create_resource(
-  //   move || (user.get()),
-  //   move |(_user)| async move { LemmyClient.get_site().await },
-  // );
-  // // site_data.set(data.get());
-
-  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
-  // let data = Signal::derive(move || ssr_data.get().or(None));
-  logging::log!("ping {:#?}", site_signal.get().is_some());
-
-
-  let data = site_signal;
-
-  // let my_user = Signal::<Option<Person>>::derive(move || {
-  //   data.get().map_or_else(
-  //     || None,
-  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-  //   )
-  // });
-
-  // let title = Signal::derive(move || site_data.get().map(|m| match m { 
-  //   Ok(o) => {
-  //     if let Some(s) = o.site_view.site.description {
-  //       format!("{} - {}", o.site_view.site.name, s)
-  //     } else {
-  //       o.site_view.site.name
-  //     }
-  //   }
-  //   _ => { "Lemmy".to_string() }
-  // }).unwrap_or("Lemmy".to_string()));
-
-
-  // let page_cursor = create_rw_signal::<Option<PaginationCursor>>(None);
-  // let cursor_string = create_rw_signal::<Option<String>>(None);
-  // let prev_cursor_stack = create_rw_signal::<Vec<Option<PaginationCursor>>>(vec![]);
-
-  // let list_signal = create_rw_signal::<Option<ListingType>>(None);
-  // let sort_signal = create_rw_signal::<Option<SortType>>(None);
-
   let query = use_query_map();
   let query_signal = create_rw_signal(query.get());
 
   let list_func = move || {
-    serde_json::from_str::<ListingType>(&query.get().get("list").cloned().unwrap_or("\"Local\"".to_string())).ok()
+    serde_json::from_str::<ListingType>(
+      &query
+        .get()
+        .get("list")
+        .cloned()
+        .unwrap_or("\"Local\"".to_string()),
+    )
+    .ok()
   };
 
   let sort_func = move || {
-    serde_json::from_str::<SortType>(&query.get().get("sort").cloned().unwrap_or("\"Active\"".to_string())).ok()
+    serde_json::from_str::<SortType>(
+      &query
+        .get()
+        .get("sort")
+        .cloned()
+        .unwrap_or("\"Active\"".to_string()),
+    )
+    .ok()
   };
 
   let ssr_list = move || query.get().get("list").cloned();
   let ssr_sort = move || query.get().get("sort").cloned();
   let ssr_prev = move || query.get().get("prev").cloned();
   let ssr_from = move || query.get().get("from").cloned();
-
-  // let query_func = move || {
-  //   Some(query.get())
-  // };
-
-
-  // query_params.insert("key".into(), "value".into());
-  // query_params.insert("key".into(), "rfefe".into());
-
-  // logging::error!("{}", query_params.to_query_string());
-
-  // query_params.remove("key".into());
-
-  // logging::error!("{}", query_params.to_query_string());
-
-  // if let Some(t) = ssr_list() {
-  //   let r = serde_json::from_str::<ListingType>(&t[..]);
-
-  //   match r {
-  //     Ok(o) => {
-  //       list_signal.set(Some(o));
-  //     }
-  //     Err(_e) => {
-  //       logging::log!("error decoding error - log and ignore in UI?");
-  //     }
-  //   }
-  // }
-
-  let on_list_click = move |lt: ListingType| {
-    move |_me: MouseEvent| {
-      let r = serde_json::to_string::<ListingType>(&lt);
-
-      match r {
-        Ok(o) => {
-          let mut query_params = query.get();
-          query_params.insert("list".into(), o);
-
-          let navigate = leptos_router::use_navigate();
-          navigate(
-            &format!("{}", query_params.to_query_string()),
-            Default::default(),
-          );
-          // navigate(
-          //   &format!("/?list={}&sort={}", o, ssr_sort().unwrap_or("".to_string()))[..],
-          //   Default::default(),
-          // );
-        }
-        Err(e) => {
-          error.set(Some(e.into()));
-        }
-      }
-    }
-  };
-
-  // if let Some(s) = ssr_sort() {
-  //   let r = serde_json::from_str::<SortType>(&s[..]);
-
-  //   match r {
-  //     Ok(o) => {
-  //       sort_signal.set(Some(o));
-  //     }
-  //     Err(e) => {
-  //       error.set(Some(e.into()));
-  //     }
-  //   }
-  // }
 
   let on_sort_click = move |lt: SortType| {
     move |_me: MouseEvent| {
@@ -160,12 +70,6 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
             &format!("{}", query_params.to_query_string()),
             Default::default(),
           );
-
-          // let navigate = leptos_router::use_navigate();
-          // navigate(
-          //   &format!("/?list={}&sort={}", ssr_list().unwrap_or("".to_string()), o)[..],
-          //   Default::default(),
-          // );
         }
         Err(e) => {
           error.set(Some(e.into()));
@@ -177,20 +81,13 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
   let posts = create_resource(
     move || (user.get(), ssr_list(), ssr_sort(), ssr_from()),
     move |(_user, list, sort, from)| async move {
-
-      // logging::log!("ping {:#?} {:#?} {:#?} {:#?}", user.get(), ssr_list(), ssr_sort(), ssr_from());
-
       let l = {
         if let Some(t) = list.clone() {
           if !t.is_empty() {
             let r = serde_json::from_str::<ListingType>(&t[..]);
 
             match r {
-              Ok(o) => {
-
-                // list_signal.set(Some(o));
-                Some(o)
-              }
+              Ok(o) => Some(o),
               Err(e) => {
                 error.set(Some(e.into()));
                 None
@@ -210,10 +107,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
             let r = serde_json::from_str::<SortType>(&t[..]);
 
             match r {
-              Ok(o) => {
-                // sort_signal.set(Some(o));
-                Some(o)
-              }
+              Ok(o) => Some(o),
               Err(e) => {
                 error.set(Some(e.into()));
                 None
@@ -231,18 +125,6 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
         if let Some(t) = from.clone() {
           if !t.is_empty() {
             Some(PaginationCursor(t))
-            // let r = serde_json::from_str::<SortType>(&t[..]);
-
-            // match r {
-            //   Ok(o) => {
-            //     // sort_signal.set(Some(o));
-            //     Some(o)
-            //   }
-            //   Err(e) => {
-            //     error.set(Some(e.into()));
-            //     None
-            //   }
-            // }
           } else {
             None
           }
@@ -319,12 +201,6 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
     },
   );
 
-  // let mut query_params = query.get();
-  // query_params.insert("prev".into(), st.join(",").to_string());
-  // query_params.insert("from".into(), p.into());
-
-  // query.get().to_query_string()
-
   view! {
     <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
       <div class="container mx-auto overflow-auto">
@@ -335,124 +211,60 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
               <button class="btn join-item">"Comments"</button>
             </div>
             <div class="join mr-3">
-              {move || { 
-              //   query_func().map(|mut query_params| {
-              //   //  match m {
-              //   // None => {
-              //   //     view! { <span></span> }
-              //   // }
-              //   // Some(res) => {
-              //     // let mut query_params = query.get();
-              //     query_params.insert("list".into(), "\"Subscribed\"".into());
+              {move || {
+                  let mut query_params = query.get();
+                  query_params.insert("list".into(), "\"Subscribed\"".into());
+                  view! {
+                    <A
+                      href=move || format!("{}", query_params.to_query_string())
+                      class=move || {
+                          format!(
+                              "btn join-item {}",
+                              if Some(ListingType::Subscribed) == list_func() {
+                                  "btn-active"
+                              } else {
+                                  ""
+                              },
+                          )
+                      }
+                    >
 
-              //     view! {
-              //       <span><A
-              //         href=move || format!("{}", query_params.to_query_string())
-              //         class=move || {
-              //             format!(
-              //                 "btn join-item {}",
-              //                 if Some(ListingType::Subscribed) == list_func() {
-              //                     "btn-active"
-              //                 } else {
-              //                     ""
-              //                 },
-              //             )
-              //         }
-              //       >
-              //         "Subscribed"
-              //       </A></span>
-
-              //     }
-              //   // }
-
-              // })}}
-                
-              // )
-                let mut query_params = query.get();
-                query_params.insert("list".into(), "\"Subscribed\"".into());
-
-                view! {
-                  <A
-                    href=move || format!("{}", query_params.to_query_string())
-      
-                      // format!(
-                      //     "/?list={}&sort={}",
-                      //     "\"Subscribed\"",
-                      //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                      // )
-                    // }
-    
-                    class=move || {
-                        format!(
-                            "btn join-item {}",
-                            if Some(ListingType::Subscribed) == list_func() {
-                                "btn-active"
-                            } else {
-                                ""
-                            },
-                        )
-                    }
-    
-                    // on:click=on_list_click(ListingType::Subscribed)
-                  >
-                    "Subscribed"
-                  </A>
-                }
+                      "Subscribed"
+                    </A>
+                  }
               }}
               <A
                 href=move || {
-                  let mut query_params = query.get();
-                  query_params.insert("list".into(), "\"Local\"".into());
-                  query_params.to_query_string()
+                    let mut query_params = query.get();
+                    query_params.insert("list".into(), "\"Local\"".into());
+                    query_params.to_query_string()
                 }
-   
-                // href=format!(
-                //     "/?list={}&sort={}",
-                //     "\"Local\"",
-                //     if Some(SortType::Active) == sort_signal.get() { "\"Hot\"" } else { "" },
-                // )
 
                 class=move || {
                     format!(
                         "btn join-item {}",
-                        if Some(ListingType::Local) == list_func() {
-                            "btn-active"
-                        } else {
-                            ""
-                        },
+                        if Some(ListingType::Local) == list_func() { "btn-active" } else { "" },
                     )
                 }
-
-                // on:click=on_list_click(ListingType::Local)
               >
+
                 "Local"
               </A>
               <A
                 href=move || {
-                  let mut query_params = query.get();
-                  query_params.insert("list".into(), "\"All\"".into());
-                  query_params.to_query_string()
+                    let mut query_params = query.get();
+                    query_params.insert("list".into(), "\"All\"".into());
+                    query_params.to_query_string()
                 }
-   
-                // href=format!(
-                //     "/?list={}&sort={}",
-                //     "\"All\"",
-                //     if Some(SortType::Active) == sort_signal.get() { "\"New\"" } else { "" },
-                // )
 
                 class=move || {
                     format!(
                         "btn join-item {}",
-                        if Some(ListingType::All) == list_func() {
-                            "btn-active"
-                        } else {
-                            ""
-                        },
+                        if Some(ListingType::All) == list_func() { "btn-active" } else { "" },
                     )
                 }
-
-                // on:click=on_list_click(ListingType::All)
               >
+
                 "All"
               </A>
             </div>
@@ -463,11 +275,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
               <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
                 <li
                   class=move || {
-                      (if Some(SortType::Active) == sort_func() {
-                          "btn-active"
-                      } else {
-                          ""
-                      })
+                      (if Some(SortType::Active) == sort_func() { "btn-active" } else { "" })
                           .to_string()
                   }
 
@@ -501,98 +309,81 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
                 view! { <div>"Loading..."</div> }
             }>
               {move || {
-                  site_signal.get().map(|s| {
-                    
-                  logging::log!("why {}", s.site_view.site.name);
-
-                  posts
+                  site_signal
                       .get()
-                      .map(|res| match res {
-                          None => {
-                              view! { <div>"No posts for this type of query at the moment"</div> }
-                          }
-                          Some(res) => {
-                              view! {
-                                <div>
-                                  <PostListings posts=res.posts.into()/>
-                                  {move || {
-                                    if let Some(s) = ssr_prev() {
-                                      if !s.is_empty() {
-                                        let mut st = s.split(",").collect::<Vec<_>>();
-                                        let p = st.pop().unwrap_or("");
-
-                                        let mut query_params = query.get();
-                                        query_params.insert("prev".into(), st.join(",").to_string());
-                                        query_params.insert("from".into(), p.into());
-
-                                        view! {
-                                          <span><A 
-                                            href=format!("{}", query_params.to_query_string())
-                                            // href=format!(
-                                            //     "/?list={}&sort={}&prev={}&from={}",
-                                            //     "",
-                                            //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                                            //     {
-                                            //       st.join(",").to_string()
-                                            //     },
-                                            //     {
-                                            //       p
-                                            //     },
-                                            // )
-                                            class="btn"                    
-                                          >
-                                            "Prev"
-                                          </A></span>
-                                        }
-                                      } else {
-                                        view! { <span></span> }
-                                      }
-                                    } else {
-                                      view! { <span></span> }
-                                    }
-                                  }}
-                                  {move || {
-                                    if let Some(n) = res.next_page.clone() {
-                                      let s = ssr_prev().unwrap_or_default();
-                                      let mut st = s.split(",").collect::<Vec<_>>();
-                                      let f = ssr_from().unwrap_or_default();
-                                      st.push(&f);
-
-                                      let mut query_params = query.get();
-                                      query_params.insert("prev".into(), st.join(",").to_string());
-                                      query_params.insert("from".into(), n.0);
+                      .map(|s| {
+                          logging::log!("why {}", s.site_view.site.name);
+                          posts
+                              .get()
+                              .map(|res| match res {
+                                  None => {
                                       view! {
-                                        <span><A 
-                                          href=format!("{}", query_params.to_query_string())
-                                          // href=format!(
-                                          //     "/?list={}&sort={}&prev={}&from={}",
-                                          //     "",
-                                          //     if Some(SortType::Active) == sort_signal.get() { "\"Active\"" } else { "" },
-                                          //     {
-                                          //       st.join(",").to_string()
-                                          //     },
-                                          //     {
-                                          //       n.0
-                                          //     },
-                                          // )
-                                          class="btn"                    
-                                        >
-                                          "Next"
-                                        </A></span>
+                                        <div>"No posts for this type of query at the moment"</div>
                                       }
-                                    } else {
-                                      view! { <span></span> }
-                                    }
+                                  }
+                                  Some(res) => {
+                                      view! {
+                                        <div>
+                                          <PostListings posts=res.posts.into()/>
+                                          {move || {
+                                              if let Some(s) = ssr_prev() {
+                                                  if !s.is_empty() {
+                                                      let mut st = s.split(",").collect::<Vec<_>>();
+                                                      let p = st.pop().unwrap_or("");
+                                                      let mut query_params = query.get();
+                                                      query_params
+                                                          .insert("prev".into(), st.join(",").to_string());
+                                                      query_params.insert("from".into(), p.into());
+                                                      view! {
+                                                        <span>
+                                                          <A
+                                                            href=format!("{}", query_params.to_query_string())
+                                                            class="btn"
+                                                          >
+                                                            "Prev"
+                                                          </A>
+                                                        </span>
+                                                      }
+                                                  } else {
+                                                      view! { <span></span> }
+                                                  }
+                                              } else {
+                                                  view! { <span></span> }
+                                              }
+                                          }}
 
-                                  }}
-                                </div>
-                              }
-                          }
+                                          {move || {
+                                              if let Some(n) = res.next_page.clone() {
+                                                  let s = ssr_prev().unwrap_or_default();
+                                                  let mut st = s.split(",").collect::<Vec<_>>();
+                                                  let f = ssr_from().unwrap_or_default();
+                                                  st.push(&f);
+                                                  let mut query_params = query.get();
+                                                  query_params
+                                                      .insert("prev".into(), st.join(",").to_string());
+                                                  query_params.insert("from".into(), n.0);
+                                                  view! {
+                                                    <span>
+                                                      <A
+                                                        href=format!("{}", query_params.to_query_string())
+                                                        class="btn"
+                                                      >
+                                                        "Next"
+                                                      </A>
+                                                    </span>
+                                                  }
+                                              } else {
+                                                  view! { <span></span> }
+                                              }
+                                          }}
+
+                                        </div>
+                                      }
+                                  }
+                              })
                       })
-
-                  })
-
               }}
+
             </Transition>
           </main>
           <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
@@ -624,10 +415,11 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
                                         key=|community| community.community.id
                                         children=move |cv: CommunityView| {
                                             view! {
-                                              <A class="text-l font-bold link link-accent whitespace-nowrap" href=format!("/c/{}", cv.community.name)>
-                                              // <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                              <A
+                                                class="text-l font-bold link link-accent whitespace-nowrap"
+                                                href=format!("/c/{}", cv.community.name)
+                                              >
                                                 {cv.community.title}
-                                              // </span>
                                               </A>
                                               " "
                                             }
@@ -635,8 +427,12 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
                                       />
 
                                     </p>
-                                    <A class="btn" href="/create_community">"Create a community"</A>
-                                    <A class="btn" href="/communities">"Explore communities"</A>
+                                    <A class="btn" href="/create_community">
+                                      "Create a community"
+                                    </A>
+                                    <A class="btn" href="/communities">
+                                      "Explore communities"
+                                    </A>
                                   </div>
                                 </div>
                               }
@@ -648,93 +444,80 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>/*  Resource<O
             <Transition fallback=|| {
                 view! { "Loading..." }
             }>
-            // <div>
               {move || {
-                  // site_data.get().or(
-                    data.get()
-                  // )
-                      // .get()
-                      .map(|o| {// match m {
-                          //  Ok(o) => {
-                              view! {
-                                <div class="card w-full bg-base-300 text-base-content mb-3">
-                                  <figure>
-                                    <div class="card-body bg-neutral">
-                                      <h2 class="card-title text-neutral-content">
-                                        {o.site_view.site.name}
-                                      </h2>
-                                    </div>
-                                  </figure>
-                                  <div class="card-body">
-                                    <p>{o.site_view.site.description}</p>
-                                    <p>
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.users_active_day} " user / day"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.users_active_week} " users / week"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.users_active_month} " users / month"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.users_active_half_year}
-                                        " users / 6 months"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.users} " users"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.communities} " Communities"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.posts} " Posts"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        {o.site_view.counts.comments} " Comments"
-                                      </span>
-                                      " "
-                                      <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                        "Modlog"
-                                      </span>
-                                    </p>
-                                    <h3 class="card-title">"Admins"</h3>
-                                    <p>
-                                      <For
-                                        each=move || o.admins.clone()
-                                        key=|admin| admin.person.id
-                                        children=move |a| {
-                                            view! {
-                                              <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                                {a.person.name}
-                                              </span>
-                                              " "
-                                            }
-                                        }
-                                      />
-
-                                    </p>
-                                  </div>
+                  site_signal
+                      .get()
+                      .map(|o| {
+                          view! {
+                            <div class="card w-full bg-base-300 text-base-content mb-3">
+                              <figure>
+                                <div class="card-body bg-neutral">
+                                  <h2 class="card-title text-neutral-content">
+                                    {o.site_view.site.name}
+                                  </h2>
                                 </div>
-                              }
-                          // }
-                          // Err(e) => {
-                          //     view! { <div> { e.to_string() } </div> }
-                          // }
-                          // _ => {
-                          //     view! { <div> "other" </div> }
-                          // }
+                              </figure>
+                              <div class="card-body">
+                                <p>{o.site_view.site.description}</p>
+                                <p>
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.users_active_day} " user / day"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.users_active_week} " users / week"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.users_active_month} " users / month"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.users_active_half_year} " users / 6 months"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.users} " users"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.communities} " Communities"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.posts} " Posts"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    {o.site_view.counts.comments} " Comments"
+                                  </span>
+                                  " "
+                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                    "Modlog"
+                                  </span>
+                                </p>
+                                <h3 class="card-title">"Admins"</h3>
+                                <p>
+                                  <For
+                                    each=move || o.admins.clone()
+                                    key=|admin| admin.person.id
+                                    children=move |a| {
+                                        view! {
+                                          <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                            {a.person.name}
+                                          </span>
+                                          " "
+                                        }
+                                    }
+                                  />
+
+                                </p>
+                              </div>
+                            </div>
+                          }
                       })
               }}
 
-            // </div>
             </Transition>
           </div>
         </div>

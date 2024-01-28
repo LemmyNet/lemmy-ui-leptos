@@ -17,7 +17,6 @@ use lemmy_api_common::{
 };
 use leptos::*;
 use leptos_router::*;
-// use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 use web_sys::{MouseEvent, SubmitEvent};
 
 #[server(LogoutFn, "/serverfn")]
@@ -93,30 +92,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
     }
   }
 
-  // // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
-
-  // let data = create_resource(
-  //   move || (user.get()),
-  //   move |(_user)| async move { LemmyClient.get_site().await },
-  // );
-
-  // // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
-  // // let data = site_signal;
-
-  // let my_user = Signal::<Option<Person>>::derive(move || {
-  //   data.get().map_or_else(
-  //     || None,
-  //     |res| res.ok()?.my_user.map(|user| user.local_user_view.person),
-  //   )
-  // });
-
-  // let instance_name = Signal::derive(move || {
-  //   data.get().map_or_else(
-  //     || Some(String::from("Lemmy")),
-  //     |res| Some(res.ok()?.site_view.site.name),
-  //   )
-  // });
 
   let logout_action = create_server_action::<LogoutFn>();
 
@@ -131,7 +107,6 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           Ok(_o) => {
             remove_cookie("jwt").await;
             user.set(Some(false));
-            // site_data.set(Some(LemmyClient.get_site().await));
           }
           Err(e) => {
             logging::warn!("logout error {:#?}", e);
@@ -175,8 +150,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
             <A href="/" class="text-xl whitespace-nowrap">
               <Transition fallback=|| {
                   view! { "Loading..." }
-              }>{move || site_signal.get().map(|m| m.site_view.site.name)/*  instance_name */}</Transition>
-              // " "
+              }>{move || site_signal.get().map(|m| m.site_view.site.name)}</Transition>
             </A>
           </li>
           <li>
@@ -197,7 +171,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           <li>
             <a href="//join-lemmy.org/donate">
               <span title=t!(i18n, donate)>
-                <Icon icon=Donate />
+                <Icon icon=Donate/>
               </span>
             </a>
           </li>
@@ -208,7 +182,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           <li>
             <A href="/search">
               <span title=t!(i18n, search)>
-                <Icon icon=Search />
+                <Icon icon=Search/>
               </span>
             </A>
           </li>
@@ -259,27 +233,15 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           <Transition fallback=|| {
               view! { "Loading..." }
           }>
-            // { move || data.get().map(|m| {
-            //   if let Ok(o) = m {
-            //     if let Some(s) = o.my_user {
-            //       view! {
-            //           <div> {s.local_user_view.person.name} </div>
-            //       }
-            //     } else {
-            //       view! {
-            //         <div><A href="/login">{t!(i18n, login)}</A></div>
-            //       }
-            //     }
-            //   } else {
-            //     view! {
-            //         <div> "Err" </div>
-            //     }
-            //   }
-            // })}
             <Show
-              // when=move || true
-              when=move || if let Some(GetSiteResponse { my_user: Some(_), .. }) = site_signal.get() { true } else { false }
-              // when=move || site_signal.get().map(|m| m.my_user.is_some() /*  with!(| my_user | my_user.is_some() */).unwrap()
+              when=move || {
+                  if let Some(GetSiteResponse { my_user: Some(_), .. }) = site_signal.get() {
+                      true
+                  } else {
+                      false
+                  }
+              }
+
               fallback=move || {
                   view! {
                     <li>
@@ -295,26 +257,43 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>
-                    <Icon icon=Notifications />
+                    <Icon icon=Notifications/>
                   </span>
                 </A>
               </li>
               <li>
                 <details>
                   <summary>
-                    { move || site_signal.get().map(|m| m.my_user.map(|n| n.clone().local_user_view.person.display_name.unwrap_or(n.local_user_view.person.name))) }
-                    // {with!(
-                    //     | my_user | { let Person { name, display_name, .. } = my_user.as_ref()
-                    //     .unwrap(); display_name.as_ref().unwrap_or(name).to_string() }
-                    // )}
+                    {move || {
+                        site_signal
+                            .get()
+                            .map(|m| {
+                                m.my_user
+                                    .map(|n| {
+                                        n.clone()
+                                            .local_user_view
+                                            .person
+                                            .display_name
+                                            .unwrap_or(n.local_user_view.person.name)
+                                    })
+                            })
+                    }}
 
                   </summary>
                   <ul class="z-10">
                     <li>
-                      <A href=move || format!("/u/{}", if let Some(GetSiteResponse { my_user: Some(m), .. }) = site_signal.get() { m.local_user_view.person.name } else { String::default() }) //.map(|m| m.my_user.map(|n| n.local_user_view.person.name)))
-                      // with!(| my_user | format!("/u/{}", my_user.as_ref().unwrap().name)
-                      // )
-                      >{t!(i18n, profile)}</A>
+                      <A href=move || {
+                          format!(
+                              "/u/{}",
+                              if let Some(GetSiteResponse { my_user: Some(m), .. }) = site_signal
+                                  .get()
+                              {
+                                  m.local_user_view.person.name
+                              } else {
+                                  String::default()
+                              },
+                          )
+                      }>{t!(i18n, profile)}</A>
                     </li>
                     <li>
                       <A href="/settings">{t!(i18n, settings)}</A>
@@ -359,28 +338,6 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
 #[component]
 pub fn BottomNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
   let i18n = use_i18n();
-  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-
-  // let ssr_data = create_resource(
-  //   move || (),
-  //   move |()| async move { LemmyClient.get_site().await },
-  // );
-
-  // let data = Signal::derive(move || site_data.get().or(ssr_data.get().or(None)));
-
-  // let instance_api_version = Signal::derive(move || {
-  //   data.get().map_or_else(
-  //     || Some(String::from("n/a")),
-  //     |res| {
-  //       Some(if res.clone().ok()?.version.is_empty() {
-  //         String::from("empty")
-  //       } else {
-  //         res.ok()?.version
-  //       })
-  //     },
-  //   )
-  // });
-
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
   view! {
@@ -399,8 +356,7 @@ pub fn BottomNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoVie
               "BE: "
               <Transition fallback=|| {
                   view! { "Loading..." }
-              }>{ move || site_signal.get().map(|m| m.version) }</Transition>
-              // }>{move || instance_api_version}</Transition>
+              }>{move || site_signal.get().map(|m| m.version)}</Transition>
             </a>
           </li>
           <li>

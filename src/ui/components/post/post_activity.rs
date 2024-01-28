@@ -3,10 +3,10 @@ use crate::{
   lemmy_client::*,
   ui::components::{comment::comment_nodes::CommentNodes, post::post_listing::PostListing},
 };
+use core::num::ParseIntError;
 use lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost};
 use leptos::*;
 use leptos_router::{use_params_map, ParamsMap};
-use core::num::ParseIntError;
 
 #[component]
 pub fn PostActivity() -> impl IntoView {
@@ -51,7 +51,9 @@ pub fn PostActivity() -> impl IntoView {
   view! {
     <main class="mx-auto">
       <h2 class="p-6 text-4xl">"Post page"</h2>
-      <Transition fallback=|| { view! { "Loading..." } }>
+      <Transition fallback=|| {
+          view! { "Loading..." }
+      }>
         {move || {
             post.get()
                 .map(|res| match res {
@@ -67,8 +69,11 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
+
       </Transition>
-      <Transition fallback=|| { view! { "Loading..." } }>
+      <Transition fallback=|| {
+          view! { "Loading..." }
+      }>
         {move || {
             comments
                 .get()
@@ -85,6 +90,7 @@ pub fn PostActivity() -> impl IntoView {
                     }
                 })
         }}
+
       </Transition>
     </main>
   }

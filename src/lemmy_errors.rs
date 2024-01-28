@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
 use core::{
   fmt,
   fmt::{Debug, Display},
 };
+use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter};
 use tracing_error::SpanTrace;
 #[cfg(feature = "full")]

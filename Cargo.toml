@@ -7,9 +7,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+# would normally use this tag but there is one feature in main that i need and main is stable with DS9.lemmy.ml right now
+# tag = "0.19.3"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
-# would normally use this tag but there is one feature in main that i need
-# tag = "0.19.3", 
 
 leptos = "0.5"
 leptos_actix = { version = "0.5", optional = true }
@@ -30,8 +30,8 @@ strum_macros = "0"
 chrono = "0"
 
 # dependecies for client (enable when csr or hydrate set)
-wasm-bindgen = { version = "0.2", optional = true }
-wasm-cookies = "0.2"
+wasm-bindgen = { version = "0", optional = true }
+wasm-cookies = "0"
 
 # dependecies for server (enable when ssr set)
 actix-files = { version = "0", optional = true }

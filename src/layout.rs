@@ -10,58 +10,21 @@ use leptos_meta::*;
 use leptos_router::{Outlet, RoutingProgress};
 
 #[component]
-pub fn Layout(site_signal: RwSignal<Option<GetSiteResponse>> /* is_routing: ReadSignal<bool> */) -> impl IntoView {
+pub fn Layout(
+  site_signal: RwSignal<Option<GetSiteResponse>>, /* is_routing: ReadSignal<bool> */
+) -> impl IntoView {
   let user = expect_context::<RwSignal<Option<bool>>>();
 
-  // let ssr_site = create_resource(
-  //   move || (user.get()),
-  //   move |(_user)| async move { LemmyClient.get_site().await.ok() },
-  // );
-
-  // let site_signal = create_rw_signal(ssr_site.get());
-
-  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-  let title = move || {
-    match site_signal.get() { 
-      Some(o) => {
-        if let Some(s) = o.site_view.site.description {
-          format!("{} - {}", o.site_view.site.name, s)
-        } else {
-          o.site_view.site.name
-        }
+  let title = move || match site_signal.get() {
+    Some(o) => {
+      if let Some(s) = o.site_view.site.description {
+        format!("{} - {}", o.site_view.site.name, s)
+      } else {
+        o.site_view.site.name
       }
-      _ => { "Lemmy".to_string() }
     }
+    _ => "Lemmy".to_string(),
   };
-  // let title = create_resource(
-  //   move || (),
-  //   move |()| async move { 
-  //     match LemmyClient.get_site().await { 
-  //       Ok(o) => {
-  //         if let Some(s) = o.site_view.site.description {
-  //           format!("{} - {}", o.site_view.site.name, s)
-  //         } else {
-  //           o.site_view.site.name
-  //         }
-  //       }
-  //       _ => { "Lemmy".to_string() }
-  //     }
-  //   },
-  // );
-  // site_data.set(data.get());
-
-  // let site_data = expect_context::<RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>>();
-
-  // let title = Signal::derive(move || site_data.get().or(data.get()).map(|m| match m { 
-  //   Ok(o) => {
-  //     if let Some(s) = o.site_view.site.description {
-  //       format!("{} - {}", o.site_view.site.name, s)
-  //     } else {
-  //       o.site_view.site.name
-  //     }
-  //   }
-  //   _ => { "Lemmy".to_string() }
-  // }).unwrap_or("Lemmy".to_string()));
 
   let ui_theme = expect_context::<RwSignal<Option<String>>>();
   let theme = create_resource(
@@ -74,27 +37,23 @@ pub fn Layout(site_signal: RwSignal<Option<GetSiteResponse>> /* is_routing: Read
       }
     },
   );
-  // ui_theme.set(theme.get());
 
   view! {
     <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
     <Meta name="description" content="Lemmy-UI-Leptos."/>
     <Meta name="viewport" content="viewport-fit=cover"/>
-    // debug where there is no visible console (mobile/live/desktop)
+    // debug console where there is no visible console (mobile/live/desktop)
     // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
     // <Script>eruda.init();</Script>
-    // <Transition fallback=|| { view! { <Title /> } }>
-    //   <Title text=move || title.get().unwrap_or("Lemmy".to_string())/>
-    // </Transition>
     <Transition fallback=|| {
-      view! { <div>"Loading..."</div> }
+        view! { <div>"Loading..."</div> }
     }>
       <div
         class="flex flex-col h-screen"
         data-theme=move || ui_theme.get().unwrap_or(theme.get().unwrap_or("retro".to_string()))
       >
-        <Title text=/* move ||  */title/* .get().unwrap_or("Lemmy".to_string()) *//>
+        <Title text=title/>
         <TopNav site_signal/>
         <Outlet/>
         <BottomNav site_signal/>

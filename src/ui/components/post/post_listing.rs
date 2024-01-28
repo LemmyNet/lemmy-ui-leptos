@@ -3,7 +3,7 @@ use crate::{
   lemmy_client::*,
   ui::components::common::icon::{
     Icon,
-    IconType::{Block, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+    IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
   },
 };
 use lemmy_api_common::{lemmy_db_views::structs::*, person::*, post::*};
@@ -138,7 +138,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   let on_vote_submit = move |ev: SubmitEvent, score: i16| {
     ev.prevent_default();
 
-    create_resource(
+    create_local_resource(
       move || (),
       move |()| async move {
         let form = CreatePostLike {
@@ -183,7 +183,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   let on_save_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_resource(
+    create_local_resource(
       move || (),
       move |()| async move {
         let form = SavePost {
@@ -210,7 +210,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   let on_block_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_resource(
+    create_local_resource(
       move || (),
       move |()| async move {
         let form = BlockPerson {
@@ -265,7 +265,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   let on_report_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
 
-    create_resource(
+    create_local_resource(
       move || (),
       move |()| async move {
         let form = CreatePostReport {
@@ -301,7 +301,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
 
   view! {
     <tr>
-      <td class="flex flex-col text-center w-12">
+      <td class="flex flex-col items-center text-center w-16">
         <ActionForm action=vote_action on:submit=on_up_vote_submit>
           <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
@@ -377,22 +377,21 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             {post_view.get().community.title}
           </A>
         </span>
-        <span class="flex items-center gap-x-1">
-          <span class="flex items-center" title=move || format!("{} comments", post_view.get().unread_comments)>
+        <span class="flex items-center gap-x-2">
+          <span
+            class="flex items-center"
+            title=move || format!("{} comments", post_view.get().unread_comments)
+          >
             <A
               href=move || { format!("/post/{}", post_view.get().post.id) }
-              class="text-xs whitespace-nowrap"// align-top"
+              class="text-sm whitespace-nowrap"
             >
-              <Icon icon=Save />
+              <Icon icon=Comments class="inline".into()/>
               " "
               {post_view.get().unread_comments}
             </A>
           </span>
-          <ActionForm
-            action=save_post_action
-            on:submit=on_save_submit
-            class="flex items-center"// align-top"
-          >
+          <ActionForm action=save_post_action on:submit=on_save_submit class="flex items-center">
             <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
             <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
             <button
@@ -404,17 +403,17 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
             </button>
           </ActionForm>
           <span title="Cross post">
-            <A href="/create_post">// class="inline-block align-top">
-              <Icon icon=Crosspost />
+            <A href="/create_post">
+              <Icon icon=Crosspost/>
             </A>
           </span>
-          <div class="dropdown">// inline-block">// align-top">
+          <div class="dropdown">
             <label tabindex="0">
               <Icon icon=VerticalDots/>
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
-                <ActionForm /* class="block"  */action=report_post_action on:submit=on_report_submit>
+                <ActionForm action=report_post_action on:submit=on_report_submit>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
                     class=move || format!("input input-bordered {}", report_validation.get())
@@ -423,12 +422,8 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     name="reason"
                     placeholder="reason"
                   />
-                  <button
-                    class="text-xs whitespace-nowrap"// align-top"
-                    title="Report post"
-                    type="submit"
-                  >
-                    <Icon icon=Report class="inline-block".into() />
+                  <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
+                    <Icon icon=Report class="inline-block".into()/>
                     " Report post"
                   </button>
                 </ActionForm>
@@ -441,12 +436,8 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     value=format!("{}", post_view.get().creator.id.0)
                   />
                   <input type="hidden" name="block" value="true"/>
-                  <button
-                    class="text-xs whitespace-nowrap"// align-top"
-                    title="Block user"
-                    type="submit"
-                  >
-                    <Icon icon=Block class="inline-block".into() />
+                  <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
+                    <Icon icon=Block class="inline-block".into()/>
                     " Block user"
                   </button>
                 </ActionForm>
