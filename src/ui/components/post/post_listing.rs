@@ -1,11 +1,14 @@
 use crate::{
   errors::{message_from_error, LemmyAppError, LemmyAppErrorType},
   lemmy_client::*,
+  ui::components::common::icon::{
+    Icon,
+    IconType::{Block, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+  },
 };
 use lemmy_api_common::{lemmy_db_views::structs::*, person::*, post::*};
 use leptos::*;
 use leptos_router::*;
-use phosphor_leptos::{ArrowDown, ArrowUp, Copy, DotsThreeVertical, Flag, Note, Prohibit, Star};
 use web_sys::SubmitEvent;
 
 #[server(VotePostFn, "/serverfn")]
@@ -380,7 +383,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
               href=move || { format!("/post/{}", post_view.get().post.id) }
               class="text-xs whitespace-nowrap"// align-top"
             >
-              <Note class="inline"/>
+              <Icon icon=Save />
               " "
               {post_view.get().unread_comments}
             </A>
@@ -402,7 +405,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </ActionForm>
           <span title="Cross post">
             <A href="/create_post">// class="inline-block align-top">
-              <Copy/>
+              <Icon icon=Crosspost />
             </A>
           </span>
           <div class="dropdown">// inline-block">// align-top">
@@ -425,7 +428,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     title="Report post"
                     type="submit"
                   >
-                    <Flag class="inline-block"/>
+                    <Icon icon=Report class="inline-block".into() />
                     " Report post"
                   </button>
                 </ActionForm>
@@ -443,7 +446,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
                     title="Block user"
                     type="submit"
                   >
-                    <Prohibit class="inline-block"/>
+                    <Icon icon=Block class="inline-block".into() />
                     " Block user"
                   </button>
                 </ActionForm>

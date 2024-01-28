@@ -4,6 +4,10 @@ use crate::{
   i18n::*,
   lemmy_client::*,
   queries::site_state_query::*,
+  ui::components::common::icon::{
+    Icon,
+    IconType::{Donate, Notifications, Search},
+  },
 };
 use chrono::Duration;
 use lemmy_api_common::{
@@ -13,7 +17,7 @@ use lemmy_api_common::{
 };
 use leptos::*;
 use leptos_router::*;
-use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
+// use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 use web_sys::{MouseEvent, SubmitEvent};
 
 #[server(LogoutFn, "/serverfn")]
@@ -193,7 +197,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           <li>
             <a href="//join-lemmy.org/donate">
               <span title=t!(i18n, donate)>
-                <Heart/>
+                <Icon icon=Donate />
               </span>
             </a>
           </li>
@@ -204,7 +208,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
           <li>
             <A href="/search">
               <span title=t!(i18n, search)>
-                <MagnifyingGlass/>
+                <Icon icon=Search />
               </span>
             </A>
           </li>
@@ -291,7 +295,7 @@ pub fn TopNav(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
               <li>
                 <A href="/inbox">
                   <span title=t!(i18n, unread_messages)>
-                    <Bell class="h-6 w-6"/>
+                    <Icon icon=Notifications />
                   </span>
                 </A>
               </li>
