@@ -306,7 +306,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
               {move || {
                   site_signal
                       .get()
-                      .map(|s| {
+                      .map(|_s| {
                           posts
                               .get()
                               .map(|res| match res {

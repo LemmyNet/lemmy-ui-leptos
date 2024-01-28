@@ -64,7 +64,7 @@ pub async fn set_cookie(path: &str, value: &str, expires: &Duration) -> Result<(
     cookie::{time::OffsetDateTime, Cookie, SameSite},
     http::{header, header::HeaderValue},
   };
-  use leptos::{expect_context, logging};
+  use leptos::expect_context;
   use leptos_actix::ResponseOptions;
 
   let response = expect_context::<ResponseOptions>();
