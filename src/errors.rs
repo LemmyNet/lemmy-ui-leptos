@@ -1,13 +1,14 @@
-use crate::{i18n::*, lemmy_errors::LemmyErrorType};
+use crate::{/* i18n::*,  */lemmy_errors::LemmyErrorType};
+// use lemmy_api_common::error::*;
 use core::num::ParseIntError;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;
-use strum_macros::{Display, EnumIter};
+use strum_macros::Display;
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
 
-#[derive(Default, Display, Debug, Clone, Serialize, Deserialize, PartialEq, EnumIter)]
+#[derive(Default, Display, Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "error", content = "message", rename_all = "snake_case")]
 pub enum LemmyAppErrorType {
   #[default]
@@ -26,39 +27,40 @@ pub enum LemmyAppErrorType {
 }
 
 pub fn message_from_error(error: &LemmyAppError) -> String {
-  let i18n = use_i18n();
+  // let i18n = use_i18n();
 
   let s = match error {
     LemmyAppError {
       error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
       ..
-    } => t!(i18n, invalid_login)().to_string(),
+    } => "t!(i18n, invalid_login)().to_string()",
     LemmyAppError {
       error_type: LemmyAppErrorType::EmptyUsername,
       ..
-    } => t!(i18n, empty_username)().to_string(),
+    } => "t!(i18n, empty_username)().to_string()",
     LemmyAppError {
       error_type: LemmyAppErrorType::EmptyPassword,
       ..
-    } => t!(i18n, empty_password)().to_string(),
+    } => "t!(i18n, empty_password)().to_string()",
     LemmyAppError {
       error_type: LemmyAppErrorType::MissingReason,
       ..
-    } => t!(i18n, empty_reason)().to_string(),
+    } => "t!(i18n, empty_reason)().to_string()",
     LemmyAppError {
       error_type: LemmyAppErrorType::InternalServerError,
       ..
-    } => t!(i18n, internal)().to_string(),
+    } => "t!(i18n, internal)().to_string()",
     LemmyAppError {
       error_type: LemmyAppErrorType::Unknown,
       ..
-    } => t!(i18n, unknown)().to_string(),
-    _ => "t!(i18n, unknown)()".to_string(),
+    } => "t!(i18n, unknown)().to_string()",
+    _ => "An error without description",
   };
 
-  logging::log!("{s}");
+  logging::error!("{s}");
 
-  s
+  s.into()
+  // String::default()
 }
 
 #[derive(Clone, Serialize, Deserialize)]

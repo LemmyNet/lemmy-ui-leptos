@@ -1,15 +1,13 @@
 use crate::{
-  errors::{LemmyAppError, LemmyAppErrorType},
-  i18n::*,
+  errors::{self, LemmyAppError},
+  // i18n::*,
   lemmy_client::*,
-  ui::components::post::post_listings::PostListings,
+  ui::components::{home::trending::Trending, post::post_listings::PostListings},
 };
 use lemmy_api_common::{
-  community::*,
   lemmy_db_schema::{ListingType, SortType},
   lemmy_db_views::structs::PaginationCursor,
-  lemmy_db_views_actor::structs::CommunityView,
-  post::{GetPosts, GetPostsResponse},
+  post::GetPosts,
   site::GetSiteResponse,
 };
 use leptos::*;
@@ -17,13 +15,26 @@ use leptos_router::*;
 use web_sys::*;
 
 #[component]
-pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl IntoView {
-  let i18n = use_i18n();
+pub fn HomeActivity(
+  site_signal_1: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>, /* Option<GetSiteResponse> */
+) -> impl IntoView {
+  // let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
   let query = use_query_map();
+
+  let site_signal = create_rw_signal({
+    if let Some(s) = site_signal_1.get() {
+      s
+    } else {
+      Err(LemmyAppError {
+        error_type: errors::LemmyAppErrorType::Unknown,
+        content: String::default(),
+      })
+    }
+  });
 
   let list_func = move || {
     serde_json::from_str::<ListingType>(
@@ -142,54 +153,12 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
         page_cursor: f,
       };
 
-      let result: Option<Result<GetPostsResponse, LemmyAppError>> = {
-        use crate::lemmy_client::*;
-        Some(LemmyClient.list_posts(form).await)
-      };
+      let result = LemmyClient.list_posts(form).await;
 
       match result {
-        Some(Ok(o)) => Some(o),
-        Some(Err(e)) => {
-          leptos::logging::log!("Err {:#?}", e);
+        Ok(o) => Some(o),
+        Err(e) => {
           error.set(Some(e));
-          None
-        }
-        None => {
-          error.set(Some(LemmyAppError {
-            error_type: LemmyAppErrorType::Unknown,
-            content: String::default(),
-          }));
-          None
-        }
-      }
-    },
-  );
-
-  let trending = create_resource(
-    move || (),
-    move |()| async move {
-      let form = ListCommunities {
-        type_: Some(ListingType::Local),
-        sort: Some(SortType::Hot),
-        limit: Some(6),
-        show_nsfw: None,
-        page: None,
-      };
-
-      let result: Option<Result<ListCommunitiesResponse, LemmyAppError>> =
-        { Some(LemmyClient.list_communities(form).await) };
-
-      match result {
-        Some(Ok(o)) => Some(o),
-        Some(Err(e)) => {
-          error.set(Some(e));
-          None
-        }
-        None => {
-          error.set(Some(LemmyAppError {
-            error_type: LemmyAppErrorType::Unknown,
-            content: String::default(),
-          }));
           None
         }
       }
@@ -276,7 +245,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
 
                   on:click=on_sort_click(SortType::Active)
                 >
-                  <span>{t!(i18n, active)}</span>
+                  <span>"{t!(i18n, active)}"</span>
                 </li>
                 <li
                   class=move || {
@@ -286,7 +255,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
 
                   on:click=on_sort_click(SortType::Hot)
                 >
-                  <span>{t!(i18n, hot)}</span>
+                  <span>"{t!(i18n, hot)}"</span>
                 </li>
                 <li
                   class=move || {
@@ -296,7 +265,7 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
 
                   on:click=on_sort_click(SortType::New)
                 >
-                  <span>{t!(i18n, new)}</span>
+                  <span>"{t!(i18n, new)}"</span>
                 </li>
               </ul>
             </div>
@@ -304,130 +273,68 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
                 view! { <div>"Loading..."</div> }
             }>
               {move || {
-                  site_signal
+                  posts
                       .get()
-                      .map(|_s| {
-                          posts
-                              .get()
-                              .map(|res| match res {
-                                  None => {
-                                      view! {
-                                        <div>"No posts for this type of query at the moment"</div>
-                                      }
-                                  }
-                                  Some(res) => {
-                                      view! {
-                                        <div>
-                                          <PostListings posts=res.posts.into()/>
-                                          {move || {
-                                              if let Some(s) = ssr_prev() {
-                                                  if !s.is_empty() {
-                                                      let mut st = s.split(",").collect::<Vec<_>>();
-                                                      let p = st.pop().unwrap_or("");
-                                                      let mut query_params = query.get();
-                                                      query_params
-                                                          .insert("prev".into(), st.join(",").to_string());
-                                                      query_params.insert("from".into(), p.into());
-                                                      view! {
-                                                        <span>
-                                                          <A
-                                                            href=format!("{}", query_params.to_query_string())
-                                                            class="btn"
-                                                          >
-                                                            "Prev"
-                                                          </A>
-                                                        </span>
-                                                      }
-                                                  } else {
-                                                      view! { <span></span> }
-                                                  }
-                                              } else {
-                                                  view! { <span></span> }
-                                              }
-                                          }}
-
-                                          {move || {
-                                              if let Some(n) = res.next_page.clone() {
-                                                  let s = ssr_prev().unwrap_or_default();
-                                                  let mut st = s.split(",").collect::<Vec<_>>();
-                                                  let f = ssr_from().unwrap_or_default();
-                                                  st.push(&f);
-                                                  let mut query_params = query.get();
-                                                  query_params
-                                                      .insert("prev".into(), st.join(",").to_string());
-                                                  query_params.insert("from".into(), n.0);
-                                                  view! {
-                                                    <span>
-                                                      <A
-                                                        href=format!("{}", query_params.to_query_string())
-                                                        class="btn"
-                                                      >
-                                                        "Next"
-                                                      </A>
-                                                    </span>
-                                                  }
-                                              } else {
-                                                  view! { <span></span> }
-                                              }
-                                          }}
-
-                                        </div>
-                                      }
-                                  }
-                              })
-                      })
-              }}
-
-            </Transition>
-          </main>
-          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
-            <Transition fallback=|| {
-                view! { "Loading..." }
-            }>
-              {move || {
-                  trending
-                      .get()
-                      .map(|r| match r {
+                      .map(|res| match res {
                           None => {
-                              view! { <div class="hidden"></div> }
+                              view! { <div>"No posts for this type of query at the moment"</div> }
                           }
-                          Some(c) => {
-                              let c_signal = create_rw_signal(c.communities);
+                          Some(res) => {
                               view! {
-                                <div class="card w-full bg-base-300 text-base-content mb-3">
-                                  <figure>
-                                    <div class="card-body bg-info">
-                                      <h2 class="card-title text-info-content">
-                                        "Trending Communities"
-                                      </h2>
-                                    </div>
-                                  </figure>
-                                  <div class="card-body">
-                                    <p>
-                                      <For
-                                        each=move || c_signal.get()
-                                        key=|community| community.community.id
-                                        children=move |cv: CommunityView| {
-                                            view! {
-                                              <A
-                                                class="text-l font-bold link link-accent whitespace-nowrap"
-                                                href=format!("/c/{}", cv.community.name)
-                                              >
-                                                {cv.community.title}
-                                              </A>
-                                              " "
-                                            }
-                                        }
-                                      />
+                                <div>
+                                  <PostListings posts=res.posts.into()/>
+                                  {move || {
+                                      if let Some(s) = ssr_prev() {
+                                          if !s.is_empty() {
+                                              let mut st = s.split(",").collect::<Vec<_>>();
+                                              let p = st.pop().unwrap_or("");
+                                              let mut query_params = query.get();
+                                              query_params
+                                                  .insert("prev".into(), st.join(",").to_string());
+                                              query_params.insert("from".into(), p.into());
+                                              view! {
+                                                <span>
+                                                  <A
+                                                    href=format!("{}", query_params.to_query_string())
+                                                    class="btn"
+                                                  >
+                                                    "Prev"
+                                                  </A>
+                                                </span>
+                                              }
+                                          } else {
+                                              view! { <span></span> }
+                                          }
+                                      } else {
+                                          view! { <span></span> }
+                                      }
+                                  }}
 
-                                    </p>
-                                    <A class="btn" href="/create_community">
-                                      "Create a community"
-                                    </A>
-                                    <A class="btn" href="/communities">
-                                      "Explore communities"
-                                    </A>
-                                  </div>
+                                  {move || {
+                                      if let Some(n) = res.next_page.clone() {
+                                          let s = ssr_prev().unwrap_or_default();
+                                          let mut st = s.split(",").collect::<Vec<_>>();
+                                          let f = ssr_from().unwrap_or_default();
+                                          st.push(&f);
+                                          let mut query_params = query.get();
+                                          query_params
+                                              .insert("prev".into(), st.join(",").to_string());
+                                          query_params.insert("from".into(), n.0);
+                                          view! {
+                                            <span>
+                                              <A
+                                                href=format!("{}", query_params.to_query_string())
+                                                class="btn"
+                                              >
+                                                "Next"
+                                              </A>
+                                            </span>
+                                          }
+                                      } else {
+                                          view! { <span></span> }
+                                      }
+                                  }}
+
                                 </div>
                               }
                           }
@@ -435,84 +342,83 @@ pub fn HomeActivity(site_signal: RwSignal<Option<GetSiteResponse>>) -> impl Into
               }}
 
             </Transition>
-            <Transition fallback=|| {
-                view! { "Loading..." }
-            }>
-              {move || {
-                  site_signal
-                      .get()
-                      .map(|o| {
-                          view! {
-                            <div class="card w-full bg-base-300 text-base-content mb-3">
-                              <figure>
-                                <div class="card-body bg-neutral">
-                                  <h2 class="card-title text-neutral-content">
-                                    {o.site_view.site.name}
-                                  </h2>
-                                </div>
-                              </figure>
-                              <div class="card-body">
-                                <p>{o.site_view.site.description}</p>
-                                <p>
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.users_active_day} " user / day"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.users_active_week} " users / week"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.users_active_month} " users / month"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.users_active_half_year} " users / 6 months"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.users} " users"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.communities} " Communities"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.posts} " Posts"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    {o.site_view.counts.comments} " Comments"
-                                  </span>
-                                  " "
-                                  <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                    "Modlog"
-                                  </span>
-                                </p>
-                                <h3 class="card-title">"Admins"</h3>
-                                <p>
-                                  <For
-                                    each=move || o.admins.clone()
-                                    key=|admin| admin.person.id
-                                    children=move |a| {
-                                        view! {
-                                          <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                            {a.person.name}
-                                          </span>
-                                          " "
-                                        }
-                                    }
-                                  />
-
-                                </p>
+          </main>
+          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
+            <Trending/>
+            {move || {
+                site_signal
+                    .get()
+                    .map(|o| {
+                        view! {
+                          <div class="card w-full bg-base-300 text-base-content mb-3">
+                            <figure>
+                              <div class="card-body bg-neutral">
+                                <h2 class="card-title text-neutral-content">
+                                  {o.site_view.site.name}
+                                </h2>
                               </div>
-                            </div>
-                          }
-                      })
-              }}
+                            </figure>
+                            <div class="card-body">
+                              <p>{o.site_view.site.description}</p>
+                              <p>
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.users_active_day} " user / day"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.users_active_week} " users / week"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.users_active_month} " users / month"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.users_active_half_year} " users / 6 months"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.users} " users"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.communities} " Communities"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.posts} " Posts"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  {o.site_view.counts.comments} " Comments"
+                                </span>
+                                " "
+                                <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                  "Modlog"
+                                </span>
+                              </p>
+                              <h3 class="card-title">"Admins"</h3>
+                              <p>
+                                <For
+                                  each=move || o.admins.clone()
+                                  key=|admin| admin.person.id
+                                  children=move |a| {
+                                      view! {
+                                        <span class="badge badge-neutral inline-block whitespace-nowrap">
+                                          {a.person.name}
+                                        </span>
+                                        " "
+                                      }
+                                  }
+                                />
 
-            </Transition>
+                              </p>
+                            </div>
+                          </div>
+                        }
+                    })
+            }}
+
           </div>
         </div>
       </div>

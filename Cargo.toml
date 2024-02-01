@@ -7,31 +7,35 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# would normally use this tag but there is one feature in main that i need and main is stable with DS9.lemmy.ml right now
-# tag = "0.19.3"
+# normally use the *latest* version tag but there is one feature in main that i need 
+# main is mostly stable with my test instance DS9.lemmy.ml right now
+# e.g. tag = "0.19.3"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+# for testing potential lemmy changes
+# lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }
 
-leptos = "0.5"
-leptos_actix = { version = "0.5", optional = true }
-leptos_meta = "0.5"
-leptos_router = "0.5"
-leptos_i18n = "0.2"
+leptos = "0"
+leptos_actix = { version = "0", optional = true }
+leptos_meta = "0"
+leptos_router = "0"
+leptos_i18n = "0"
 
 serde = { version = "1", features = ["derive"] }
 serde_urlencoded = "0"
 serde_json = "1"
-web-sys = { version = "0", features = ["AbortController", "AbortSignal"] }
-gloo-net = { version = "0", features = ["http"] }
 cfg-if = "1"
 tracing-error = "0"
 anyhow = "1"
 strum = "0"
 strum_macros = "0"
 chrono = "0"
+web-sys = { version = "0", features = ["AbortController", "AbortSignal"] }
 
 # dependecies for client (enable when csr or hydrate set)
-wasm-bindgen = { version = "0", optional = true }
-wasm-cookies = "0"
+wasm-bindgen = { version = "=0.2.89", optional = true }
+wasm-cookies = { version = "0", optional = true }
+console_error_panic_hook = { version = "0", optional = true }
+gloo-net = { version = "0", optional = true, features = ["http"] }
 
 # dependecies for server (enable when ssr set)
 actix-files = { version = "0", optional = true }
@@ -54,14 +58,26 @@ hydrate = [
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
+  "dep:wasm-bindgen",
+  "dep:wasm-cookies",
+  "dep:console_error_panic_hook",
+  "dep:gloo-net",
 ]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
+csr = [
+  "leptos/csr",
+  "leptos_meta/csr",
+  "leptos_router/csr",
+  "leptos_i18n/csr",
+  "dep:wasm-bindgen",
+  "dep:wasm-cookies",
+  "dep:console_error_panic_hook", 
+  "dep:gloo-net"]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "dep:leptos_actix",
+  "leptos_actix",
   "dep:actix-http",
   "dep:actix-web",
   "dep:actix-files",
@@ -92,7 +108,7 @@ watch = false
 bin-features = ["ssr", "bypass_internal_proxy"]
 bin-default-features = false
 
-lib-features = ["csr", "hydrate", "bypass_internal_proxy"]
+lib-features = ["hydrate", "bypass_internal_proxy"]
 lib-default-features = false
 lib-profile-release = "wasm-release"
 

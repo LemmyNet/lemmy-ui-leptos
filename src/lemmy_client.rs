@@ -5,7 +5,13 @@ use crate::{
   lemmy_errors::LemmyErrorType,
 };
 use cfg_if::cfg_if;
-use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
+use lemmy_api_common::{
+  comment::*,
+  community::*,
+  person::*,
+  post::*,
+  site::*, /* , error::* */
+};
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -155,8 +161,10 @@ cfg_if! {
 
                 leptos::logging::log!("{}", query);
 
+                // ready for leptos 0.6
+                let client = extract::<web::Data<Client>>().await?;
 
-                let result = extract(|client: web::Data<Client>| async move {
+                // let result = extract(|client: web::Data<Client>| async move {
                     let mut r = match method {
                         HttpType::Get => client
                             // normal request code
@@ -195,9 +203,9 @@ cfg_if! {
 
                     r.json::<Response>().await.map_err(Into::into)
 
-                }).await?;
+                // }).await?;
 
-                result
+                // result
             }
         }
 
