@@ -70,8 +70,9 @@ csr = [
   "leptos_i18n/csr",
   "dep:wasm-bindgen",
   "dep:wasm-cookies",
-  "dep:console_error_panic_hook", 
-  "dep:gloo-net"]
+  "dep:console_error_panic_hook",
+  "dep:gloo-net",
+]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
