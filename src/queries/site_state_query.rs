@@ -9,16 +9,12 @@ async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   use actix_web::web;
   use leptos_actix::extract;
 
-  Ok(
-    extract(
-      |session: Session, client: web::Data<awc::Client>| async move {
-        let jwt = session.get::<String>("jwt")?;
+  let session = extract::<Session>().await?;
+  let client = extract::<web::Data<awc::Client>>().await?;
 
-        client.get_site(jwt).await
-      },
-    )
-    .await??,
-  )
+  let jwt = session.get::<String>("jwt")?;
+
+  client.get_site(jwt).await.map_err(Into::into)
 }
 
 pub fn use_site_state() -> QueryResult<Result<GetSiteResponse, ServerFnError>, impl RefetchFn> {

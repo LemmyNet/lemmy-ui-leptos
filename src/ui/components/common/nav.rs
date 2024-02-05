@@ -13,11 +13,12 @@ pub async fn logout() -> Result<(), ServerFnError> {
   use actix_session::Session;
   use leptos_actix::extract;
 
-  extract(|session: Session| async move {
-    // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
-    session.purge();
-  })
-  .await
+  let session = extract::<Session>().await?;
+
+  // TODO: Will have to make API call to delete session stored in DB once that feature is implemented on the server
+  session.purge();
+
+  Ok(())
 }
 
 #[component]
