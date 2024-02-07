@@ -44,14 +44,12 @@ pub fn TopNav() -> impl IntoView {
   });
 
   let logout_action = create_server_action::<LogoutAction>();
-  let _logout_is_success =
-    Signal::derive(move || logout_action.value().get().is_some_and(|res| res.is_ok()));
 
-  // create_isomorphic_effect(move |_| {
-  //   if logout_is_success() {
-  //     refetch();
-  //   }
-  // });
+  create_isomorphic_effect(move |_| {
+    if logout_action.version().with(|v| *v > 0) {
+      refetch();
+    }
+  });
 
   let ui_theme = expect_context::<RwSignal<String>>();
 
