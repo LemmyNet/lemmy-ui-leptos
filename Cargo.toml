@@ -19,6 +19,7 @@ web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.5", features = ["http"] }
 cfg-if = "1"
 lemmy_api_common = { version = "0.19.3", default-features = false }
+lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main" }
 
 serde_urlencoded = "0.7"
 thiserror = "1.0"
