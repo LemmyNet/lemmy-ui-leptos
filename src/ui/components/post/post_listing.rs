@@ -21,8 +21,8 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<PostResponse, Serv
     post_id: PostId(post_id),
     score,
   };
-
-  Ok(extract(|client: web::Data<awc::Client>| async move { client.like_post(form).await }).await??)
+  let client = extract::<web::Data<awc::Client>>().await?;
+  client.like_post(form).await.map_err(Into::into)
 }
 
 #[server(SavePostFn, "/serverfn")]
@@ -35,8 +35,8 @@ pub async fn save_post_fn(post_id: i32, save: bool) -> Result<PostResponse, Serv
     post_id: PostId(post_id),
     save,
   };
-
-  Ok(extract(|client: web::Data<awc::Client>| async move { client.save_post(form).await }).await??)
+  let client = extract::<web::Data<awc::Client>>().await?;
+  client.save_post(form).await.map_err(Into::into)
 }
 
 #[server(BlockUserFn, "/serverfn")]
@@ -52,11 +52,8 @@ pub async fn block_user_fn(
     person_id: PersonId(person_id),
     block,
   };
-
-  Ok(
-    extract(|client: web::Data<awc::Client>| async move { client.block_user(form).await })
-      .await??,
-  )
+  let client = extract::<web::Data<awc::Client>>().await?;
+  client.block_user(form).await.map_err(Into::into)
 }
 
 #[server(ReportPostFn, "/serverfn")]
@@ -72,11 +69,8 @@ pub async fn report_post_fn(
     post_id: PostId(post_id),
     reason,
   };
-
-  Ok(
-    extract(|client: web::Data<awc::Client>| async move { client.report_post(form).await })
-      .await??,
-  )
+  let client = extract::<web::Data<awc::Client>>().await?;
+  client.report_post(form).await.map_err(Into::into)
 }
 
 #[component]

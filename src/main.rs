@@ -55,7 +55,6 @@ cfg_if! {
                             .route("/api/{tail:.*}", web::route()
                                 .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
                                 .to(route_to_api))
-                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                             .wrap(cookie_middleware())
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))
@@ -70,7 +69,6 @@ cfg_if! {
                             .app_data(client)
                     } else {
                         App::new()
-                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                             .wrap(cookie_middleware())
                             .service(Files::new("/pkg", format!("{site_root}/pkg")))
                             .service(Files::new("/assets", site_root))

@@ -12,26 +12,25 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
   use crate::lemmy_client::LemmyClient;
   use actix_session::Session;
   use actix_web::web;
-  use awc::Client;
   use lemmy_api_common::person::{Login, LoginResponse};
   use leptos_actix::{extract, redirect};
 
-  extract(|client: web::Data<Client>, session: Session| async move {
-    let req = Login {
-      username_or_email: username_or_email.into(),
-      password: password.into(),
-      totp_2fa_token: None,
-    };
+  let client = extract::<web::Data<awc::Client>>().await?;
+  let session = extract::<Session>().await?;
 
-    let LoginResponse { jwt, .. } = client.login(req).await?;
-    if let Some(jwt) = jwt {
-      session.insert("jwt", jwt.into_inner())?;
-    }
+  let req = Login {
+    username_or_email: username_or_email.into(),
+    password: password.into(),
+    totp_2fa_token: None,
+  };
 
-    redirect("/");
-    Ok(())
-  })
-  .await?
+  let LoginResponse { jwt, .. } = client.login(req).await?;
+  if let Some(jwt) = jwt {
+    session.insert("jwt", jwt.into_inner())?;
+  }
+
+  redirect("/");
+  Ok(())
 }
 
 #[component]
