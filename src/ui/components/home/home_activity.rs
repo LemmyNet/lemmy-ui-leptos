@@ -89,56 +89,56 @@ pub fn HomeActivity() -> impl IntoView {
             </li>
           </ul>
         </div>
-        // <Suspense fallback=|| {
-        //     view! { "Loading..." }
-        // }>
-        //   {move || {
-        //       posts
-        //           .get()
-        //           .map(|res| match res {
-        //               None => {
-        //                   view! { <div></div> }
-        //               }
-        //               Some(res) => {
-        //                   view! {
-        //                     <div>
-        //                       <PostListings posts=res.posts.into() error/>
+      // <Suspense fallback=|| {
+      // view! { "Loading..." }
+      // }>
+      // {move || {
+      // posts
+      // .get()
+      // .map(|res| match res {
+      // None => {
+      // view! { <div></div> }
+      // }
+      // Some(res) => {
+      // view! {
+      // <div>
+      // <PostListings posts=res.posts.into() error/>
 
-        //                       <button
-        //                         class="btn"
-        //                         on:click=move |_| {
-        //                             let mut p = prev_cursor_stack.get();
-        //                             let s = p.pop().unwrap_or(None);
-        //                             prev_cursor_stack.set(p);
-        //                             page_cursor.set(s.clone());
-        //                             cursor_string.set(Some(format!("{:#?}", s)));
-        //                         }
-        //                       >
+      // <button
+      // class="btn"
+      // on:click=move |_| {
+      // let mut p = prev_cursor_stack.get();
+      // let s = p.pop().unwrap_or(None);
+      // prev_cursor_stack.set(p);
+      // page_cursor.set(s.clone());
+      // cursor_string.set(Some(format!("{:#?}", s)));
+      // }
+      // >
 
-        //                         "Prev"
-        //                       </button>
-        //                       <button
-        //                         class="btn"
-        //                         on:click=move |_| {
-        //                             let mut p = prev_cursor_stack.get();
-        //                             p.push(page_cursor.get());
-        //                             prev_cursor_stack.set(p);
-        //                             page_cursor.set(res.next_page.clone());
-        //                             cursor_string
-        //                                 .set(Some(format!("{:#?}", res.next_page.clone())));
-        //                         }
-        //                       >
+      // "Prev"
+      // </button>
+      // <button
+      // class="btn"
+      // on:click=move |_| {
+      // let mut p = prev_cursor_stack.get();
+      // p.push(page_cursor.get());
+      // prev_cursor_stack.set(p);
+      // page_cursor.set(res.next_page.clone());
+      // cursor_string
+      // .set(Some(format!("{:#?}", res.next_page.clone())));
+      // }
+      // >
 
-        //                         "Next"
-        //                       </button>
+      // "Next"
+      // </button>
 
-        //                     </div>
-        //                   }
-        //               }
-        //           })
-        //   }}
+      // </div>
+      // }
+      // }
+      // })
+      // }}
 
-        // </Suspense>
+      // </Suspense>
       </main>
       <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
         <div class="sticky top-0 p-4 bg-gray-100 rounded-xl w-full"></div>
