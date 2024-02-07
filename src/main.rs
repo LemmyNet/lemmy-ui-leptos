@@ -3,14 +3,13 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
 
-        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware};
+        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware, host::get_client};
 
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
 
         use leptos_actix::{generate_route_list, LeptosRoutes};
-        use awc::Client;
 
         #[actix_web::get("favicon.svg")]
         async fn favicon(
@@ -46,7 +45,7 @@ cfg_if! {
                 let site_root = &leptos_options.site_root;
                 let routes = &routes;
 
-                let client = web::Data::new(Client::new());
+                let client = web::Data::new(get_client());
 
                 cfg_if! {
                     if #[cfg(not(feature = "bypass_internal_proxy"))] {
