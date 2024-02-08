@@ -26,10 +26,11 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
     totp_2fa_token: None,
   };
 
-  let LoginResponse { jwt, .. } = client
+  let jwt = client
     .login(req)
     .await
-    .map_err(Into::<ServerFnError>::into)?;
+    .map_err(Into::<ServerFnError>::into)?
+    .jwt;
   if let Some(jwt) = jwt {
     session.insert("jwt", jwt.into_inner())?;
   }
