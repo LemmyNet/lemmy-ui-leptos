@@ -3,14 +3,13 @@ use cfg_if::cfg_if;
 cfg_if! {
     if #[cfg(feature = "ssr")] {
 
-        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware};
+        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware, host::get_client};
 
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
 
         use leptos_actix::{generate_route_list, LeptosRoutes};
-        use awc::Client;
 
         #[actix_web::get("favicon.svg")]
         async fn favicon(
@@ -46,43 +45,19 @@ cfg_if! {
                 let site_root = &leptos_options.site_root;
                 let routes = &routes;
 
-                let client = web::Data::new(Client::new());
-
-                cfg_if! {
-                    if #[cfg(not(feature = "bypass_internal_proxy"))] {
-                        use lemmy_ui_leptos::server::api_service::route_to_api;
-                        App::new()
-                            .route("/api/{tail:.*}", web::route()
-                                .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                                .to(route_to_api))
-                            .wrap(cookie_middleware())
-                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                            .service(Files::new("/assets", site_root))
-                            .service(favicon)
-                            .service(icons)
-                            .leptos_routes(
-                                leptos_options.to_owned(),
-                                routes.to_owned(),
-                                App
-                            )
-                            .app_data(web::Data::new(leptos_options.to_owned()))
-                            .app_data(client)
-                    } else {
-                        App::new()
-                            .wrap(cookie_middleware())
-                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                            .service(Files::new("/assets", site_root))
-                            .service(favicon)
-                            .service(icons)
-                            .leptos_routes(
-                                leptos_options.to_owned(),
-                                routes.to_owned(),
-                                App
-                            )
-                            .app_data(web::Data::new(leptos_options.to_owned()))
-                            .app_data(client)
-                    }
-                }
+                App::new()
+                    .wrap(cookie_middleware())
+                    .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                    .service(Files::new("/assets", site_root))
+                    .service(favicon)
+                    .service(icons)
+                    .leptos_routes(
+                        leptos_options.to_owned(),
+                        routes.to_owned(),
+                        App
+                    )
+                    .app_data(web::Data::new(leptos_options.to_owned()))
+                    .app_data(web::Data::new(get_client()))
             })
             .bind(&addr)?
             .run()

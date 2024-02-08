@@ -1,4 +1,4 @@
-use lemmy_api_common::lemmy_db_views::structs::CommentView;
+use lemmy_client::lemmy_api_common::lemmy_db_views::structs::CommentView;
 use leptos::*;
 
 #[component]
