@@ -2,7 +2,6 @@ mod config;
 mod errors;
 pub mod host;
 mod layout;
-mod lemmy_client;
 mod queries;
 #[cfg(feature = "ssr")]
 pub mod server;

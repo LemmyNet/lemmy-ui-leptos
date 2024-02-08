@@ -27,6 +27,14 @@ impl LemmyAppError {
 
 pub type LemmyAppResult<T> = Result<T, LemmyAppError>;
 
+// impl From<lemmy_client::Error> for LemmyAppError {
+//   fn from(e: lemmy_client::Error) -> Self {
+//     Self::APIError {
+//       error: e.message().to_owned(),
+//     }
+//   }
+// }
+
 impl From<ser::Error> for LemmyAppError {
   fn from(value: ser::Error) -> Self {
     Self::APIError {
@@ -38,31 +46,6 @@ impl From<ser::Error> for LemmyAppError {
 impl From<ParseIntError> for LemmyAppError {
   fn from(_value: ParseIntError) -> Self {
     Self::ParamsError
-  }
-}
-
-#[cfg(not(feature = "ssr"))]
-impl From<gloo_net::Error> for LemmyAppError {
-  fn from(_value: gloo_net::Error) -> Self {
-    Self::InternalServerError
-  }
-}
-
-#[cfg(feature = "ssr")]
-impl From<awc::error::JsonPayloadError> for LemmyAppError {
-  fn from(value: awc::error::JsonPayloadError) -> Self {
-    Self::APIError {
-      error: value.to_string(),
-    }
-  }
-}
-
-#[cfg(feature = "ssr")]
-impl From<awc::error::SendRequestError> for LemmyAppError {
-  fn from(value: awc::error::SendRequestError) -> Self {
-    Self::APIError {
-      error: value.to_string(),
-    }
   }
 }
 

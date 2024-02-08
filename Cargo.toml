@@ -19,7 +19,7 @@ web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
 gloo-net = { version = "0.5", features = ["http"] }
 cfg-if = "1"
 lemmy_api_common = { version = "0.19.3", default-features = false }
-lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main" }
+lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main", features = ["leptos"] }
 
 serde_urlencoded = "0.7"
 thiserror = "1.0"
@@ -33,7 +33,6 @@ actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
 actix-proxy = { version = "0.2", optional = true }
 awc = { version = "3.4", optional = true }
-async-trait = "0.1"
 actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
