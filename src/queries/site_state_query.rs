@@ -1,4 +1,4 @@
-use lemmy_api_common::site::GetSiteResponse;
+use lemmy_client::lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_query::{use_query, QueryOptions, QueryResult, RefetchFn, ResourceOption};
 

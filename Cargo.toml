@@ -13,26 +13,20 @@ leptos_meta = "0.6"
 leptos_router = "0.6"
 leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n.git", tag = "v0.3.0-rc" }
 leptos_query = "0.4"
-
 serde = { version = "1", features = ["derive"] }
-web-sys = { version = "0.3", features = ["AbortController", "AbortSignal"] }
-gloo-net = { version = "0.5", features = ["http"] }
 cfg-if = "1"
-lemmy_api_common = { version = "0.19.3", default-features = false }
-lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main", features = ["leptos"] }
-
+lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main", features = [
+  "leptos",
+] }
 serde_urlencoded = "0.7"
 thiserror = "1.0"
 
 # dependecies for client (enable when csr or hydrate set)
 wasm-bindgen = { version = "0.2", optional = true }
-wasm-cookies = "0.2"
 
 # dependecies for server (enable when ssr set)
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
-actix-proxy = { version = "0.2", optional = true }
-awc = { version = "3.4", optional = true }
 actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
@@ -49,8 +43,15 @@ hydrate = [
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
   "leptos_query/hydrate",
+  "dep:wasm-bindgen",
 ]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr", "leptos_i18n/csr"]
+csr = [
+  "leptos/csr",
+  "leptos_meta/csr",
+  "leptos_router/csr",
+  "leptos_i18n/csr",
+  "dep:wasm-bindgen",
+]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
@@ -60,11 +61,8 @@ ssr = [
   "dep:leptos_actix",
   "dep:actix-web",
   "dep:actix-files",
-  "dep:actix-proxy",
-  "dep:awc",
   "dep:actix-session",
 ]
-bypass_internal_proxy = []
 
 [package.metadata.cargo-all-features]
 denylist = ["actix-files", "actix-web", "leptos_actix"]

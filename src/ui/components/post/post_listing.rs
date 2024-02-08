@@ -2,7 +2,7 @@ use crate::ui::components::common::icon::{
   Icon,
   IconType::{Block, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
 };
-use lemmy_api_common::{
+use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::newtypes::*, //{PersonId, PostId},
   lemmy_db_views::structs::*,   //PostView,
   person::*,                    //{BlockPerson, BlockPersonResponse},
@@ -252,8 +252,8 @@ pub fn PostListing(
                 placeholder
               </li>
               // <ActionForm action=block_user_action class="inline-block">
-              <li>placeholder// <input
-              // type="hidden"
+              // <input
+              <li>placeholder// type="hidden"
               // name="person_id"
               // value=format!("{}", post_view.get().creator.id.0)
               // />

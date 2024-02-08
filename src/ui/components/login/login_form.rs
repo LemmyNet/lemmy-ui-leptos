@@ -11,8 +11,10 @@ use leptos_router::ActionForm;
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use actix_session::Session;
   use actix_web::web;
-  use lemmy_api_common::person::{Login, LoginResponse};
-  use lemmy_client::LemmyClient;
+  use lemmy_client::{
+    lemmy_api_common::person::{Login, LoginResponse},
+    LemmyClient,
+  };
   use leptos_actix::{extract, redirect};
 
   let client = extract::<web::Data<LemmyClient>>().await?;

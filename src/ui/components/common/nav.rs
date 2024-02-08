@@ -6,7 +6,7 @@ use crate::{
     IconType::{Donate, Notifications, Search},
   },
 };
-use lemmy_api_common::lemmy_db_schema::source::person::Person;
+use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_query::QueryResult;
 use leptos_router::*;
