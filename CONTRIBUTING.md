@@ -14,7 +14,7 @@ to install daisyUI.
 
 Then do:
 
-`./run.sh`
+`cargo leptos watch`
 
 and goto http://localhost:1237
 
