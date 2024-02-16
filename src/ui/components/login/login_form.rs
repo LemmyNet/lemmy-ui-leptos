@@ -1,7 +1,7 @@
 use crate::{
   cookie::set_cookie,
   errors::{LemmyAppError, LemmyAppErrorType},
-  // i18n::*,
+  i18n::*,
   ui::components::common::text_input::{InputType, TextInput},
 };
 use lemmy_api_common::person::{Login, LoginResponse};
@@ -51,7 +51,7 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
 #[server(LoginFn, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
 
   let req = Login {
     username_or_email: username_or_email.into(),
@@ -74,13 +74,13 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
           // redirect("/");
           Ok(())
         }
-        Err(_e) => {
+        Err(e) => {
           // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
-    Err(_e) => {
+    Err(e) => {
       // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
@@ -89,7 +89,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
-  // let _i18n = use_i18n();
+  let _i18n = use_i18n();
 
   let query = use_query_map();
 
@@ -152,8 +152,6 @@ pub fn LoginForm() -> impl IntoView {
             .await;
             user.set(Some(true));
             leptos_router::use_navigate()("/", Default::default());
-            // work around for unreachable error
-            // window().location().set_href("/");
           }
           Ok(LoginResponse { jwt: None, .. }) => {
             error.set(Some(LemmyAppError {

@@ -7,10 +7,11 @@ use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::Outlet;
+use web_sys::{js_sys::Function, wasm_bindgen::closure::Closure, Event};
 
 #[component]
 pub fn Layout(
-  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>, /* , ui_theme: RwSignal<Option<String>> *//* Option<GetSiteResponse> */
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
 ) -> impl IntoView {
   let title = move || match site_signal.get() {
     Some(Ok(o)) => {
@@ -35,14 +36,38 @@ pub fn Layout(
     },
   );
 
+
+  // let cb = Closure::wrap(Box::new(|e: Event| {
+  //   // let input = e
+  //   //     .current_target()
+  //   //     .unwrap()
+  //   //     .dyn_into::<web_sys::HtmlTextAreaElement>()
+  //   //     .unwrap();
+
+  //   logging::log!("{:?}", e);
+  // }) as Box<dyn Function(_)>);
+
+
+  // let r = window().add_event_listener_with_callback("scroll", &cb.as_ref());
+
+  // cb.forget();
+
+
+  // window().set_onscroll(Some(Function::new_no_args(body))) onscroll()  .add_event_listener_with_callback("scroll", &on_scroll);
+
   view! {
     <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
     <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
-    <Meta name="description" content="Lemmy-UI-Leptos."/>
-    <Meta name="viewport" content="viewport-fit=cover"/>
+    <Meta name="description" content=title/>
+    // <Meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    // <Meta name="viewport" content="viewport-fit=cover"/>
     // debug console where there is no dev tools (mobile/desktop)
     // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
     // <Script>eruda.init();</Script>
+    // <Window />
+    // <Body on:scroll=on_scroll /* class="min-h-screen h-full" *//>
+    <Title text=title/>
+    // <Body class="min-h-screen h-full"/>
     <Transition fallback=|| {}>
       {move || {
           theme
@@ -51,11 +76,12 @@ pub fn Layout(
                   ui_theme.set(Some(m));
               })
       }}
-      <div class="flex flex-col h-screen" data-theme=move || ui_theme.get()>
-        <Title text=title/>
-        <TopNav site_signal_1=site_signal/>
+      <div class="flex flex-col min-h-screen"  /* class="flex flex-col flex-row flex-grow justify-between min-h-screen"  */data-theme=move || ui_theme.get()>
+        <TopNav site_signal/>
         <Outlet/>
-        <BottomNav site_signal_1=site_signal/>
+        <BottomNav site_signal/>
+    //   </div>
+    // </div>
       </div>
     </Transition>
   }

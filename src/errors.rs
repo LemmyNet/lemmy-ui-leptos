@@ -1,4 +1,4 @@
-use crate::{/* i18n::*,  */ lemmy_errors::LemmyErrorType};
+use crate::{i18n::*,  lemmy_errors::LemmyErrorType};
 // use lemmy_api_common::error::*;
 use core::num::ParseIntError;
 use leptos::*;
@@ -15,6 +15,7 @@ pub enum LemmyAppErrorType {
   Unknown,
   NotFound,
   InternalServerError,
+  InternalClientError,
   ParamsError,
 
   ApiError(LemmyErrorType),
@@ -27,34 +28,34 @@ pub enum LemmyAppErrorType {
 }
 
 pub fn message_from_error(error: &LemmyAppError) -> String {
-  // let i18n = use_i18n();
+  let i18n = use_i18n();
 
   let s = match error {
     LemmyAppError {
       error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
       ..
-    } => "t!(i18n, invalid_login)().to_string()",
+    } => t!(i18n, invalid_login)().to_string(),
     LemmyAppError {
       error_type: LemmyAppErrorType::EmptyUsername,
       ..
-    } => "t!(i18n, empty_username)().to_string()",
+    } => t!(i18n, empty_username)().to_string(),
     LemmyAppError {
       error_type: LemmyAppErrorType::EmptyPassword,
       ..
-    } => "t!(i18n, empty_password)().to_string()",
+    } => t!(i18n, empty_password)().to_string(),
     LemmyAppError {
       error_type: LemmyAppErrorType::MissingReason,
       ..
-    } => "t!(i18n, empty_reason)().to_string()",
+    } => t!(i18n, empty_reason)().to_string(),
     LemmyAppError {
       error_type: LemmyAppErrorType::InternalServerError,
       ..
-    } => "t!(i18n, internal)().to_string()",
+    } => t!(i18n, internal)().to_string(),
     LemmyAppError {
       error_type: LemmyAppErrorType::Unknown,
       ..
-    } => "t!(i18n, unknown)().to_string()",
-    _ => "An error without description",
+    } => t!(i18n, unknown)().to_string(),
+    _ => "An error without description".to_string(),
   };
 
   logging::error!("{s}");
@@ -143,6 +144,37 @@ impl From<ParseIntError> for LemmyAppError {
   }
 }
 
+impl From<web_sys::wasm_bindgen::JsValue> for LemmyAppError {
+  fn from(value: web_sys::wasm_bindgen::JsValue) -> Self {
+    Self {
+      error_type: LemmyAppErrorType::InternalClientError,
+      content: format!("{:#?}", value),
+    }
+  }
+}
+
+pub trait NoneError<T> where Self: std::marker::Sized {
+  fn n(self) -> Result<T, LemmyAppErrorType>;
+}
+
+// impl DoubleExt for i32 {
+//   fn double(&self) -> Self {
+//       *self * 2
+//   }
+// }
+
+
+impl<T> NoneError<T> for Option<T> /* where T: std::fmt::Debug */ {
+  fn n(self) -> Result<T, LemmyAppErrorType> {
+    self.ok_or(LemmyAppErrorType::InternalClientError)
+    // Self {
+    //   error_type: LemmyAppErrorType::InternalClientError,
+    //   content: format!("{:#?}", value),
+    // }
+  }
+}
+
+
 #[cfg(not(feature = "ssr"))]
 impl From<gloo_net::Error> for LemmyAppError {
   fn from(value: gloo_net::Error) -> Self {
@@ -162,6 +194,7 @@ impl From<wasm_cookies::FromUrlEncodingError> for LemmyAppError {
     }
   }
 }
+
 #[cfg(feature = "ssr")]
 impl From<awc::error::JsonPayloadError> for LemmyAppError {
   fn from(value: awc::error::JsonPayloadError) -> Self {

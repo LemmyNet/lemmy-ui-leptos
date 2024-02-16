@@ -1,7 +1,7 @@
-// #![allow(warnings)]
+#![allow(warnings)]
 
 use cfg_if::cfg_if;
-use lemmy_ui_leptos::App;
+use lemmy_ui_leptos::*;
 use leptos::*;
 
 cfg_if! {
@@ -88,23 +88,18 @@ cfg_if! {
 
 #[cfg(not(any(feature = "ssr", feature = "csr")))]
 pub fn main() {
-  // no client-side main function
-  // unless we want this to work with e.g., Trunk for pure client-side testing
-  // see lib.rs for hydration function instead
-  // see optional feature `csr` instead
+    // for pure client-side testing
+    // see lib.rs for hydration function instead
+    // a client-side main function is required for using `trunk serve`
+    // to run: `trunk serve --open --features hydrate`
 }
 
 #[cfg(all(not(feature = "ssr"), feature = "csr"))]
 pub fn main() {
-  // a client-side main function is required for using `trunk serve`
-  // prefer using `cargo leptos serve` instead
-  // to run: `trunk serve --open --features csr`
-  // use bubulu::app::*;
-  use lemmy_ui_leptos::*;
-  use leptos::*;
-  use wasm_bindgen::prelude::wasm_bindgen;
-
-  console_error_panic_hook::set_once();
-
-  leptos::mount_to_body(App);
+    // a client-side main function is required for using `trunk serve`
+    // to run: `trunk serve --open --features csr`
+    use wasm_bindgen::prelude::wasm_bindgen;
+    // required for better debug messages
+    console_error_panic_hook::set_once();
+    leptos::mount_to_body(App);
 }

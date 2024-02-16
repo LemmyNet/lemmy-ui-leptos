@@ -1,4 +1,4 @@
-// #![allow(warnings)]
+#![allow(warnings)]
 
 mod config;
 mod cookie;
@@ -14,7 +14,7 @@ mod ui;
 
 use crate::{
   errors::LemmyAppError,
-  // i18n::*,
+  i18n::*,
   layout::Layout,
   lemmy_client::*,
   ui::components::{
@@ -34,8 +34,7 @@ leptos_i18n::load_locales!();
 #[component]
 pub fn App() -> impl IntoView {
   provide_meta_context();
-  // crashes web server currently (v0.2)
-  // provide_i18n_context();
+  provide_i18n_context();
 
   let error = create_rw_signal::<Option<LemmyAppError>>(None);
   provide_context(error);
@@ -79,7 +78,7 @@ pub fn App() -> impl IntoView {
         <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>
           <Route path="/*any" view=NotFound/>
 
-          <Route path="" view=move || view! { <HomeActivity site_signal_1=site_signal/> }/>
+          <Route path="" view=move || view! { <HomeActivity site_signal/> }/>
 
           <Route path="create_post" view=CommunitiesActivity/>
           <Route path="post/:id" view=PostActivity/>
@@ -107,16 +106,8 @@ pub fn App() -> impl IntoView {
 
 #[component]
 fn NotFound() -> impl IntoView {
-  // set an HTTP status code 404
-  // this is feature gated because it can only be done during
-  // initial server-side rendering
-  // if you navigate to the 404 page subsequently, the status
-  // code will not be set because there is not a new HTTP request
-  // to the server
   #[cfg(feature = "ssr")]
   {
-    // this can be done inline because it's synchronous
-    // if it were async, we'd use a server function
     let resp = expect_context::<leptos_actix::ResponseOptions>();
     resp.set_status(actix_web::http::StatusCode::NOT_FOUND);
   }
@@ -127,7 +118,6 @@ fn NotFound() -> impl IntoView {
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
-  use leptos::*;
   console_error_panic_hook::set_once();
   mount_to_body(App);
 }

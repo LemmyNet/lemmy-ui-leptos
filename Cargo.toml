@@ -11,8 +11,12 @@ crate-type = ["cdylib", "rlib"]
 # main is mostly stable with my test instance DS9.lemmy.ml right now
 # e.g. tag = "0.19.3"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+
+# lemmy_utils = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false, features = ["error-only"] }
+
 # for testing potential lemmy changes
 # lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }
+# lemmy_utils = { path = "../lemmy/crates/utils", default-features = false }
 
 leptos = "0"
 leptos_actix = { version = "0", optional = true }
@@ -28,14 +32,16 @@ tracing-error = "0"
 anyhow = "1"
 strum = "0"
 strum_macros = "0"
-chrono = "0"
 web-sys = { version = "0", features = ["AbortController", "AbortSignal"] }
 
 # dependecies for client (enable when csr or hydrate set)
+# specific version required for better debug messages (from leptos scaffold)
 wasm-bindgen = { version = "=0.2.89", optional = true }
-wasm-cookies = { version = "0", optional = true }
+# required for better debug messages
 console_error_panic_hook = { version = "0", optional = true }
+wasm-cookies = { version = "0", optional = true }
 gloo-net = { version = "0", optional = true, features = ["http"] }
+chrono = { version = "0", optional = true }
 
 # dependecies for server (enable when ssr set)
 actix-files = { version = "0", optional = true }
@@ -52,7 +58,7 @@ default = "en"
 locales = ["en", "fr"]
 
 [features]
-default = ["ssr"]
+# default = ["ssr"]
 hydrate = [
   "leptos/hydrate",
   "leptos_meta/hydrate",
@@ -62,6 +68,7 @@ hydrate = [
   "dep:wasm-cookies",
   "dep:console_error_panic_hook",
   "dep:gloo-net",
+  "dep:chrono",
 ]
 csr = [
   "leptos/csr",
@@ -72,6 +79,7 @@ csr = [
   "dep:wasm-cookies",
   "dep:console_error_panic_hook",
   "dep:gloo-net",
+  "dep:chrono",
 ]
 ssr = [
   "leptos/ssr",

@@ -300,8 +300,8 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
   };
 
   view! {
-    <tr>
-      <td class="flex flex-col items-center text-center w-16">
+    <tr class="flex sm:table-row">
+      <td class="flex flex-col items-center text-center w-16 hidden sm:table-cell">
         <ActionForm action=vote_action on:submit=on_up_vote_submit>
           <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
           <input
@@ -311,7 +311,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
-            class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
+            class=move || format!("align-bottom{}", { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } })
             title="Up vote"
           >
             <Icon icon=Upvote/>
@@ -327,14 +327,14 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
-            class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
+            class=move || format!("align-top{}", { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } })
             title="Down vote"
           >
             <Icon icon=Downvote/>
           </button>
         </ActionForm>
       </td>
-      <td class="w-28">
+      <td class=format!("flex items-center sm:w-28 sm:table-cell{}", if post_view.get().post.thumbnail_url.is_none() {" hidden"} else {""})> //class="sm:w-28 sm:table-cell">
         <a href=move || {
             if let Some(d) = post_view.get().post.url {
                 d.inner().to_string()
@@ -378,6 +378,39 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </A>
         </span>
         <span class="flex items-center gap-x-2">
+          // <span class="sm:hidden">
+            <ActionForm action=vote_action on:submit=on_up_vote_submit class="flex items-center sm:hidden">
+              <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+              <input
+                type="hidden"
+                name="score"
+                value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
+              />
+              <button
+                type="submit"
+                class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
+                title="Up vote"
+              >
+                <Icon icon=Upvote/>
+              </button>
+            </ActionForm>
+            <span class="block text-sm sm:hidden">{move || post_view.get().counts.score}</span>
+            <ActionForm action=vote_action on:submit=on_down_vote_submit class="flex items-center sm:hidden">
+              <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+              <input
+                type="hidden"
+                name="score"
+                value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
+              />
+              <button
+                type="submit"
+                class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
+                title="Down vote"
+              >
+                <Icon icon=Downvote/>
+              </button>
+            </ActionForm>
+          // </span>
           <span
             class="flex items-center"
             title=move || format!("{} comments", post_view.get().unread_comments)
@@ -407,7 +440,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
               <Icon icon=Crosspost/>
             </A>
           </span>
-          <div class="dropdown">
+          <div class="dropdown hidden sm:block">
             <label tabindex="0">
               <Icon icon=VerticalDots/>
             </label>

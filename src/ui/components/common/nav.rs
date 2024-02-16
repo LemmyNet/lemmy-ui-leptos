@@ -1,7 +1,7 @@
 use crate::{
   cookie::{remove_cookie, set_cookie},
   errors::{self, message_from_error, LemmyAppError},
-  // i18n::*,
+  i18n::*,
   lemmy_client::*,
   ui::components::common::icon::{
     Icon,
@@ -64,17 +64,15 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav(
-  site_signal_1: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>, /* Option<GetSiteResponse> */
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
 ) -> impl IntoView {
-  // let i18n = use_i18n();
+  let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
 
-  // let site_signal = create_rw_signal({
-  if let Some(Err(e)) = site_signal_1.get() {
+  if let Some(Err(e)) = site_signal.get() {
     error.set(Some(e));
   }
-  // });
 
   let query = use_query_map();
   let ssr_error = move || query.with(|params| params.get("error").cloned());
@@ -93,40 +91,6 @@ pub fn TopNav(
       }
     }
   }
-
-  // let trending = create_resource(
-  //   move || (),
-  //   move |()| async move {
-  //     let form = ListCommunities {
-  //       type_: None,
-  //       sort: None,
-  //       limit: Some(6),
-  //       show_nsfw: None,
-  //       page: None,
-  //     };
-
-  //     let result = LemmyClient.list_communities(form).await;
-
-  //     match result {
-  //       Ok(o) => Some(o),
-  //       Err(e) => {
-  //         error.set(Some(e));
-  //         None
-  //       }
-  //       // None => {
-  //       //   error.set(Some(LemmyAppError {
-  //       //     error_type: LemmyAppErrorType::Unknown,
-  //       //     content: String::default(),
-  //       //   }));
-  //       //   None
-  //       // }
-  //     }
-  //   },
-  // );
-
-  // if let Err(e) = site_signal.get() {
-  //   error.set(Some(e));
-  // }
 
   let user = expect_context::<RwSignal<Option<bool>>>();
 
@@ -169,49 +133,43 @@ pub fn TopNav(
     }
   };
 
-  // let lang_action = create_server_action::<ChangeLangFn>();
+  let lang_action = create_server_action::<ChangeLangFn>();
 
-  // let on_lang_submit = move |lang: Locale| {
-  //   move |ev: SubmitEvent| {
-  //     ev.prevent_default();
-  //     i18n.set_locale(lang);
-  //   }
-  // };
+  let on_lang_submit = move |lang: Locale| {
+    move |ev: SubmitEvent| {
+      ev.prevent_default();
+      i18n.set_locale(lang);
+    }
+  };
 
   view! {
-    <nav class="navbar container mx-auto">
+    <nav class="navbar container mx-auto hidden sm:flex sticky top-0 bg-base-100 z-[1]">
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap items-center">
           <li>
             <A href="/" class="text-xl whitespace-nowrap">
-              // <Transition fallback=|| {
-              // view! { "Loading..." }
-              // }>
               {move || {
-                  if let Some(Ok(m)) = site_signal_1.get() {
+                  if let Some(Ok(m)) = site_signal.get() {
                       m.site_view.site.name
                   } else {
                       "Lemmy".to_string()
                   }
               }}
-
-            // site_signal.get().map(|m| m.site_view.site.name).unwrap_or("Lemmy".to_string())}
-            // </Transition>
             </A>
           </li>
           <li>
             <A href="/communities" class="text-md">
-              "{t!(i18n, communities)}"
+              {t!(i18n, communities)}
             </A>
           </li>
           <li>
             <A href="/create_post" class="text-md">
-              "{t!(i18n, create_post)}"
+              {t!(i18n, create_post)}
             </A>
           </li>
           <li>
             <A href="/create_community" class="text-md">
-              "{t!(i18n, create_community)}"
+              {t!(i18n, create_community)}
             </A>
           </li>
           <li>
@@ -237,16 +195,16 @@ pub fn TopNav(
               <summary>"Lang"</summary>
               <ul>
                 <li>
-                  // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::fr)>
-                  // <input type="hidden" name="lang" value="FR"/>
-                  <button type="submit">"FR"</button>
-                // </ActionForm>
+                  <ActionForm action=lang_action on:submit=on_lang_submit(Locale::fr)>
+                    <input type="hidden" name="lang" value="FR"/>
+                    <button type="submit">"FR"</button>
+                  </ActionForm>
                 </li>
                 <li>
-                  // <ActionForm action=lang_action on:submit=on_lang_submit(Locale::en)>
-                  // <input type="hidden" name="lang" value="EN"/>
-                  <button type="submit">"EN"</button>
-                // </ActionForm>
+                  <ActionForm action=lang_action on:submit=on_lang_submit(Locale::en)>
+                    <input type="hidden" name="lang" value="EN"/>
+                    <button type="submit">"EN"</button>
+                  </ActionForm>
                 </li>
               </ul>
             </details>
@@ -276,12 +234,9 @@ pub fn TopNav(
               </ul>
             </details>
           </li>
-          // <Transition fallback=|| {
-          // view! { "Loading..." }
-          // }>
           <Show
             when=move || {
-                if let Some(Ok(GetSiteResponse { my_user: Some(_), .. })) = site_signal_1.get() {
+                if let Some(Ok(GetSiteResponse { my_user: Some(_), .. })) = site_signal.get() {
                     true
                 } else {
                     false
@@ -291,10 +246,10 @@ pub fn TopNav(
             fallback=move || {
                 view! {
                   <li>
-                    <A href="/login">"{t!(i18n, login)}"</A>
+                    <A href="/login">{t!(i18n, login)}</A>
                   </li>
                   <li>
-                    <A href="/signup">"{t!(i18n, signup)}"</A>
+                    <A href="/signup">{t!(i18n, signup)}</A>
                   </li>
                 }
             }
@@ -302,7 +257,7 @@ pub fn TopNav(
 
             <li>
               <A href="/inbox">
-                <span title="t!(i18n, unread_messages)">
+                <span title=t!(i18n, unread_messages)>
                   <Icon icon=Notifications/>
                 </span>
               </A>
@@ -311,7 +266,7 @@ pub fn TopNav(
               <details>
                 <summary>
                   {move || {
-                      if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal_1
+                      if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal
                           .get()
                       {
                           m.local_user_view
@@ -329,7 +284,7 @@ pub fn TopNav(
                     <A href=move || {
                         format!(
                             "/u/{}",
-                            if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal_1
+                            if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal
                                 .get()
                             {
                                 m.local_user_view.person.name
@@ -337,22 +292,21 @@ pub fn TopNav(
                                 String::default()
                             },
                         )
-                    }>"{t!(i18n, profile)}"</A>
+                    }>{t!(i18n, profile)}</A>
                   </li>
                   <li>
-                    <A href="/settings">"{t!(i18n, settings)}"</A>
+                    <A href="/settings">{t!(i18n, settings)}</A>
                   </li>
                   <div class="divider my-0"></div>
                   <li>
                     <ActionForm action=logout_action on:submit=on_logout_submit>
-                      <button type="submit">"{t!(i18n, logout)}"</button>
+                      <button type="submit">{t!(i18n, logout)}</button>
                     </ActionForm>
                   </li>
                 </ul>
               </details>
             </li>
           </Show>
-        // </Transition>
         </ul>
       </div>
     </nav>
@@ -381,24 +335,13 @@ pub fn TopNav(
 
 #[component]
 pub fn BottomNav(
-  site_signal_1: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>, /* Option<GetSiteResponse> */
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
 ) -> impl IntoView {
-  // let i18n = use_i18n();
+  let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-  let site_signal = create_rw_signal({
-    if let Some(s) = site_signal_1.get() {
-      s
-    } else {
-      Err(LemmyAppError {
-        error_type: errors::LemmyAppErrorType::Unknown,
-        content: String::default(),
-      })
-    }
-  });
-
   view! {
-    <nav class="container navbar mx-auto">
+    <nav class="container navbar mx-auto hidden sm:flex">
       <div class="navbar-start w-auto"></div>
       <div class="navbar-end grow w-auto">
         <ul class="menu menu-horizontal flex-nowrap items-center">
@@ -411,31 +354,33 @@ pub fn BottomNav(
           <li>
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "BE: "
-              // <Transition fallback=|| {
-              // view! { "Loading..." }
-              // }>
-              {move || site_signal.get().map(|m| m.version)}
-            // </Transition>
+              {move || {
+                  if let Some(Ok(m)) = site_signal.get() {
+                      m.version
+                  } else {
+                      "Lemmy".to_string()
+                  }
+              }}
             </a>
           </li>
           <li>
             <A href="/modlog" class="text-md">
-              "{t!(i18n, modlog)}"
+              {t!(i18n, modlog)}
             </A>
           </li>
           <li>
             <A href="/instances" class="text-md">
-              "{t!(i18n, instances)}"
+              {t!(i18n, instances)}
             </A>
           </li>
           <li>
             <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
-              "{t!(i18n, docs)}"
+              {t!(i18n, docs)}
             </a>
           </li>
           <li>
             <a href="//github.com/LemmyNet" class="text-md">
-              "{t!(i18n, code)}"
+              {t!(i18n, code)}
             </a>
           </li>
           <li>

@@ -1,40 +1,30 @@
 use crate::{
-  errors::{self, LemmyAppError},
-  // i18n::*,
+  errors::{self, LemmyAppError, LemmyAppErrorType, NoneError},
+  i18n::*,
   lemmy_client::*,
-  ui::components::{home::trending::Trending, post::post_listings::PostListings},
+  ui::components::{home::{site_summary::SiteSummary, trending::Trending}, post::post_listings::PostListings},
 };
+use anyhow::{Context, Error};
 use lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
-  lemmy_db_views::structs::PaginationCursor,
-  post::GetPosts,
+  lemmy_db_views::structs::{PaginationCursor, PostView},
+  post::{GetPosts, GetPostsResponse},
   site::GetSiteResponse,
 };
 use leptos::*;
 use leptos_router::*;
-use web_sys::*;
+use web_sys::{wasm_bindgen::UnwrapThrowExt, MouseEvent};
 
 #[component]
 pub fn HomeActivity(
-  site_signal_1: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>, /* Option<GetSiteResponse> */
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
 ) -> impl IntoView {
-  // let i18n = use_i18n();
+  let i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
   let user = expect_context::<RwSignal<Option<bool>>>();
 
   let query = use_query_map();
-
-  let site_signal = create_rw_signal({
-    if let Some(s) = site_signal_1.get() {
-      s
-    } else {
-      Err(LemmyAppError {
-        error_type: errors::LemmyAppErrorType::Unknown,
-        content: String::default(),
-      })
-    }
-  });
 
   let list_func = move || {
     serde_json::from_str::<ListingType>(
@@ -58,8 +48,6 @@ pub fn HomeActivity(
     .ok()
   };
 
-  let ssr_list = move || query.get().get("list").cloned();
-  let ssr_sort = move || query.get().get("sort").cloned();
   let ssr_prev = move || query.get().get("prev").cloned();
   let ssr_from = move || query.get().get("from").cloned();
 
@@ -85,49 +73,9 @@ pub fn HomeActivity(
     }
   };
 
-  let posts = create_resource(
-    move || (user.get(), ssr_list(), ssr_sort(), ssr_from()),
-    move |(_user, list, sort, from)| async move {
-      let l = {
-        if let Some(t) = list.clone() {
-          if !t.is_empty() {
-            let r = serde_json::from_str::<ListingType>(&t[..]);
-
-            match r {
-              Ok(o) => Some(o),
-              Err(e) => {
-                error.set(Some(e.into()));
-                None
-              }
-            }
-          } else {
-            None
-          }
-        } else {
-          None
-        }
-      };
-
-      let s = {
-        if let Some(t) = sort.clone() {
-          if !t.is_empty() {
-            let r = serde_json::from_str::<SortType>(&t[..]);
-
-            match r {
-              Ok(o) => Some(o),
-              Err(e) => {
-                error.set(Some(e.into()));
-                None
-              }
-            }
-          } else {
-            None
-          }
-        } else {
-          None
-        }
-      };
-
+  let ssr_posts = create_resource(
+    move || (user.get(), list_func(), sort_func(), ssr_from()),
+    move |(_user, list_type, sort_type, from)| async move {
       let f = {
         if let Some(t) = from.clone() {
           if !t.is_empty() {
@@ -141,8 +89,8 @@ pub fn HomeActivity(
       };
 
       let form = GetPosts {
-        type_: l,
-        sort: s,
+        type_: list_type,
+        sort: sort_type,
         community_name: None,
         community_id: None,
         page: None,
@@ -165,16 +113,194 @@ pub fn HomeActivity(
     },
   );
 
+  let csr_posts = RwSignal::new(None::<Vec<PostView>>);
+  let csr_paginator = RwSignal::new(None::<PaginationCursor>);
+  let csr_pagesize = RwSignal::new(10);
+  
+
+  // let pages_signal = create_rw_signal(vec![posts]);
+
+  // let mut ps = pages_signal.get();
+  // ps.push(posts);
+
+  // pages_signal.set(ps);
+
+  // csr_posts.get().map_or_else(|| ssr_posts.get().map_or((), |s| {}), |c| {});
+
+  // let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+  // let ow = window().outer_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+  // logging::log!(" width {} {}", iw, ow);
+
+
+
+  #[cfg(not(feature = "ssr"))]
+  {
+    let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+    // logging::log!("1 {}", iw);
+
+    if iw >= 1536f64 {
+
+      let limit = if iw >= 1920f64 {
+        20
+      } else {
+        10
+      };
+      
+      logging::log!("2 {} ", limit);
+      create_local_resource(
+        move || (user.get(), list_func(), sort_func(), ssr_from()),
+        move |(_user, list_type, sort_type, from)| async move {
+          let form = GetPosts {
+            type_: list_type,
+            sort: sort_type,
+            community_name: None,
+            community_id: None,
+            page: None,
+            limit: Some(limit),
+            saved_only: None,
+            disliked_only: None,
+            liked_only: None,
+            page_cursor: csr_paginator.get(),
+          };
+    
+          let result = LemmyClient.list_posts(form).await;
+    
+          match result {
+            Ok(mut o) => {
+              csr_paginator.set(o.next_page);
+              let mut p = csr_posts.get().unwrap_or(vec![]);
+              p.append(&mut o.posts);
+              logging::log!("count {}", p.len());
+              csr_posts.set(Some(p));
+            },
+            Err(e) => {
+              error.set(Some(e));
+            }
+          }
+        },
+      );
+    }
+    logging::log!("3");
+
+    if iw < 640f64 {
+      logging::log!("4");
+
+      let on_scroll = move |_| {
+
+
+
+        // fn calc() -> Result<(bool, f64), LemmyAppError> {
+        //   let h = window().inner_height()?.as_f64().n()?;// .ok_or(LemmyAppErrorType::InternalClientError)?;
+        //   let o = window().page_y_offset().ok().unwrap_or(0.0);
+        //   let b = f64::from(document().body().map(|b| b.offset_height()).unwrap_or(1));
+      
+        //   let endOfPage = h + o >= b;
+      
+        //   let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+        //   let ow = window().outer_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+    
+        //   Ok((true, 1.0))
+        // }
+    
+    
+        let h = window().inner_height().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+        let o = window().page_y_offset().ok().unwrap_or(0.0);
+        let b = f64::from(document().body().map(|b| b.offset_height()).unwrap_or(1));
+    
+        let endOfPage = h + o >= b;
+    
+        // let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+        // let ow = window().outer_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+    
+          // let endOfPage: Result<bool, _> = { Ok(window().inner_height()?.into() + window().page_y_offset()?.into() >= document().body()?.offset_height().into()) };
+
+        logging::log!("{} {} {} {}", endOfPage, h, o, b);
+
+        if /* iw < 640f64 && */ endOfPage {
+    
+          // logging::log!("scroll {} width {} {}", endOfPage, iw, ow);
+    
+          // let ssr_posts = 
+          create_local_resource(
+            move || (user.get(), list_func(), sort_func(), ssr_from()),
+            move |(_user, list_type, sort_type, from)| async move {
+              let f = {
+                if let Some(t) = from.clone() {
+                  if !t.is_empty() {
+                    Some(PaginationCursor(t))
+                  } else {
+                    None
+                  }
+                } else {
+                  None
+                }
+              };
+        
+              let form = GetPosts {
+                type_: list_type,
+                sort: sort_type,
+                community_name: None,
+                community_id: None,
+                page: None,
+                // limit: if csr_paginator.get().is_none() { Some(40) } else { None },
+                limit: None,
+                saved_only: None,
+                disliked_only: None,
+                liked_only: None,
+                page_cursor: csr_paginator.get(),
+              };
+        
+              let result = LemmyClient.list_posts(form).await;
+        
+              match result {
+                Ok(mut o) => {
+                  logging::log!("{:#?} page {:#?} ", csr_paginator.get(), o.next_page.clone());
+
+                  // if csr_paginator.get().is_none() {
+                    csr_paginator.set(o.next_page);
+                    let mut p = csr_posts.get().unwrap_or(vec![]);
+                    p.append(&mut o.posts);
+                    logging::log!("count {}", p.len());
+                    csr_posts.set(Some(p));
+                    logging::log!("{:#?} ua ", csr_paginator.get());
+                    // csr_posts.set(Some(csr_posts.get().unwrap_or(vec![]).append(o.posts)));
+                  // } else {
+                    // csr_paginator.set(o.next_page.clone());
+                  //   csr_posts.set(csr_posts.get());
+                  // }
+                  // Some(o)
+                },
+                Err(e) => {
+                  error.set(Some(e));
+                  // None
+                }
+              }
+            },
+          );
+      
+        }
+      };
+    
+      logging::log!("5");
+
+      window_event_listener_untyped("scroll", on_scroll);
+      // need resize hook as well
+    }
+  }
+
+
+
+
   view! {
-    <div class="w-full flex flex-col sm:flex-row flex-grow overflow-hidden">
-      <div class="container mx-auto overflow-auto">
+    <div class="w-full flex flex-col sm:flex-row flex-grow">
+      <div class="sm:container sm:mx-auto">
         <div class="w-full flex flex-col sm:flex-row flex-grow">
-          <main role="main" class="w-full h-full flex-grow p-3">
-            <div class="join mr-3">
-              <button class="btn join-item">"Posts"</button>
-              <button class="btn join-item">"Comments"</button>
+          <main role="main" class="w-full h-full flex-grow sm:p-3">
+            <div class="join mr-3 hidden sm:inline-block">
+              <button class="btn join-item btn-active">"Posts"</button>
+              <button class="btn join-item btn-disabled">"Comments"</button>
             </div>
-            <div class="join mr-3">
+            <div class="join mr-3 hidden sm:inline-block">
               {move || {
                   let mut query_params = query.get();
                   query_params.insert("list".into(), "\"Subscribed\"".into());
@@ -232,7 +358,7 @@ pub fn HomeActivity(
                 "All"
               </A>
             </div>
-            <div class="dropdown">
+            <div class="dropdown hidden sm:inline-block">
               <label tabindex="0" class="btn">
                 "Sort type"
               </label>
@@ -245,7 +371,7 @@ pub fn HomeActivity(
 
                   on:click=on_sort_click(SortType::Active)
                 >
-                  <span>"{t!(i18n, active)}"</span>
+                  <span>{t!(i18n, active)}</span>
                 </li>
                 <li
                   class=move || {
@@ -255,7 +381,7 @@ pub fn HomeActivity(
 
                   on:click=on_sort_click(SortType::Hot)
                 >
-                  <span>"{t!(i18n, hot)}"</span>
+                  <span>{t!(i18n, hot)}</span>
                 </li>
                 <li
                   class=move || {
@@ -265,160 +391,125 @@ pub fn HomeActivity(
 
                   on:click=on_sort_click(SortType::New)
                 >
-                  <span>"{t!(i18n, new)}"</span>
+                  <span>{t!(i18n, new)}</span>
                 </li>
               </ul>
             </div>
-            <Transition fallback=|| {
-                view! { <div>"Loading..."</div> }
-            }>
-              {move || {
-                  posts
-                      .get()
-                      .map(|res| match res {
-                          None => {
-                              view! { <div>"No posts for this type of query at the moment"</div> }
-                          }
-                          Some(res) => {
-                              view! {
-                                <div>
-                                  <PostListings posts=res.posts.into()/>
-                                  {move || {
-                                      if let Some(s) = ssr_prev() {
-                                          if !s.is_empty() {
-                                              let mut st = s.split(",").collect::<Vec<_>>();
-                                              let p = st.pop().unwrap_or("");
-                                              let mut query_params = query.get();
-                                              query_params
-                                                  .insert("prev".into(), st.join(",").to_string());
-                                              query_params.insert("from".into(), p.into());
-                                              view! {
-                                                <span>
-                                                  <A
-                                                    href=format!("{}", query_params.to_query_string())
-                                                    class="btn"
-                                                  >
-                                                    "Prev"
-                                                  </A>
-                                                </span>
-                                              }
-                                          } else {
-                                              view! { <span></span> }
-                                          }
-                                      } else {
-                                          view! { <span></span> }
-                                      }
-                                  }}
+            <Transition fallback=|| {}>
+            {move || ssr_posts.get().unwrap_or(None).map(|p| {
+              csr_posts.set(Some(p.posts));
+              csr_paginator.set(p.next_page);
+            // }) }
+            // </Transition>
+            // <Transition fallback=|| {
+            //     view! { <div>"Loading..."</div> }
+            // }>
+              // <For each={move || pages_signal.get()} key={|ps| ps.into()} let:ps>
+              //   <span>1</span>
 
-                                  {move || {
-                                      if let Some(n) = res.next_page.clone() {
-                                          let s = ssr_prev().unwrap_or_default();
-                                          let mut st = s.split(",").collect::<Vec<_>>();
-                                          let f = ssr_from().unwrap_or_default();
-                                          st.push(&f);
-                                          let mut query_params = query.get();
-                                          query_params
-                                              .insert("prev".into(), st.join(",").to_string());
-                                          query_params.insert("from".into(), n.0);
-                                          view! {
-                                            <span>
-                                              <A
-                                                href=format!("{}", query_params.to_query_string())
-                                                class="btn"
-                                              >
-                                                "Next"
-                                              </A>
-                                            </span>
-                                          }
-                                      } else {
-                                          view! { <span></span> }
-                                      }
-                                  }}
+              // </For>
+    
+              // {move || {
+                // csr_posts.get(). .unwrap_or(ssr_posts.get().unwrap_or)
+                
+                // logging::log!("will be none {:#?}", csr_posts.get());
+                // let func = move || csr_posts.get().unwrap_or(vec![]).into();
+                
+                // csr_posts.get().unwrap_or(ssr_posts.get().unwrap_or(None))
+                // csr_posts.get()
+                //   .map(|res| //match res {
+                          // None => {
+                          //     view! { <div>"No posts for this type of query at the moment"</div> }
+                          // }
+                          // Some(res) => {
+                              // view! {
+                              //   <div>
+                              
+                              //   // <PostListings posts=p.posts.into() />//csr_posts.get().unwrap_or(vec![]).into() />
 
-                                </div>
-                              }
-                          }
-                      })
-              }}
+                              //   </div>
+                              // }
+                          // )// }
+                      }
+                    )
+              }
 
-            </Transition>
-          </main>
-          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4">
-            <Trending/>
-            {move || {
-                site_signal
-                    .get()
-                    .map(|o| {
-                        view! {
-                          <div class="card w-full bg-base-300 text-base-content mb-3">
-                            <figure>
-                              <div class="card-body bg-neutral">
-                                <h2 class="card-title text-neutral-content">
-                                  {o.site_view.site.name}
-                                </h2>
-                              </div>
-                            </figure>
-                            <div class="card-body">
-                              <p>{o.site_view.site.description}</p>
-                              <p>
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.users_active_day} " user / day"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.users_active_week} " users / week"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.users_active_month} " users / month"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.users_active_half_year} " users / 6 months"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.users} " users"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.communities} " Communities"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.posts} " Posts"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  {o.site_view.counts.comments} " Comments"
-                                </span>
-                                " "
-                                <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                  "Modlog"
-                                </span>
-                              </p>
-                              <h3 class="card-title">"Admins"</h3>
-                              <p>
-                                <For
-                                  each=move || o.admins.clone()
-                                  key=|admin| admin.person.id
-                                  children=move |a| {
-                                      view! {
-                                        <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                          {a.person.name}
-                                        </span>
-                                        " "
-                                      }
+                        <div class="columns-1 2xl:columns-2 3xl:columns-3">
+            // {
+            //   move || format!("{:#?}", csr_posts.get())
+
+            // }
+                          // <table class="table">
+                          //   // <Show when=move || csr_posts.get().is_some() fallback=|| view! { <span></span> }>
+                          //   // <For each=move || posts.get().unwrap_or(vec![]) key=|pv| pv.post.id let:pv>
+                          //   //   <PostListing post_view=pv.into()/>
+                          //     // <span> </span>
+                          //   // </For>
+                          //   // </Show>
+                          // </table>
+      
+                              <PostListings posts=csr_posts /> //.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
+                        </div>
+
+                        {move || {
+                          if let Some(s) = ssr_prev() {
+                              if !s.is_empty() {
+                                  let mut st = s.split(",").collect::<Vec<_>>();
+                                  let p = st.pop().unwrap_or("");
+                                  let mut query_params = query.get();
+                                  query_params
+                                      .insert("prev".into(), st.join(",").to_string());
+                                  query_params.insert("from".into(), p.into());
+                                  view! {
+                                    <span>
+                                      <A
+                                        href=format!("{}", query_params.to_query_string())
+                                        class="btn"
+                                      >
+                                        "Prev"
+                                      </A>
+                                    </span>
                                   }
-                                />
+                              } else {
+                                  view! { <span></span> }
+                              }
+                          } else {
+                              view! { <span></span> }
+                          }
+                      }}
+          
+                      {move || {
+                          if let Some(n) = csr_paginator.get() { //res.next_page.clone() {
+                              let s = ssr_prev().unwrap_or_default();
+                              let mut st = s.split(",").collect::<Vec<_>>();
+                              let f = ssr_from().unwrap_or_default();
+                              st.push(&f);
+                              let mut query_params = query.get();
+                              query_params
+                                  .insert("prev".into(), st.join(",").to_string());
+                              query_params.insert("from".into(), n.0);
+                              view! {
+                                <span>
+                                  <A
+                                    href=format!("{}", query_params.to_query_string())
+                                    class="btn"
+                                  >
+                                    "Next"
+                                  </A>
+                                </span>
+                              }
+                          } else {
+                              view! { <span></span> }
+                          }
+                      }}
+          
+                        </Transition>
 
-                              </p>
-                            </div>
-                          </div>
-                        }
-                    })
-            }}
-
+          </main>
+          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4 hidden lg:block">
+            // causing deserial error due to server and client being out of sync
+            // <Trending/>
+            <SiteSummary site_signal/>
           </div>
         </div>
       </div>

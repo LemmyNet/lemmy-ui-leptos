@@ -118,6 +118,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
 
         use actix_web::web;
+        use actix_web::cookie::time::OffsetDateTime;
         use awc::{Client, ClientRequest};
         use leptos_actix::{extract};
 
@@ -157,7 +158,7 @@ cfg_if! {
 
                 // cache busting code
                 let query = serde_urlencoded::to_string(&body).unwrap_or("".to_string());
-                let query = format!("{}?{}&cache_bust={}", route, query, chrono::offset::Utc::now().to_rfc3339());
+                let query = format!("{}?{}&cache_bust={}", route, query, OffsetDateTime::now_utc().unix_timestamp());
 
                 leptos::logging::log!("{}", query);
 
@@ -261,7 +262,7 @@ cfg_if! {
                 let r = match method {
                     HttpType::Get => http::Request::
                         // cache busting code
-                        get(&format!("{}&cache_bust={}", build_fetch_query(path, body), chrono::offset::Utc::now().to_rfc3339()))
+                        get(&format!("{}&cache_bust={}", build_fetch_query(path, body), chrono::offset::Utc::now().timestamp()))
                         // normal request code
                         // get(&build_fetch_query(path, body))
                         .maybe_bearer_auth(jwt.as_deref())
