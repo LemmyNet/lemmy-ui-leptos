@@ -312,20 +312,20 @@ cfg_if! {
 }
 
 fn build_route(route: &str) -> String {
-  cfg_if! {
-    if #[cfg(all(not(feature = "ssr"), not(feature = "bypass_internal_proxy")))] {
-      format!(
-        "//{}/api/v3/{}",
-        get_host(),
-        route
-      )
-    } else {
+  // cfg_if! {
+    // if #[cfg(all(not(feature = "ssr"), not(feature = "bypass_internal_proxy")))] {
+    //   format!(
+    //     "//{}/api/v3/{}",
+    //     get_host(),
+    //     route
+    //   )
+    // } else {
       format!(
         "http{}://{}/api/v3/{}",
         if get_https() == "true" { "s" } else { "" },
         get_host(),
         route
       )
-    }
-  }
+    // }
+  // }
 }

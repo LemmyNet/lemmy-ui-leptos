@@ -48,8 +48,21 @@ pub fn HomeActivity(
     .ok()
   };
 
+  let from_func = move || {
+    if let Some(t) = query.get().get("from").cloned() {
+      if !t.is_empty() {
+        Some(PaginationCursor(t))
+      } else {
+        None
+      }
+    } else {
+      None
+    }
+  };
+
   let ssr_prev = move || query.get().get("prev").cloned();
-  let ssr_from = move || query.get().get("from").cloned();
+  // let ssr_from = move || query.get().get("from").cloned();
+  let ssr_limit = move || query.get().get("limit").cloned().unwrap_or("".to_string()).parse::<i64>().ok();
 
   let on_sort_click = move |lt: SortType| {
     move |_me: MouseEvent| {
@@ -74,31 +87,19 @@ pub fn HomeActivity(
   };
 
   let ssr_posts = create_resource(
-    move || (user.get(), list_func(), sort_func(), ssr_from()),
-    move |(_user, list_type, sort_type, from)| async move {
-      let f = {
-        if let Some(t) = from.clone() {
-          if !t.is_empty() {
-            Some(PaginationCursor(t))
-          } else {
-            None
-          }
-        } else {
-          None
-        }
-      };
-
+    move || (user.get(), list_func(), sort_func(), from_func(), ssr_limit()),
+    move |(_user, list_type, sort_type, from, limit)| async move {
       let form = GetPosts {
         type_: list_type,
         sort: sort_type,
         community_name: None,
         community_id: None,
         page: None,
-        limit: None,
+        limit: limit,
         saved_only: None,
         disliked_only: None,
         liked_only: None,
-        page_cursor: f,
+        page_cursor: from,
       };
 
       let result = LemmyClient.list_posts(form).await;
@@ -136,49 +137,59 @@ pub fn HomeActivity(
   #[cfg(not(feature = "ssr"))]
   {
     let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
-    // logging::log!("1 {}", iw);
+    logging::log!("1 {}", iw);
 
     if iw >= 1536f64 {
 
-      let limit = if iw >= 1920f64 {
+      let limit = if iw >= 1536f64 {
         20
       } else {
         10
       };
-      
-      logging::log!("2 {} ", limit);
-      create_local_resource(
-        move || (user.get(), list_func(), sort_func(), ssr_from()),
-        move |(_user, list_type, sort_type, from)| async move {
-          let form = GetPosts {
-            type_: list_type,
-            sort: sort_type,
-            community_name: None,
-            community_id: None,
-            page: None,
-            limit: Some(limit),
-            saved_only: None,
-            disliked_only: None,
-            liked_only: None,
-            page_cursor: csr_paginator.get(),
-          };
-    
-          let result = LemmyClient.list_posts(form).await;
-    
-          match result {
-            Ok(mut o) => {
-              csr_paginator.set(o.next_page);
-              let mut p = csr_posts.get().unwrap_or(vec![]);
-              p.append(&mut o.posts);
-              logging::log!("count {}", p.len());
-              csr_posts.set(Some(p));
-            },
-            Err(e) => {
-              error.set(Some(e));
-            }
-          }
-        },
+
+      let mut query_params = query.get();
+      query_params.insert("limit".into(), limit.to_string());
+      // query_params.to_query_string()
+
+      let navigate = leptos_router::use_navigate();
+      navigate(
+        &format!("{}", query_params.to_query_string()),
+        Default::default(),
       );
+  
+      // logging::log!("2 {} ", limit);
+      // create_local_resource(
+      //   move || (user.get(), list_func(), sort_func(), ssr_from()),
+      //   move |(_user, list_type, sort_type, from)| async move {
+      //     let form = GetPosts {
+      //       type_: list_type,
+      //       sort: sort_type,
+      //       community_name: None,
+      //       community_id: None,
+      //       page: None,
+      //       limit: Some(limit),
+      //       saved_only: None,
+      //       disliked_only: None,
+      //       liked_only: None,
+      //       page_cursor: csr_paginator.get(),
+      //     };
+    
+      //     let result = LemmyClient.list_posts(form).await;
+    
+      //     match result {
+      //       Ok(mut o) => {
+      //         csr_paginator.set(o.next_page);
+      //         let mut p = csr_posts.get().unwrap_or(vec![]);
+      //         p.append(&mut o.posts);
+      //         logging::log!("count {}", p.len());
+      //         csr_posts.set(Some(p));
+      //       },
+      //       Err(e) => {
+      //         error.set(Some(e));
+      //       }
+      //     }
+      //   },
+      // );
     }
     logging::log!("3");
 
@@ -222,19 +233,19 @@ pub fn HomeActivity(
     
           // let ssr_posts = 
           create_local_resource(
-            move || (user.get(), list_func(), sort_func(), ssr_from()),
-            move |(_user, list_type, sort_type, from)| async move {
-              let f = {
-                if let Some(t) = from.clone() {
-                  if !t.is_empty() {
-                    Some(PaginationCursor(t))
-                  } else {
-                    None
-                  }
-                } else {
-                  None
-                }
-              };
+            move || (user.get(), list_func(), sort_func()),
+            move |(_user, list_type, sort_type)| async move {
+              // let f = {
+              //   if let Some(t) = from.clone() {
+              //     if !t.is_empty() {
+              //       Some(PaginationCursor(t))
+              //     } else {
+              //       None
+              //     }
+              //   } else {
+              //     None
+              //   }
+              // };
         
               let form = GetPosts {
                 type_: list_type,
@@ -397,8 +408,89 @@ pub fn HomeActivity(
             </div>
             <Transition fallback=|| {}>
             {move || ssr_posts.get().unwrap_or(None).map(|p| {
-              csr_posts.set(Some(p.posts));
-              csr_paginator.set(p.next_page);
+              // csr_posts.set(Some(p.posts));
+              // csr_paginator.set(p.next_page);
+
+
+              view! {
+                <div class="columns-1 2xl:columns-2 3xl:columns-3">
+                // {
+                //   move || format!("{:#?}", csr_posts.get())
+    
+                // }
+                              // <table class="table">
+                              //   // <Show when=move || csr_posts.get().is_some() fallback=|| view! { <span></span> }>
+                              //   // <For each=move || posts.get().unwrap_or(vec![]) key=|pv| pv.post.id let:pv>
+                              //   //   <PostListing post_view=pv.into()/>
+                              //     // <span> </span>
+                              //   // </For>
+                              //   // </Show>
+                              // </table>
+          
+                                  <PostListings posts=p.posts.into() />
+                                  // <PostListings posts=csr_posts /> //.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
+                            </div>
+    
+                            {move || {
+                              if let Some(s) = ssr_prev() {
+                                  if !s.is_empty() {
+                                      let mut st = s.split(",").collect::<Vec<_>>();
+                                      let p = st.pop().unwrap_or("");
+                                      let mut query_params = query.get();
+                                      query_params
+                                          .insert("prev".into(), st.join(",").to_string());
+                                      query_params.insert("from".into(), p.into());
+                                      view! {
+                                        <span>
+                                          <A
+                                            href=format!("{}", query_params.to_query_string())
+                                            class="btn"
+                                          >
+                                            "Prev"
+                                          </A>
+                                        </span>
+                                      }
+                                  } else {
+                                      view! { <span></span> }
+                                  }
+                              } else {
+                                  view! { <span></span> }
+                              }
+                          }}
+              
+                          {move || {
+                              if let Some(n) = p.next_page.clone() {
+                                  let s = ssr_prev().unwrap_or_default();
+                                  let mut st = s.split(",").collect::<Vec<_>>();
+                                  let f = if let Some(PaginationCursor(g)) = from_func() {
+                                    g
+                                    // let s = f.clone(); //}.unwrap_or(PaginationCursor(""));
+                                    // st.push(&s);
+                                  } else {
+                                    "".to_string()
+                                  };
+                                  st.push(&f);
+                                  let mut query_params = query.get();
+                                  query_params
+                                      .insert("prev".into(), st.join(",").to_string());
+                                  query_params.insert("from".into(), n.0);
+                                  view! {
+                                    <span>
+                                      <A
+                                        href=format!("{}", query_params.to_query_string())
+                                        class="btn"
+                                      >
+                                        "Next"
+                                      </A>
+                                    </span>
+                                  }
+                              } else {
+                                  view! { <span></span> }
+                              }
+                          }}
+    
+              }
+
             // }) }
             // </Transition>
             // <Transition fallback=|| {
@@ -434,80 +526,87 @@ pub fn HomeActivity(
                     )
               }
 
-                        <div class="columns-1 2xl:columns-2 3xl:columns-3">
-            // {
-            //   move || format!("{:#?}", csr_posts.get())
+            //             <div class="columns-1 2xl:columns-2 3xl:columns-3">
+            // // {
+            // //   move || format!("{:#?}", csr_posts.get())
 
-            // }
-                          // <table class="table">
-                          //   // <Show when=move || csr_posts.get().is_some() fallback=|| view! { <span></span> }>
-                          //   // <For each=move || posts.get().unwrap_or(vec![]) key=|pv| pv.post.id let:pv>
-                          //   //   <PostListing post_view=pv.into()/>
-                          //     // <span> </span>
-                          //   // </For>
-                          //   // </Show>
-                          // </table>
+            // // }
+            //               // <table class="table">
+            //               //   // <Show when=move || csr_posts.get().is_some() fallback=|| view! { <span></span> }>
+            //               //   // <For each=move || posts.get().unwrap_or(vec![]) key=|pv| pv.post.id let:pv>
+            //               //   //   <PostListing post_view=pv.into()/>
+            //               //     // <span> </span>
+            //               //   // </For>
+            //               //   // </Show>
+            //               // </table>
       
-                              <PostListings posts=csr_posts /> //.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
-                        </div>
+            //                   <PostListings posts=ssr_posts.get().map(|p| p).into() />
+            //                   // <PostListings posts=csr_posts /> //.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
+            //             </div>
 
-                        {move || {
-                          if let Some(s) = ssr_prev() {
-                              if !s.is_empty() {
-                                  let mut st = s.split(",").collect::<Vec<_>>();
-                                  let p = st.pop().unwrap_or("");
-                                  let mut query_params = query.get();
-                                  query_params
-                                      .insert("prev".into(), st.join(",").to_string());
-                                  query_params.insert("from".into(), p.into());
-                                  view! {
-                                    <span>
-                                      <A
-                                        href=format!("{}", query_params.to_query_string())
-                                        class="btn"
-                                      >
-                                        "Prev"
-                                      </A>
-                                    </span>
-                                  }
-                              } else {
-                                  view! { <span></span> }
-                              }
-                          } else {
-                              view! { <span></span> }
-                          }
-                      }}
+            //             {move || {
+            //               if let Some(s) = ssr_prev() {
+            //                   if !s.is_empty() {
+            //                       let mut st = s.split(",").collect::<Vec<_>>();
+            //                       let p = st.pop().unwrap_or("");
+            //                       let mut query_params = query.get();
+            //                       query_params
+            //                           .insert("prev".into(), st.join(",").to_string());
+            //                       query_params.insert("from".into(), p.into());
+            //                       view! {
+            //                         <span>
+            //                           <A
+            //                             href=format!("{}", query_params.to_query_string())
+            //                             class="btn"
+            //                           >
+            //                             "Prev"
+            //                           </A>
+            //                         </span>
+            //                       }
+            //                   } else {
+            //                       view! { <span></span> }
+            //                   }
+            //               } else {
+            //                   view! { <span></span> }
+            //               }
+            //           }}
           
-                      {move || {
-                          if let Some(n) = csr_paginator.get() { //res.next_page.clone() {
-                              let s = ssr_prev().unwrap_or_default();
-                              let mut st = s.split(",").collect::<Vec<_>>();
-                              let f = ssr_from().unwrap_or_default();
-                              st.push(&f);
-                              let mut query_params = query.get();
-                              query_params
-                                  .insert("prev".into(), st.join(",").to_string());
-                              query_params.insert("from".into(), n.0);
-                              view! {
-                                <span>
-                                  <A
-                                    href=format!("{}", query_params.to_query_string())
-                                    class="btn"
-                                  >
-                                    "Next"
-                                  </A>
-                                </span>
-                              }
-                          } else {
-                              view! { <span></span> }
-                          }
-                      }}
+            //           {move || {
+            //               if let Some(n) = p.next_page.clone() {
+            //                   let s = ssr_prev().unwrap_or_default();
+            //                   let mut st = s.split(",").collect::<Vec<_>>();
+            //                   let f = if let Some(PaginationCursor(g)) = from_func() {
+            //                     g
+            //                     // let s = f.clone(); //}.unwrap_or(PaginationCursor(""));
+            //                     // st.push(&s);
+            //                   } else {
+            //                     "".to_string()
+            //                   };
+            //                   st.push(&f);
+            //                   let mut query_params = query.get();
+            //                   query_params
+            //                       .insert("prev".into(), st.join(",").to_string());
+            //                   query_params.insert("from".into(), n.0);
+            //                   view! {
+            //                     <span>
+            //                       <A
+            //                         href=format!("{}", query_params.to_query_string())
+            //                         class="btn"
+            //                       >
+            //                         "Next"
+            //                       </A>
+            //                     </span>
+            //                   }
+            //               } else {
+            //                   view! { <span></span> }
+            //               }
+            //           }}
           
                         </Transition>
 
           </main>
           <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4 hidden lg:block">
-            // causing deserial error due to server and client being out of sync
+            // causing deserialization at the moment
             // <Trending/>
             <SiteSummary site_signal/>
           </div>

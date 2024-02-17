@@ -58,7 +58,7 @@ pub fn message_from_error(error: &LemmyAppError) -> String {
     _ => "An error without description".to_string(),
   };
 
-  logging::error!("{s}");
+  logging::error!("{} - {}", s, error.content);
 
   s.into()
   // String::default()

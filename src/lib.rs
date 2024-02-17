@@ -8,8 +8,8 @@ mod layout;
 mod lemmy_client;
 mod lemmy_errors;
 // mod queries;
-#[cfg(feature = "ssr")]
-pub mod server;
+// #[cfg(feature = "ssr")]
+// pub mod server;
 mod ui;
 
 use crate::{
