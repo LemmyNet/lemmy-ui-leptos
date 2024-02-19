@@ -86,6 +86,11 @@ pub fn HomeActivity(
     }
   };
 
+
+  let csr_posts = RwSignal::new(None::<Vec<PostView>>);
+  let csr_paginator = RwSignal::new(None::<PaginationCursor>);
+  // let csr_pagesize = RwSignal::new(10);
+
   let ssr_posts = create_resource(
     move || (user.get(), list_func(), sort_func(), from_func(), ssr_limit()),
     move |(_user, list_type, sort_type, from, limit)| async move {
@@ -105,7 +110,9 @@ pub fn HomeActivity(
       let result = LemmyClient.list_posts(form).await;
 
       match result {
-        Ok(o) => Some(o),
+        Ok(o) => {
+          Some(o)
+        },
         Err(e) => {
           error.set(Some(e));
           None
@@ -113,10 +120,6 @@ pub fn HomeActivity(
       }
     },
   );
-
-  let csr_posts = RwSignal::new(None::<Vec<PostView>>);
-  let csr_paginator = RwSignal::new(None::<PaginationCursor>);
-  let csr_pagesize = RwSignal::new(10);
   
 
   // let pages_signal = create_rw_signal(vec![posts]);
@@ -139,23 +142,25 @@ pub fn HomeActivity(
     let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
     logging::log!("1 {}", iw);
 
-    if iw >= 1536f64 {
+    // if iw >= 1536f64 {
 
-      let limit = if iw >= 1536f64 {
-        20
-      } else {
-        10
-      };
+      // let limit = if iw >= 2560f64 {
+      //   30
+      // } else if iw >= 1536f64 {
+      //   20
+      // } else {
+      //   10
+      // };
 
-      let mut query_params = query.get();
-      query_params.insert("limit".into(), limit.to_string());
-      // query_params.to_query_string()
+      // let mut query_params = query.get();
+      // query_params.insert("limit".into(), limit.to_string());
+      // // query_params.to_query_string()
 
-      let navigate = leptos_router::use_navigate();
-      navigate(
-        &format!("{}", query_params.to_query_string()),
-        Default::default(),
-      );
+      // let navigate = leptos_router::use_navigate();
+      // navigate(
+      //   &format!("{}", query_params.to_query_string()),
+      //   Default::default(),
+      // );
   
       // logging::log!("2 {} ", limit);
       // create_local_resource(
@@ -190,7 +195,7 @@ pub fn HomeActivity(
       //     }
       //   },
       // );
-    }
+    // }
     logging::log!("3");
 
     if iw < 640f64 {
@@ -297,16 +302,54 @@ pub fn HomeActivity(
       window_event_listener_untyped("scroll", on_scroll);
       // need resize hook as well
     }
+
+    let on_resize = move |_| {
+      logging::log!("resize");
+      let iw = window().inner_width().ok().map(|b| b.as_f64().unwrap_or(0.0)).unwrap_or(0.0);
+      logging::log!("10 {}", iw);
+  
+      // if iw >= 1536f64 {
+  
+        let mut query_params = query.get();
+        if iw >= 2560f64 {
+          query_params.insert("limit".into(), "30".to_string());
+        } else if iw >= 1536f64 {
+          query_params.insert("limit".into(), "20".to_string());
+          // 20
+        } else {
+          query_params.remove("limit");
+          // 10
+        }
+
+        if iw >= 640f64 {
+          csr_posts.set(None);
+          csr_paginator.set(None);
+        }
+  
+        // query_params.to_query_string()
+  
+        let navigate = leptos_router::use_navigate();
+        navigate(
+          &format!("{}", query_params.to_query_string()),
+          Default::default(),
+        );
+      // } 
+    };
+
+    window_event_listener_untyped("resize", on_resize);
+
   }
 
 
 
 
   view! {
-    <div class="w-full flex flex-col sm:flex-row flex-grow">
-      <div class="sm:container sm:mx-auto">
-        <div class="w-full flex flex-col sm:flex-row flex-grow">
-          <main role="main" class="w-full h-full flex-grow sm:p-3">
+    // <div class="w-full flex flex-col sm:flex-row flex-grow">
+    //   <div class="sm:container sm:mx-auto">
+    //     <div class="w-full flex flex-col sm:flex-row flex-grow">
+          // <main role="main" class="w-full h-full flex-grow sm:p-3">
+          // <main role="main" class="w-full sm:flex-row flex-grow">
+          <div class="block">
             <div class="join mr-3 hidden sm:inline-block">
               <button class="btn join-item btn-active">"Posts"</button>
               <button class="btn join-item btn-disabled">"Comments"</button>
@@ -406,14 +449,19 @@ pub fn HomeActivity(
                 </li>
               </ul>
             </div>
+          </div>
+          <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">
             <Transition fallback=|| {}>
             {move || ssr_posts.get().unwrap_or(None).map(|p| {
               // csr_posts.set(Some(p.posts));
-              // csr_paginator.set(p.next_page);
-
+              if csr_posts.get().is_none() {
+                logging::log!("sds");
+                csr_paginator.set(p.next_page.clone());
+              }
 
               view! {
-                <div class="columns-1 2xl:columns-2 3xl:columns-3">
+                <div class="flex flex-col ">
+                            <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
                 // {
                 //   move || format!("{:#?}", csr_posts.get())
     
@@ -428,10 +476,11 @@ pub fn HomeActivity(
                               // </table>
           
                                   <PostListings posts=p.posts.into() />
-                                  // <PostListings posts=csr_posts /> //.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
-                            </div>
+                                  <PostListings posts=csr_posts.get().unwrap_or(vec![]).into() />//csr_posts.get().unwrap_or(vec![]).into() />
+                                </div>
+                            <div class=" hidden sm:block">
     
-                            {move || {
+                        {/* move ||  */{
                               if let Some(s) = ssr_prev() {
                                   if !s.is_empty() {
                                       let mut st = s.split(",").collect::<Vec<_>>();
@@ -458,7 +507,7 @@ pub fn HomeActivity(
                               }
                           }}
               
-                          {move || {
+                          {/* move ||  */{
                               if let Some(n) = p.next_page.clone() {
                                   let s = ssr_prev().unwrap_or_default();
                                   let mut st = s.split(",").collect::<Vec<_>>();
@@ -488,6 +537,8 @@ pub fn HomeActivity(
                                   view! { <span></span> }
                               }
                           }}
+                          </div>
+                      </div>
     
               }
 
@@ -604,14 +655,14 @@ pub fn HomeActivity(
           
                         </Transition>
 
-          </main>
-          <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4 hidden lg:block">
-            // causing deserialization at the moment
-            // <Trending/>
-            <SiteSummary site_signal/>
-          </div>
-        </div>
-      </div>
-    </div>
+                      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 hidden lg:block">
+                        // causing deserialization issue at the moment
+                        <Trending/>
+                        // <SiteSummary site_signal/>
+                      </div>
+                      </main>
+    //     </div>
+    //   </div>
+    // </div>
   }
 }
