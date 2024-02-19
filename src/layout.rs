@@ -74,15 +74,32 @@ pub fn Layout(
               .get()
               .map(|m| {
                   ui_theme.set(Some(m));
+                  view! {
+                    <div class="flex flex-col min-h-screen"  /* class="flex flex-col flex-row flex-grow justify-between min-h-screen"  */data-theme=move || ui_theme.get()>
+                      <TopNav site_signal/>
+                      <div class="w-full flex flex-col flex-grow">
+                        <div class="sm:container sm:mx-auto">
+                          <div class="w-full flex flex-col flex-grow p-6">
+                            <Outlet/>
+                          </div>
+                        </div>
+                      </div>
+                      <BottomNav site_signal/>
+                    </div>
+                  }
               })
       }}
-      <div class="flex flex-col min-h-screen"  /* class="flex flex-col flex-row flex-grow justify-between min-h-screen"  */data-theme=move || ui_theme.get()>
-        <TopNav site_signal/>
-        <Outlet/>
-        <BottomNav site_signal/>
-    //   </div>
-    // </div>
-      </div>
+      // <div class="flex flex-col min-h-screen"  /* class="flex flex-col flex-row flex-grow justify-between min-h-screen"  */data-theme=move || ui_theme.get()>
+      //   <TopNav site_signal/>
+      //   <div class="w-full flex flex-col flex-grow">
+      //     <div class="sm:container sm:mx-auto">
+      //       <div class="w-full flex flex-col flex-grow p-6">
+      //         <Outlet/>
+      //       </div>
+      //     </div>
+      //   </div>
+      //   <BottomNav site_signal/>
+      // </div>
     </Transition>
   }
 }
