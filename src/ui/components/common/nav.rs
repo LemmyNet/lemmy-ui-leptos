@@ -15,6 +15,7 @@ use web_sys::SubmitEvent;
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
+  // bug in leptos when redirecting
   // use leptos_actix::redirect;
   let result = LemmyClient.logout().await;
   match result {

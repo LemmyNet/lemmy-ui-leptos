@@ -51,7 +51,8 @@ async fn try_login(form: Login) -> Result<LoginResponse, LemmyAppError> {
 
 #[server(LoginFn, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use leptos_actix::redirect;
+  // bug in leptos when redirecting
+  // use leptos_actix::redirect;
 
   let req = Login {
     username_or_email: username_or_email.into(),
@@ -74,13 +75,13 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
           // redirect("/");
           Ok(())
         }
-        Err(e) => {
+        Err(_e) => {
           // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
-    Err(e) => {
+    Err(_e) => {
       // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }

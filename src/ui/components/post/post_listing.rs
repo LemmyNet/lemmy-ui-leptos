@@ -21,6 +21,7 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostRespons
   };
   let result = LemmyClient.like_post(form).await;
 
+  // bug in leptos when redirecting
   // use leptos_actix::redirect;
 
   match result {
