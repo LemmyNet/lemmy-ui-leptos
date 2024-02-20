@@ -83,10 +83,7 @@ pub fn HomeActivity(
           query_params.insert("sort".into(), o);
 
           let navigate = leptos_router::use_navigate();
-          navigate(
-            &query_params.to_query_string(),
-            Default::default(),
-          );
+          navigate(&query_params.to_query_string(), Default::default());
         }
         Err(e) => {
           error.set(Some(e.into()));
