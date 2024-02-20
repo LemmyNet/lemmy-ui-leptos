@@ -111,19 +111,9 @@ pub fn LoginForm() -> impl IntoView {
     let le = serde_json::from_str::<LemmyAppError>(&e[..]);
 
     match le {
-      Ok(e) => match e {
-        LemmyAppError {
-          error_type: LemmyAppErrorType::EmptyUsername,
-          ..
-        } => {
-          username_validation.set("input-error".to_string());
-        }
-        LemmyAppError {
-          error_type: LemmyAppErrorType::EmptyPassword,
-          ..
-        } => {
-          password_validation.set("input-error".to_string());
-        }
+      Ok(e) => match e.error_type {
+        LemmyAppErrorType::EmptyUsername => username_validation.set("input-error".to_string()),
+        LemmyAppErrorType::EmptyPassword => password_validation.set("input-error".to_string()),
         _ => {}
       },
       Err(_) => {}
