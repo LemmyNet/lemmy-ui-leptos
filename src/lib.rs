@@ -1,4 +1,4 @@
-#![allow(warnings)]
+// #![allow(warnings)]
 
 mod config;
 mod cookie;
@@ -7,9 +7,6 @@ mod host;
 mod layout;
 mod lemmy_client;
 mod lemmy_errors;
-// mod queries;
-// #[cfg(feature = "ssr")]
-// pub mod server;
 mod ui;
 
 use crate::{
@@ -62,7 +59,6 @@ pub fn App() -> impl IntoView {
 
   view! {
     <Transition fallback=|| {}>
-      // the only way i can find to force a signal to initialize in SSR mode
       {move || {
           ssr_site
               .get()
@@ -72,7 +68,6 @@ pub fn App() -> impl IntoView {
       }}
 
     </Transition>
-
     <Router>
       <Routes>
         <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>

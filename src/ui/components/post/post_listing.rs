@@ -311,7 +311,13 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
-            class=move || format!("align-bottom{}", { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } })
+            class=move || {
+                format!(
+                    "align-bottom{}",
+                    { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } },
+                )
+            }
+
             title="Up vote"
           >
             <Icon icon=Upvote/>
@@ -327,14 +333,23 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           />
           <button
             type="submit"
-            class=move || format!("align-top{}", { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } })
+            class=move || {
+                format!(
+                    "align-top{}",
+                    { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } },
+                )
+            }
+
             title="Down vote"
           >
             <Icon icon=Downvote/>
           </button>
         </ActionForm>
       </td>
-      <td class=format!("flex items-center sm:w-28 sm:table-cell{}", if post_view.get().post.thumbnail_url.is_none() {" hidden"} else {""})> //class="sm:w-28 sm:table-cell">
+      <td class=format!(
+          "flex items-center sm:w-28 sm:table-cell{}",
+          if post_view.get().post.thumbnail_url.is_none() { " hidden" } else { "" },
+      )>
         <a href=move || {
             if let Some(d) = post_view.get().post.url {
                 d.inner().to_string()
@@ -378,39 +393,48 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
           </A>
         </span>
         <span class="flex items-center gap-x-2">
-          // <span class="sm:hidden">
-            <ActionForm action=vote_action on:submit=on_up_vote_submit class="flex items-center sm:hidden">
-              <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
-              <input
-                type="hidden"
-                name="score"
-                value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
-              />
-              <button
-                type="submit"
-                class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
-                title="Up vote"
-              >
-                <Icon icon=Upvote/>
-              </button>
-            </ActionForm>
-            <span class="block text-sm sm:hidden">{move || post_view.get().counts.score}</span>
-            <ActionForm action=vote_action on:submit=on_down_vote_submit class="flex items-center sm:hidden">
-              <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
-              <input
-                type="hidden"
-                name="score"
-                value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
-              />
-              <button
-                type="submit"
-                class=move || { if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" } }
-                title="Down vote"
-              >
-                <Icon icon=Downvote/>
-              </button>
-            </ActionForm>
-          // </span>
+          <ActionForm
+            action=vote_action
+            on:submit=on_up_vote_submit
+            class="flex items-center sm:hidden"
+          >
+            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+            <input
+              type="hidden"
+              name="score"
+              value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
+            />
+            <button
+              type="submit"
+              class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
+              title="Up vote"
+            >
+              <Icon icon=Upvote/>
+            </button>
+          </ActionForm>
+          <span class="block text-sm sm:hidden">{move || post_view.get().counts.score}</span>
+          <ActionForm
+            action=vote_action
+            on:submit=on_down_vote_submit
+            class="flex items-center sm:hidden"
+          >
+            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+            <input
+              type="hidden"
+              name="score"
+              value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
+            />
+            <button
+              type="submit"
+              class=move || {
+                  if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" }
+              }
+
+              title="Down vote"
+            >
+              <Icon icon=Downvote/>
+            </button>
+          </ActionForm>
           <span
             class="flex items-center"
             title=move || format!("{} comments", post_view.get().unread_comments)

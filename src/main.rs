@@ -1,4 +1,4 @@
-#![allow(warnings)]
+// #![allow(warnings)]
 
 use cfg_if::cfg_if;
 use lemmy_ui_leptos::*;
@@ -43,41 +43,19 @@ cfg_if! {
 
                 let client = web::Data::new(Client::new());
 
-                // cfg_if! {
-                //     if #[cfg(not(feature = "bypass_internal_proxy"))] {
-                //         use lemmy_ui_leptos::server::api_service::route_to_api;
-                //         App::new()
-                //             .route("/api/{tail:.*}", web::route()
-                //                 .guard(guard::Any(guard::Get()).or(guard::Header("content-type", "application/json")))
-                //                 .to(route_to_api))
-                //             .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                //             .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                //             .service(Files::new("/assets", site_root))
-                //             .service(favicon)
-                //             .service(icons)
-                //             .leptos_routes(
-                //                 leptos_options.to_owned(),
-                //                 routes.to_owned(),
-                //                 App
-                //             )
-                //             .app_data(web::Data::new(leptos_options.to_owned()))
-                //             .app_data(client)
-                //     } else {
-                        App::new()
-                            .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                            .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                            .service(Files::new("/assets", site_root))
-                            .service(favicon)
-                            .service(icons)
-                            .leptos_routes(
-                                leptos_options.to_owned(),
-                                routes.to_owned(),
-                                App
-                            )
-                            .app_data(web::Data::new(leptos_options.to_owned()))
-                            .app_data(client)
-                //     }
-                // }
+                App::new()
+                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
+                    .service(Files::new("/pkg", format!("{site_root}/pkg")))
+                    .service(Files::new("/assets", site_root))
+                    .service(favicon)
+                    .service(icons)
+                    .leptos_routes(
+                        leptos_options.to_owned(),
+                        routes.to_owned(),
+                        App
+                    )
+                    .app_data(web::Data::new(leptos_options.to_owned()))
+                    .app_data(client)
             })
             .bind(&addr)?
             .run()
@@ -88,18 +66,18 @@ cfg_if! {
 
 #[cfg(not(any(feature = "ssr", feature = "csr")))]
 pub fn main() {
-    // for pure client-side testing
-    // see lib.rs for hydration function instead
-    // a client-side main function is required for using `trunk serve`
-    // to run: `trunk serve --open --features hydrate`
+  // for pure client-side testing
+  // see lib.rs for hydration function
+  // a client-side main function is required for using `trunk serve`
+  // to run: `trunk serve --open --features hydrate`
 }
 
 #[cfg(all(not(feature = "ssr"), feature = "csr"))]
 pub fn main() {
-    // a client-side main function is required for using `trunk serve`
-    // to run: `trunk serve --open --features csr`
-    use wasm_bindgen::prelude::wasm_bindgen;
-    // required for better debug messages
-    console_error_panic_hook::set_once();
-    leptos::mount_to_body(App);
+  // a client-side main function is required for using `trunk serve`
+  // to run: `trunk serve --open --features csr`
+  use wasm_bindgen::prelude::wasm_bindgen;
+  // required for better debug messages
+  console_error_panic_hook::set_once();
+  leptos::mount_to_body(App);
 }

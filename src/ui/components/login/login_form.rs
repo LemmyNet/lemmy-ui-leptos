@@ -186,30 +186,24 @@ pub fn LoginForm() -> impl IntoView {
   };
 
   view! {
-    // <div class="w-full flex flex-col sm:flex-row flex-grow">
-    //   <main role="main" class="w-full h-full flex-grow p-3">
-            <ActionForm class="space-y-3" action=login on:submit=on_submit>
-              <TextInput
-                id="username"
-                name="username_or_email"
-                on_input=move |s| update!(| name | * name = s)
-                label="Username"
-              />
-              <TextInput
-                id="password"
-                name="password"
-                validation_class=password_validation.into()
-                on_input=move |s| update!(| password | * password = s)
-                input_type=InputType::Password
-                label="Password"
-              />
-              <button class="btn btn-lg" type="submit">
-                "Login"
-              </button>
-            </ActionForm>
-    //       </main>
-    //     </div>
-    //   </div>
-    // </div>
+    <ActionForm class="space-y-3" action=login on:submit=on_submit>
+      <TextInput
+        id="username"
+        name="username_or_email"
+        on_input=move |s| update!(| name | * name = s)
+        label="Username"
+      />
+      <TextInput
+        id="password"
+        name="password"
+        validation_class=password_validation.into()
+        on_input=move |s| update!(| password | * password = s)
+        input_type=InputType::Password
+        label="Password"
+      />
+      <button class="btn btn-lg" type="submit">
+        "Login"
+      </button>
+    </ActionForm>
   }
 }

@@ -5,13 +5,7 @@ use crate::{
   lemmy_errors::LemmyErrorType,
 };
 use cfg_if::cfg_if;
-use lemmy_api_common::{
-  comment::*,
-  community::*,
-  person::*,
-  post::*,
-  site::*, /* , error::* */
-};
+use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*};
 use leptos::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -162,51 +156,45 @@ cfg_if! {
 
                 leptos::logging::log!("{}", query);
 
-                // ready for leptos 0.6
                 let client = extract::<web::Data<Client>>().await?;
 
-                // let result = extract(|client: web::Data<Client>| async move {
-                    let mut r = match method {
-                        HttpType::Get => client
-                            // normal request code
-                            // .get(&route)
-                            .get(&query)
-                            .maybe_bearer_auth(jwt.clone())
-                            // normal request code
-                            // .query(&body)?
-                            .send(),
-                        HttpType::Post => client
-                            .post(&route)
-                            .maybe_bearer_auth(jwt.clone())
-                            .send_json(&body),
-                        HttpType::Put => client
-                            .put(&route)
-                            .maybe_bearer_auth(jwt.clone())
-                            .send_json(&body)
-                    }.await?;
+                let mut r = match method {
+                    HttpType::Get => client
+                        // normal request code
+                        // .get(&route)
+                        .get(&query)
+                        .maybe_bearer_auth(jwt.clone())
+                        // normal request code
+                        // .query(&body)?
+                        .send(),
+                    HttpType::Post => client
+                        .post(&route)
+                        .maybe_bearer_auth(jwt.clone())
+                        .send_json(&body),
+                    HttpType::Put => client
+                        .put(&route)
+                        .maybe_bearer_auth(jwt.clone())
+                        .send_json(&body)
+                }.await?;
 
-                    match r.status().as_u16() {
-                        400..=499 | 500..=599 => {
-                            let api_result = r.json::<LemmyErrorType>().await;
+                match r.status().as_u16() {
+                    400..=499 | 500..=599 => {
+                        let api_result = r.json::<LemmyErrorType>().await;
 
-                            match api_result {
-                                Ok(le) => {
-                                  return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
-                                },
-                                Err(e) => {
-                                  return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
-                                },
-                            }
-                        },
-                        _ => {
-                        },
-                    };
+                        match api_result {
+                            Ok(le) => {
+                              return Err(LemmyAppError{ error_type: LemmyAppErrorType::ApiError(le.clone()), content: format!("{:#?}", le) })
+                            },
+                            Err(e) => {
+                              return Err(LemmyAppError{ error_type: LemmyAppErrorType::Unknown, content: format!("{:#?}", e) })
+                            },
+                        }
+                    },
+                    _ => {
+                    },
+                };
 
-                    r.json::<Response>().await.map_err(Into::into)
-
-                // }).await?;
-
-                // result
+                r.json::<Response>().await.map_err(Into::into)
             }
         }
 
@@ -312,20 +300,10 @@ cfg_if! {
 }
 
 fn build_route(route: &str) -> String {
-  // cfg_if! {
-    // if #[cfg(all(not(feature = "ssr"), not(feature = "bypass_internal_proxy")))] {
-    //   format!(
-    //     "//{}/api/v3/{}",
-    //     get_host(),
-    //     route
-    //   )
-    // } else {
-      format!(
-        "http{}://{}/api/v3/{}",
-        if get_https() == "true" { "s" } else { "" },
-        get_host(),
-        route
-      )
-    // }
-  // }
+  format!(
+    "http{}://{}/api/v3/{}",
+    if get_https() == "true" { "s" } else { "" },
+    get_host(),
+    route
+  )
 }

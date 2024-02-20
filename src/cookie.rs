@@ -119,7 +119,6 @@ pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
 
   let path_string = path.to_string().clone();
 
-  // ready for leptos 0.6
   let req = extract::<HttpRequest>().await?;
 
   if let Some(c) = req.cookie(&path_string) {
@@ -127,16 +126,4 @@ pub async fn get_cookie(path: &str) -> Result<Option<String>, LemmyAppError> {
   } else {
     Ok(None)
   }
-
-  // let cookie_value = extract(|req: HttpRequest| async move {
-  //   if let Some(c) = req.cookie(&path_string) {
-  //     let s = c.clone();
-  //     Some(s.value().to_string())
-  //   } else {
-  //     None
-  //   }
-  // })
-  // .await?;
-
-  // Ok(cookie_value.clone())
 }

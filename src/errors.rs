@@ -1,4 +1,4 @@
-use crate::{i18n::*,  lemmy_errors::LemmyErrorType};
+use crate::{i18n::*, lemmy_errors::LemmyErrorType};
 // use lemmy_api_common::error::*;
 use core::num::ParseIntError;
 use leptos::*;
@@ -153,27 +153,18 @@ impl From<web_sys::wasm_bindgen::JsValue> for LemmyAppError {
   }
 }
 
-pub trait NoneError<T> where Self: std::marker::Sized {
+pub trait NoneError<T>
+where
+  Self: std::marker::Sized,
+{
   fn n(self) -> Result<T, LemmyAppErrorType>;
 }
 
-// impl DoubleExt for i32 {
-//   fn double(&self) -> Self {
-//       *self * 2
-//   }
-// }
-
-
-impl<T> NoneError<T> for Option<T> /* where T: std::fmt::Debug */ {
+impl<T> NoneError<T> for Option<T> {
   fn n(self) -> Result<T, LemmyAppErrorType> {
     self.ok_or(LemmyAppErrorType::InternalClientError)
-    // Self {
-    //   error_type: LemmyAppErrorType::InternalClientError,
-    //   content: format!("{:#?}", value),
-    // }
   }
 }
-
 
 #[cfg(not(feature = "ssr"))]
 impl From<gloo_net::Error> for LemmyAppError {

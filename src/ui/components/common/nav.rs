@@ -1,6 +1,6 @@
 use crate::{
   cookie::{remove_cookie, set_cookie},
-  errors::{self, message_from_error, LemmyAppError},
+  errors::{message_from_error, LemmyAppError},
   i18n::*,
   lemmy_client::*,
   ui::components::common::icon::{
@@ -64,7 +64,7 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 
 #[component]
 pub fn TopNav(
-  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>,
 ) -> impl IntoView {
   let i18n = use_i18n();
 
@@ -155,6 +155,7 @@ pub fn TopNav(
                       "Lemmy".to_string()
                   }
               }}
+
             </A>
           </li>
           <li>
@@ -266,8 +267,7 @@ pub fn TopNav(
               <details>
                 <summary>
                   {move || {
-                      if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal
-                          .get()
+                      if let Some(Ok(GetSiteResponse { my_user: Some(m), .. })) = site_signal.get()
                       {
                           m.local_user_view
                               .person
@@ -335,7 +335,7 @@ pub fn TopNav(
 
 #[component]
 pub fn BottomNav(
-  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>
+  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>,
 ) -> impl IntoView {
   let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -355,12 +355,9 @@ pub fn BottomNav(
             <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
               "BE: "
               {move || {
-                  if let Some(Ok(m)) = site_signal.get() {
-                      m.version
-                  } else {
-                      "Lemmy".to_string()
-                  }
+                  if let Some(Ok(m)) = site_signal.get() { m.version } else { "Lemmy".to_string() }
               }}
+
             </a>
           </li>
           <li>
