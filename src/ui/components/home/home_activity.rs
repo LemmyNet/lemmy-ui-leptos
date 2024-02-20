@@ -84,7 +84,7 @@ pub fn HomeActivity(
 
           let navigate = leptos_router::use_navigate();
           navigate(
-            &format!("{}", query_params.to_query_string()),
+            &query_params.to_query_string(),
             Default::default(),
           );
         }
@@ -115,7 +115,7 @@ pub fn HomeActivity(
         community_name: None,
         community_id: None,
         page: None,
-        limit: limit,
+        limit,
         saved_only: None,
         disliked_only: None,
         liked_only: None,
@@ -239,7 +239,7 @@ pub fn HomeActivity(
             query_params.insert("list".into(), "\"Subscribed\"".into());
             view! {
               <A
-                href=move || format!("{}", query_params.to_query_string())
+                href=move || query_params.to_query_string()
                 class=move || {
                     format!(
                         "btn join-item {}",
@@ -339,14 +339,14 @@ pub fn HomeActivity(
                           <PostListings posts=p.posts.into()/>
                           <PostListings posts=csr_infinite_scroll_posts
                               .get()
-                              .unwrap_or(vec![])
+                              .unwrap_or_default()
                               .into()/>
                         </div>
                         <div class=" hidden sm:block">
 
                           {if let Some(s) = ssr_prev() {
                               if !s.is_empty() {
-                                  let mut st = s.split(",").collect::<Vec<_>>();
+                                  let mut st = s.split(',').collect::<Vec<_>>();
                                   let p = st.pop().unwrap_or("");
                                   let mut query_params = query.get();
                                   query_params.insert("prev".into(), st.join(",").to_string());
@@ -369,7 +369,7 @@ pub fn HomeActivity(
                           }}
                           {if let Some(n) = p.next_page.clone() {
                               let s = ssr_prev().unwrap_or_default();
-                              let mut st = s.split(",").collect::<Vec<_>>();
+                              let mut st = s.split(',').collect::<Vec<_>>();
                               let f = if let Some(PaginationCursor(g)) = from_func() {
                                   g
                               } else {

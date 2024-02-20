@@ -13,7 +13,7 @@ pub fn PostActivity() -> impl IntoView {
   let post_id = move || params.get().get("id").cloned().unwrap_or_default();
 
   let post = create_resource(
-    move || post_id(),
+    post_id,
     move |id_string| async move {
       let id = id_string.parse::<i32>()?;
       let form = GetPost {
@@ -25,7 +25,7 @@ pub fn PostActivity() -> impl IntoView {
   );
 
   let comments = create_resource(
-    move || post_id(),
+    post_id,
     move |id_string| async move {
       let id = id_string.parse::<i32>()?;
       let form = GetComments {

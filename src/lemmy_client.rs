@@ -178,7 +178,7 @@ cfg_if! {
                 }.await?;
 
                 match r.status().as_u16() {
-                    400..=499 | 500..=599 => {
+                    400..=599 => {
                         let api_result = r.json::<LemmyErrorType>().await;
 
                         match api_result {
@@ -270,7 +270,7 @@ cfg_if! {
                 }.send().await?;
 
                 match r.status() {
-                    400..=499 | 500..=599 => {
+                    400..=599 => {
                         let api_result = r.json::<LemmyErrorType>().await;
                         match api_result {
                             Ok(le) => {

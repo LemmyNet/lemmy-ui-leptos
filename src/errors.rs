@@ -44,7 +44,7 @@ pub fn message_from_error(error: &LemmyAppError) -> String {
 
   logging::error!("{} - {}", s, error.content);
 
-  s.into()
+  s
 }
 
 #[derive(Clone, Serialize, Deserialize)]
