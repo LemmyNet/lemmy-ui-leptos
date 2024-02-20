@@ -7,9 +7,8 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# normally use the *latest* version tag but there is one feature in main that i need 
-# main is mostly stable with my test instance DS9.lemmy.ml right now
-# e.g. tag = "0.19.3"
+# use the latest version tag and test against an instance that supports the same version
+# e.g. tag = "0.19.4"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 # the new lemmy client
 lemmy-client = "0"

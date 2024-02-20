@@ -95,7 +95,7 @@ pub fn HomeActivity(
     }
   };
 
-  let csr_posts = RwSignal::new(None::<Vec<PostView>>);
+  let csr_infinite_scroll_posts = RwSignal::new(None::<Vec<PostView>>);
   let csr_paginator = RwSignal::new(None::<PaginationCursor>);
 
   let ssr_posts = create_resource(
@@ -159,7 +159,7 @@ pub fn HomeActivity(
       }
 
       if iw >= 640f64 {
-        csr_posts.set(None);
+        csr_infinite_scroll_posts.set(None);
         csr_paginator.set(None);
       }
 
@@ -172,11 +172,11 @@ pub fn HomeActivity(
 
     window_event_listener_untyped("resize", on_resize);
 
-    logging::log!("1 {}", iw);
+    if let Ok(e) = web_sys::Event::new("resize") {
+      on_resize(e);
+    }
 
     if iw < 640f64 {
-      logging::log!("4");
-
       let on_scroll = move |_| {
         let h = window()
           .inner_height()
@@ -187,8 +187,6 @@ pub fn HomeActivity(
         let b = f64::from(document().body().map(|b| b.offset_height()).unwrap_or(1));
 
         let endOfPage = h + o >= b;
-
-        logging::log!("{} {} {} {}", endOfPage, h, o, b);
 
         if endOfPage {
           create_local_resource(
@@ -212,9 +210,9 @@ pub fn HomeActivity(
               match result {
                 Ok(mut o) => {
                   csr_paginator.set(o.next_page);
-                  let mut p = csr_posts.get().unwrap_or(vec![]);
+                  let mut p = csr_infinite_scroll_posts.get().unwrap_or(vec![]);
                   p.append(&mut o.posts);
-                  csr_posts.set(Some(p));
+                  csr_infinite_scroll_posts.set(Some(p));
                 }
                 Err(e) => {
                   error.set(Some(e));
@@ -331,8 +329,7 @@ pub fn HomeActivity(
                 .get()
                 .unwrap_or(None)
                 .map(|p| {
-                    if csr_posts.get().is_none() {
-                        logging::log!("sds");
+                    if csr_infinite_scroll_posts.get().is_none() {
                         csr_paginator.set(p.next_page.clone());
                     }
                     view! {
@@ -340,7 +337,10 @@ pub fn HomeActivity(
                         <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
 
                           <PostListings posts=p.posts.into()/>
-                          <PostListings posts=csr_posts.get().unwrap_or(vec![]).into()/>
+                          <PostListings posts=csr_infinite_scroll_posts
+                              .get()
+                              .unwrap_or(vec![])
+                              .into()/>
                         </div>
                         <div class=" hidden sm:block">
 
