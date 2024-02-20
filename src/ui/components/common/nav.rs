@@ -10,6 +10,7 @@ use crate::{
 };
 use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
+use leptos_query::QueryResult;
 use leptos_router::*;
 use web_sys::SubmitEvent;
 

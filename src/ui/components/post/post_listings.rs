@@ -1,5 +1,5 @@
 use crate::ui::components::post::post_listing::PostListing;
-use lemmy_api_common::lemmy_db_views::structs::PostView;
+use lemmy_client::lemmy_api_common::lemmy_db_views::structs::PostView;
 use leptos::*;
 
 #[component]
