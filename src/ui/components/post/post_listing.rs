@@ -134,7 +134,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
 
   let post_view = create_rw_signal(post_view.get());
 
-  // let vote_action = create_server_action::<VotePostFn>();
+  let vote_action = create_server_action::<VotePostFn>();
 
   let on_vote_submit = move |ev: SubmitEvent, score: i16| {
     ev.prevent_default();
@@ -179,7 +179,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
     on_vote_submit(ev, score);
   };
 
-  // let save_post_action = create_server_action::<SavePostFn>();
+  let save_post_action = create_server_action::<SavePostFn>();
 
   let on_save_submit = move |ev: SubmitEvent| {
     ev.prevent_default();
@@ -206,7 +206,7 @@ pub fn PostListing(post_view: MaybeSignal<PostView>) -> impl IntoView {
     );
   };
 
-  // let block_user_action = create_server_action::<BlockUserFn>();
+  let block_user_action = create_server_action::<BlockUserFn>();
 
   let on_block_submit = move |ev: SubmitEvent| {
     ev.prevent_default();

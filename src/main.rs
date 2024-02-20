@@ -10,6 +10,7 @@ cfg_if! {
         use actix_web::*;
 
         use leptos_actix::{generate_route_list, LeptosRoutes};
+        use awc::Client;
 
         #[actix_web::get("favicon.svg")]
         async fn favicon(

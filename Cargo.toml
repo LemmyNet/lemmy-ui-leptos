@@ -11,7 +11,10 @@ crate-type = ["cdylib", "rlib"]
 # main is mostly stable with my test instance DS9.lemmy.ml right now
 # e.g. tag = "0.19.3"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+# the new lemmy client
+lemmy-client = "0"
 
+# import LemmyErrors from server project when ready
 # lemmy_utils = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false, features = ["error-only"] }
 
 # for testing potential lemmy changes
@@ -51,8 +54,8 @@ actix-http = { version = "3", optional = true }
 awc = { version = "3", optional = true }
 
 [package.metadata.cargo-machete]
-# strum required for error handling, actix-proxy for awc SSL
-ignored = ["strum", "actix-proxy"]
+# strum required for error handling, actix-proxy for awc SSL, lemmy-client will become useful when it returns LemmyErrors
+ignored = ["strum", "actix-proxy", "lemmy-client"]
 
 [package.metadata.leptos-i18n]
 default = "en"
