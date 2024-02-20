@@ -30,38 +30,21 @@ pub enum LemmyAppErrorType {
 pub fn message_from_error(error: &LemmyAppError) -> String {
   let i18n = use_i18n();
 
-  let s = match error {
-    LemmyAppError {
-      error_type: LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin),
-      ..
-    } => t!(i18n, invalid_login)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::EmptyUsername,
-      ..
-    } => t!(i18n, empty_username)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::EmptyPassword,
-      ..
-    } => t!(i18n, empty_password)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::MissingReason,
-      ..
-    } => t!(i18n, empty_reason)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::InternalServerError,
-      ..
-    } => t!(i18n, internal)().to_string(),
-    LemmyAppError {
-      error_type: LemmyAppErrorType::Unknown,
-      ..
-    } => t!(i18n, unknown)().to_string(),
+  let s = match error.error_type {
+    LemmyAppErrorType::ApiError(LemmyErrorType::IncorrectLogin) => {
+      t!(i18n, invalid_login)().to_string()
+    }
+    LemmyAppErrorType::EmptyUsername => t!(i18n, empty_username)().to_string(),
+    LemmyAppErrorType::EmptyPassword => t!(i18n, empty_password)().to_string(),
+    LemmyAppErrorType::MissingReason => t!(i18n, empty_reason)().to_string(),
+    LemmyAppErrorType::InternalServerError => t!(i18n, internal)().to_string(),
+    LemmyAppErrorType::Unknown => t!(i18n, unknown)().to_string(),
     _ => "An error without description".to_string(),
   };
 
   logging::error!("{} - {}", s, error.content);
 
   s.into()
-  // String::default()
 }
 
 #[derive(Clone, Serialize, Deserialize)]
