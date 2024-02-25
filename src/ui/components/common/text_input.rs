@@ -19,6 +19,7 @@ pub fn TextInput(
   #[prop(into)] label: TextProp,
   #[prop(into)] on_input: Callback<String, ()>,
   #[prop(default = InputType::Text)] input_type: InputType,
+  #[prop(optional)] validation_class: MaybeSignal<String>,
 ) -> impl IntoView {
   let show_password = RwSignal::new(false);
   let for_id = id.get().clone();
@@ -33,8 +34,13 @@ pub fn TextInput(
         }
 
         id=id
-        class="peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50"
-        required
+        class=move || {
+            format!(
+                "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50 {}",
+                validation_class.get(),
+            )
+        }
+
         placeholder=" "
         name=move || name.get()
         disabled=move || disabled.get().unwrap_or(false)

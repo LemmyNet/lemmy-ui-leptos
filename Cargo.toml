@@ -1,35 +1,60 @@
 [package]
 name = "lemmy-ui-leptos"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = "0.6"
-leptos_actix = { version = "0.6", optional = true }
-leptos_meta = "0.6"
-leptos_router = "0.6"
-leptos_i18n = { git = "https://github.com/Baptistemontan/leptos_i18n.git", tag = "v0.3.0-rc" }
-leptos_query = "0.4"
+# use the latest version tag and test against an instance that supports the same version
+# e.g. tag = "0.19.4"
+lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+# the new lemmy client
+lemmy-client = "0"
+
+# import LemmyErrors from server project when ready
+# lemmy_utils = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false, features = ["error-only"] }
+
+# for testing potential lemmy changes
+# lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }
+# lemmy_utils = { path = "../lemmy/crates/utils", default-features = false }
+
+leptos = "0"
+leptos_actix = { version = "0", optional = true }
+leptos_meta = "0"
+leptos_router = "0"
+leptos_i18n = "0"
+
 serde = { version = "1", features = ["derive"] }
+serde_urlencoded = "0"
+serde_json = "1"
 cfg-if = "1"
-lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main", features = [
-  "leptos",
-] }
-serde_urlencoded = "0.7"
-thiserror = "1.0"
+tracing-error = "0"
+anyhow = "1"
+strum = "0"
+strum_macros = "0"
+web-sys = { version = "0", features = ["AbortController", "AbortSignal"] }
 
 # dependecies for client (enable when csr or hydrate set)
-wasm-bindgen = { version = "0.2", optional = true }
+wasm-cookies = { version = "0", optional = true }
+gloo-net = { version = "0", optional = true, features = ["http"] }
+chrono = { version = "0", optional = true }
+# specific version required for better debug messages (from leptos scaffold)
+wasm-bindgen = { version = "=0.2.89", optional = true }
+# required for better debug messages
+console_error_panic_hook = { version = "0", optional = true }
 
 # dependecies for server (enable when ssr set)
-actix-files = { version = "0.6", optional = true }
+actix-files = { version = "0", optional = true }
 actix-web = { version = "4", features = ["macros"], optional = true }
-actix-session = { version = "0.9", features = [
-  "cookie-session",
-], optional = true }
+actix-proxy = { version = "0", optional = true }
+actix-http = { version = "3", optional = true }
+awc = { version = "3", optional = true }
+
+[package.metadata.cargo-machete]
+# strum required for error handling, actix-proxy for awc SSL, lemmy-client will become useful when it returns LemmyErrors
+ignored = ["strum", "actix-proxy", "lemmy-client"]
 
 [package.metadata.leptos-i18n]
 default = "en"
@@ -42,8 +67,11 @@ hydrate = [
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
-  "leptos_query/hydrate",
   "dep:wasm-bindgen",
+  "dep:wasm-cookies",
+  "dep:console_error_panic_hook",
+  "dep:gloo-net",
+  "dep:chrono",
 ]
 csr = [
   "leptos/csr",
@@ -51,17 +79,22 @@ csr = [
   "leptos_router/csr",
   "leptos_i18n/csr",
   "dep:wasm-bindgen",
+  "dep:wasm-cookies",
+  "dep:console_error_panic_hook",
+  "dep:gloo-net",
+  "dep:chrono",
 ]
 ssr = [
   "leptos/ssr",
   "leptos_i18n/actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "leptos_query/ssr",
-  "dep:leptos_actix",
+  "leptos_actix",
+  "dep:actix-http",
   "dep:actix-web",
   "dep:actix-files",
-  "dep:actix-session",
+  "dep:actix-proxy",
+  "dep:awc",
 ]
 
 [package.metadata.cargo-all-features]
