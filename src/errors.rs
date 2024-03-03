@@ -1,6 +1,6 @@
-use crate::{i18n::*/* , lemmy_errors::LemmyErrorType */};
-use lemmy_api_common::LemmyErrorType;
+use crate::i18n::*;
 use core::num::ParseIntError;
+use lemmy_api_common::LemmyErrorType;
 use leptos::*;
 use serde::{Deserialize, Serialize};
 use serde_urlencoded::ser;

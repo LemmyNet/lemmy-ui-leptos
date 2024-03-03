@@ -1,8 +1,4 @@
-use crate::{
-  errors::LemmyAppError,
-  i18n::*,
-  lemmy_client::*,
-};
+use crate::{errors::LemmyAppError, i18n::*, lemmy_client::*};
 use lemmy_api_common::{
   community::*,
   lemmy_db_schema::{ListingType, SortType},
