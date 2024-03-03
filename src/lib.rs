@@ -6,7 +6,7 @@ mod errors;
 pub mod host;
 mod layout;
 mod lemmy_client;
-mod lemmy_errors;
+// mod lemmy_errors;
 mod ui;
 
 use crate::{
