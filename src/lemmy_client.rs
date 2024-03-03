@@ -2,7 +2,6 @@ use crate::{
   cookie::get_cookie,
   errors::{LemmyAppError, LemmyAppErrorType, LemmyAppResult},
   host::{get_host, get_https},
-  // lemmy_errors::LemmyErrorType,
 };
 use cfg_if::cfg_if;
 use lemmy_api_common::{comment::*, community::*, person::*, post::*, site::*, LemmyErrorType};

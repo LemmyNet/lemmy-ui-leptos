@@ -117,6 +117,7 @@ pub fn HomeActivity(
         disliked_only: None,
         liked_only: None,
         page_cursor: from,
+        show_hidden: None,
       };
 
       let result = LemmyClient.list_posts(form).await;
@@ -200,6 +201,7 @@ pub fn HomeActivity(
                 disliked_only: None,
                 liked_only: None,
                 page_cursor: csr_paginator.get(),
+                show_hidden: None,
               };
 
               let result = LemmyClient.list_posts(form).await;

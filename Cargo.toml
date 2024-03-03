@@ -8,14 +8,11 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 # use the latest version tag and test against an instance that supports the same version
-# e.g. tag = "0.19.4"
 lemmy_api_common = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
 # lemmy_api_common = { tag = "0.19.3", git = "https://github.com/LemmyNet/lemmy.git", default-features = false }
+
 # the new lemmy client
 lemmy-client = "0"
-
-# import LemmyErrors from server project when ready
-# lemmy_utils = { branch = "main", git = "https://github.com/LemmyNet/lemmy.git", default-features = false, features = ["error-type"] }
 
 # for testing potential lemmy changes
 # lemmy_api_common = { path = "../lemmy/crates/api_common", default-features = false }

@@ -1,0 +1,132 @@
+version: "3.7"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "50m"
+    max-file: "4"
+
+services:
+  proxy:
+    image: nginx:1-alpine
+    ports:
+      # actual and only port facing any connection from outside
+      # Note, change the left number if port 1236 is already in use on your system
+      # You could use port 80 if you won't use a reverse proxy
+      - "1236:1236"
+      - "8536:8536"
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro,Z
+    restart: unless-stopped
+    depends_on:
+      - pictrs
+      - lemmy-ui
+    logging: *default-logging
+
+  lemmy:
+    # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
+    image: dessalines/lemmy:0.19.3
+    # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
+    # use "build" to build your local lemmy server image for development. make sure to comment out "image".
+    # run: docker compose up --build
+
+     #build:
+     # context: ../
+     # dockerfile: ./Dockerfile
+      # args:
+      #   RUST_RELEASE_MODE: release
+      #   CARGO_BUILD_FEATURES: default
+    # this hostname is used in nginx reverse proxy and also for lemmy ui to connect to the backend, do not change
+    hostname: lemmy
+    restart: unless-stopped
+    environment:
+      - RUST_LOG="warn,lemmy_server=debug,lemmy_api=debug,lemmy_api_common=debug,lemmy_api_crud=debug,lemmy_apub=debug,lemmy_db_schema=debug,lemmy_db_views=debug,lemmy_db_views_actor=debug,lemmy_db_views_moderator=debug,lemmy_routes=debug,lemmy_utils=debug,lemmy_websocket=debug"
+      - RUST_BACKTRACE=full
+    ports:
+      # prometheus metrics can be enabled with the `prometheus` config option. they are available on
+      # port 10002, path /metrics by default
+      - "10002:10002"
+    volumes:
+      - ./lemmy.hjson:/config/config.hjson:Z
+    depends_on:
+      - postgres
+      - pictrs
+    logging: *default-logging
+
+  lemmy-ui:
+    # use "image" to pull down an already compiled lemmy-ui. make sure to comment out "build".
+    image: dessalines/lemmy-ui:0.19.3
+    # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
+    # use "build" to build your local lemmy ui image for development. make sure to comment out "image".
+    # run: docker compose up --build
+
+    # build:
+    #   context: ../../lemmy-ui # assuming lemmy-ui is cloned besides lemmy directory
+    #   dockerfile: dev.dockerfile
+    environment:
+      # this needs to match the hostname defined in the lemmy service
+      - LEMMY_UI_LEMMY_INTERNAL_HOST=lemmy:8536
+      # set the outside hostname here
+      - LEMMY_UI_LEMMY_EXTERNAL_HOST=localhost:1236
+      - LEMMY_UI_HTTPS=false
+      - LEMMY_UI_DEBUG=true
+    depends_on:
+      - lemmy
+    restart: unless-stopped
+    logging: *default-logging
+    init: true
+
+  pictrs:
+    image: asonix/pictrs:0.5.0-rc.2
+    # this needs to match the pictrs url in lemmy.hjson
+    hostname: pictrs
+    # we can set options to pictrs like this, here we set max. image size and forced format for conversion
+    # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
+    environment:
+      - PICTRS_OPENTELEMETRY_URL=http://otel:4137
+      - PICTRS__API_KEY=string
+      - RUST_LOG=debug
+      - RUST_BACKTRACE=full
+      - PICTRS__MEDIA__VIDEO_CODEC=vp9
+      - PICTRS__MEDIA__GIF__MAX_WIDTH=256
+      - PICTRS__MEDIA__GIF__MAX_HEIGHT=256
+      - PICTRS__MEDIA__GIF__MAX_AREA=65536
+      - PICTRS__MEDIA__GIF__MAX_FRAME_COUNT=400
+    user: 0:0
+    volumes:
+      - ./volumes/pictrs:/mnt:Z
+    restart: unless-stopped
+    logging: *default-logging
+
+  postgres:
+    image: postgres:15-alpine
+    # this needs to match the database host in lemmy.hson
+    # Tune your settings via
+    # https://pgtune.leopard.in.ua/#/
+    # You can use this technique to add them here
+    # https://stackoverflow.com/a/30850095/1655478
+    hostname: postgres
+    command:
+      [
+        "postgres",
+        "-c",
+        "session_preload_libraries=auto_explain",
+        "-c",
+        "auto_explain.log_min_duration=5ms",
+        "-c",
+        "auto_explain.log_analyze=true",
+        "-c",
+        "track_activity_query_size=1048576",
+      ]
+    ports:
+      # use a different port so it doesnt conflict with potential postgres db running on the host
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=lemmy
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=lemmy
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data:Z
+    restart: unless-stopped
+    logging: *default-logging

@@ -42,6 +42,10 @@ and browse to `http://localhost:1237` to see the UI.
 
 Any changes you make while coding might require a page refresh as the automatic reload may become detached.
 
+### Running against a local Lemmy instance in Docker
+
+In the [docker](/docker) directory you will find a [docker-compose file](/docker-compose.yml) that will launch a full lemmy instance and will serve your development version of the Lemmy-UI-Leptos at http://localhost as long as it is running with the config `export LEMMY_UI_LEPTOS_LEMMY_HOST=localhost`.
+
 ### Formatting
 
 Code submissions need to follow strict formatting guidelines. Run `./format.sh` or use the commands within to automate this process.

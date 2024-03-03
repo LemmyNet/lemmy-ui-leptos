@@ -21,13 +21,12 @@ pub async fn vote_post_fn(post_id: i32, score: i16) -> Result<Option<PostRespons
   };
   let result = LemmyClient.like_post(form).await;
 
-  // bug in leptos when redirecting
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
 
   match result {
     Ok(o) => Ok(Some(o)),
-    Err(_e) => {
-      // redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
       Ok(None)
     }
   }
@@ -43,12 +42,12 @@ pub async fn save_post_fn(post_id: i32, save: bool) -> Result<Option<PostRespons
   };
   let result = LemmyClient.save_post(form).await;
 
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
 
   match result {
     Ok(o) => Ok(Some(o)),
-    Err(_e) => {
-      // redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
       Ok(None)
     }
   }
@@ -67,12 +66,12 @@ pub async fn block_user_fn(
   };
   let result = LemmyClient.block_user(form).await;
 
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
 
   match result {
     Ok(o) => Ok(Some(o)),
-    Err(_e) => {
-      // redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
       Ok(None)
     }
   }
@@ -117,12 +116,12 @@ pub async fn report_post_fn(
   };
   let result = try_report(form).await;
 
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
 
   match result {
     Ok(o) => Ok(Some(o)),
-    Err(_e) => {
-      // redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/?error={}", serde_json::to_string(&e)?)[..]);
       Ok(None)
     }
   }
