@@ -44,7 +44,7 @@ Any changes you make while coding might require a page refresh as the automatic 
 
 ### Running against a local Lemmy instance in Docker
 
-In the [docker](/docker) directory you will find a [docker-compose file](/docker-compose.yml) that will launch a full lemmy instance and will serve your development version of the Lemmy-UI-Leptos at http://localhost as long as it is running with the config `export LEMMY_UI_LEPTOS_LEMMY_HOST=localhost`.
+In the [docker](/docker) directory you will find a [docker-compose file](/docker/docker-compose.yml) that will launch a full lemmy instance and will serve your development version of the Lemmy-UI-Leptos at http://localhost as long as it is running with the config `export LEMMY_UI_LEPTOS_LEMMY_HOST=localhost`.
 
 ### Formatting
 
