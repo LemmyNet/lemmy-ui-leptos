@@ -21,7 +21,6 @@ services:
     restart: unless-stopped
     depends_on:
       - pictrs
-      - lemmy-ui
     logging: *default-logging
 
   lemmy:
@@ -53,29 +52,6 @@ services:
       - postgres
       - pictrs
     logging: *default-logging
-
-  lemmy-ui:
-    # use "image" to pull down an already compiled lemmy-ui. make sure to comment out "build".
-    image: dessalines/lemmy-ui:0.19.3
-    # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
-    # use "build" to build your local lemmy ui image for development. make sure to comment out "image".
-    # run: docker compose up --build
-
-    # build:
-    #   context: ../../lemmy-ui # assuming lemmy-ui is cloned besides lemmy directory
-    #   dockerfile: dev.dockerfile
-    environment:
-      # this needs to match the hostname defined in the lemmy service
-      - LEMMY_UI_LEMMY_INTERNAL_HOST=lemmy:8536
-      # set the outside hostname here
-      - LEMMY_UI_LEMMY_EXTERNAL_HOST=localhost:1236
-      - LEMMY_UI_HTTPS=false
-      - LEMMY_UI_DEBUG=true
-    depends_on:
-      - lemmy
-    restart: unless-stopped
-    logging: *default-logging
-    init: true
 
   pictrs:
     image: asonix/pictrs:0.5.0-rc.2
