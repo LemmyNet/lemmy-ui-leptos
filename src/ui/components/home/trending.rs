@@ -1,8 +1,4 @@
-use crate::{
-  errors::LemmyAppError,
-  // i18n::*,
-  lemmy_client::*,
-};
+use crate::{errors::LemmyAppError, i18n::*, lemmy_client::*};
 use lemmy_api_common::{
   community::*,
   lemmy_db_schema::{ListingType, SortType},
@@ -13,7 +9,7 @@ use leptos_router::*;
 
 #[component]
 pub fn Trending() -> impl IntoView {
-  // let i18n = use_i18n();
+  let _i18n = use_i18n();
 
   let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
 

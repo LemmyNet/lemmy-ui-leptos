@@ -40,6 +40,7 @@ pub fn get_https() -> String {
   }
 }
 
+// maybe for use with lemmy client
 // fn should_use_https() -> bool {
 //   let https_env_var;
 //   cfg_if! {

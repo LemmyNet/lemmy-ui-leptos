@@ -15,25 +15,24 @@ use web_sys::SubmitEvent;
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  // bug in leptos when redirecting
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
   let result = LemmyClient.logout().await;
   match result {
     Ok(_o) => {
       let r = remove_cookie("jwt").await;
       match r {
         Ok(_o) => {
-          // redirect("/");
+          redirect("/");
           Ok(())
         }
-        Err(_e) => {
-          // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+        Err(e) => {
+          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
-    Err(_e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }
@@ -52,12 +51,12 @@ pub async fn change_lang(lang: String) -> Result<(), ServerFnError> {
 
 #[server(ChangeThemeFn, "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
-  // use leptos_actix::redirect;
+  use leptos_actix::redirect;
   let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
   match r {
     Ok(_o) => Ok(()),
-    Err(_e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+    Err(e) => {
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }

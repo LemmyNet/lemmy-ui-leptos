@@ -1,3 +1,4 @@
+// useful in development to only have errors in compiler output
 // #![allow(warnings)]
 
 mod config;
@@ -6,7 +7,6 @@ mod errors;
 pub mod host;
 mod layout;
 mod lemmy_client;
-mod lemmy_errors;
 mod ui;
 
 use crate::{

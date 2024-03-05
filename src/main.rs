@@ -1,3 +1,4 @@
+// useful in development to only have errors in compiler output
 // #![allow(warnings)]
 
 use cfg_if::cfg_if;
