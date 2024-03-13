@@ -53,11 +53,16 @@ pub fn App() -> impl IntoView {
         <Routes>
           <Route path="/*any" view=NotFound/>
 
-          <Route path="" view=move || view!{
-            <WithFilterBar>
-              <HomeActivity />
-              </WithFilterBar>
-          }/>
+          <Route
+            path=""
+            view=move || {
+                view! {
+                  <WithFilterBar>
+                    <HomeActivity/>
+                  </WithFilterBar>
+                }
+            }
+          />
 
           <Route path="create_post" view=CommunitiesActivity/>
           <Route path="post/:id" view=PostActivity/>

@@ -30,7 +30,6 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
     session.insert("jwt", jwt.into_inner())?;
   }
 
-  redirect("/");
   Ok(())
 }
 

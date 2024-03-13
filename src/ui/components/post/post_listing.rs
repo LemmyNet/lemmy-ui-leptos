@@ -274,7 +274,6 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
                 <ActionForm action=report_post_action>
                   <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
                   <input
-                    // class=move || format!("input input-bordered {}", report_validation.get())
                     type="text"
                     on:input=move |e| update!(| reason | * reason = event_target_value(& e))
                     name="reason"
