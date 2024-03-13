@@ -55,26 +55,16 @@ pub fn SiteSummary() -> impl IntoView {
           <Unpack item=site_description let:site_description>
             <p>{site_description}</p>
           </Unpack>
-        </Transition>
-        <Transition fallback=|| "Loading">
           <Unpack item=counts let:counts>
             <p>
               <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
-              &nbsp
               <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.users} " users"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.communities} " communities"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.posts} " posts"</CountsBadge>
-              &nbsp;
               <CountsBadge>{counts.comments} " comments"</CountsBadge>
-              &nbsp;
               <CountsBadge>Modlog</CountsBadge>
             </p>
 

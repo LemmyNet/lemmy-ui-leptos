@@ -33,11 +33,11 @@ pub fn App() -> impl IntoView {
   provide_i18n_context();
   provide_query_client();
 
-  let ui_theme = RwSignal::<String>::new(String::from("retro"));
+  let ui_theme = RwSignal::new(String::from("retro"));
 
-  let (is_routing, set_is_routing) = create_signal(false);
+  let is_routing = RwSignal::new(false);
   view! {
-    <Router set_is_routing=set_is_routing>
+    <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
       <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
@@ -62,6 +62,8 @@ pub fn App() -> impl IntoView {
                   </WithFilterBar>
                 }
             }
+
+            ssr=SsrMode::PartiallyBlocked
           />
 
           <Route path="create_post" view=CommunitiesActivity/>

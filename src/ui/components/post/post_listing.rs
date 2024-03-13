@@ -106,11 +106,11 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
   let vote_action = Action::<VotePost, _>::server();
 
-  let save_post_action = create_server_action::<SavePost>();
+  let save_post_action = Action::<SavePost, _>::server();
 
-  let block_user_action = create_server_action::<BlockUser>();
+  let block_user_action = Action::<BlockUser, _>::server();
 
-  let report_post_action = create_server_action::<ReportPost>();
+  let report_post_action = Action::<ReportPost, _>::server();
 
   let reason = RwSignal::new(String::new());
 

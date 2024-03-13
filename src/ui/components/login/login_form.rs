@@ -11,7 +11,6 @@ use leptos_router::ActionForm;
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use crate::utils::get_client_and_session::get_client_and_session;
   use lemmy_client::lemmy_api_common::person::Login as LoginBody;
-  use leptos_actix::redirect;
 
   let (client, session) = get_client_and_session().await?;
 

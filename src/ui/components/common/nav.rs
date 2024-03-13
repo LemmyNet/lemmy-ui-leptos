@@ -95,75 +95,77 @@ pub fn TopNav() -> impl IntoView {
   // };
 
   view! {
-    <Transition fallback=|| "Loading">
-      <nav class="navbar container mx-auto">
-        <div class="navbar-start">
-          <ul class="menu menu-horizontal flex-nowrap">
-            <li>
+    <nav class="navbar container mx-auto">
+      <div class="navbar-start">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <Transition>
               <Unpack item=instance_name let:instance_name>
                 <A href="/" class="text-xl whitespace-nowrap">
                   {instance_name}
                 </A>
               </Unpack>
-            </li>
-            <li>
-              <A href="/communities" class="text-md">
-                {t!(i18n, communities)}
-              </A>
-            </li>
-            <li>
-              <A href="/create_post" class="text-md">
-                {t!(i18n, create_post)}
-              </A>
-            </li>
-            <li>
-              <A href="/create_community" class="text-md">
-                {t!(i18n, create_community)}
-              </A>
-            </li>
-            <li>
-              <a href="//join-lemmy.org/donate">
-                <span title="t!(i18n, donate)">
-                  <Icon icon=Donate/>
-                </span>
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div class="navbar-end">
-          <ul class="menu menu-horizontal flex-nowrap">
-            <li>
-              <A href="/search">
-                <span title="t!(i18n, search)">
-                  <Icon icon=Search/>
-                </span>
-              </A>
-            </li>
-            // <li class="z-[1]">
-            // <details>
-            // <summary>"Theme"</summary>
-            // <ul>
-            // <li>
-            // <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
-            // <input type="hidden" name="theme" value="dark"/>
-            // <button type="submit">"Dark"</button>
-            // </ActionForm>
-            // </li>
-            // <li>
-            // <ActionForm action=theme_action on:submit=on_theme_submit("light")>
-            // <input type="hidden" name="theme" value="light"/>
-            // <button type="submit">"Light"</button>
-            // </ActionForm>
-            // </li>
-            // <li>
-            // <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
-            // <input type="hidden" name="theme" value="retro"/>
-            // <button type="submit">"Retro"</button>
-            // </ActionForm>
-            // </li>
-            // </ul>
-            // </details>
-            // </li>
+            </Transition>
+          </li>
+          <li>
+            <A href="/communities" class="text-md">
+              {t!(i18n, communities)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_post" class="text-md">
+              {t!(i18n, create_post)}
+            </A>
+          </li>
+          <li>
+            <A href="/create_community" class="text-md">
+              {t!(i18n, create_community)}
+            </A>
+          </li>
+          <li>
+            <a href="//join-lemmy.org/donate">
+              <span title="t!(i18n, donate)">
+                <Icon icon=Donate/>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <ul class="menu menu-horizontal flex-nowrap">
+          <li>
+            <A href="/search">
+              <span title="t!(i18n, search)">
+                <Icon icon=Search/>
+              </span>
+            </A>
+          </li>
+          // <li class="z-[1]">
+          // <details>
+          // <summary>"Theme"</summary>
+          // <ul>
+          // <li>
+          // <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
+          // <input type="hidden" name="theme" value="dark"/>
+          // <button type="submit">"Dark"</button>
+          // </ActionForm>
+          // </li>
+          // <li>
+          // <ActionForm action=theme_action on:submit=on_theme_submit("light")>
+          // <input type="hidden" name="theme" value="light"/>
+          // <button type="submit">"Light"</button>
+          // </ActionForm>
+          // </li>
+          // <li>
+          // <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
+          // <input type="hidden" name="theme" value="retro"/>
+          // <button type="submit">"Retro"</button>
+          // </ActionForm>
+          // </li>
+          // </ul>
+          // </details>
+          // </li>
+          <Transition fallback=|| "Loading">
             <Unpack item=user_is_logged_in let:user_is_logged_in>
               <Show
                 when=move || user_is_logged_in
@@ -230,10 +232,10 @@ pub fn TopNav() -> impl IntoView {
                 </Unpack>
               </Show>
             </Unpack>
-          </ul>
-        </div>
-      </nav>
-    </Transition>
+          </Transition>
+        </ul>
+      </div>
+    </nav>
   }
 }
 
@@ -252,53 +254,52 @@ pub fn BottomNav() -> impl IntoView {
   });
 
   view! {
-    <Transition fallback=|| "Loading">
-      <nav class="container navbar mx-auto hidden sm:flex">
-        <div class="navbar-start w-auto"></div>
-        <div class="navbar-end grow w-auto">
-          <ul class="menu menu-horizontal flex-nowrap items-center">
-            <li>
-              <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
-                "FE: "
-                {FE_VERSION}
-              </a>
-            </li>
-            <li>
-              <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-                <Unpack item=version let:version>
+    <nav class="container navbar mx-auto hidden sm:flex">
+      <div class="navbar-start w-auto"></div>
+      <div class="navbar-end grow w-auto">
+        <ul class="menu menu-horizontal flex-nowrap items-center">
+          <li>
+            <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
+              "FE: "
+              {FE_VERSION}
+            </a>
+          </li>
+          <li>
+            <Transition fallback=|| "Loading">
+              <Unpack item=version let:version>
+                <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
                   {version}
-                </Unpack>
-
-              </a>
-            </li>
-            <li>
-              <A href="/modlog" class="text-md">
-                {t!(i18n, modlog)}
-              </A>
-            </li>
-            <li>
-              <A href="/instances" class="text-md">
-                {t!(i18n, instances)}
-              </A>
-            </li>
-            <li>
-              <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
-                {t!(i18n, docs)}
-              </a>
-            </li>
-            <li>
-              <a href="//github.com/LemmyNet" class="text-md">
-                {t!(i18n, code)}
-              </a>
-            </li>
-            <li>
-              <a href="//join-lemmy.org" class="text-md">
-                "join-lemmy.org"
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </Transition>
+                </a>
+              </Unpack>
+            </Transition>
+          </li>
+          <li>
+            <A href="/modlog" class="text-md">
+              {t!(i18n, modlog)}
+            </A>
+          </li>
+          <li>
+            <A href="/instances" class="text-md">
+              {t!(i18n, instances)}
+            </A>
+          </li>
+          <li>
+            <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
+              {t!(i18n, docs)}
+            </a>
+          </li>
+          <li>
+            <a href="//github.com/LemmyNet" class="text-md">
+              {t!(i18n, code)}
+            </a>
+          </li>
+          <li>
+            <a href="//join-lemmy.org" class="text-md">
+              "join-lemmy.org"
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
   }
 }
