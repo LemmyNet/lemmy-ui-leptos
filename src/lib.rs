@@ -1,29 +1,28 @@
-// useful in development to only have errors in compiler output
-// #![allow(warnings)]
-
-mod config;
-mod cookie;
+mod constants;
 mod errors;
 pub mod host;
-mod layout;
-mod lemmy_client;
+mod queries;
+#[cfg(feature = "ssr")]
+pub mod server;
 mod ui;
+mod utils;
 
 use crate::{
-  errors::LemmyAppError,
   i18n::*,
-  layout::Layout,
-  lemmy_client::*,
   ui::components::{
+    common::{
+      nav::{BottomNav, TopNav},
+      with_filter_bar::WithFilterBar,
+    },
     communities::communities_activity::CommunitiesActivity,
     home::home_activity::HomeActivity,
     login::login_activity::LoginActivity,
     post::post_activity::PostActivity,
   },
 };
-use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
+use leptos_query::provide_query_client;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -32,48 +31,33 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
+  provide_query_client();
 
-  let error = create_rw_signal::<Option<LemmyAppError>>(None);
-  provide_context(error);
-  let user = create_rw_signal::<Option<bool>>(None);
-  provide_context(user);
-  let ui_theme = create_rw_signal::<Option<String>>(None);
-  provide_context(ui_theme);
+  let ui_theme = RwSignal::<String>::new(String::from("retro"));
 
-  let ssr_site = create_resource(
-    move || (user.get()),
-    move |_user| async move {
-      let result = LemmyClient.get_site().await;
-
-      match result {
-        Ok(o) => Ok(o),
-        Err(e) => {
-          error.set(Some(e.clone()));
-          Err(e)
-        }
-      }
-    },
-  );
-
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
-
+  let (is_routing, set_is_routing) = create_signal(false);
   view! {
-    <Transition fallback=|| {}>
-      {move || {
-          ssr_site
-              .get()
-              .map(|m| {
-                  site_signal.set(Some(m));
-              });
-      }}
+    <Router set_is_routing=set_is_routing>
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+      <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
+      <Meta name="description" content="Lemmy-UI-Leptos."/>
+      <Meta name="viewport" content="viewport-fit=cover"/>
+      // debug where there is no visible console (mobile/live/desktop)
+      // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+      // <Script>eruda.init();</Script>
+      <Title text="Brand from env"/>
 
-    </Transition>
-    <Router>
-      <Routes>
-        <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>
+      <div class="flex flex-col h-screen" data-theme=ui_theme>
+        <TopNav/>
+        <Routes>
           <Route path="/*any" view=NotFound/>
 
-          <Route path="" view=move || view! { <HomeActivity site_signal/> }/>
+          <Route path="" view=move || view!{
+            <WithFilterBar>
+              <HomeActivity />
+              </WithFilterBar>
+          }/>
 
           <Route path="create_post" view=CommunitiesActivity/>
           <Route path="post/:id" view=PostActivity/>
@@ -84,7 +68,6 @@ pub fn App() -> impl IntoView {
           <Route path="c/:id" view=CommunitiesActivity/>
 
           <Route path="login" view=LoginActivity/>
-          <Route path="logout" view=CommunitiesActivity/>
           <Route path="signup" view=CommunitiesActivity/>
 
           <Route path="inbox" view=CommunitiesActivity/>
@@ -93,8 +76,9 @@ pub fn App() -> impl IntoView {
 
           <Route path="modlog" view=CommunitiesActivity/>
           <Route path="instances" view=CommunitiesActivity/>
-        </Route>
-      </Routes>
+        </Routes>
+        <BottomNav/>
+      </div>
     </Router>
   }
 }

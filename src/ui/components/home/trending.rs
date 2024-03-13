@@ -1,93 +1,79 @@
-use crate::{errors::LemmyAppError, i18n::*, lemmy_client::*};
-use lemmy_api_common::{
+use crate::{
+  queries::communities_list_query::use_communities_scope,
+  ui::components::common::unpack::Unpack,
+  utils::derive_query_signal::derive_query_signal,
+};
+use lemmy_client::lemmy_api_common::{
   community::*,
   lemmy_db_schema::{ListingType, SortType},
-  lemmy_db_views_actor::structs::CommunityView,
 };
 use leptos::*;
-use leptos_router::*;
+use leptos_query::{QueryOptions, QueryResult, ResourceOption};
+use leptos_router::A;
+use std::time::Duration;
 
 #[component]
 pub fn Trending() -> impl IntoView {
-  let _i18n = use_i18n();
+  let QueryResult {
+    data: trending_communities_response,
+    ..
+  } = use_communities_scope(QueryOptions {
+    resource_option: Some(ResourceOption::Blocking),
+    stale_time: Some(Duration::from_secs(300)),
+    ..Default::default()
+  })
+  .use_query(|| ListCommunities {
+    type_: Some(ListingType::Local),
+    sort: Some(SortType::Hot),
+    limit: Some(5),
+    ..Default::default()
+  });
 
-  let error = expect_context::<RwSignal<Option<LemmyAppError>>>();
-
-  let trending = create_resource(
-    move || (),
-    move |()| async move {
-      let form = ListCommunities {
-        type_: Some(ListingType::Local),
-        sort: Some(SortType::Hot),
-        limit: Some(6),
-        show_nsfw: None,
-        page: None,
-      };
-
-      let result = LemmyClient.list_communities(form).await;
-
-      match result {
-        Ok(o) => Some(o),
-        Err(e) => {
-          error.set(Some(e));
-          None
-        }
-      }
+  let trending_communities = derive_query_signal(
+    trending_communities_response,
+    |trending_communities_response| {
+      trending_communities_response
+        .communities
+        .iter()
+        .map(|community_view| {
+          (
+            community_view.community.id,
+            community_view.community.name.clone(),
+          )
+        })
+        .collect::<Vec<_>>()
     },
   );
 
   view! {
-    <Transition fallback=|| {
-        view! { "Loading..." }
-    }>
-      {move || {
-          trending
-              .get()
-              .map(|r| match r {
-                  None => {
-                      view! { <div class="hidden"></div> }
-                  }
-                  Some(c) => {
-                      let c_signal = create_rw_signal(c.communities);
-                      view! {
-                        <div class="card w-full bg-base-300 text-base-content mb-3">
-                          <figure>
-                            <div class="card-body bg-info">
-                              <h2 class="card-title text-info-content">"Trending Communities"</h2>
-                            </div>
-                          </figure>
-                          <div class="card-body">
-                            <p>
-                              <For
-                                each=move || c_signal.get()
-                                key=|community| community.community.id
-                                children=move |cv: CommunityView| {
-                                    view! {
-                                      <A
-                                        class="text-l font-bold link link-accent whitespace-nowrap"
-                                        href=format!("/c/{}", cv.community.name)
-                                      >
-                                        {cv.community.title}
-                                      </A>
-                                      " "
-                                    }
-                                }
-                              />
-
-                            </p>
-                            <A class="btn" href="/create_community">
-                              "Create a community"
-                            </A>
-                            <A class="btn" href="/communities">
-                              "Explore communities"
-                            </A>
-                          </div>
-                        </div>
-                      }
-                  }
-              })
-      }}
-
-    </Transition>
+    <div class="card w-full bg-base-300 text-base-content mb-3">
+      <figure>
+        <div class="card-body bg-info">
+          <h2 class="card-title text-info-content">"Trending Communities"</h2>
+        </div>
+      </figure>
+      <div>
+        <p>
+          <Transition fallback=|| "Loading">
+            <Unpack item=trending_communities let:communities>
+              <For each=move || communities.clone() key=|c| c.0 let:c>
+                <A
+                  class="text-1 font-bold link link-accent whitespace-nowrap"
+                  href=format!("/c/{}", c.1.clone())
+                >
+                  {c.1.clone()}
+                </A>
+              </For>
+            </Unpack>
+          </Transition>
+        </p>
+        <A class="btn" href="/create_community">
+          "Create a community"
+        </A>
+        <A class="btn" href="/communities">
+          "Explore communities"
+        </A>
+      </div>
+    </div>
   }
 }

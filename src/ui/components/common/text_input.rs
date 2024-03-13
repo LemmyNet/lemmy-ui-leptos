@@ -46,7 +46,8 @@ pub fn TextInput(
         disabled=move || disabled.get().unwrap_or(false)
         required=move || required.get().unwrap_or(false)
         on:input=move |e| {
-            on_input.call(event_target_value(&e));
+            // Need the fully qualified syntax due to possible future collison with an addition to the standard library. See https://doc.rust-lang.org/std/ops/trait.Fn.html#tymethod.call
+            leptos::Callable::call(&on_input, event_target_value(&e));
         }
       />
 
