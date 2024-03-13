@@ -1551,7 +1551,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "lemmy-client"
 version = "0.19.4-alpha.1"
-source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#70f236df5c3bf02c15d1644dfe1c494ea1a4ee04"
+source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#bff51b301d1d908b6539a8abd764390db0ea42a4"
 dependencies = [
  "cfg-if",
  "gloo-net 0.5.0",
@@ -1593,7 +1593,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "chrono",
  "enum-map",
@@ -1613,7 +1613,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1632,7 +1632,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1643,7 +1643,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1656,7 +1656,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1666,7 +1666,7 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#45c56df4e8fd30e852a9ca2670ca492d8d18fdad"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#255e69563362093036c64472ce9939439cbe2738"
 dependencies = [
  "cfg-if",
  "rosetta-build",
@@ -3738,9 +3738,9 @@ checksum = "927da81e25be1e1a2901d59b81b37dd2efd1fc9c9345a55007f09bf5a2d3ee03"
 
 [[package]]
 name = "yansi"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c2861d76f58ec8fc95708b9b1e417f7b12fd72ad33c01fa6886707092dea0d3"
+checksum = "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049"
 
 [[package]]
 name = "zerocopy"
