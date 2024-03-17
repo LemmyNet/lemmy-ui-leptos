@@ -63,7 +63,7 @@ pub fn App() -> impl IntoView {
                 }
             }
 
-            ssr=SsrMode::PartiallyBlocked
+            ssr=SsrMode::Async
           />
 
           <Route path="create_post" view=CommunitiesActivity/>

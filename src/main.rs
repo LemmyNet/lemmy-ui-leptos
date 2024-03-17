@@ -43,12 +43,12 @@ cfg_if! {
                 let routes = &routes;
 
                 App::new()
+                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .wrap(cookie_middleware())
                     .service(Files::new("/pkg", format!("{site_root}/pkg")))
                     .service(Files::new("/assets", site_root))
                     .service(favicon)
                     .service(icons)
-                    .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .leptos_routes(
                         leptos_options.to_owned(),
                         routes.to_owned(),

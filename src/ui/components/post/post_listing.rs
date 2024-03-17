@@ -87,7 +87,7 @@ pub async fn report_post(
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
-  let post_view = Signal::derive(move || post_view.get());
+  let post_view = RwSignal::new(post_view());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
   let is_upvote =
     Signal::derive(move || with!(|post_view| post_view.my_vote.unwrap_or_default() == 1));
@@ -105,6 +105,22 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   });
 
   let vote_action = Action::<VotePost, _>::server();
+  Effect::new_isomorphic(move |_| {
+    let version = vote_action.version()();
+
+    if version > 0 {
+      vote_action.value().with(|value| {
+        let new_post_view = &value.as_ref().unwrap().as_ref().unwrap().post_view;
+
+        update!(|post_view| {
+          post_view.counts.score = new_post_view.counts.score;
+          post_view.counts.upvotes = new_post_view.counts.upvotes;
+          post_view.counts.downvotes = new_post_view.counts.downvotes;
+          post_view.my_vote = new_post_view.my_vote;
+        });
+      });
+    }
+  });
 
   let save_post_action = Action::<SavePost, _>::server();
 
