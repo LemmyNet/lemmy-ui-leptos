@@ -135,6 +135,19 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   });
 
   let save_post_action = Action::<SavePost, _>::server();
+  Effect::new_isomorphic(move |_| {
+    let version = save_post_action.version()();
+
+    if version > 0 {
+      save_post_action.value().with(|value| {
+        let new_post_view = &value.as_ref().unwrap().as_ref().unwrap().post_view;
+
+        update!(|post_view| {
+          post_view.saved = new_post_view.saved;
+        });
+      });
+    }
+  });
 
   let block_user_action = Action::<BlockUser, _>::server();
 
@@ -162,7 +175,8 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
 
             title="Up vote"
-            disabled=move || !user_is_logged_in()
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
+
           >
             <Icon icon=Upvote/>
           </button>
@@ -185,7 +199,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
             title="Down vote"
 
-            disabled=move || !user_is_logged_in()
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
           >
             <Icon icon=Downvote/>
           </button>
@@ -243,6 +257,8 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               type="submit"
               class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
               title="Up vote"
+
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Upvote/>
             </button>
@@ -262,6 +278,8 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               }
 
               title="Down vote"
+
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Downvote/>
             </button>
@@ -286,6 +304,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               type="submit"
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
+              disabled=move || !user_is_logged_in() || save_post_action.pending()()
             >
               <Icon icon=Save/>
             </button>
