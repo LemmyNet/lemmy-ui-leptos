@@ -176,8 +176,8 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
             title="Up vote"
             disabled=move || !user_is_logged_in() || vote_action.pending()()
-
           >
+
             <Icon icon=Upvote/>
           </button>
         </ActionForm>
@@ -197,6 +197,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
                     class.push_str(" text-accent"); } class }
                 )
             }
+
             title="Down vote"
 
             disabled=move || !user_is_logged_in() || vote_action.pending()()
@@ -258,7 +259,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
               title="Up vote"
 
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Upvote/>
             </button>
@@ -279,7 +280,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
               title="Down vote"
 
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Downvote/>
             </button>

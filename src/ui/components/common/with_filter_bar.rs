@@ -15,19 +15,36 @@ fn ListingTypeLink(
   children: Children,
 ) -> impl IntoView {
   let query = use_query_map();
+  let site_response = expect_context::<SiteStateSignal>();
+  let disabled = Signal::derive(move || {
+    with!(|site_response| !site_response
+      .as_ref()
+      .map(|site_response| site_response.as_ref().ok())
+      .flatten()
+      .map_or(false, |site_response| site_response.my_user.is_some())
+      && matches!(
+        link_listing_type,
+        ListingType::ModeratorView | ListingType::Subscribed
+      ))
+  });
 
   view! {
     <A
       href=move || {
-          let mut query = query.get();
-          query.insert(String::from("listingType"), link_listing_type.to_string());
-          query.to_query_string()
+          if disabled() {
+              String::from("javascript:void(0)")
+          } else {
+              let mut query = query.get();
+              query.insert(String::from("listingType"), link_listing_type.to_string());
+              query.to_query_string()
+          }
       }
 
-      class=move || {
+      class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
+      attr:aria-disabled=move || if disabled() { Some("true") } else { None }
+      attr:aria-selected=move || {
           with!(
-              | listing_type | { let mut class = String::from("btn join-item"); if * listing_type ==
-              link_listing_type { class.push_str(" btn-active") } class }
+              | listing_type | if * listing_type == link_listing_type { Some("true") } else { None }
           )
       }
     >
