@@ -1,19 +1,15 @@
 use crate::{
   i18n::*,
-  queries::site_state_query::use_site_state,
+  queries::site_state_query::SiteStateSignal,
   ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
   utils::derive_query_signal::derive_query_signal,
 };
 use leptos::*;
-use leptos_query::QueryResult;
 
 #[component]
 pub fn SiteSummary() -> impl IntoView {
   let _i18n = use_i18n();
-  let QueryResult {
-    data: site_response,
-    ..
-  } = use_site_state().use_query(|| ());
+  let site_response = expect_context::<SiteStateSignal>();
 
   let site_name = derive_query_signal(site_response, |site_response| {
     site_response.site_view.site.name.clone()

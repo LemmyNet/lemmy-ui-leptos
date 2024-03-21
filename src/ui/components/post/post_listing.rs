@@ -1,6 +1,9 @@
-use crate::ui::components::common::icon::{
-  Icon,
-  IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+use crate::{
+  queries::site_state_query::SiteStateSignal,
+  ui::components::common::icon::{
+    Icon,
+    IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+  },
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -104,6 +107,15 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       .map(ToString::to_string))
   });
 
+  let site_response = expect_context::<SiteStateSignal>();
+  let user_is_logged_in = Signal::derive(move || {
+    with!(|site_response| site_response
+      .as_ref()
+      .map(|site_response| site_response.as_ref().ok())
+      .flatten()
+      .map_or(false, |site_response| site_response.my_user.is_some()))
+  });
+
   let vote_action = Action::<VotePost, _>::server();
   Effect::new_isomorphic(move |_| {
     let version = vote_action.version()();
@@ -150,6 +162,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
 
             title="Up vote"
+            disabled=move || !user_is_logged_in()
           >
             <Icon icon=Upvote/>
           </button>
@@ -170,8 +183,9 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
                     class.push_str(" text-accent"); } class }
                 )
             }
-
             title="Down vote"
+
+            disabled=move || !user_is_logged_in()
           >
             <Icon icon=Downvote/>
           </button>

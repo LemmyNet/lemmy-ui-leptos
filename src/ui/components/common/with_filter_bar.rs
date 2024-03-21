@@ -1,11 +1,10 @@
-use crate::{i18n::*, queries::site_state_query::use_site_state};
+use crate::{i18n::*, queries::site_state_query::SiteStateSignal};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
   ListingType,
   SortType,
 };
 use leptos::*;
-use leptos_query::QueryResult;
 use leptos_router::{use_query_map, A};
 use serde::Deserialize;
 
@@ -64,11 +63,7 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
   get_user_default: impl Fn(&LocalUser) -> T + 'static,
   get_site_default: impl Fn(&LocalSite) -> T + 'static,
 ) -> Signal<T> {
-  let QueryResult {
-    data: site_response,
-    ..
-  } = use_site_state().use_query(|| ());
-
+  let site_response = expect_context::<SiteStateSignal>();
   let query = use_query_map();
 
   Signal::derive(move || {

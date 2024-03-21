@@ -1,10 +1,9 @@
 use crate::{
-  queries::site_state_query::use_site_state,
+  queries::site_state_query::use_site_refetch,
   ui::components::common::text_input::{InputType, TextInput},
 };
 use cfg_if::cfg_if;
 use leptos::{server_fn::error::NoCustomError, *};
-use leptos_query::QueryResult;
 use leptos_router::ActionForm;
 
 #[server(LoginAction, "/serverfn")]
@@ -38,8 +37,7 @@ pub fn LoginForm() -> impl IntoView {
   let password = RwSignal::new(String::new());
 
   let login = Action::<LoginAction, _>::server();
-
-  let QueryResult { refetch, .. } = use_site_state().use_query(|| ());
+  let refetch = use_site_refetch();
 
   Effect::new_isomorphic(move |_| {
     if login.version().get() > 0 {

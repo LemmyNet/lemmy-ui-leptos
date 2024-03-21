@@ -9,6 +9,7 @@ mod utils;
 
 use crate::{
   i18n::*,
+  queries::site_state_query::provide_site_state,
   ui::components::{
     common::{
       nav::{BottomNav, TopNav},
@@ -23,6 +24,7 @@ use crate::{
 use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
+use leptos_query_devtools::LeptosQueryDevtools;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -32,11 +34,14 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
   provide_query_client();
+  provide_site_state();
 
   let ui_theme = RwSignal::new(String::from("retro"));
 
   let is_routing = RwSignal::new(false);
+
   view! {
+    <LeptosQueryDevtools/>
     <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>

@@ -1,6 +1,6 @@
 use crate::{
   i18n::*,
-  queries::site_state_query::use_site_state,
+  queries::site_state_query::{use_site_refetch, SiteStateSignal},
   ui::components::common::{
     icon::{
       Icon,
@@ -12,7 +12,6 @@ use crate::{
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
-use leptos_query::QueryResult;
 use leptos_router::*;
 
 #[server(prefix = "/serverfn")]
@@ -47,11 +46,8 @@ pub async fn logout() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let QueryResult {
-    data: site_response,
-    refetch,
-    ..
-  } = use_site_state().use_query(|| ());
+  let site_response = expect_context::<SiteStateSignal>();
+  let refetch = use_site_refetch();
 
   let user_is_logged_in = derive_query_signal(site_response, |site_response| {
     site_response.my_user.is_some()
@@ -244,11 +240,7 @@ pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-  let QueryResult {
-    data: site_response,
-    ..
-  } = use_site_state().use_query(|| ());
-
+  let site_response = expect_context::<SiteStateSignal>();
   let version = derive_query_signal(site_response, |site_response| {
     format!("BE: {}", site_response.version)
   });
