@@ -1648,7 +1648,6 @@ dependencies = [
  "actix-web",
  "cfg-if",
  "console_error_panic_hook",
- "gloo-net 0.5.0",
  "lemmy-client",
  "leptos",
  "leptos_actix",
@@ -1659,10 +1658,8 @@ dependencies = [
  "leptos_router",
  "serde",
  "serde_json",
- "serde_urlencoded",
  "tokio",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]

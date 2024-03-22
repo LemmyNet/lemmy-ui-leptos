@@ -33,14 +33,11 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
-  let name = RwSignal::new(String::new());
-  let password = RwSignal::new(String::new());
-
   let login = Action::<LoginAction, _>::server();
   let refetch = use_site_refetch();
 
   Effect::new_isomorphic(move |_| {
-    if login.version().get() > 0 {
+    if login.version()() > 0 {
       refetch();
 
       cfg_if! {
@@ -60,16 +57,18 @@ pub fn LoginForm() -> impl IntoView {
       <TextInput
         id="username"
         name="username_or_email"
-        on_input=move |s| update!(| name | * name = s)
         label="Username"
+        required=true
+        min_length=3
       />
 
       <TextInput
         id="password"
         name="password"
-        on_input=move |s| update!(| password | * password = s)
         label="Password"
         input_type=InputType::Password
+        pattern=".{10,60}"
+        required=true
       />
 
       <button class="btn btn-lg" type="submit">

@@ -46,6 +46,7 @@ fn ListingTypeLink(
           if listing_type() == link_listing_type { Some("true") } else { None }
       }
     >
+
       {children()}
     </A>
   }

@@ -1,7 +1,6 @@
 #![allow(clippy::empty_docs)]
 
 mod constants;
-mod errors;
 pub mod host;
 mod queries;
 #[cfg(feature = "ssr")]
@@ -45,11 +44,10 @@ pub fn App() -> impl IntoView {
 
   view! {
     {
-      #[cfg(debug_assertions)]
-      view!{
-        <LeptosQueryDevtools/>
-      }
+        #[cfg(debug_assertions)]
+        view! { <LeptosQueryDevtools/> }
     }
+
     <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>

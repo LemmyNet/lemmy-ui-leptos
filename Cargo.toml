@@ -11,23 +11,13 @@ leptos = { version = "0", features = ["nightly"] }
 leptos_meta = { version = "0", features = ["nightly"] }
 leptos_router = { version = "0", features = ["nightly"] }
 leptos_i18n = "0"
-serde = { version = "1", features = ["derive"] }
 cfg-if = "1"
 lemmy-client = { git = "https://github.com/SleeplessOne1917/lemmy-client-rs.git", branch = "main", features = [
   "leptos",
 ] }
-serde_urlencoded = "0"
+serde = "1"
 serde_json = "1"
-# tracing-error = "0"
-# anyhow = "1"
-# strum = "0"
-# strum_macros = "0"
-web-sys = { version = "0", features = ["AbortController", "AbortSignal"] }
 
-# dependecies for client (enable when csr or hydrate set)
-gloo-net = { version = "0", optional = true, features = ["http"] }
-
-# specific version required for better debug messages (from leptos scaffold)
 wasm-bindgen = { version = "0.2", optional = true }
 
 # required for better debug messages
@@ -44,10 +34,6 @@ leptos_query = "0.5"
 tokio = { version = "1.36", optional = true, features = ["macros"] }
 leptos_query_devtools = "0.1.3"
 
-[package.metadata.cargo-machete]
-# strum required for error handling, actix-proxy for awc SSL
-ignored = ["strum", "actix-proxy"]
-
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en", "fr"]
@@ -63,7 +49,6 @@ hydrate = [
   "leptos_query_devtools/csr",
   "dep:wasm-bindgen",
   "dep:console_error_panic_hook",
-  "dep:gloo-net",
 ]
 csr = [
   "leptos/csr",
@@ -72,7 +57,6 @@ csr = [
   "leptos_i18n/csr",
   "dep:wasm-bindgen",
   "dep:console_error_panic_hook",
-  "dep:gloo-net",
 ]
 ssr = [
   "leptos/ssr",

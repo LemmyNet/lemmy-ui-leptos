@@ -12,12 +12,13 @@ pub enum InputType {
 
 #[component]
 pub fn TextInput(
-  #[prop(optional)] disabled: MaybeProp<bool>,
-  #[prop(optional)] required: MaybeProp<bool>,
+  #[prop(optional, into)] disabled: MaybeProp<bool>,
+  #[prop(optional, into)] required: MaybeProp<bool>,
+  #[prop(optional, into)] min_length: MaybeProp<u8>,
+  #[prop(optional, into)] pattern: MaybeProp<TextProp>,
   #[prop(into)] id: TextProp,
   #[prop(into)] name: TextProp,
   #[prop(into)] label: TextProp,
-  #[prop(into)] on_input: Callback<String, ()>,
   #[prop(default = InputType::Text)] input_type: InputType,
   #[prop(optional)] validation_class: MaybeSignal<String>,
 ) -> impl IntoView {
@@ -43,11 +44,10 @@ pub fn TextInput(
 
         placeholder=" "
         name=move || name.get()
-        disabled=move || disabled.get().unwrap_or(false)
-        required=move || required.get().unwrap_or(false)
-        on:input=move |e| {
-            leptos::Callable::call(&on_input, event_target_value(&e));
-        }
+        disabled=disabled
+        required=required
+        min_length=min_length
+        pattern=pattern
       />
 
       <Show when=move || input_type == InputType::Password>
