@@ -4,6 +4,7 @@ use crate::{
     Icon,
     IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
   },
+  utils::derive_user_is_logged_in::derive_user_is_logged_in,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -108,13 +109,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   });
 
   let site_response = expect_context::<SiteStateSignal>();
-  let user_is_logged_in = Signal::derive(move || {
-    with!(|site_response| site_response
-      .as_ref()
-      .map(|site_response| site_response.as_ref().ok())
-      .flatten()
-      .map_or(false, |site_response| site_response.my_user.is_some()))
-  });
+  let user_is_logged_in = derive_user_is_logged_in(site_response);
 
   let vote_action = Action::<VotePost, _>::server();
   Effect::new_isomorphic(move |_| {
@@ -175,7 +170,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
 
             title="Up vote"
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+            disabled=move || !user_is_logged_in().0 || vote_action.pending()()
           >
 
             <Icon icon=Upvote/>
@@ -200,7 +195,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
             title="Down vote"
 
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+            disabled=move || !user_is_logged_in().0 || vote_action.pending()()
           >
             <Icon icon=Downvote/>
           </button>
@@ -259,7 +254,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
               title="Up vote"
 
-              disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in().0 || vote_action.pending()()
             >
               <Icon icon=Upvote/>
             </button>
@@ -280,7 +275,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
               title="Down vote"
 
-              disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in().0 || vote_action.pending()()
             >
               <Icon icon=Downvote/>
             </button>
@@ -305,7 +300,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               type="submit"
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
-              disabled=move || !user_is_logged_in() || save_post_action.pending()()
+              disabled=move || !user_is_logged_in().0 || save_post_action.pending()()
             >
               <Icon icon=Save/>
             </button>

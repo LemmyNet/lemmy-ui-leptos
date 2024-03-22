@@ -39,6 +39,7 @@ pub fn get_https() -> String {
 }
 
 fn should_use_https() -> bool {
+  #[allow(clippy::needless_late_init)]
   let https_env_var;
   cfg_if! {
       if #[cfg(feature="ssr")] {

@@ -1,4 +1,8 @@
-use crate::{i18n::*, queries::site_state_query::SiteStateSignal};
+use crate::{
+  i18n::*,
+  queries::site_state_query::SiteStateSignal,
+  utils::derive_user_is_logged_in::{derive_user_is_logged_in, UserLoggedIn},
+};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
   ListingType,
@@ -15,17 +19,13 @@ fn ListingTypeLink(
   children: Children,
 ) -> impl IntoView {
   let query = use_query_map();
-  let site_response = expect_context::<SiteStateSignal>();
+  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
   let disabled = Signal::derive(move || {
-    with!(|site_response| !site_response
-      .as_ref()
-      .map(|site_response| site_response.as_ref().ok())
-      .flatten()
-      .map_or(false, |site_response| site_response.my_user.is_some())
+    !user_is_logged_in().0
       && matches!(
         link_listing_type,
-        ListingType::ModeratorView | ListingType::Subscribed
-      ))
+        ListingType::Subscribed | ListingType::ModeratorView
+      )
   });
 
   view! {
@@ -43,12 +43,9 @@ fn ListingTypeLink(
       class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
       attr:aria-disabled=move || if disabled() { Some("true") } else { None }
       attr:aria-selected=move || {
-          with!(
-              | listing_type | if * listing_type == link_listing_type { Some("true") } else { None }
-          )
+          if listing_type() == link_listing_type { Some("true") } else { None }
       }
     >
-
       {children()}
     </A>
   }
@@ -62,9 +59,10 @@ fn SortTypeLink(
 ) -> impl IntoView {
   let query = use_query_map();
   view! {
-    <li class=move || {
-        with!(| sort_type | if * sort_type == link_sort_type { Some("btn-active") } else { None })
-    }>
+    <li
+      class="aria-selected:btn-active"
+      attr:aria-selected=move || if sort_type() == link_sort_type { Some("true") } else { None }
+    >
 
       <A href=move || {
           let mut query = query.get();
@@ -121,9 +119,12 @@ pub fn WithFilterBar(children: Children) -> impl IntoView {
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
+  let site_response = expect_context::<SiteStateSignal>();
+  let user_is_logged_in = derive_user_is_logged_in(site_response);
 
   provide_context(listing_type);
   provide_context(sort_type);
+  provide_context(user_is_logged_in);
 
   view! {
     <div class="block">

@@ -421,9 +421,9 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "backtrace"
-version = "0.3.69"
+version = "0.3.70"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2089b7e3f35b9dd2d0ed921ead4f6d318c27680d4a5bd167b3ee120edb105837"
+checksum = "95d8e92cac0961e91dbd517496b00f7e9b92363dbe6d42c3198268323798860c"
 dependencies = [
  "addr2line",
  "cc",
@@ -593,9 +593,9 @@ dependencies = [
 
 [[package]]
 name = "cargo-platform"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "694c8807f2ae16faecc43dc17d74b3eb042482789fd0eb64b39a2e04e087053f"
+checksum = "24b1f0365a6c6bb4020cd05806fd0d33c44d38046b8bd7f0e40814b9763cabfc"
 dependencies = [
  "serde",
 ]
@@ -1668,7 +1668,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1690,7 +1690,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1709,7 +1709,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1720,7 +1720,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1733,7 +1733,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1743,7 +1743,7 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#2fd81067c7130a23cabfff8bfa76b349b87e8426"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
 dependencies = [
  "cfg-if",
  "rosetta-build",

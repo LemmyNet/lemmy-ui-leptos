@@ -1,3 +1,5 @@
+#![allow(clippy::empty_docs)]
+
 mod constants;
 mod errors;
 pub mod host;
@@ -24,6 +26,7 @@ use crate::{
 use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
+#[cfg(debug_assertions)]
 use leptos_query_devtools::LeptosQueryDevtools;
 use leptos_router::*;
 
@@ -41,7 +44,12 @@ pub fn App() -> impl IntoView {
   let is_routing = RwSignal::new(false);
 
   view! {
-    <LeptosQueryDevtools/>
+    {
+      #[cfg(debug_assertions)]
+      view!{
+        <LeptosQueryDevtools/>
+      }
+    }
     <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>

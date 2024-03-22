@@ -8,7 +8,10 @@ use crate::{
     },
     unpack::Unpack,
   },
-  utils::derive_query_signal::derive_query_signal,
+  utils::{
+    derive_query_signal::derive_query_signal,
+    derive_user_is_logged_in::derive_user_is_logged_in,
+  },
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -49,9 +52,7 @@ pub fn TopNav() -> impl IntoView {
   let site_response = expect_context::<SiteStateSignal>();
   let refetch = use_site_refetch();
 
-  let user_is_logged_in = derive_query_signal(site_response, |site_response| {
-    site_response.my_user.is_some()
-  });
+  let user_is_logged_in = derive_user_is_logged_in(site_response);
 
   let names = derive_query_signal(site_response, |site_response| {
     site_response.my_user.as_ref().map(|my_user| {
@@ -161,74 +162,70 @@ pub fn TopNav() -> impl IntoView {
           // </ul>
           // </details>
           // </li>
-          <Transition fallback=|| "Loading">
-            <Unpack item=user_is_logged_in let:user_is_logged_in>
-              <Show
-                when=move || user_is_logged_in
+          <Show
+            when=move || user_is_logged_in().0
 
-                fallback=move || {
-                    view! {
-                      <li>
-                        <A href="/login">{t!(i18n, login)}</A>
-                      </li>
-                      <li>
-                        <A href="/signup">{t!(i18n, signup)}</A>
-                      </li>
-                    }
-                }
-              >
-
-                <li>
-                  <A href="/inbox">
-                    <span title=t!(i18n, unread_messages)>
-                      <Icon icon=Notifications/>
-                    </span>
-                  </A>
-                </li>
-                <Unpack item=names let:names>
+            fallback=move || {
+                view! {
                   <li>
-                    <details>
-                      <summary>
-
-                        {
-                            let (name, display_name) = names
-                                .as_ref()
-                                .expect(
-                                    "None case for my_user should be handled by ancestor Show component",
-                                );
-                            display_name.as_ref().unwrap_or(name)
-                        }
-
-                      </summary>
-                      <ul class="z-10">
-                        <li>
-                          <A href={
-                              let name = names
-                                  .as_ref()
-                                  .expect(
-                                      "None case for my_user should be handled by ancestor Show component",
-                                  )
-                                  .0
-                                  .as_str();
-                              format!("/u/{name}")
-                          }>{t!(i18n, profile)}</A>
-                        </li>
-                        <li>
-                          <A href="/settings">{t!(i18n, settings)}</A>
-                        </li>
-                        <div class="divider my-0"></div>
-                        <li>
-                          <ActionForm action=logout_action>
-                            <button type="submit">{t!(i18n, logout)}</button>
-                          </ActionForm>
-                        </li>
-                      </ul>
-                    </details>
+                    <A href="/login">{t!(i18n, login)}</A>
                   </li>
-                </Unpack>
-              </Show>
+                  <li>
+                    <A href="/signup">{t!(i18n, signup)}</A>
+                  </li>
+                }
+            }
+          >
+
+            <li>
+              <A href="/inbox">
+                <span title=t!(i18n, unread_messages)>
+                  <Icon icon=Notifications/>
+                </span>
+              </A>
+            </li>
+            <Unpack item=names let:names>
+              <li>
+                <details>
+                  <summary>
+
+                    {
+                        let (name, display_name) = names
+                            .as_ref()
+                            .expect(
+                                "None case for my_user should be handled by ancestor Show component",
+                            );
+                        display_name.as_ref().unwrap_or(name)
+                    }
+
+                  </summary>
+                  <ul class="z-10">
+                    <li>
+                      <A href={
+                          let name = names
+                              .as_ref()
+                              .expect(
+                                  "None case for my_user should be handled by ancestor Show component",
+                              )
+                              .0
+                              .as_str();
+                          format!("/u/{name}")
+                      }>{t!(i18n, profile)}</A>
+                    </li>
+                    <li>
+                      <A href="/settings">{t!(i18n, settings)}</A>
+                    </li>
+                    <div class="divider my-0"></div>
+                    <li>
+                      <ActionForm action=logout_action>
+                        <button type="submit">{t!(i18n, logout)}</button>
+                      </ActionForm>
+                    </li>
+                  </ul>
+                </details>
+              </li>
             </Unpack>
-          </Transition>
+          </Show>
         </ul>
       </div>
     </nav>
