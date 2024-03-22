@@ -97,11 +97,13 @@ pub fn TopNav() -> impl IntoView {
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
             <Transition>
-              <Unpack item=instance_name let:instance_name>
-                <A href="/" class="text-xl whitespace-nowrap">
-                  {instance_name}
-                </A>
-              </Unpack>
+              <ErrorBoundary fallback=|_| "Error loading site">
+                <Unpack item=instance_name let:instance_name>
+                  <A href="/" class="text-xl whitespace-nowrap">
+                    {instance_name}
+                  </A>
+                </Unpack>
+              </ErrorBoundary>
             </Transition>
           </li>
           <li>
@@ -184,47 +186,49 @@ pub fn TopNav() -> impl IntoView {
                 </span>
               </A>
             </li>
-            <Unpack item=names let:names>
-              <li>
-                <details>
-                  <summary>
+            <ErrorBoundary fallback=|_| "Error loading user">
+              <Unpack item=names let:names>
+                <li>
+                  <details>
+                    <summary>
 
-                    {
-                        let (name, display_name) = names
-                            .as_ref()
-                            .expect(
-                                "None case for my_user should be handled by ancestor Show component",
-                            );
-                        display_name.as_ref().unwrap_or(name)
-                    }
-
-                  </summary>
-                  <ul class="z-10">
-                    <li>
-                      <A href={
-                          let name = names
+                      {
+                          let (name, display_name) = names
                               .as_ref()
                               .expect(
                                   "None case for my_user should be handled by ancestor Show component",
-                              )
-                              .0
-                              .as_str();
-                          format!("/u/{name}")
-                      }>{t!(i18n, profile)}</A>
-                    </li>
-                    <li>
-                      <A href="/settings">{t!(i18n, settings)}</A>
-                    </li>
-                    <div class="divider my-0"></div>
-                    <li>
-                      <ActionForm action=logout_action>
-                        <button type="submit">{t!(i18n, logout)}</button>
-                      </ActionForm>
-                    </li>
-                  </ul>
-                </details>
-              </li>
-            </Unpack>
+                              );
+                          display_name.as_ref().unwrap_or(name)
+                      }
+
+                    </summary>
+                    <ul class="z-10">
+                      <li>
+                        <A href={
+                            let name = names
+                                .as_ref()
+                                .expect(
+                                    "None case for my_user should be handled by ancestor Show component",
+                                )
+                                .0
+                                .as_str();
+                            format!("/u/{name}")
+                        }>{t!(i18n, profile)}</A>
+                      </li>
+                      <li>
+                        <A href="/settings">{t!(i18n, settings)}</A>
+                      </li>
+                      <div class="divider my-0"></div>
+                      <li>
+                        <ActionForm action=logout_action>
+                          <button type="submit">{t!(i18n, logout)}</button>
+                        </ActionForm>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </Unpack>
+            </ErrorBoundary>
           </Show>
         </ul>
       </div>

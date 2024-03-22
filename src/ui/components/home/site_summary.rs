@@ -40,42 +40,47 @@ pub fn SiteSummary() -> impl IntoView {
       <figure>
         <div class="card-body bg-neutral">
           <Transition fallback=|| "Loading">
-            <Unpack item=site_name let:site_name>
-              <h2 class="card-title text-neutral-content">{site_name}</h2>
-            </Unpack>
+            <ErrorBoundary fallback=|_| "Error loading site info">
+              <Unpack item=site_name let:site_name>
+                <h2 class="card-title text-neutral-content">{site_name}</h2>
+              </Unpack>
+            </ErrorBoundary>
           </Transition>
         </div>
       </figure>
       <div class="card-body">
         <Transition fallback=|| "Loading">
-          <Unpack item=site_description let:site_description>
-            <p>{site_description}</p>
-          </Unpack>
-          <Unpack item=counts let:counts>
-            <p>
-              <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
-              <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
-              <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
-              <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
-              <CountsBadge>{counts.users} " users"</CountsBadge>
-              <CountsBadge>{counts.communities} " communities"</CountsBadge>
-              <CountsBadge>{counts.posts} " posts"</CountsBadge>
-              <CountsBadge>{counts.comments} " comments"</CountsBadge>
-              <CountsBadge>Modlog</CountsBadge>
-            </p>
+          <ErrorBoundary fallback=|_| "Error loading site">
+            <Unpack item=site_description let:site_description>
+              <p>{site_description}</p>
+            </Unpack>
+            <Unpack item=counts let:counts>
+              <p>
+                <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
+                <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
+                <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
+                <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
+                <CountsBadge>{counts.users} " users"</CountsBadge>
+                <CountsBadge>{counts.communities} " communities"</CountsBadge>
+                <CountsBadge>{counts.posts} " posts"</CountsBadge>
+                <CountsBadge>{counts.comments} " comments"</CountsBadge>
+                <CountsBadge>Modlog</CountsBadge>
+              </p>
 
-          </Unpack>
-
+            </Unpack>
+          </ErrorBoundary>
         </Transition>
         <h3 class="card-title">Admins</h3>
 
         <p>
           <Transition>
-            <Unpack item=admins let:admins>
-              <For each=move || admins.clone() key=|c| c.0 let:admin>
-                <CountsBadge>{admin.1}</CountsBadge>
-              </For>
-            </Unpack>
+            <ErrorBoundary fallback=|_| "Error loading site">
+              <Unpack item=admins let:admins>
+                <For each=move || admins.clone() key=|c| c.0 let:admin>
+                  <CountsBadge>{admin.1}</CountsBadge>
+                </For>
+              </Unpack>
+            </ErrorBoundary>
           </Transition>
         </p>
       </div>

@@ -54,17 +54,20 @@ pub fn Trending() -> impl IntoView {
       </figure>
       <div>
         <p>
+          // TODO: make better fallbacks for transition and errorboundary
           <Transition fallback=|| "Loading">
-            <Unpack item=trending_communities let:communities>
-              <For each=move || communities.clone() key=|c| c.0 let:c>
-                <A
-                  class="text-1 font-bold link link-accent whitespace-nowrap"
-                  href=format!("/c/{}", c.1.clone())
-                >
-                  {c.1.clone()}
-                </A>
-              </For>
-            </Unpack>
+            <ErrorBoundary fallback=|_| "Error loading trending communities">
+              <Unpack item=trending_communities let:communities>
+                <For each=move || communities.clone() key=|c| c.0 let:c>
+                  <A
+                    class="text-1 font-bold link link-accent whitespace-nowrap"
+                    href=format!("/c/{}", c.1.clone())
+                  >
+                    {c.1.clone()}
+                  </A>
+                </For>
+              </Unpack>
+            </ErrorBoundary>
           </Transition>
         </p>
         <A class="btn" href="/create_community">

@@ -37,9 +37,11 @@ pub fn HomeActivity() -> impl IntoView {
       <div class="flex flex-col">
         <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
           <Suspense fallback=|| "Loading">
-            <Unpack item=posts let:posts>
-              <PostListings posts=posts/>
-            </Unpack>
+            <ErrorBoundary fallback=|_| { "Could not load posts!" }>
+              <Unpack item=posts let:posts>
+                <PostListings posts=posts/>
+              </Unpack>
+            </ErrorBoundary>
           </Suspense>
         </div>
       </div>
