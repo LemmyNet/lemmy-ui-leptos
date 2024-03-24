@@ -8,7 +8,7 @@ import {
 test.beforeEach(async ({ context }) => {
   await context.route("*/**/serverfn/*", async (route) => {
     await route.abort();
-    throw "CSR - Error - Server function request - " + route.toString();
+    throw "CSR - error - server function request";
   });
 });
 
