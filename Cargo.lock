@@ -421,9 +421,9 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "backtrace"
-version = "0.3.70"
+version = "0.3.71"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95d8e92cac0961e91dbd517496b00f7e9b92363dbe6d42c3198268323798860c"
+checksum = "26b05800d2e817c8b3b4b54abd461726265fa9789ae34330622f2db9ee696f9d"
 dependencies = [
  "addr2line",
  "cc",
@@ -537,9 +537,9 @@ checksum = "e1e5f035d16fc623ae5f74981db80a439803888314e3a555fd6f04acd51a3205"
 
 [[package]]
 name = "bytes"
-version = "1.5.0"
+version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2bd12c1caf447e69cd4528f47f94d203fd2582878ecb9e9465484c4148a8223"
+checksum = "514de17de45fdb8dc022b1a7975556c53c86f9f0aa5f534b98977b171857c2c9"
 
 [[package]]
 name = "bytestring"
@@ -1297,7 +1297,7 @@ dependencies = [
  "futures-sink",
  "futures-util",
  "http 0.2.12",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "slab",
  "tokio",
  "tokio-util",
@@ -1532,9 +1532,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.2.5"
+version = "2.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b0b929d511467233429c45a44ac1dcaa21ba0f5ba11e4879e6ed28ddb4f9df4"
+checksum = "168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26"
 dependencies = [
  "equivalent",
  "hashbrown 0.14.3",
@@ -1665,7 +1665,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1687,7 +1687,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1706,7 +1706,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1717,7 +1717,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1730,7 +1730,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1740,7 +1740,7 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.3"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#78581bd6963a072563da76e9e149a0e65c7f528c"
+source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#ef4bb3cc4032ea25e38f4c1972e39c8dc0ba4ca5"
 dependencies = [
  "cfg-if",
  "rosetta-build",
@@ -1816,7 +1816,7 @@ dependencies = [
  "futures",
  "getrandom",
  "html-escape",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "itertools",
  "js-sys",
  "leptos_reactive",
@@ -1842,7 +1842,7 @@ checksum = "fb051c7b3bce8368ee30fb57e7b14cdcd573019ea6cd1858b9c697a3519ea099"
 dependencies = [
  "anyhow",
  "camino",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "parking_lot",
  "proc-macro2",
  "quote",
@@ -1925,7 +1925,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12b9dac59a2f88f5235dbe17cfa81b738a6f47238a64e4f23b921f1a90a9bf11"
 dependencies = [
  "cfg-if",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "leptos",
  "tracing",
  "wasm-bindgen",
@@ -1974,7 +1974,7 @@ dependencies = [
  "base64 0.21.7",
  "cfg-if",
  "futures",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "js-sys",
  "paste",
  "pin-project",
@@ -2556,9 +2556,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.10.3"
+version = "1.10.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b62dbe01f0b06f9d8dc7d49e05a0785f153b00b2c227856282f671e0318c9b15"
+checksum = "c117dbdfde9c8308975b6a18d71f3f385c89461f7b3fb054288ecf2a2058ba4c"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -2594,9 +2594,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.0"
+version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58b48d98d932f4ee75e541614d32a7f44c889b72bd9c2e04d95edd135989df88"
+checksum = "e333b1eb9fe677f6893a9efcb0d277a2d3edd83f358a236b657c32301dc6e5f6"
 dependencies = [
  "base64 0.21.7",
  "bytes",
@@ -2868,7 +2868,7 @@ dependencies = [
  "chrono",
  "hex",
  "indexmap 1.9.3",
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "serde",
  "serde_derive",
  "serde_json",
@@ -3267,7 +3267,7 @@ version = "0.22.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e40bb779c5187258fd7aad0eb68cb8706a0a81fa712fbea808ab43c4b8374c4"
 dependencies = [
- "indexmap 2.2.5",
+ "indexmap 2.2.6",
  "serde",
  "serde_spanned",
  "toml_datetime",

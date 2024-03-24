@@ -1,10 +1,9 @@
-use crate::{
-  queries::site_state_query::SiteStateSignal,
-  ui::components::common::icon::{
+use crate::ui::{
+  components::common::icon::{
     Icon,
     IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
   },
-  utils::derive_user_is_logged_in::derive_user_is_logged_in,
+  contexts::site_context::UserLoggedIn,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -108,8 +107,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       .map(ToString::to_string))
   });
 
-  let site_response = expect_context::<SiteStateSignal>();
-  let user_is_logged_in = derive_user_is_logged_in(site_response);
+  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
 
   let vote_action = Action::<VotePost, _>::server();
   Effect::new_isomorphic(move |_| {

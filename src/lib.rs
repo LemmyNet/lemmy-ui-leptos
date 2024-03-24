@@ -10,16 +10,18 @@ mod utils;
 
 use crate::{
   i18n::*,
-  queries::site_state_query::provide_site_state,
-  ui::components::{
-    common::{
-      nav::{BottomNav, TopNav},
-      with_filter_bar::WithFilterBar,
+  ui::{
+    components::{
+      common::{
+        nav::{BottomNav, TopNav},
+        with_filter_bar::WithFilterBar,
+      },
+      communities::communities_activity::CommunitiesActivity,
+      home::home_activity::HomeActivity,
+      login::login_activity::LoginActivity,
+      post::post_activity::PostActivity,
     },
-    communities::communities_activity::CommunitiesActivity,
-    home::home_activity::HomeActivity,
-    login::login_activity::LoginActivity,
-    post::post_activity::PostActivity,
+    contexts::site_context::provide_site_state,
   },
 };
 use leptos::*;
@@ -60,44 +62,55 @@ pub fn App() -> impl IntoView {
       <Title text="Brand from env"/>
 
       <div class="flex flex-col h-screen" data-theme=ui_theme>
-        <TopNav/>
         <Routes>
-          <Route path="/*any" view=NotFound/>
+          <Route path="" view=BaseLayout>
+            <Route path="/*any" view=NotFound/>
 
-          <Route
-            path=""
-            view=move || {
-                view! {
-                  <WithFilterBar>
-                    <HomeActivity/>
-                  </WithFilterBar>
-                }
-            }
+            <Route
+              path=""
+              view=move || {
+                  view! {
+                    <WithFilterBar>
+                      <HomeActivity/>
+                    </WithFilterBar>
+                  }
+              }
 
-            ssr=SsrMode::Async
-          />
+              ssr=SsrMode::Async
+            />
 
-          <Route path="create_post" view=CommunitiesActivity/>
-          <Route path="post/:id" view=PostActivity/>
+            <Route path="create_post" view=CommunitiesActivity/>
+            <Route path="post/:id" view=PostActivity/>
 
-          <Route path="search" view=CommunitiesActivity/>
-          <Route path="communities" view=CommunitiesActivity/>
-          <Route path="create_community" view=CommunitiesActivity/>
-          <Route path="c/:id" view=CommunitiesActivity/>
+            <Route path="search" view=CommunitiesActivity/>
+            <Route path="communities" view=CommunitiesActivity/>
+            <Route path="create_community" view=CommunitiesActivity/>
+            <Route path="c/:id" view=CommunitiesActivity/>
 
-          <Route path="login" view=LoginActivity/>
-          <Route path="signup" view=CommunitiesActivity/>
+            <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
+            <Route path="signup" view=CommunitiesActivity/>
 
-          <Route path="inbox" view=CommunitiesActivity/>
-          <Route path="settings" view=CommunitiesActivity/>
-          <Route path="u/:id" view=CommunitiesActivity/>
+            <Route path="inbox" view=CommunitiesActivity/>
+            <Route path="settings" view=CommunitiesActivity/>
+            <Route path="u/:id" view=CommunitiesActivity/>
 
-          <Route path="modlog" view=CommunitiesActivity/>
-          <Route path="instances" view=CommunitiesActivity/>
+            <Route path="modlog" view=CommunitiesActivity/>
+            <Route path="instances" view=CommunitiesActivity/>
+          </Route>
         </Routes>
-        <BottomNav/>
       </div>
     </Router>
+  }
+}
+
+#[component]
+fn BaseLayout() -> impl IntoView {
+  view! {
+    <Transition>
+      <TopNav/>
+      <Outlet/>
+      <BottomNav/>
+    </Transition>
   }
 }
 

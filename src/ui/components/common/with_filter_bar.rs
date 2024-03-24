@@ -1,7 +1,6 @@
 use crate::{
   i18n::*,
-  queries::site_state_query::SiteStateSignal,
-  utils::derive_user_is_logged_in::{derive_user_is_logged_in, UserLoggedIn},
+  ui::contexts::site_context::{SiteStateSignal, UserLoggedIn},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
@@ -120,12 +119,8 @@ pub fn WithFilterBar(children: Children) -> impl IntoView {
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
-  let site_response = expect_context::<SiteStateSignal>();
-  let user_is_logged_in = derive_user_is_logged_in(site_response);
-
   provide_context(listing_type);
   provide_context(sort_type);
-  provide_context(user_is_logged_in);
 
   view! {
     <div class="block">

@@ -17,5 +17,11 @@ async fn list_posts(body: GetPosts) -> Result<GetPostsResponse, ServerFnError> {
 }
 
 pub fn use_posts() -> QueryScope<GetPosts, Result<GetPostsResponse, ServerFnError>> {
-  create_query(list_posts, QueryOptions::default())
+  create_query(
+    list_posts,
+    QueryOptions {
+      resource_option: Some(leptos_query::ResourceOption::Blocking),
+      ..Default::default()
+    },
+  )
 }

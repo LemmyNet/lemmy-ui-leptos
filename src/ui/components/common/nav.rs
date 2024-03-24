@@ -1,17 +1,16 @@
 use crate::{
   i18n::*,
-  queries::site_state_query::{use_site_refetch, SiteStateSignal},
-  ui::components::common::{
-    icon::{
-      Icon,
-      IconType::{Donate, Notifications, Search},
+  ui::{
+    components::common::{
+      icon::{
+        Icon,
+        IconType::{Donate, Notifications, Search},
+      },
+      unpack::Unpack,
     },
-    unpack::Unpack,
+    contexts::site_context::{SiteRefetchFn, SiteStateSignal, UserLoggedIn},
   },
-  utils::{
-    derive_query_signal::derive_query_signal,
-    derive_user_is_logged_in::derive_user_is_logged_in,
-  },
+  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -50,9 +49,9 @@ pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
   let site_response = expect_context::<SiteStateSignal>();
-  let refetch = use_site_refetch();
+  let SiteRefetchFn(refetch) = expect_context::<SiteRefetchFn>();
 
-  let user_is_logged_in = derive_user_is_logged_in(site_response);
+  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
 
   let names = derive_query_signal(site_response, |site_response| {
     site_response.my_user.as_ref().map(|my_user| {
@@ -69,8 +68,8 @@ pub fn TopNav() -> impl IntoView {
 
   let logout_action = create_server_action::<Logout>();
 
-  Effect::new_isomorphic(move |_| {
-    if logout_action.version().with(|v| *v > 0) {
+  Effect::new(move |_| {
+    if logout_action.version()() > 0 {
       refetch();
     }
   });
@@ -96,15 +95,11 @@ pub fn TopNav() -> impl IntoView {
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
-            <Transition>
-              <ErrorBoundary fallback=|_| "Error loading site">
-                <Unpack item=instance_name let:instance_name>
-                  <A href="/" class="text-xl whitespace-nowrap">
-                    {instance_name}
-                  </A>
-                </Unpack>
-              </ErrorBoundary>
-            </Transition>
+            <Unpack item=instance_name let:instance_name>
+              <A href="/" class="text-xl whitespace-nowrap">
+                {instance_name}
+              </A>
+            </Unpack>
           </li>
           <li>
             <A href="/communities" class="text-md">
@@ -186,49 +181,47 @@ pub fn TopNav() -> impl IntoView {
                 </span>
               </A>
             </li>
-            <ErrorBoundary fallback=|_| "Error loading user">
-              <Unpack item=names let:names>
-                <li>
-                  <details>
-                    <summary>
+            <Unpack item=names let:names>
+              <li>
+                <details>
+                  <summary>
 
-                      {
-                          let (name, display_name) = names
+                    {
+                        let (name, display_name) = names
+                            .as_ref()
+                            .expect(
+                                "None case for my_user should be handled by ancestor Show component",
+                            );
+                        display_name.as_ref().unwrap_or(name)
+                    }
+
+                  </summary>
+                  <ul class="z-10">
+                    <li>
+                      <A href={
+                          let name = names
                               .as_ref()
                               .expect(
                                   "None case for my_user should be handled by ancestor Show component",
-                              );
-                          display_name.as_ref().unwrap_or(name)
-                      }
-
-                    </summary>
-                    <ul class="z-10">
-                      <li>
-                        <A href={
-                            let name = names
-                                .as_ref()
-                                .expect(
-                                    "None case for my_user should be handled by ancestor Show component",
-                                )
-                                .0
-                                .as_str();
-                            format!("/u/{name}")
-                        }>{t!(i18n, profile)}</A>
-                      </li>
-                      <li>
-                        <A href="/settings">{t!(i18n, settings)}</A>
-                      </li>
-                      <div class="divider my-0"></div>
-                      <li>
-                        <ActionForm action=logout_action>
-                          <button type="submit">{t!(i18n, logout)}</button>
-                        </ActionForm>
-                      </li>
-                    </ul>
-                  </details>
-                </li>
-              </Unpack>
-            </ErrorBoundary>
+                              )
+                              .0
+                              .as_str();
+                          format!("/u/{name}")
+                      }>{t!(i18n, profile)}</A>
+                    </li>
+                    <li>
+                      <A href="/settings">{t!(i18n, settings)}</A>
+                    </li>
+                    <div class="divider my-0"></div>
+                    <li>
+                      <ActionForm action=logout_action>
+                        <button type="submit">{t!(i18n, logout)}</button>
+                      </ActionForm>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+            </Unpack>
           </Show>
         </ul>
       </div>
@@ -258,13 +251,11 @@ pub fn BottomNav() -> impl IntoView {
             </a>
           </li>
           <li>
-            <Transition fallback=|| "Loading">
-              <Unpack item=version let:version>
-                <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-                  {version}
-                </a>
-              </Unpack>
-            </Transition>
+            <Unpack item=version let:version>
+              <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
+                {version}
+              </a>
+            </Unpack>
           </li>
           <li>
             <A href="/modlog" class="text-md">

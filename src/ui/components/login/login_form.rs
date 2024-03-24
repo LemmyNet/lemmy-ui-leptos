@@ -1,10 +1,12 @@
 use crate::{
-  queries::site_state_query::use_site_refetch,
-  ui::components::common::text_input::{InputType, TextInput},
+  constants::AUTH_COOKIE,
+  ui::{
+    components::common::text_input::{InputType, TextInput},
+    contexts::site_context::{SiteRefetchFn, UserLoggedIn},
+  },
 };
-use cfg_if::cfg_if;
 use leptos::{server_fn::error::NoCustomError, *};
-use leptos_router::ActionForm;
+use leptos_router::{ActionForm, NavigateOptions, Redirect};
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -25,7 +27,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
     .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?
     .jwt
   {
-    session.insert("jwt", jwt.into_inner())?;
+    session.insert(AUTH_COOKIE, jwt.into_inner())?;
   }
 
   Ok(())
@@ -34,25 +36,26 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 #[component]
 pub fn LoginForm() -> impl IntoView {
   let login = Action::<LoginAction, _>::server();
-  let refetch = use_site_refetch();
+  let SiteRefetchFn(refetch) = expect_context::<SiteRefetchFn>();
+  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
 
-  Effect::new_isomorphic(move |_| {
-    if login.version()() > 0 {
+  Effect::new(move |_| {
+    if login.version()() > 0 && !user_is_logged_in().0 {
       refetch();
-
-      cfg_if! {
-        if #[cfg(feature = "ssr")] {
-          leptos_actix::redirect("/");
-        } else {
-          let navigate = leptos_router::use_navigate();
-
-          navigate("/", leptos_router::NavigateOptions { replace: true, ..Default::default() })
-        }
-      }
     }
   });
 
   view! {
+    <Show when=move || user_is_logged_in().0>
+      <Redirect
+        path="/"
+        options=NavigateOptions {
+            replace: true,
+            ..Default::default()
+        }
+      />
+
+    </Show>
     <ActionForm class="space-y-3" action=login>
       <TextInput
         id="username"
