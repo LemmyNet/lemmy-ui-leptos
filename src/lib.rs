@@ -12,23 +12,20 @@ use crate::{
   i18n::*,
   ui::{
     components::{
-      common::{
-        nav::{BottomNav, TopNav},
-        with_filter_bar::WithFilterBar,
-      },
+      common::with_filter_bar::WithFilterBar,
       communities::communities_activity::CommunitiesActivity,
       home::home_activity::HomeActivity,
       login::login_activity::LoginActivity,
       post::post_activity::PostActivity,
     },
     contexts::site_context::provide_site_state,
+    layouts::base_layout::BaseLayout,
   },
 };
 use leptos::*;
 use leptos_meta::*;
 use leptos_query::provide_query_client;
 #[cfg(debug_assertions)]
-use leptos_query_devtools::LeptosQueryDevtools;
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -45,11 +42,6 @@ pub fn App() -> impl IntoView {
   let is_routing = RwSignal::new(false);
 
   view! {
-    {
-        #[cfg(debug_assertions)]
-        view! { <LeptosQueryDevtools/> }
-    }
-
     <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
       <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
@@ -62,6 +54,7 @@ pub fn App() -> impl IntoView {
       <Title text="Brand from env"/>
 
       <div class="flex flex-col h-screen" data-theme=ui_theme>
+
         <Routes>
           <Route path="" view=BaseLayout>
             <Route path="/*any" view=NotFound/>
@@ -100,17 +93,6 @@ pub fn App() -> impl IntoView {
         </Routes>
       </div>
     </Router>
-  }
-}
-
-#[component]
-fn BaseLayout() -> impl IntoView {
-  view! {
-    <Transition>
-      <TopNav/>
-      <Outlet/>
-      <BottomNav/>
-    </Transition>
   }
 }
 

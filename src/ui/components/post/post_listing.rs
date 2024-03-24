@@ -92,6 +92,7 @@ pub async fn report_post(
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
   let post_view = RwSignal::new(post_view());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
+  let post_name = Signal::derive(move || with!(|post_view| post_view.post.name.clone()));
   let is_upvote =
     Signal::derive(move || with!(|post_view| post_view.my_vote.unwrap_or_default() == 1));
   let is_downvote =
@@ -106,6 +107,15 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       .as_ref()
       .map(ToString::to_string))
   });
+
+  let creator_id = Signal::derive(move || with!(|post_view| post_view.creator.id.0));
+  let creator_name = Signal::derive(move || with!(|post_view| post_view.creator.name.clone()));
+  let community_name = Signal::derive(move || with!(|post_view| post_view.community.name.clone()));
+
+  let community_title =
+    Signal::derive(move || with!(|post_view| post_view.community.title.clone()));
+  let unread_comments = Signal::derive(move || with!(|post_view| post_view.unread_comments));
+  let saved = Signal::derive(move || with!(|post_view| post_view.saved));
 
   let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
 
@@ -225,31 +235,30 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       </td>
       <td class="w-full">
         <A href=move || with!(| id | format!("/post/{id}")) class="block">
-          <span class="text-lg">{move || post_view.get().post.name}</span>
+          <span class="text-lg">{post_name}</span>
         </A>
         <span class="block">
           <A
-            href=move || format!("/u/{}", post_view.get().creator.name)
+            href=move || with!(| creator_name | format!("/u/{creator_name}"))
             class="text-sm inline-block"
           >
-            {post_view.get().creator.name}
+            {creator_name}
           </A>
           " to "
-          <A class="text-sm inline-block" href=format!("/c/{}", post_view.get().community.name)>
-            {post_view.get().community.title}
+          <A
+            class="text-sm inline-block"
+            href=move || with!(| community_name | format!("/c/{community_name}"))
+          >
+            {community_title}
           </A>
         </span>
         <span class="flex items-center gap-x-2">
           <ActionForm action=vote_action class="flex items-center sm:hidden">
-            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
-            <input
-              type="hidden"
-              name="score"
-              value=move || if Some(1) == post_view.get().my_vote { 0 } else { 1 }
-            />
+            <input type="hidden" name="post_id" value=id/>
+            <input type="hidden" name="score" value=move || if is_upvote() { 0 } else { 1 }/>
             <button
               type="submit"
-              class=move || { if Some(1) == post_view.get().my_vote { " text-accent" } else { "" } }
+              class=move || is_upvote().then_some("text-accent")
               title="Up vote"
 
               disabled=move || !user_is_logged_in().0 || vote_action.pending()()
@@ -257,19 +266,13 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               <Icon icon=Upvote/>
             </button>
           </ActionForm>
-          <span class="block text-sm sm:hidden">{move || post_view.get().counts.score}</span>
+          <span class="block text-sm sm:hidden">{score}</span>
           <ActionForm action=vote_action class="flex items-center sm:hidden">
-            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
-            <input
-              type="hidden"
-              name="score"
-              value=move || if Some(-1) == post_view.get().my_vote { 0 } else { -1 }
-            />
+            <input type="hidden" name="post_id" value=id/>
+            <input type="hidden" name="score" value=move || is_downvote() {0} else {-1}/>
             <button
               type="submit"
-              class=move || {
-                  if Some(-1) == post_view.get().my_vote { " text-accent" } else { "" }
-              }
+              class=move || is_downvote().then_some("text-accent")
 
               title="Down vote"
 
@@ -278,22 +281,16 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               <Icon icon=Downvote/>
             </button>
           </ActionForm>
-          <span
-            class="flex items-center"
-            title=move || format!("{} comments", post_view.get().unread_comments)
-          >
-            <A
-              href=move || { format!("/post/{}", post_view.get().post.id) }
-              class="text-sm whitespace-nowrap"
-            >
+          <span class="flex items-center" title=move || format!("{} comments", unread_comments())>
+            <A href=move || { format!("/post/{}", id()) } class="text-sm whitespace-nowrap">
               <Icon icon=Comments class="inline".into()/>
               " "
-              {post_view.get().unread_comments}
+              {unread_comments}
             </A>
           </span>
           <ActionForm action=save_post_action class="flex items-center">
-            <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
-            <input type="hidden" name="save" value=move || format!("{}", !post_view.get().saved)/>
+            <input type="hidden" name="post_id" value=id/>
+            <input type="hidden" name="save" value=saved/>
             <button
               type="submit"
               title="Save post"
@@ -315,7 +312,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
                 <ActionForm action=report_post_action>
-                  <input type="hidden" name="post_id" value=format!("{}", post_view.get().post.id)/>
+                  <input type="hidden" name="post_id" value=id/>
                   <input
                     type="text"
                     on:input=move |e| update!(| reason | * reason = event_target_value(& e))
@@ -330,11 +327,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               </li>
               <li>
                 <ActionForm action=block_user_action>
-                  <input
-                    type="hidden"
-                    name="person_id"
-                    value=format!("{}", post_view.get().creator.id.0)
-                  />
+                  <input type="hidden" name="person_id" value=creator_id/>
                   <input type="hidden" name="block" value="true"/>
                   <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
                     <Icon icon=Block class="inline-block".into()/>
