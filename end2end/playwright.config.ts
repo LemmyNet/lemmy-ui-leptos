@@ -22,6 +22,18 @@ const config: PlaywrightTestConfig = {
 
   projects: [
     {
+      name: "Chromium SSR",
+      testMatch: "ssr.spec.ts",
+      use: {
+        ...{
+          javaScriptEnabled: false,
+          baseURL: "http://localhost:1237",
+        },
+        ...devices["Desktop Chrome"],
+      },
+    },
+
+    {
       name: "Chromium Hydrate",
       testMatch: "hydrate.spec.ts",
       use: {
@@ -40,18 +52,6 @@ const config: PlaywrightTestConfig = {
         ...{
           // deliberately trigger failure
           // javaScriptEnabled: false,
-          baseURL: "http://localhost:1237",
-        },
-        ...devices["Desktop Chrome"],
-      },
-    },
-
-    {
-      name: "Chromium SSR",
-      testMatch: "ssr.spec.ts",
-      use: {
-        ...{
-          javaScriptEnabled: false,
           baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Chrome"],
