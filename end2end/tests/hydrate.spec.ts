@@ -1,9 +1,13 @@
 import { test, expect } from "@playwright/test";
-import { loginLogoutTest, persistLanguageTest, persistThemeTest } from "./common";
+import {
+  loginLogoutTest,
+  persistLanguageTest,
+  persistThemeTest,
+} from "./common";
 
 test("show home, login, logout multiple times", async ({ page }) => {
   await page.goto("/");
-  let iterations = 3
+  let iterations = 3;
   while (iterations--) {
     await loginLogoutTest({ page });
   }

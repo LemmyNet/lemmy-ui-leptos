@@ -10,28 +10,25 @@ const config: PlaywrightTestConfig = {
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  // only 1 worker because server can only handle login tests 
+  // only 1 worker because server can only handle login tests
   // one at a time from the same account due to token clashes
-  // another solution is to use multiple account fixture data 
+  // another solution is to use multiple account fixture data
   workers: 1,
-  reporter: [ ['html', { open: 'never' }] ],
+  reporter: [["html", { open: "never" }]],
   use: {
     actionTimeout: 0,
     trace: "on-first-retry",
   },
 
   projects: [
-
     {
       name: "Chromium Hydrate",
       testMatch: "hydrate.spec.ts",
       use: {
         ...{
           // javaScriptEnabled: true,
-          baseURL: 'http://localhost:1237',
+          baseURL: "http://localhost:1237",
         },
-        // ...devices["Desktop Firefox"],
-        // ...devices["Desktop Safari"],
         ...devices["Desktop Chrome"],
       },
     },
@@ -40,13 +37,11 @@ const config: PlaywrightTestConfig = {
       name: "Chromium CSR",
       testMatch: "csr.spec.ts",
       use: {
-        ...{ 
+        ...{
           // deliberately trigger failure
           // javaScriptEnabled: false,
-          baseURL: 'http://localhost:1237',
+          baseURL: "http://localhost:1237",
         },
-        // ...devices["Desktop Firefox"],
-        // ...devices["Desktop Safari"],
         ...devices["Desktop Chrome"],
       },
     },
@@ -55,12 +50,10 @@ const config: PlaywrightTestConfig = {
       name: "Chromium SSR",
       testMatch: "ssr.spec.ts",
       use: {
-        ...{ 
+        ...{
           javaScriptEnabled: false,
-          baseURL: 'http://localhost:1237',
+          baseURL: "http://localhost:1237",
         },
-        // ...devices["Desktop Firefox"],
-        // ...devices["Desktop Safari"],
         ...devices["Desktop Chrome"],
       },
     },
@@ -75,8 +68,6 @@ const config: PlaywrightTestConfig = {
     //       baseURL: 'http://localhost:1237',
     //     },
     //     ...devices["Desktop Firefox"],
-    //     // ...devices["Desktop Safari"],
-    //     // ...devices["Desktop Chrome"],
     //   },
     // },
 
@@ -84,14 +75,12 @@ const config: PlaywrightTestConfig = {
     //   name: "Firefox CSR",
     //   testMatch: "csr.spec.ts",
     //   use: {
-    //     ...{ 
+    //     ...{
     //       // deliberately trigger failure
     //       // javaScriptEnabled: false,
     //       baseURL: 'http://localhost:1237',
     //     },
     //     ...devices["Desktop Firefox"],
-    //     // ...devices["Desktop Safari"],
-    //     // ...devices["Desktop Chrome"],
     //   },
     // },
 
@@ -99,13 +88,11 @@ const config: PlaywrightTestConfig = {
       name: "Firefox SSR",
       testMatch: "ssr.spec.ts",
       use: {
-        ...{ 
+        ...{
           javaScriptEnabled: false,
-          baseURL: 'http://localhost:1237',
+          baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Firefox"],
-        // ...devices["Desktop Safari"],
-        // ...devices["Desktop Chrome"],
       },
     },
 
@@ -151,7 +138,6 @@ const config: PlaywrightTestConfig = {
     //     channel: 'chrome',
     //   },
     // },
-
   ],
 };
 
