@@ -1,29 +1,31 @@
-// useful in development to only have errors in compiler output
-// #![allow(warnings)]
+#![allow(clippy::empty_docs)]
 
-mod config;
-mod cookie;
-mod errors;
+mod constants;
 pub mod host;
-mod layout;
-mod lemmy_client;
+mod queries;
+#[cfg(feature = "ssr")]
+pub mod server;
 mod ui;
+mod utils;
 
 use crate::{
-  errors::LemmyAppError,
   i18n::*,
-  layout::Layout,
-  lemmy_client::*,
-  ui::components::{
-    communities::communities_activity::CommunitiesActivity,
-    home::home_activity::HomeActivity,
-    login::login_activity::LoginActivity,
-    post::post_activity::PostActivity,
+  ui::{
+    components::{
+      common::with_filter_bar::WithFilterBar,
+      communities::communities_activity::CommunitiesActivity,
+      home::home_activity::HomeActivity,
+      login::login_activity::LoginActivity,
+      post::post_activity::PostActivity,
+    },
+    contexts::site_context::provide_site_state,
+    layouts::base_layout::BaseLayout,
   },
 };
-use lemmy_api_common::site::GetSiteResponse;
 use leptos::*;
 use leptos_meta::*;
+use leptos_query::provide_query_client;
+#[cfg(debug_assertions)]
 use leptos_router::*;
 
 leptos_i18n::load_locales!();
@@ -32,69 +34,64 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
+  provide_query_client();
+  provide_site_state();
 
-  let error = create_rw_signal::<Option<LemmyAppError>>(None);
-  provide_context(error);
-  let user = create_rw_signal::<Option<bool>>(None);
-  provide_context(user);
-  let ui_theme = create_rw_signal::<Option<String>>(None);
-  provide_context(ui_theme);
+  let ui_theme = RwSignal::new(String::from("retro"));
 
-  let ssr_site = create_resource(
-    move || (user.get()),
-    move |_user| async move {
-      let result = LemmyClient.get_site().await;
-
-      match result {
-        Ok(o) => Ok(o),
-        Err(e) => {
-          error.set(Some(e.clone()));
-          Err(e)
-        }
-      }
-    },
-  );
-
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
+  let is_routing = RwSignal::new(false);
 
   view! {
-    <Transition fallback=|| {}>
-      {move || {
-          ssr_site
-              .get()
-              .map(|m| {
-                  site_signal.set(Some(m));
-              });
-      }}
+    <Router set_is_routing=is_routing>
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+      <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
+      <Meta name="description" content="Lemmy-UI-Leptos."/>
+      <Meta name="viewport" content="viewport-fit=cover"/>
+      // debug where there is no visible console (mobile/live/desktop)
+      // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+      // <Script>eruda.init();</Script>
+      <Title text="Brand from env"/>
 
-    </Transition>
-    <Router>
-      <Routes>
-        <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>
-          <Route path="/*any" view=NotFound/>
+      <div class="flex flex-col h-screen" data-theme=ui_theme>
 
-          <Route path="" view=move || view! { <HomeActivity site_signal/> }/>
+        <Routes>
+          <Route path="" view=BaseLayout>
+            <Route path="/*any" view=NotFound/>
 
-          <Route path="create_post" view=CommunitiesActivity/>
-          <Route path="post/:id" view=PostActivity/>
+            <Route
+              path=""
+              view=move || {
+                  view! {
+                    <WithFilterBar>
+                      <HomeActivity/>
+                    </WithFilterBar>
+                  }
+              }
 
-          <Route path="search" view=CommunitiesActivity/>
-          <Route path="communities" view=CommunitiesActivity/>
-          <Route path="create_community" view=CommunitiesActivity/>
-          <Route path="c/:id" view=CommunitiesActivity/>
+              ssr=SsrMode::Async
+            />
 
-          <Route path="login" view=LoginActivity/>
-          <Route path="logout" view=CommunitiesActivity/>
-          <Route path="signup" view=CommunitiesActivity/>
+            <Route path="create_post" view=CommunitiesActivity/>
+            <Route path="post/:id" view=PostActivity/>
 
-          <Route path="inbox" view=CommunitiesActivity/>
-          <Route path="settings" view=CommunitiesActivity/>
-          <Route path="u/:id" view=CommunitiesActivity/>
+            <Route path="search" view=CommunitiesActivity/>
+            <Route path="communities" view=CommunitiesActivity/>
+            <Route path="create_community" view=CommunitiesActivity/>
+            <Route path="c/:id" view=CommunitiesActivity/>
 
-          <Route path="modlog" view=CommunitiesActivity/>
-          <Route path="instances" view=CommunitiesActivity/>
-        </Route>
-      </Routes>
+            <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
+            <Route path="signup" view=CommunitiesActivity/>
+
+            <Route path="inbox" view=CommunitiesActivity/>
+            <Route path="settings" view=CommunitiesActivity/>
+            <Route path="u/:id" view=CommunitiesActivity/>
+
+            <Route path="modlog" view=CommunitiesActivity/>
+            <Route path="instances" view=CommunitiesActivity/>
+          </Route>
+        </Routes>
+      </div>
     </Router>
   }
 }
