@@ -1,14 +1,14 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 
 export async function loginLogoutTest({ page }) {
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first()
+    page.locator("a").getByText("Login", { exact: true }).first(),
   ).toHaveText("Login");
 
   await page.locator("a").getByText("Login", { exact: true }).first().click();
 
   await expect(page.getByRole("button").getByText("Login").first()).toHaveText(
-    "Login"
+    "Login",
   );
 
   await page.getByLabel("Username", { exact: true }).fill("lemmy");
@@ -16,7 +16,7 @@ export async function loginLogoutTest({ page }) {
   await page.getByRole("button").getByText("Login").click();
 
   await expect(
-    page.locator("summary").getByText("lemmy", { exact: true })
+    page.locator("summary").getByText("lemmy", { exact: true }),
   ).toBeVisible();
 
   await page.locator("summary").getByText("lemmy", { exact: true }).click();
@@ -27,25 +27,25 @@ export async function persistLanguageTest({ page }) {
   await page.goto("/");
 
   await expect(page.locator("a").getByText("Modlog").first()).toHaveText(
-    "Modlog"
+    "Modlog",
   );
 
   await expect(
-    page.locator("summary").getByText("Lang", { exact: true })
+    page.locator("summary").getByText("Lang", { exact: true }),
   ).toBeVisible();
 
   await page.locator("summary").getByText("Lang", { exact: true }).click();
   await page.getByRole("button").getByText("FR", { exact: true }).click();
 
   await expect(page.locator("a").getByText("fr Modlog").first()).toHaveText(
-    "fr Modlog"
+    "fr Modlog",
   );
 
   await page.goto("https://join-lemmy.org");
   await page.goto("/");
 
   await expect(page.locator("a").getByText("fr Modlog").first()).toHaveText(
-    "fr Modlog"
+    "fr Modlog",
   );
 }
 
@@ -55,7 +55,7 @@ export async function persistThemeTest({ page }) {
   await expect(page.locator("div[data-theme]")).toHaveAttribute("data-theme");
 
   await expect(
-    page.locator("summary").getByText("Theme", { exact: true })
+    page.locator("summary").getByText("Theme", { exact: true }),
   ).toBeVisible();
 
   await page.locator("summary").getByText("Theme", { exact: true }).click();
@@ -63,7 +63,7 @@ export async function persistThemeTest({ page }) {
 
   await expect(page.locator("div[data-theme]")).toHaveAttribute(
     "data-theme",
-    "dark"
+    "dark",
   );
 
   await page.goto("https://join-lemmy.org");
@@ -71,6 +71,6 @@ export async function persistThemeTest({ page }) {
 
   await expect(page.locator("div[data-theme]")).toHaveAttribute(
     "data-theme",
-    "dark"
+    "dark",
   );
 }
