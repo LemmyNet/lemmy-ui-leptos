@@ -5,7 +5,6 @@ variables:
 steps:
   prettier_check:
     image: tmknom/prettier:3.0.0
-    group: format
     commands:
       - prettier -c .
     when:
@@ -13,7 +12,6 @@ steps:
 
   toml_fmt:
     image: tamasfe/taplo:0.8.1
-    group: format
     commands:
       - taplo format --check
     when:
@@ -21,7 +19,6 @@ steps:
 
   cargo_fmt:
     image: *rust_image
-    group: format
     environment:
       # store cargo data in repo folder so that it gets cached between steps
       CARGO_HOME: .cargo
@@ -32,7 +29,6 @@ steps:
 
   leptos_fmt:
     image: *rust_image
-    group: format
     commands:
       - *install_binstall
       - cargo binstall -y leptosfmt
@@ -41,7 +37,6 @@ steps:
       - event: pull_request
 
   cargo_machete:
-    group: format
     image: *rust_image
     commands:
       - *install_binstall
