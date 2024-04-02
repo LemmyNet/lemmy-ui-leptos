@@ -6,3 +6,7 @@
 target
 node_modules
 docker/volumes
+
+# test
+end2end/test-results
+end2end/playwright-report
