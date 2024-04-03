@@ -6,8 +6,9 @@ steps:
   # putting this first while in dev to fail faster
   playwright_check:
     image: docker:dind
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    # need priv server
+    # volumes:
+    #   - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - ls -la
       - uname -a
