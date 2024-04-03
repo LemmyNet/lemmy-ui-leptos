@@ -121,16 +121,34 @@ services:
 steps:
   # putting this first while in dev to fail faster
   playwright_check:
-    image: docker:dind
-    # need priv server
-    # volumes:
-    #   - /var/run/docker.sock:/var/run/docker.sock
-    commands:
-      - ls -la
-      - uname -a
-      - docker compose -f ./docker/docker-compose.yml up
-    when:
-      - event: pull_request    
+    image: *rust_image
+  environment:
+    CARGO_HOME: .cargo
+  commands:
+    - *install_binstall
+    - cargo-binstall -y cargo-leptos
+    - apt-get update && apt-get -y install libssl-dev pkg-config
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    - . /root/.profile
+    - nvm install --lts
+    - npm install -g pnpm
+    - pnpm install
+    - rustup target add wasm32-unknown-unknown
+    - cargo leptos build
+  when:
+    - event: pull_request
+
+  # playwright_check:
+  #   image: docker:dind
+  #   # need priv server
+  #   # volumes:
+  #   #   - /var/run/docker.sock:/var/run/docker.sock
+  #   commands:
+  #     - ls -la
+  #     - uname -a
+  #     - docker compose -f ./docker/docker-compose.yml up
+  #   when:
+  #     - event: pull_request    
 
   prettier_check:
     image: tmknom/prettier:3.0.0
