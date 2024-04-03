@@ -3,6 +3,14 @@ variables:
   - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
 
 steps:
+  # putting this first while in dev to fail faster
+  playwright_check:
+    image: docker:dind
+    commands:
+      - ls -la
+    when:
+      - event: pull_request    
+
   prettier_check:
     image: tmknom/prettier:3.0.0
     commands:
