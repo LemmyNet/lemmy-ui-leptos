@@ -45,8 +45,8 @@ services:
     #   # prometheus metrics can be enabled with the `prometheus` config option. they are available on
     #   # port 10002, path /metrics by default
     #   - "10002:10002"
-    # volumes:
-    #   - ./lemmy.hjson:/config/config.hjson:Z
+    volumes:
+      - ./docker/lemmy.hjson:/config/config.hjson:Z
     depends_on:
       - postgres
       # - pictrs
