@@ -8,6 +8,7 @@ steps:
     image: docker:dind
     commands:
       - ls -la
+      - uname -a
     when:
       - event: pull_request    
 
