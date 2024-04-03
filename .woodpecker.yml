@@ -9,7 +9,7 @@ steps:
     commands:
       - ls -la
       - uname -a
-      - docker compose up -f ./docker/docker-compose.yml
+      - docker compose -f ./docker/docker-compose.yml up
     when:
       - event: pull_request    
 
