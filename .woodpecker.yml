@@ -117,7 +117,6 @@ services:
 #         - subnet: 179.99.0.0/24
 #           gateway: 179.99.0.1
 
-
 steps:
   # putting this first while in dev to fail faster
   # playwright_check:
@@ -148,7 +147,7 @@ steps:
   #     - uname -a
   #     - docker compose -f ./docker/docker-compose.yml up
   #   when:
-  #     - event: pull_request    
+  #     - event: pull_request
 
   prettier_check:
     image: tmknom/prettier:3.0.0
