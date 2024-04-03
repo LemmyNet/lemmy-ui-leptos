@@ -47,8 +47,8 @@ services:
     #   - "10002:10002"
     # volumes:
     #   - ./lemmy.hjson:/config/config.hjson:Z
-    # depends_on:
-    #   - postgres
+    depends_on:
+      - postgres
       # - pictrs
     # logging: *default-logging
     # networks:
