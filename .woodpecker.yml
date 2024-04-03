@@ -49,7 +49,7 @@ services:
     #   - /docker/lemmy.hjson:/config/config.hjson:Z
     # depends_on:
     #   - postgres
-      # - pictrs
+    # - pictrs
     # logging: *default-logging
     # networks:
     #   - lemmynet
