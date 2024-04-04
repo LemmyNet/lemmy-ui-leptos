@@ -8,6 +8,9 @@ devDependencies:
   "@playwright/test":
     specifier: ^1.41.1
     version: 1.41.1
+  "@types/node":
+    specifier: ^18.13.0
+    version: 18.19.26
 
 packages:
   /@playwright/test@1.41.1:
@@ -19,6 +22,15 @@ packages:
     hasBin: true
     dependencies:
       playwright: 1.41.1
+    dev: true
+
+  /@types/node@18.19.26:
+    resolution:
+      {
+        integrity: sha512-+wiMJsIwLOYCvUqSdKTrfkS8mpTp+MPINe6+Np4TAGFWWRWiBQ5kSq9nZGCSPkzx9mvT+uEukzpX4MOSCydcvw==,
+      }
+    dependencies:
+      undici-types: 5.26.5
     dev: true
 
   /fsevents@2.3.2:
@@ -52,4 +64,11 @@ packages:
       playwright-core: 1.41.1
     optionalDependencies:
       fsevents: 2.3.2
+    dev: true
+
+  /undici-types@5.26.5:
+    resolution:
+      {
+        integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==,
+      }
     dev: true
