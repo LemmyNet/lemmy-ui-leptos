@@ -1,9 +1,10 @@
-use crate::ui::{
-  components::common::icon::{
+use crate::{
+  resources::site_resource::SiteResource,
+  ui::components::common::icon::{
     Icon,
     IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
   },
-  contexts::site_context::UserLoggedIn,
+  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -90,6 +91,9 @@ pub async fn report_post(
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
+
   let post_view = RwSignal::new(post_view());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
   let post_name = Signal::derive(move || with!(|post_view| post_view.post.name.clone()));
@@ -116,8 +120,6 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
     Signal::derive(move || with!(|post_view| post_view.community.title.clone()));
   let unread_comments = Signal::derive(move || with!(|post_view| post_view.unread_comments));
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
-
-  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
 
   let vote_action = Action::<VotePost, _>::server();
   Effect::new_isomorphic(move |_| {
@@ -178,7 +180,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
 
             title="Up vote"
-            disabled=move || !user_is_logged_in().0 || vote_action.pending()()
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
           >
 
             <Icon icon=Upvote/>
@@ -203,7 +205,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
             title="Down vote"
 
-            disabled=move || !user_is_logged_in().0 || vote_action.pending()()
+            disabled=move || !user_is_logged_in() || vote_action.pending()()
           >
             <Icon icon=Downvote/>
           </button>
@@ -261,7 +263,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               class=move || is_upvote().then_some("text-accent")
               title="Up vote"
 
-              disabled=move || !user_is_logged_in().0 || vote_action.pending()()
+              disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Upvote/>
             </button>
@@ -276,7 +278,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
               title="Down vote"
 
-              disabled=move || !user_is_logged_in().0 || vote_action.pending()()
+              disabled=move || !user_is_logged_in() || vote_action.pending()()
             >
               <Icon icon=Downvote/>
             </button>
@@ -295,7 +297,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               type="submit"
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
-              disabled=move || !user_is_logged_in().0 || save_post_action.pending()()
+              disabled=move || !user_is_logged_in() || save_post_action.pending()()
             >
               <Icon icon=Save/>
             </button>

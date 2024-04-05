@@ -3,6 +3,7 @@
 mod constants;
 pub mod host;
 mod queries;
+mod resources;
 #[cfg(feature = "ssr")]
 pub mod server;
 mod ui;
@@ -10,6 +11,7 @@ mod utils;
 
 use crate::{
   i18n::*,
+  resources::site_resource::create_site_resource,
   ui::{
     components::{
       common::with_filter_bar::WithFilterBar,
@@ -18,7 +20,6 @@ use crate::{
       login::login_activity::LoginActivity,
       post::post_activity::PostActivity,
     },
-    contexts::site_context::provide_site_state,
     layouts::base_layout::BaseLayout,
   },
 };
@@ -35,7 +36,7 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
   provide_query_client();
-  provide_site_state();
+  provide_context(create_site_resource());
 
   let ui_theme = RwSignal::new(String::from("retro"));
 

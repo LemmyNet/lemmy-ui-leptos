@@ -1,9 +1,7 @@
 use crate::{
   i18n::*,
-  ui::{
-    components::common::{counts_badge::CountsBadge, unpack::Unpack},
-    contexts::site_context::SiteStateSignal,
-  },
+  resources::site_resource::SiteResource,
+  ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
   utils::derive_query_signal::derive_query_signal,
 };
 use leptos::*;
@@ -11,13 +9,13 @@ use leptos::*;
 #[component]
 pub fn SiteSummary() -> impl IntoView {
   let _i18n = use_i18n();
-  let site_response = expect_context::<SiteStateSignal>();
+  let site_resource = expect_context::<SiteResource>();
 
-  let site_name = derive_query_signal(site_response, |site_response| {
+  let site_name = derive_query_signal(site_resource, |site_response| {
     site_response.site_view.site.name.clone()
   });
 
-  let site_description = derive_query_signal(site_response, |site_response| {
+  let site_description = derive_query_signal(site_resource, |site_response| {
     site_response
       .site_view
       .site
@@ -26,11 +24,11 @@ pub fn SiteSummary() -> impl IntoView {
       .unwrap_or_default()
   });
 
-  let counts = derive_query_signal(site_response, |site_response| {
+  let counts = derive_query_signal(site_resource, |site_response| {
     site_response.site_view.counts
   });
 
-  let admins = derive_query_signal(site_response, |site_response| {
+  let admins = derive_query_signal(site_resource, |site_response| {
     site_response
       .admins
       .iter()

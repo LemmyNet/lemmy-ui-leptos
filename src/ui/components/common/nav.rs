@@ -1,16 +1,11 @@
 use crate::{
-  i18n::*,
-  ui::{
-    components::common::{
+  i18n::*, resources::site_resource::SiteResource, ui::components::common::{
       icon::{
         Icon,
         IconType::{Donate, Notifications, Search},
       },
       unpack::Unpack,
-    },
-    contexts::site_context::{SiteRefetchFn, SiteStateSignal, UserLoggedIn},
-  },
-  utils::derive_query_signal::derive_query_signal,
+    }, utils::{derive_query_signal::derive_query_signal, derive_user_is_logged_in_signal::derive_user_is_logged_in_signal}
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -48,12 +43,10 @@ pub async fn logout() -> Result<(), ServerFnError> {
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
-  let site_response = expect_context::<SiteStateSignal>();
-  let SiteRefetchFn(refetch) = expect_context::<SiteRefetchFn>();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
 
-  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
-
-  let names = derive_query_signal(site_response, |site_response| {
+  let names = derive_query_signal(site_resource, |site_response| {
     site_response.my_user.as_ref().map(|my_user| {
       (
         my_user.local_user_view.person.name.clone(),
@@ -62,7 +55,7 @@ pub fn TopNav() -> impl IntoView {
     })
   });
 
-  let instance_name = derive_query_signal(site_response, |site_response| {
+  let instance_name = derive_query_signal(site_resource, |site_response| {
     site_response.site_view.site.name.clone()
   });
 
@@ -70,7 +63,7 @@ pub fn TopNav() -> impl IntoView {
 
   Effect::new(move |_| {
     if logout_action.version()() > 0 {
-      refetch();
+      site_resource.refetch();
     }
   });
 
@@ -160,7 +153,7 @@ pub fn TopNav() -> impl IntoView {
           // </details>
           // </li>
           <Show
-            when=move || user_is_logged_in().0
+            when=move || user_is_logged_in()
 
             fallback=move || {
                 view! {
@@ -234,9 +227,9 @@ pub fn BottomNav() -> impl IntoView {
   let i18n = use_i18n();
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
-  let site_response = expect_context::<SiteStateSignal>();
-  let version = derive_query_signal(site_response, |site_response| {
-    format!("BE: {}", site_response.version)
+  let site_resource = expect_context::<SiteResource>();
+  let version = derive_query_signal(site_resource, |res| {
+    format!("BE: {}", res.version)
   });
 
   view! {

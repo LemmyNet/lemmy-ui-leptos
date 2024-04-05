@@ -1,9 +1,8 @@
 use crate::{
   constants::AUTH_COOKIE,
-  ui::{
-    components::common::text_input::{InputType, TextInput},
-    contexts::site_context::{SiteRefetchFn, UserLoggedIn},
-  },
+  resources::site_resource::SiteResource,
+  ui::components::common::text_input::{InputType, TextInput},
+  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
 };
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::{ActionForm, NavigateOptions, Redirect};
@@ -36,17 +35,17 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 #[component]
 pub fn LoginForm() -> impl IntoView {
   let login = Action::<LoginAction, _>::server();
-  let SiteRefetchFn(refetch) = expect_context::<SiteRefetchFn>();
-  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
 
   Effect::new(move |_| {
-    if login.version()() > 0 && !user_is_logged_in().0 {
-      refetch();
+    if login.version()() > 0 && !user_is_logged_in() {
+      site_resource.refetch();
     }
   });
 
   view! {
-    <Show when=move || user_is_logged_in().0>
+    <Show when=move || user_is_logged_in()>
       <Redirect
         path="/"
         options=NavigateOptions {

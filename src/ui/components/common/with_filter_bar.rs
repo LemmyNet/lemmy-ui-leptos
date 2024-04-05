@@ -1,6 +1,7 @@
 use crate::{
   i18n::*,
-  ui::contexts::site_context::{SiteStateSignal, UserLoggedIn},
+  resources::site_resource::SiteResource,
+  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
@@ -18,9 +19,10 @@ fn ListingTypeLink(
   children: Children,
 ) -> impl IntoView {
   let query = use_query_map();
-  let user_is_logged_in = expect_context::<Signal<UserLoggedIn>>();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
   let disabled = Signal::derive(move || {
-    !user_is_logged_in().0
+    !user_is_logged_in()
       && matches!(
         link_listing_type,
         ListingType::Subscribed | ListingType::ModeratorView
@@ -78,12 +80,12 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
   get_user_default: impl Fn(&LocalUser) -> T + 'static,
   get_site_default: impl Fn(&LocalSite) -> T + 'static,
 ) -> Signal<T> {
-  let site_response = expect_context::<SiteStateSignal>();
+  let site_resource = expect_context::<SiteResource>();
   let query = use_query_map();
 
   Signal::derive(move || {
-    with!(|site_response, query| {
-      let site_response = site_response
+    with!(|site_resource, query| {
+      let site_response = site_resource
         .as_ref()
         .and_then(|site_response| site_response.as_ref().ok());
 
