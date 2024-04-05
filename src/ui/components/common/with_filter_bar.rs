@@ -1,8 +1,4 @@
-use crate::{
-  i18n::*,
-  resources::site_resource::SiteResource,
-  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
-};
+use crate::{contexts::site_resource_context::SiteResource, i18n::*};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
   ListingType,
@@ -19,8 +15,7 @@ fn ListingTypeLink(
   children: Children,
 ) -> impl IntoView {
   let query = use_query_map();
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
+  let user_is_logged_in = expect_context::<Signal<bool>>();
   let disabled = Signal::derive(move || {
     !user_is_logged_in()
       && matches!(

@@ -1,6 +1,6 @@
 use crate::{
+  contexts::site_resource_context::SiteResource,
   i18n::*,
-  resources::site_resource::SiteResource,
   ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
   utils::derive_query_signal::derive_query_signal,
 };

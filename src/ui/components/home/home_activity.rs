@@ -1,5 +1,5 @@
 use crate::{
-  queries::posts_list_query::use_posts,
+  serverfns::list_posts::list_posts,
   ui::components::{
     common::unpack::Unpack,
     home::{site_summary::SiteSummary, trending::Trending},
@@ -12,25 +12,22 @@ use lemmy_client::lemmy_api_common::{
   post::GetPosts,
 };
 use leptos::*;
-use leptos_query::QueryResult;
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
   let listing_type = expect_context::<Signal<ListingType>>();
   let sort_type = expect_context::<Signal<SortType>>();
 
-  let QueryResult {
-    data: list_posts_response,
-    ..
-  } = use_posts().use_query(move || GetPosts {
-    type_: Some(listing_type()),
-    sort: Some(sort_type()),
-    ..Default::default()
-  });
+  let posts_resource = create_blocking_resource(
+    move || GetPosts {
+      type_: Some(listing_type()),
+      sort: Some(sort_type()),
+      ..Default::default()
+    },
+    list_posts,
+  );
 
-  let posts = derive_query_signal(list_posts_response, |list_posts_response| {
-    list_posts_response.posts.clone()
-  });
+  let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
   view! {
     <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">

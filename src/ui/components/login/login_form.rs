@@ -1,8 +1,7 @@
 use crate::{
   constants::AUTH_COOKIE,
-  resources::site_resource::SiteResource,
+  contexts::site_resource_context::SiteResource,
   ui::components::common::text_input::{InputType, TextInput},
-  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
 };
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::{ActionForm, NavigateOptions, Redirect};
@@ -36,7 +35,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 pub fn LoginForm() -> impl IntoView {
   let login = Action::<LoginAction, _>::server();
   let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
+  let user_is_logged_in = expect_context::<Signal<bool>>();
 
   Effect::new(move |_| {
     if login.version()() > 0 && !user_is_logged_in() {

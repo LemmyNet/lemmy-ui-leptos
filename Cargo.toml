@@ -30,7 +30,6 @@ actix-web = { version = "4", features = ["macros"], optional = true }
 actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
-leptos_query = "0.5"
 tokio = { version = "1.36", optional = true, features = ["macros"] }
 
 [package.metadata.leptos-i18n]
@@ -44,7 +43,6 @@ hydrate = [
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
-  "leptos_query/hydrate",
   "dep:wasm-bindgen",
   "dep:console_error_panic_hook",
 ]
@@ -61,7 +59,6 @@ ssr = [
   "leptos_i18n/actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
-  "leptos_query/ssr",
   "dep:leptos_actix",
   "dep:actix-web",
   "dep:actix-files",

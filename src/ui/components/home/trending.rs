@@ -1,5 +1,5 @@
 use crate::{
-  queries::communities_list_query::use_communities_scope,
+  serverfns::list_communities::list_communities,
   ui::components::common::unpack::Unpack,
   utils::derive_query_signal::derive_query_signal,
 };
@@ -8,42 +8,26 @@ use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
 };
 use leptos::*;
-use leptos_query::{QueryOptions, QueryResult, ResourceOption};
 use leptos_router::A;
-use std::time::Duration;
 
 #[component]
 pub fn Trending() -> impl IntoView {
-  let QueryResult {
-    data: trending_communities_response,
-    ..
-  } = use_communities_scope(QueryOptions {
-    resource_option: Some(ResourceOption::Blocking),
-    stale_time: Some(Duration::from_secs(300)),
-    ..Default::default()
-  })
-  .use_query(|| ListCommunities {
-    type_: Some(ListingType::Local),
-    sort: Some(SortType::Hot),
-    limit: Some(5),
-    ..Default::default()
-  });
-
-  let trending_communities = derive_query_signal(
-    trending_communities_response,
-    |trending_communities_response| {
-      trending_communities_response
-        .communities
-        .iter()
-        .map(|community_view| {
-          (
-            community_view.community.id,
-            community_view.community.name.clone(),
-          )
-        })
-        .collect::<Vec<_>>()
+  let trending_communities_resource = create_blocking_resource(
+    || ListCommunities {
+      type_: Some(ListingType::Local),
+      sort: Some(SortType::Hot),
+      limit: Some(5),
+      ..Default::default()
     },
+    list_communities,
   );
+
+  let trending_communities = derive_query_signal(trending_communities_resource, |r| {
+    r.communities
+      .iter()
+      .map(|cv| (cv.community.id, cv.community.name.clone()))
+      .collect::<Vec<_>>()
+  });
 
   view! {
     <div class="card w-full bg-base-300 text-base-content mb-3">

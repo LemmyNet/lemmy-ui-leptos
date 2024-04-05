@@ -1,1 +1,1 @@
-pub mod site_context;
+pub mod site_resource_context;

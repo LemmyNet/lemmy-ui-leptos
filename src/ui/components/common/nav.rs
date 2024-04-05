@@ -1,11 +1,14 @@
 use crate::{
-  i18n::*, resources::site_resource::SiteResource, ui::components::common::{
-      icon::{
-        Icon,
-        IconType::{Donate, Notifications, Search},
-      },
-      unpack::Unpack,
-    }, utils::{derive_query_signal::derive_query_signal, derive_user_is_logged_in_signal::derive_user_is_logged_in_signal}
+  contexts::site_resource_context::SiteResource,
+  i18n::*,
+  ui::components::common::{
+    icon::{
+      Icon,
+      IconType::{Donate, Notifications, Search},
+    },
+    unpack::Unpack,
+  },
+  utils::derive_query_signal::derive_query_signal,
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -44,7 +47,7 @@ pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
   let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
+  let user_is_logged_in = expect_context::<Signal<bool>>();
 
   let names = derive_query_signal(site_resource, |site_response| {
     site_response.my_user.as_ref().map(|my_user| {
@@ -228,9 +231,7 @@ pub fn BottomNav() -> impl IntoView {
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
   let site_resource = expect_context::<SiteResource>();
-  let version = derive_query_signal(site_resource, |res| {
-    format!("BE: {}", res.version)
-  });
+  let version = derive_query_signal(site_resource, |res| format!("BE: {}", res.version));
 
   view! {
     <nav class="container navbar mx-auto hidden sm:flex">

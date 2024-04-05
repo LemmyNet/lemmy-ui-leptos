@@ -1,10 +1,6 @@
-use crate::{
-  resources::site_resource::SiteResource,
-  ui::components::common::icon::{
-    Icon,
-    IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
-  },
-  utils::derive_user_is_logged_in_signal::derive_user_is_logged_in_signal,
+use crate::ui::components::common::icon::{
+  Icon,
+  IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -91,8 +87,7 @@ pub async fn report_post(
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in_signal(site_resource);
+  let user_is_logged_in = expect_context::<Signal<bool>>();
 
   let post_view = RwSignal::new(post_view());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));

@@ -1,5 +1,14 @@
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-use leptos::{create_blocking_resource, server, server_fn::codec::GetUrl, Resource, ServerFnError};
+use leptos::{
+  create_blocking_resource,
+  provide_context,
+  server,
+  server_fn::codec::GetUrl,
+  with,
+  Resource,
+  ServerFnError,
+  Signal,
+};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
@@ -17,6 +26,15 @@ async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
 
 pub type SiteResource = Resource<(), Result<GetSiteResponse, ServerFnError>>;
 
-pub fn create_site_resource() -> SiteResource {
-  create_blocking_resource(|| (), |_| async { get_site().await })
+pub fn provide_site_resource_context() {
+  let site_resource = create_blocking_resource(|| (), |_| async { get_site().await });
+  let user_is_logged_in = Signal::derive(move || {
+    with!(|site_resource| site_resource
+      .as_ref()
+      .and_then(|data| data.as_ref().ok())
+      .map_or(false, |s| s.my_user.is_some()))
+  });
+
+  provide_context(site_resource);
+  provide_context(user_is_logged_in);
 }

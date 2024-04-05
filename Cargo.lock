@@ -369,12 +369,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async_cell"
-version = "0.2.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "834eee9ce518130a3b4d5af09ecc43e9d6b57ee76613f227a1ddd6b77c7a62bc"
-
-[[package]]
 name = "attribute-derive"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1185,18 +1179,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gloo-timers"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbb143cf96099802033e0d4f4963b19fd2e0b728bcf076cd9cf7f6634f092994"
-dependencies = [
- "futures-channel",
- "futures-core",
- "js-sys",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "gloo-utils"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1574,7 +1556,6 @@ dependencies = [
  "leptos_actix",
  "leptos_i18n",
  "leptos_meta",
- "leptos_query",
  "leptos_router",
  "serde",
  "serde_json",
@@ -1850,25 +1831,6 @@ dependencies = [
  "leptos",
  "tracing",
  "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
-name = "leptos_query"
-version = "0.5.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "210f99102170bc3d227148d78c2fdd79e89f724981a697c526f294c85a0b0521"
-dependencies = [
- "async-trait",
- "async_cell",
- "cfg-if",
- "futures",
- "futures-channel",
- "gloo-timers",
- "js-sys",
- "leptos",
- "slotmap",
- "tokio",
  "web-sys",
 ]
 

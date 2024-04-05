@@ -1,17 +1,17 @@
 #![allow(clippy::empty_docs)]
 
 mod constants;
+mod contexts;
 pub mod host;
-mod queries;
-mod resources;
 #[cfg(feature = "ssr")]
 pub mod server;
+mod serverfns;
 mod ui;
 mod utils;
 
 use crate::{
+  contexts::site_resource_context::provide_site_resource_context,
   i18n::*,
-  resources::site_resource::create_site_resource,
   ui::{
     components::{
       common::with_filter_bar::WithFilterBar,
@@ -36,7 +36,7 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
   provide_query_client();
-  provide_context(create_site_resource());
+  provide_site_resource_context();
 
   let ui_theme = RwSignal::new(String::from("retro"));
 
