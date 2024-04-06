@@ -22,10 +22,26 @@ services:
   #   #   - lemmynet
 
   lemmy:
+    name: lemmy
     # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
     image: dessalines/lemmy:dev
-    cmd: ls
-    entrypoint: ls
+    commands:
+      - |-
+        printf '{
+          hostname: lemmy-dev
+          database: {
+            host: postgres
+            password: password
+          }
+        }' > "$LEMMY_CONFIG_LOCATION"
+      # wait for db to start
+      - sleep 15
+      - lemmy_server
+    environment:
+      LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
+    ports:
+      - 8536
+
     # image: dessalines/lemmy:0.19.3
     # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
     # use "build" to build your local lemmy server image for development. make sure to comment out "image".
@@ -81,6 +97,7 @@ services:
   #   #   - lemmynet
 
   postgres:
+    name: postgres
     image: postgres:16-alpine
     # hostname: postgres
     # command:
@@ -95,8 +112,8 @@ services:
     #     "-c",
     #     "track_activity_query_size=1048576",
     #   ]
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - 5432
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_PASSWORD=password
@@ -120,6 +137,13 @@ services:
 #           gateway: 179.99.0.1
 
 steps:
+  lemmy_service_test:
+    image: quay.io/curl/curl:latest
+    commands:
+      # wait for lemmy
+      - sleep 20
+      - curl -v http://lemmy:8536/api/v3/site
+
   # putting this first while in dev to fail faster
   # playwright_check:
   #   image: *rust_image
