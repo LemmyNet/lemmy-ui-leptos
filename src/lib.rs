@@ -25,7 +25,6 @@ use crate::{
 };
 use leptos::*;
 use leptos_meta::*;
-use leptos_query::provide_query_client;
 #[cfg(debug_assertions)]
 use leptos_router::*;
 
@@ -35,7 +34,6 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
-  provide_query_client();
   provide_site_resource_context();
 
   let ui_theme = RwSignal::new(String::from("retro"));

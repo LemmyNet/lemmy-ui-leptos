@@ -33,9 +33,7 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
             let addr = conf.leptos_options.site_addr;
 
-            leptos_query::suppress_query_load(true);
             let routes = generate_route_list(App);
-            leptos_query::suppress_query_load(false);
 
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
