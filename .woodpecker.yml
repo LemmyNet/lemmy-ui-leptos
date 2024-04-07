@@ -59,21 +59,19 @@ steps:
     environment:
       CARGO_HOME: .cargo
     commands:
+      - apt-get update && apt-get -y install libssl-dev pkg-config
       - *install_binstall
-    #   - cargo-binstall -y cargo-leptos
-    #   - apt-get update && apt-get -y install libssl-dev pkg-config
-    #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-    #   - . /root/.profile
-    #   - nvm install --lts
-    #   - npm install -g pnpm
-    #   - pnpm install
-    #   - cd end2end
-    #   - pnpm install
-    #   - cd ..
-    #   - rustup target add wasm32-unknown-unknown
-    #   - cargo leptos end-to-end
-    # when:
-    #   - event: pull_request
+      - cargo-binstall -y cargo-leptos
+      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      - . /root/.profile
+      - nvm install --lts
+      - npm install -g pnpm
+      - pnpm install
+      - cd end2end
+      - pnpm install
+      - cd ..
+      - rustup target add wasm32-unknown-unknown
+      - cargo leptos end-to-end
 
   prettier_check:
     image: tmknom/prettier:3.0.0
