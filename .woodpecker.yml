@@ -1,6 +1,6 @@
 variables:
 
-  - &rust_image "rustlang/rust:latest"
+  - &rust_image "rust:latest"
   - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
 
 services:
@@ -8,7 +8,7 @@ services:
   lemmy:
     name: lemmy
     image: dessalines/lemmy:dev
-    # image: dessalines/lemmy:0.19.3
+    # image: dessalines/lemmy:0.19.4
     commands:
       - |-
         printf '{
@@ -55,7 +55,7 @@ steps:
     #   # - curl -v http://lemmy:8536/api/v3/site
     when:
       - event: pull_request
-    image: rust:latest
+    image: *rust_image
     environment:
       CARGO_HOME: .cargo
     commands:
