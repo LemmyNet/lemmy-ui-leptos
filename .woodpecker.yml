@@ -49,8 +49,8 @@ steps:
 
   playwright_check:
     image: *rust_image
-  environment:
-    CARGO_HOME: .cargo
+    environment:
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
     #   - cargo-binstall -y cargo-leptos
