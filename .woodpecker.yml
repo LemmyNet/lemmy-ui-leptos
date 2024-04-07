@@ -48,18 +48,18 @@ steps:
   #     - event: pull_request
 
   playwright_check:
-    image: quay.io/curl/curl:latest
-    commands:
-      # wait for lemmy
-      - sleep 20
-      # - curl -v http://lemmy:8536/api/v3/site
+    # image: quay.io/curl/curl:latest
+    # commands:
+    #   # wait for lemmy
+    #   - sleep 20
+    #   # - curl -v http://lemmy:8536/api/v3/site
     when:
       - event: pull_request
-    # image: *rust_image
-    # environment:
-    #   CARGO_HOME: .cargo
-    # commands:
-    #   - *install_binstall
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - *install_binstall
     #   - cargo-binstall -y cargo-leptos
     #   - apt-get update && apt-get -y install libssl-dev pkg-config
     #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
