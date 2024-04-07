@@ -60,7 +60,7 @@ steps:
     commands:
       # - apt-get update && apt-get -y install libssl-dev pkg-config
 
-      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
       - *install_binstall
       - cargo-binstall -y cargo-leptos
