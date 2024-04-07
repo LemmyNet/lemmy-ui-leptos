@@ -45,7 +45,6 @@ steps:
   #     - sleep 20
   #     - curl -v http://lemmy:8536/api/v3/site
   #   when:
-  #     - event: pull_request
 
   playwright_check:
     # image: quay.io/curl/curl:latest
