@@ -26,10 +26,10 @@ test("show home", async ({ page }) => {
 //   }
 // });
 
-// test("persist language selection between sessions", async ({ page }) => {
-//   await persistLanguageTest({ page });
-// });
-
-test("persist theme selection between sessions", async ({ page }) => {
-  await persistThemeTest({ page });
+test("persist language selection between sessions", async ({ page }) => {
+  await persistLanguageTest({ page });
 });
+
+// test("persist theme selection between sessions", async ({ page }) => {
+//   await persistThemeTest({ page });
+// });
