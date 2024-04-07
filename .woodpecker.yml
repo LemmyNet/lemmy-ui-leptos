@@ -51,22 +51,22 @@ steps:
     image: *rust_image
   environment:
     CARGO_HOME: .cargo
-  commands:
-    - *install_binstall
-  #   - cargo-binstall -y cargo-leptos
-  #   - apt-get update && apt-get -y install libssl-dev pkg-config
-  #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  #   - . /root/.profile
-  #   - nvm install --lts
-  #   - npm install -g pnpm
-  #   - pnpm install
-  #   - cd end2end
-  #   - pnpm install
-  #   - cd ..
-  #   - rustup target add wasm32-unknown-unknown
-  #   - cargo leptos end-to-end
-  when:
-    - event: pull_request
+    commands:
+      - *install_binstall
+    #   - cargo-binstall -y cargo-leptos
+    #   - apt-get update && apt-get -y install libssl-dev pkg-config
+    #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    #   - . /root/.profile
+    #   - nvm install --lts
+    #   - npm install -g pnpm
+    #   - pnpm install
+    #   - cd end2end
+    #   - pnpm install
+    #   - cd ..
+    #   - rustup target add wasm32-unknown-unknown
+    #   - cargo leptos end-to-end
+    when:
+      - event: pull_request
 
   prettier_check:
     image: tmknom/prettier:3.0.0
