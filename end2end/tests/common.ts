@@ -1,5 +1,11 @@
 import { expect } from "@playwright/test";
 
+export async function showHome({ page }) {
+  await expect(
+    page.locator("a").getByText("Login", { exact: true }).first(),
+  ).toHaveText("Login");
+}
+
 export async function loginLogoutTest({ page }) {
   await expect(
     page.locator("a").getByText("Login", { exact: true }).first(),

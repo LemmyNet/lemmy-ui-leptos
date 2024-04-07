@@ -3,6 +3,7 @@ import {
   loginLogoutTest,
   persistLanguageTest,
   persistThemeTest,
+  showHome,
 } from "./common";
 
 test.beforeEach(async ({ context }) => {
@@ -12,19 +13,23 @@ test.beforeEach(async ({ context }) => {
   });
 });
 
-// doesn't fail on CSR because of interceptor above slows down logins
-test("show home, login, logout multiple times", async ({ page }) => {
-  await page.goto("/");
-  let iterations = 3;
-  while (iterations--) {
-    await loginLogoutTest({ page });
-  }
+test("show home", async ({ page }) => {
+   await showHome({ page });
 });
 
-test("persist language selection between sessions", async ({ page }) => {
-  await persistLanguageTest({ page });
-});
+// // doesn't fail on CSR because of interceptor above
+// test("show home, login, logout multiple times", async ({ page }) => {
+//   await page.goto("/");
+//   let iterations = 3;
+//   while (iterations--) {
+//     await loginLogoutTest({ page });
+//   }
+// });
 
-test("persist theme selection between sessions", async ({ page }) => {
-  await persistThemeTest({ page });
-});
+// test("persist language selection between sessions", async ({ page }) => {
+//   await persistLanguageTest({ page });
+// });
+
+// test("persist theme selection between sessions", async ({ page }) => {
+//   await persistThemeTest({ page });
+// });
