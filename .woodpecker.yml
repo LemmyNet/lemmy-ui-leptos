@@ -70,6 +70,9 @@ steps:
       - pnpm install
       - cd ..
       - rustup target add wasm32-unknown-unknown
+      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy
+      - LEMMY_UI_LEPTOS_LEMMY_HTTPS=false
+      - LEPTOS_TAILWIND_VERSION=v3.4.1
       - cargo leptos end-to-end
 
   prettier_check:
