@@ -64,18 +64,18 @@ steps:
       - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
       - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
 
-#      - *install_binstall
+      # - *install_binstall
       - cargo-binstall -y cargo-leptos
       # - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
       # - . /root/.profile
       # - nvm install --lts
       - npm install -g pnpm
       - pnpm install
-      - cd end2end
-      - pnpm install
+      # - cd end2end
+      # - pnpm install
       # - npx playwright install-deps
       # - npx playwright install
-      - cd ..
+      # - cd ..
       - rustup target add wasm32-unknown-unknown
       - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy
       - LEMMY_UI_LEPTOS_LEMMY_HTTPS=false
