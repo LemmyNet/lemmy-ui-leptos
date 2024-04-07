@@ -22,17 +22,17 @@ pub async fn logout() -> Result<(), ServerFnError> {
       let r = remove_cookie("jwt").await;
       match r {
         Ok(_o) => {
-          // redirect("/");
+          redirect("/");
           Ok(())
         }
         Err(e) => {
-          // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
     Err(e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }
@@ -56,7 +56,7 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
   match r {
     Ok(_o) => Ok(()),
     Err(e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }
@@ -139,12 +139,6 @@ pub fn TopNav(
     move |ev: SubmitEvent| {
       ev.prevent_default();
       i18n.set_locale(lang);
-      // create_local_resource(
-      //   move || (),
-      //   move |()| async move {
-      //     let _ = remove_cookie("i18n_pref_locale").await;
-      //   },
-      // );
     }
   };
 

@@ -71,17 +71,17 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
       .await;
       match r {
         Ok(_o) => {
-          // redirect("/");
+          redirect("/");
           Ok(())
         }
         Err(e) => {
-          // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
     Err(e) => {
-      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }

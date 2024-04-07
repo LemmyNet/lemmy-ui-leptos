@@ -1,5 +1,5 @@
 // useful in development to only have errors in compiler output
-#![allow(warnings)]
+// #![allow(warnings)]
 
 mod config;
 mod cookie;
@@ -40,21 +40,10 @@ pub fn App() -> impl IntoView {
   let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
 
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
-
   let ssr_site = create_resource(
     move || (user.get()),
     move |_user| async move {
-      let result = if _user == Some(true) {
-        LemmyClient.get_site().await
-      } else {
-        if let Some(Ok(mut s)) = site_signal.get() {
-          s.my_user = None;
-          Ok(s)
-        } else {
-          LemmyClient.get_site().await
-        }
-      };
+      let result = LemmyClient.get_site().await;
 
       match result {
         Ok(o) => Ok(o),
@@ -66,6 +55,7 @@ pub fn App() -> impl IntoView {
     },
   );
 
+  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
 
   view! {
     <Transition fallback=|| {}>
@@ -126,107 +116,3 @@ pub fn hydrate() {
   console_error_panic_hook::set_once();
   mount_to_body(App);
 }
-
-// use anyhow::Result;
-
-// use headless_chrome::{Browser, LaunchOptions};
-
-// use std::error::Error;
-
-// use headless_chrome::Browser;
-// use headless_chrome::protocol::cdp::Page;
-
-// fn browse_wikipedia() -> Result<(), Box<dyn Error>> {
-//     Ok(())
-// }
-
-// fn query(input: &str) -> Result<()> {
-//   let browser = Browser::new(
-//       LaunchOptions::default_builder()
-//           .build()
-//           .expect("Could not find chrome-executable"),
-//   )?;
-//   let tab = browser.new_tab()?;
-//   tab.navigate_to("https://en.wikipedia.org")?
-//       .wait_for_element("input#searchInput")?
-//       .click()?;
-//   tab.type_str(input)?.press_key("Enter")?;
-//   match tab.wait_for_element("div.shortdescription") {
-//       Err(e) => eprintln!("Query failed: {e:?}"),
-//       Ok(e) => match e.get_description()?.find(|n| n.node_name == "#text") {
-//           Some(n) => println!("Result for `{}`: {}", &input, n.node_value),
-//           None => eprintln!("No shortdescription-node found on page"),
-//       },
-//   }
-//   Ok(())
-// }
-
-// fn main() -> Result<()> {
-//   let input = "Elvis Aaron Presley";
-//   query(input)
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     use std::error::Error;
-
-//     use headless_chrome::Browser;
-//     use headless_chrome::protocol::cdp::Page;
-  
-//     #[test]
-//     fn browse_wikipedia()-> Result<(), Box<dyn Error>> {
-
-//       let browser = Browser::default()?;
-
-//       let tab = browser.new_tab()?;
-  
-//       // Navigate to wikipedia
-//       tab.navigate_to("https://www.wikipedia.org")?;
-  
-//       // Wait for network/javascript/dom to make the search-box available
-//       // and click it.
-//       tab.wait_for_element("input#searchInput")?.click()?;
-
-//       tab.
-  
-//       // Type in a query and press `Enter`
-//       tab.type_str("WebKit")?.press_key("Enter")?;
-  
-//       // We should end up on the WebKit-page once navigated
-//       let elem = tab.wait_for_element("#firstHeading")?;
-//       assert!(tab.get_url().ends_with("WebKit"));
-  
-//       // Take a screenshot of the entire browser window
-//       let _jpeg_data = tab.capture_screenshot(
-//           Page::CaptureScreenshotFormatOption::Jpeg,
-//           None,
-//           None,
-//           true)?;
-  
-//       // Take a screenshot of just the WebKit-Infobox
-//       let _png_data = tab
-//           .wait_for_element("#mw-content-text > div > table.infobox.vevent")?
-//           .capture_screenshot(Page::CaptureScreenshotFormatOption::Png)?;
-  
-//       // Run JavaScript in the page
-//       let remote_object = elem.call_js_fn(r#"
-//           function getIdTwice () {
-//               // `this` is always the element that you called `call_js_fn` on
-//               const id = this.id;
-//               return id + id;
-//           }
-//       "#, vec![], false)?;
-//       match remote_object.value {
-//           Some(returned_string) => {
-//               dbg!(&returned_string);
-//               assert_eq!(returned_string, "firstHeadingfirstHeading".to_string());
-//           }
-//           _ => {
-//               assert!(remote_object.value.is_some());
-//           }
-//       };
-
-//       Ok(())
-
-//     }
-// }
