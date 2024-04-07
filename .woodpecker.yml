@@ -55,7 +55,7 @@ steps:
     #   # - curl -v http://lemmy:8536/api/v3/site
     when:
       - event: pull_request
-    image: *rust_image
+    image: rust:latest
     environment:
       CARGO_HOME: .cargo
     commands:
