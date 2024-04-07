@@ -53,22 +53,26 @@ steps:
     #   # - curl -v http://lemmy:8536/api/v3/site
     when:
       - event: pull_request
-    image: *rust_image
+    # image: *rust_image
+    image: mcr.microsoft.com/playwright:latest
     environment:
       CARGO_HOME: .cargo
     commands:
-      - apt-get update && apt-get -y install libssl-dev pkg-config
+      # - apt-get update && apt-get -y install libssl-dev pkg-config
+
+      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
       - *install_binstall
       - cargo-binstall -y cargo-leptos
-      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-      - . /root/.profile
-      - nvm install --lts
+      # - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      # - . /root/.profile
+      # - nvm install --lts
       - npm install -g pnpm
       - pnpm install
       - cd end2end
       - pnpm install
-      - npx playwright install-deps
-      - npx playwright install
+      # - npx playwright install-deps
+      # - npx playwright install
       - cd ..
       - rustup target add wasm32-unknown-unknown
       - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy
