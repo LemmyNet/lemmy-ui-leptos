@@ -61,6 +61,7 @@ steps:
       # - apt-get update && apt-get -y install libssl-dev pkg-config
 
       - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
 
       - *install_binstall
       - cargo-binstall -y cargo-leptos
