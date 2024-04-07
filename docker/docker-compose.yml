@@ -22,10 +22,13 @@ services:
     depends_on:
       - pictrs
     logging: *default-logging
+    networks:
+      - lemmynet
 
   lemmy:
     # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
-    image: dessalines/lemmy:0.19.3
+    image: dessalines/lemmy:dev
+    # image: dessalines/lemmy:0.19.3
     # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
     # use "build" to build your local lemmy server image for development. make sure to comment out "image".
     # run: docker compose up --build
@@ -52,6 +55,8 @@ services:
       - postgres
       - pictrs
     logging: *default-logging
+    networks:
+      - lemmynet
 
   pictrs:
     image: asonix/pictrs:0.5.0-rc.2
@@ -74,6 +79,8 @@ services:
       - ./volumes/pictrs:/mnt:Z
     restart: unless-stopped
     logging: *default-logging
+    networks:
+      - lemmynet
 
   postgres:
     image: postgres:15-alpine
@@ -106,3 +113,16 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data:Z
     restart: unless-stopped
     logging: *default-logging
+    networks:
+      - lemmynet
+
+networks:
+  appnet:
+    name: lemmynet
+    driver: bridge
+    enable_ipv6: false
+    ipam:
+      driver: default
+      config:
+        - subnet: 179.99.0.0/24
+          gateway: 179.99.0.1

@@ -151,7 +151,8 @@ cfg_if! {
 
                 // cache busting code
                 let query = serde_urlencoded::to_string(&body).unwrap_or("".to_string());
-                let query = format!("{}?{}&cache_bust={}", route, query, OffsetDateTime::now_utc().unix_timestamp());
+                // let query = format!("{}?{}&cache_bust={}", route, query, OffsetDateTime::now_utc().unix_timestamp());
+                let query = format!("{}?{}", route, query);
 
                 leptos::logging::log!("{}", query);
 
@@ -249,7 +250,8 @@ cfg_if! {
                 let r = match method {
                     HttpType::Get => http::Request::
                         // cache busting code
-                        get(&format!("{}&cache_bust={}", build_fetch_query(path, body), chrono::offset::Utc::now().timestamp()))
+                        // get(&format!("{}&cache_bust={}", build_fetch_query(path, body), chrono::offset::Utc::now().timestamp()))
+                        get(&format!("{}", build_fetch_query(path, body)))
                         // normal request code
                         // get(&build_fetch_query(path, body))
                         .maybe_bearer_auth(jwt.as_deref())
