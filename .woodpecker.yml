@@ -68,6 +68,7 @@ steps:
       - pnpm install
       - cd end2end
       - pnpm install
+      - npx playwright install-deps
       - npx playwright install
       - cd ..
       - rustup target add wasm32-unknown-unknown
