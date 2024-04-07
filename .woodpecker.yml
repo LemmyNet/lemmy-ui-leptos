@@ -7,7 +7,8 @@ services:
 
   lemmy:
     name: lemmy
-    image: dessalines/lemmy:0.19.4-beta.2
+    image: dessalines/lemmy:dev
+    # image: dessalines/lemmy:0.19.4
     commands:
       - |-
         printf '{
