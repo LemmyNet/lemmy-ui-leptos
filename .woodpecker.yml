@@ -48,11 +48,18 @@ steps:
   #     - event: pull_request
 
   playwright_check:
-    image: *rust_image
-    environment:
-      CARGO_HOME: .cargo
+    image: quay.io/curl/curl:latest
     commands:
-      - *install_binstall
+      # wait for lemmy
+      - sleep 20
+      # - curl -v http://lemmy:8536/api/v3/site
+    when:
+      - event: pull_request
+    # image: *rust_image
+    # environment:
+    #   CARGO_HOME: .cargo
+    # commands:
+    #   - *install_binstall
     #   - cargo-binstall -y cargo-leptos
     #   - apt-get update && apt-get -y install libssl-dev pkg-config
     #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -65,8 +72,8 @@ steps:
     #   - cd ..
     #   - rustup target add wasm32-unknown-unknown
     #   - cargo leptos end-to-end
-    when:
-      - event: pull_request
+    # when:
+    #   - event: pull_request
 
   prettier_check:
     image: tmknom/prettier:3.0.0
