@@ -1,30 +1,15 @@
 variables:
+
   - &rust_image "rustlang/rust:nightly"
   - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
 
 services:
-  # proxy:
-  #   image: nginx:1-alpine
-  #   ports:
-  #     # actual and only port facing any connection from outside
-  #     # Note, change the left number if port 1236 is already in use on your system
-  #     # You could use port 80 if you won't use a reverse proxy
-  #     - "1236:1236"
-  #     - "8536:8536"
-  #     - "80:80"
-  #   # volumes:
-  #   #   - ./nginx.conf:/etc/nginx/nginx.conf:ro,Z
-  #   # restart: unless-stopped
-  #   # depends_on:
-  #   #   - pictrs
-  #   # logging: *default-logging
-  #   # networks:
-  #   #   - lemmynet
 
   lemmy:
     name: lemmy
     # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
     image: dessalines/lemmy:dev
+    # image: dessalines/lemmy:0.19.3
     commands:
       - |-
         printf '{
@@ -42,126 +27,48 @@ services:
     ports:
       - 8536
 
-    # image: dessalines/lemmy:0.19.3
-    # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
-    # use "build" to build your local lemmy server image for development. make sure to comment out "image".
-    # run: docker compose up --build
-
-    #build:
-    # context: ../
-    # dockerfile: ./Dockerfile
-    # args:
-    #   RUST_RELEASE_MODE: release
-    #   CARGO_BUILD_FEATURES: default
-    # this hostname is used in nginx reverse proxy and also for lemmy ui to connect to the backend, do not change
-    # hostname: lemmy
-    # restart: unless-stopped
-    # environment:
-    #   - RUST_LOG="warn,lemmy_server=debug,lemmy_api=debug,lemmy_api_common=debug,lemmy_api_crud=debug,lemmy_apub=debug,lemmy_db_schema=debug,lemmy_db_views=debug,lemmy_db_views_actor=debug,lemmy_db_views_moderator=debug,lemmy_routes=debug,lemmy_utils=debug,lemmy_websocket=debug"
-    #   - RUST_BACKTRACE=full
-    # ports:
-    #   # prometheus metrics can be enabled with the `prometheus` config option. they are available on
-    #   # port 10002, path /metrics by default
-    #   - "10002:10002"
-    # volumes:
-    #   - /docker/lemmy.hjson:/config/config.hjson:Z
-    # depends_on:
-    #   - postgres
-    # - pictrs
-    # logging: *default-logging
-    # networks:
-    #   - lemmynet
-
-  # pictrs:
-  #   image: asonix/pictrs:0.5.0-rc.2
-  #   # this needs to match the pictrs url in lemmy.hjson
-  #   hostname: pictrs
-  #   # we can set options to pictrs like this, here we set max. image size and forced format for conversion
-  #   # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
-  #   environment:
-  #     - PICTRS_OPENTELEMETRY_URL=http://otel:4137
-  #     - PICTRS__API_KEY=string
-  #     - RUST_LOG=debug
-  #     - RUST_BACKTRACE=full
-  #     - PICTRS__MEDIA__VIDEO_CODEC=vp9
-  #     - PICTRS__MEDIA__GIF__MAX_WIDTH=256
-  #     - PICTRS__MEDIA__GIF__MAX_HEIGHT=256
-  #     - PICTRS__MEDIA__GIF__MAX_AREA=65536
-  #     - PICTRS__MEDIA__GIF__MAX_FRAME_COUNT=400
-  #   user: 0:0
-  #   volumes:
-  #     - ./volumes/pictrs:/mnt:Z
-  #   restart: unless-stopped
-  #   # logging: *default-logging
-  #   # networks:
-  #   #   - lemmynet
-
   postgres:
     name: postgres
     image: postgres:16-alpine
-    # hostname: postgres
-    # command:
-    #   [
-    #     "postgres",
-    #     "-c",
-    #     "session_preload_libraries=auto_explain",
-    #     "-c",
-    #     "auto_explain.log_min_duration=5ms",
-    #     "-c",
-    #     "auto_explain.log_analyze=true",
-    #     "-c",
-    #     "track_activity_query_size=1048576",
-    #   ]
     ports:
       - 5432
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=lemmy
-    # volumes:
-    #   - ./volumes/postgres:/var/lib/postgresql/data:Z
-    # restart: unless-stopped
-    # logging: *default-logging
-#     networks:
-#       - lemmynet
-
-# networks:
-#   appnet:
-#     name: lemmynet
-#     driver: bridge
-#     enable_ipv6: false
-#     ipam:
-#       driver: default
-#       config:
-#         - subnet: 179.99.0.0/24
-#           gateway: 179.99.0.1
 
 steps:
-  lemmy_service_test:
-    image: quay.io/curl/curl:latest
-    commands:
-      # wait for lemmy
-      - sleep 20
-      - curl -v http://lemmy:8536/api/v3/site
+
+  # lemmy_service_test:
+  #   image: quay.io/curl/curl:latest
+  #   commands:
+  #     # wait for lemmy
+  #     - sleep 20
+  #     - curl -v http://lemmy:8536/api/v3/site
+  #   when:
+  #     - event: pull_request
 
   # putting this first while in dev to fail faster
-  # playwright_check:
-  #   image: *rust_image
-  # environment:
-  #   CARGO_HOME: .cargo
-  # commands:
-  #   - *install_binstall
-  #   - cargo-binstall -y cargo-leptos
-  #   - apt-get update && apt-get -y install libssl-dev pkg-config
-  #   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-  #   - . /root/.profile
-  #   - nvm install --lts
-  #   - npm install -g pnpm
-  #   - pnpm install
-  #   - rustup target add wasm32-unknown-unknown
-  #   - cargo leptos build
-  # when:
-  #   - event: pull_request
+  playwright_check:
+    image: *rust_image
+  environment:
+    CARGO_HOME: .cargo
+  commands:
+    - *install_binstall
+    - cargo-binstall -y cargo-leptos
+    - apt-get update && apt-get -y install libssl-dev pkg-config
+    - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+    - . /root/.profile
+    - nvm install --lts
+    - npm install -g pnpm
+    - pnpm install
+    - cd end2end
+    - pnpm install
+    - cd ..
+    - rustup target add wasm32-unknown-unknown
+    - cargo leptos end-to-end
+  when:
+    - event: pull_request
 
   # playwright_check:
   #   image: docker:dind
