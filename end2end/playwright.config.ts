@@ -27,7 +27,7 @@ const config: PlaywrightTestConfig = {
       use: {
         ...{
           javaScriptEnabled: false,
-          baseURL: "http://127.0.0.1:1237",
+          baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Chrome"],
       },
@@ -39,7 +39,7 @@ const config: PlaywrightTestConfig = {
       use: {
         ...{
           // javaScriptEnabled: true,
-          baseURL: "http://127.0.0.1:1237",
+          baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Chrome"],
       },
@@ -52,7 +52,7 @@ const config: PlaywrightTestConfig = {
         ...{
           // deliberately trigger failure
           // javaScriptEnabled: false,
-          baseURL: "http://127.0.0.1:1237",
+          baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Chrome"],
       },
@@ -90,7 +90,7 @@ const config: PlaywrightTestConfig = {
       use: {
         ...{
           javaScriptEnabled: false,
-          baseURL: "http://127.0.0.1:1237",
+          baseURL: "http://localhost:1237",
         },
         ...devices["Desktop Firefox"],
       },
