@@ -14,7 +14,7 @@ test.beforeEach(async ({ context }) => {
 });
 
 test("show home", async ({ page }) => {
-   await showHome({ page });
+  await showHome({ page });
 });
 
 // doesn't fail on CSR because of interceptor above
