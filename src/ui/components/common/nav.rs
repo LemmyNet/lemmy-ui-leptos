@@ -22,17 +22,17 @@ pub async fn logout() -> Result<(), ServerFnError> {
       let r = remove_cookie("jwt").await;
       match r {
         Ok(_o) => {
-          redirect("/");
+          // redirect("/");
           Ok(())
         }
         Err(e) => {
-          redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+          // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
     Err(e) => {
-      redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
+      // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
   }
