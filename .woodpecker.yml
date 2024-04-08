@@ -74,19 +74,21 @@ steps:
 
       - npm install -g pnpm
       - pnpm install
-      - cd end2end
-      - pnpm install
 
-      - npx playwright install --with-deps
-
-      - cd ..
       - rustup target add wasm32-unknown-unknown
       - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy
       - LEMMY_UI_LEPTOS_LEMMY_HTTPS=false
       - LEPTOS_TAILWIND_VERSION=v3.4.1
       - cargo leptos watch &
-      - sleep 120
+
       - cd end2end
+      - pnpm install
+
+      - npx playwright install --with-deps
+
+#      - cd ..
+#      - sleep 120
+#      - cd end2end
       - npx playwright test
 
   prettier_check:
