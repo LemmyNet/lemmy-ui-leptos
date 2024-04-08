@@ -21,6 +21,8 @@ export async function loginLogoutTest({ page }) {
 
   await page.getByLabel("Username", { exact: true }).fill("lemmy");
   await page.getByLabel("Password", { exact: true }).fill("lemmylemmy");
+  await page.getByLabel("Password", { exact: true }).blur();
+  await page.waitForTimeout(1000);
   await page.getByRole("button").getByText("Login").click();
 
   await expect(
