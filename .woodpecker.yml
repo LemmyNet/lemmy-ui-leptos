@@ -94,7 +94,7 @@ steps:
       - pnpm install
 
       - rustup target add wasm32-unknown-unknown
-      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
+      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
 
       - cd end2end
       - pnpm install
