@@ -11,10 +11,10 @@ services:
     commands:
       - |-
         printf '{
-          hostname: lemmy-dev
+          hostname: "lemmy"
           database: {
             host: postgres
-            password: password
+            password: "password"
           }
           setup: {
             admin_username: "lemmy"
