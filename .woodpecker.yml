@@ -16,6 +16,11 @@ services:
             host: postgres
             password: password
           }
+          setup: {
+            admin_username: "lemmy"
+            admin_password: "lemmylemmy"
+            site_name: "lemmy-dev"
+          }
         }' > "$LEMMY_CONFIG_LOCATION"
       # wait for db to start
       - sleep 15
