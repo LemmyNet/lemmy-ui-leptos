@@ -85,6 +85,7 @@ steps:
       - LEMMY_UI_LEPTOS_LEMMY_HTTPS=false
       - LEPTOS_TAILWIND_VERSION=v3.4.1
       - cargo leptos watch &
+      - sleep 120
       - cd end2end
       - npx playwright test
 
