@@ -157,14 +157,18 @@ steps:
       - pnpm install
 
       - rustup target add wasm32-unknown-unknown
-      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
-      - sleep 30
+      # - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
+      # - sleep 30
 
       - cd end2end
       - pnpm install
       # - npx playwright install --with-deps
 
-      - npx playwright test
+      # - npx playwright test
+
+      - cd ..
+      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos end-to-end
+
     when:
       - event: pull_request
 
