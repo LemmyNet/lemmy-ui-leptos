@@ -66,6 +66,8 @@ steps:
 
   leptos_fmt:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
       - cargo binstall -y leptosfmt
@@ -75,6 +77,8 @@ steps:
 
   cargo_machete:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
       - cargo binstall -y cargo-machete
@@ -92,14 +96,6 @@ steps:
       - cargo clippy
     when:
       - event: pull_request
-
-  # lemmy_service_test:
-  #   image: quay.io/curl/curl:latest
-  #   commands:
-  #     # wait for lemmy
-  #     - sleep 20
-  #     - curl -v http://lemmy:8536/api/v3/site
-  #   when:
 
   cargo_build:
     image: *rust_image
@@ -119,50 +115,10 @@ steps:
     when:
       - event: pull_request
 
-  playwright_check:
-    # image: quay.io/curl/curl:latest
-    # commands:
-    #   # wait for lemmy
-    #   - sleep 20
-    #   # - curl -v http://lemmy:8536/api/v3/site
-    when:
-      - event: pull_request
-    image: *rust_image
-    # image: mcr.microsoft.com/playwright:latest
-    environment:
-      CARGO_HOME: .cargo
-    commands:
-      - apt update && apt -y install libssl-dev pkg-config  build-essential gcc make
-
-      # - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-      # - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
-      # - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
-
-      - *install_binstall
-
-      - cargo-binstall -y cargo-leptos
-
-      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-      - . /root/.profile
-      - nvm install --lts
-
-      - npm install -g pnpm
-      - pnpm install
-
-      - rustup target add wasm32-unknown-unknown
-      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
-
-      - cd end2end
-      - pnpm install
-
-      - npx playwright install --with-deps
-
-      #      - cd ..
-      #      - sleep 120
-      #      - cd end2end
-      - npx playwright test
-
-  # cargo_build:
+  # # No rust unit tests yet
+  # cargo_test:
+  #   when:
+  #     - event: pull_request
   #   image: *rust_image
   #   environment:
   #     CARGO_HOME: .cargo
@@ -176,20 +132,43 @@ steps:
   #     - npm install -g pnpm
   #     - pnpm install
   #     - rustup target add wasm32-unknown-unknown
-  #     - cargo leptos build
-  #   when:
-  #     - event: pull_request
-
-  # Nothing to test yet
-  # cargo_test:
-  #   image: *rust_image
-  #   environment:
-  #     CARGO_HOME: .cargo
-  #   commands:
-  #     - apt-get update && apt-get -y install libssl-dev pkg-config
-  #     - rustup target add wasm32-unknown-unknown
-  #     - cargo install cargo-leptos
   #     - cargo leptos test
+
+  playwright_check:
+    when:
+      - event: pull_request
+    # image: *rust_image
+    image: mcr.microsoft.com/playwright:latest
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - apt update && apt -y install libssl-dev pkg-config  build-essential gcc make
+
+      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
+      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
+
+      # - *install_binstall
+
+      - cargo-binstall -y cargo-leptos
+
+      # - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+      # - . /root/.profile
+      # - nvm install --lts
+
+      - npm install -g pnpm
+      - pnpm install
+
+      - rustup target add wasm32-unknown-unknown
+      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos watch &
+      # - sleep 30
+
+      - cd end2end
+      - pnpm install
+
+      # - npx playwright install --with-deps
+
+      - npx playwright test
 
   notify_on_failure:
     image: alpine:3
