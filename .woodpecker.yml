@@ -147,7 +147,6 @@ steps:
       - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
       - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
       - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
-
       # - *install_binstall
 
       - cargo-binstall -y cargo-leptos
