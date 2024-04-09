@@ -69,10 +69,9 @@ steps:
     environment:
       CARGO_HOME: .cargo
     commands:
-      - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
       - *install_binstall
       - cargo binstall -y leptosfmt
-      - leptosfmt -c .leptosfmt.toml --check src
+      - .cargo/bin/leptosfmt -c .leptosfmt.toml --check src
     when:
       - event: pull_request
 
@@ -118,8 +117,6 @@ steps:
 
   # # No rust unit tests yet
   # cargo_test:
-  #   when:
-  #     - event: pull_request
   #   image: *rust_image
   #   environment:
   #     CARGO_HOME: .cargo
@@ -134,10 +131,10 @@ steps:
   #     - pnpm install
   #     - rustup target add wasm32-unknown-unknown
   #     - cargo leptos test
+  #   when:
+  #     - event: pull_request
 
   playwright_check:
-    when:
-      - event: pull_request
     # image: *rust_image
     image: mcr.microsoft.com/playwright:latest
     environment:
@@ -168,6 +165,8 @@ steps:
       # - npx playwright install --with-deps
 
       - npx playwright test
+    when:
+      - event: pull_request
 
   notify_on_failure:
     image: alpine:3
