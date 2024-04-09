@@ -15,7 +15,8 @@ use web_sys::SubmitEvent;
 
 #[server(LogoutFn, "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  use leptos_actix::redirect;
+  // workaround for https://github.com/leptos-rs/leptos/issues/2506
+  // use leptos_actix::redirect;
   let result = LemmyClient.logout().await;
   match result {
     Ok(_o) => {
@@ -25,13 +26,13 @@ pub async fn logout() -> Result<(), ServerFnError> {
           // redirect("/");
           Ok(())
         }
-        Err(e) => {
+        Err(_e) => {
           // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
           Ok(())
         }
       }
     }
-    Err(e) => {
+    Err(_e) => {
       // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
       Ok(())
     }
