@@ -54,13 +54,13 @@ steps:
       - event: pull_request
 
   cargo_fmt:
-    image: *rust_image
+    image: rustlang/rust:nightly
     environment:
       # store cargo data in repo folder so that it gets cached between steps
       CARGO_HOME: .cargo
     commands:
       - rustup component add rustfmt
-      - cargo +nightly fmt -- --check
+      - cargo fmt -- --check
     when:
       - event: pull_request
 
