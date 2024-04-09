@@ -15,8 +15,10 @@ use crate::{
   layout::Layout,
   lemmy_client::*,
   ui::components::{
-    communities::communities_activity::CommunitiesActivity, home::home_activity::HomeActivity,
-    login::login_activity::LoginActivity, post::post_activity::PostActivity,
+    communities::communities_activity::CommunitiesActivity,
+    home::home_activity::HomeActivity,
+    login::login_activity::LoginActivity,
+    post::post_activity::PostActivity,
   },
 };
 use lemmy_api_common::site::GetSiteResponse;
