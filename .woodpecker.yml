@@ -1,5 +1,5 @@
 variables:
-  - &rust_image "rustlang/rust:nightly"
+  - &rust_image "rust"
   - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
 
 services:
@@ -60,7 +60,7 @@ steps:
       CARGO_HOME: .cargo
     commands:
       - rustup component add rustfmt
-      - cargo fmt -- --check
+      - cargo +nightly fmt -- --check
     when:
       - event: pull_request
 
