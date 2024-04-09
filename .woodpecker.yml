@@ -164,7 +164,6 @@ steps:
 
       - cd end2end
       - pnpm install
-
       # - npx playwright install --with-deps
 
       - npx playwright test
