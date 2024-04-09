@@ -69,7 +69,7 @@ steps:
     environment:
       CARGO_HOME: .cargo
     commands:
-      - - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
+      - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
       - *install_binstall
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
