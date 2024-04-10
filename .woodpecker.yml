@@ -7,9 +7,9 @@ services:
     name: lemmy
     image: dessalines/lemmy:0.19.4-beta.2
     commands:
-      - pwd
-      - ls -laR
-      - cp ./end2end/config.hjson /home/lemmy/config.hjson
+      # - pwd
+      # - ls -laR
+      # - cp ./end2end/config.hjson /home/lemmy/config.hjson
       # - |-
       #   printf '{
       #     hostname: "lemmy"
@@ -28,8 +28,8 @@ services:
       - sleep 15
       - lemmy_server
     environment:
-      LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
-      # LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/config.hjson
+      # LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
+      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
     ports:
       - 8536
 
