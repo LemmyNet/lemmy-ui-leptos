@@ -7,7 +7,8 @@ services:
     name: lemmy
     image: dessalines/lemmy:0.19.4-beta.2
     commands:
-      - cp end2end/config.hjson /home/lemmy/config.hjson
+      - ls -laR
+      - cp ./end2end/config.hjson /home/lemmy/config.hjson
       # - |-
       #   printf '{
       #     hostname: "lemmy"
