@@ -1,0 +1,15 @@
+{
+  # for more info about the config, check out the documentation
+  # https://join-lemmy.org/docs/en/administration/configuration.html
+
+  hostname: "lemmy"
+  setup: {
+    admin_username: "lemmy"
+    admin_password: "lemmylemmy"
+    site_name: "lemmy-dev"
+  }
+  database: {
+    host: postgres
+    password: "password"
+  }
+}

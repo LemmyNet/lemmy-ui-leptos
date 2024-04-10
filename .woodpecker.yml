@@ -7,24 +7,26 @@ services:
     name: lemmy
     image: dessalines/lemmy:0.19.4-beta.2
     commands:
-      - |-
-        printf '{
-          hostname: "lemmy"
-          database: {
-            host: postgres
-            password: "password"
-          }
-          setup: {
-            admin_username: "lemmy"
-            admin_password: "lemmylemmy"
-            site_name: "lemmy-dev"
-          }
-        }' > "$LEMMY_CONFIG_LOCATION"
+      # - |-
+      #   printf '{
+      #     hostname: "lemmy"
+      #     database: {
+      #       host: postgres
+      #       password: "password"
+      #     }
+      #     setup: {
+      #       admin_username: "lemmy"
+      #       admin_password: "lemmylemmy"
+      #       site_name: "lemmy-dev"
+      #     }
+      #   }' > "$LEMMY_CONFIG_LOCATION"
+
       # wait for db to start
       - sleep 15
       - lemmy_server
     environment:
-      LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
+      # LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
+      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/config.hjson
     ports:
       - 8536
 
