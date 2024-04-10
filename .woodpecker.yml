@@ -102,7 +102,7 @@ steps:
     when:
       - event: pull_request
 
-  # # No rust unit tests yet
+  # No rust unit tests yet
   # cargo_test:
   #   image: *rust_image
   #   environment:
