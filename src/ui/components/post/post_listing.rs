@@ -1,6 +1,10 @@
-use crate::ui::components::common::icon::{
-  Icon,
-  IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+use crate::{
+  contexts::site_resource_context::SiteResource,
+  ui::components::common::icon::{
+    Icon,
+    IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
+  },
+  utils::derive_user_is_logged_in,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -16,7 +20,7 @@ use leptos_router::*;
 
 #[server(prefix = "/serverfn")]
 pub async fn vote_post(post_id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session::get_client_and_session};
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
 
   let (client, session) = get_client_and_session().await?;
 
@@ -33,7 +37,7 @@ pub async fn vote_post(post_id: PostId, score: i16) -> Result<PostResponse, Serv
 
 #[server(prefix = "/serverfn")]
 pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session::get_client_and_session};
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get::<String>(AUTH_COOKIE)?;
@@ -52,7 +56,7 @@ pub async fn block_user(
   person_id: PersonId,
   block: bool,
 ) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session::get_client_and_session};
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get::<String>(AUTH_COOKIE)?;
@@ -71,7 +75,7 @@ pub async fn report_post(
   post_id: PostId,
   reason: String,
 ) -> Result<PostReportResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session::get_client_and_session};
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get::<String>(AUTH_COOKIE)?;
@@ -87,7 +91,8 @@ pub async fn report_post(
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
-  let user_is_logged_in = expect_context::<Signal<bool>>();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
 
   let post_view = RwSignal::new(post_view());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));

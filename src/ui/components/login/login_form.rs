@@ -2,13 +2,14 @@ use crate::{
   constants::AUTH_COOKIE,
   contexts::site_resource_context::SiteResource,
   ui::components::common::text_input::{InputType, TextInput},
+  utils::derive_user_is_logged_in,
 };
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::{ActionForm, NavigateOptions, Redirect};
 
 #[server(LoginAction, "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use crate::utils::get_client_and_session::get_client_and_session;
+  use crate::utils::get_client_and_session;
   use lemmy_client::lemmy_api_common::person::Login as LoginBody;
 
   let (client, session) = get_client_and_session().await?;
@@ -32,16 +33,9 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 }
 
 #[component]
-pub fn LoginForm() -> impl IntoView {
-  let login = Action::<LoginAction, _>::server();
+fn LoginRedirect() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = expect_context::<Signal<bool>>();
-
-  Effect::new(move |_| {
-    if login.version()() > 0 && !user_is_logged_in() {
-      site_resource.refetch();
-    }
-  });
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
 
   view! {
     <Show when=move || user_is_logged_in()>
@@ -54,6 +48,25 @@ pub fn LoginForm() -> impl IntoView {
       />
 
     </Show>
+  }
+}
+
+#[component]
+pub fn LoginForm() -> impl IntoView {
+  let login = Action::<LoginAction, _>::server();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
+
+  Effect::new(move |_| {
+    if login.version()() > 0 && !user_is_logged_in() {
+      site_resource.refetch();
+    }
+  });
+
+  view! {
+    <Suspense>
+      <LoginRedirect/>
+    </Suspense>
     <ActionForm class="space-y-3" action=login>
       <TextInput
         id="username"

@@ -3,7 +3,7 @@ use leptos::{server, server_fn::codec::GetUrl, ServerFnError};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 pub async fn list_posts(body: GetPosts) -> Result<GetPostsResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session::get_client_and_session};
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   use lemmy_client::LemmyRequest;
 
   let (client, session) = get_client_and_session().await?;

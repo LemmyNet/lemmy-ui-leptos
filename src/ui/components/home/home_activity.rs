@@ -5,7 +5,7 @@ use crate::{
     home::{site_summary::SiteSummary, trending::Trending},
     post::post_listings::PostListings,
   },
-  utils::derive_query_signal::derive_query_signal,
+  utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
@@ -15,8 +15,8 @@ use leptos::*;
 
 #[component]
 pub fn HomeActivity() -> impl IntoView {
-  let listing_type = expect_context::<Signal<ListingType>>();
-  let sort_type = expect_context::<Signal<SortType>>();
+  let listing_type = expect_context::<ReadSignal<ListingType>>();
+  let sort_type = expect_context::<ReadSignal<SortType>>();
 
   let posts_resource = create_blocking_resource(
     move || GetPosts {

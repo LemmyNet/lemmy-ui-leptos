@@ -481,9 +481,9 @@ dependencies = [
 
 [[package]]
 name = "bumpalo"
-version = "3.15.4"
+version = "3.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ff69b9dd49fd426c69a0db9fc04dd934cdb6645ff000864d98f7e2af8830eaa"
+checksum = "79296716171880943b8470b5f8d03aa55eb2e645a4874bdbb28adb49162e012c"
 
 [[package]]
 name = "bytecount"
@@ -571,9 +571,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.0.90"
+version = "1.0.92"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cd6604a82acf3039f1144f54b8eb34e91ffba622051189e71b781822d5ee1f5"
+checksum = "2678b2e3449475e95b0aa6f9b506a28e61b3dc8996592b983695e8ebb58a8b41"
 dependencies = [
  "jobserver",
  "libc",
@@ -1124,9 +1124,9 @@ dependencies = [
 
 [[package]]
 name = "getrandom"
-version = "0.2.12"
+version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "190092ea657667030ac6a35e305e62fc4dd69fd98ac98631e5d3a2b1575a12b5"
+checksum = "94b22e06ecb0110981051723910cbf0b5f5e09a2062dd7663334ee79a9d1286c"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -1212,9 +1212,9 @@ dependencies = [
 
 [[package]]
 name = "half"
-version = "2.4.0"
+version = "2.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5eceaaeec696539ddaf7b333340f1af35a5aa87ae3e4f3ead0532f72affab2e"
+checksum = "6dd08c532ae367adf81c312a4580bc67f1d0fe8bc9c460520283f4c0ff277888"
 dependencies = [
  "cfg-if",
  "crunchy",
@@ -1528,7 +1528,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 [[package]]
 name = "lemmy-client"
 version = "0.19.4-alpha.1"
-source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#a1c01a130fa35ef6ca9b03f04511b936327a2d9b"
+source = "git+https://github.com/SleeplessOne1917/lemmy-client-rs.git?branch=main#152b08027bd865707c5a502bae6bd44dd5743b4a"
 dependencies = [
  "cfg-if",
  "gloo-net",
@@ -1559,6 +1559,8 @@ dependencies = [
  "leptos_router",
  "serde",
  "serde_json",
+ "strum 0.26.2",
+ "strum_macros 0.26.2",
  "tokio",
  "wasm-bindgen",
 ]
@@ -1566,7 +1568,7 @@ dependencies = [
 [[package]]
 name = "lemmy_api_common"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1588,7 +1590,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_schema"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1597,8 +1599,8 @@ dependencies = [
  "moka",
  "serde",
  "serde_with",
- "strum",
- "strum_macros",
+ "strum 0.25.0",
+ "strum_macros 0.25.3",
  "tracing",
  "typed-builder",
  "url",
@@ -1608,7 +1610,7 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1619,20 +1621,20 @@ dependencies = [
 [[package]]
 name = "lemmy_db_views_actor"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
- "strum",
- "strum_macros",
+ "strum 0.25.0",
+ "strum_macros 0.25.3",
 ]
 
 [[package]]
 name = "lemmy_db_views_moderator"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1642,13 +1644,13 @@ dependencies = [
 [[package]]
 name = "lemmy_utils"
 version = "0.19.4-beta.2"
-source = "git+https://github.com/LemmyNet/lemmy.git?branch=main#705e86eb4c0079d0775f0c1490968f1183095fcc"
+source = "git+https://github.com/LemmyNet/lemmy.git?tag=0.19.4-beta.2#1f178b65a10c0984b6a3d7040e476327930d3eea"
 dependencies = [
  "cfg-if",
  "rosetta-build",
  "serde",
- "strum",
- "strum_macros",
+ "strum 0.25.0",
+ "strum_macros 0.25.3",
 ]
 
 [[package]]
@@ -2524,9 +2526,9 @@ dependencies = [
 
 [[package]]
 name = "rustversion"
-version = "1.0.14"
+version = "1.0.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ffc183a10b4478d04cbbbfc96d0873219d962dd5accaff2ffbd4ceb7df837f4"
+checksum = "80af6f9131f277a45a3fba6ce8e2258037bb0477a67e610d3c1fe046ab31de47"
 
 [[package]]
 name = "ryu"
@@ -2835,10 +2837,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "290d54ea6f91c969195bdbcd7442c8c2a2ba87da8bf60a7ee86a235d4bc1e125"
 
 [[package]]
+name = "strum"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5d8cec3501a5194c432b2b7976db6b7d10ec95c253208b45f83f7136aa985e29"
+
+[[package]]
 name = "strum_macros"
 version = "0.25.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23dc1fa9ac9c169a78ba62f0b841814b7abae11bdd047b9c58f893439e309ea0"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn 2.0.58",
+]
+
+[[package]]
+name = "strum_macros"
+version = "0.26.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6cf59daf282c0a494ba14fd21610a0325f9f90ec9d1231dea26bcb1d696c946"
 dependencies = [
  "heck",
  "proc-macro2",

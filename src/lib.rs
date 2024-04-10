@@ -10,17 +10,19 @@ mod ui;
 mod utils;
 
 use crate::{
-  contexts::site_resource_context::provide_site_resource_context,
+  contexts::{
+    site_resource_context::provide_site_resource_context,
+    theme_resource_context::provide_theme_resource_context,
+  },
   i18n::*,
   ui::{
     components::{
-      common::with_filter_bar::WithFilterBar,
       communities::communities_activity::CommunitiesActivity,
       home::home_activity::HomeActivity,
       login::login_activity::LoginActivity,
       post::post_activity::PostActivity,
     },
-    layouts::base_layout::BaseLayout,
+    layouts::{base_layout::BaseLayout, filter_bar_layout::FilterBarLayout},
   },
 };
 use leptos::*;
@@ -35,8 +37,7 @@ pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
   provide_site_resource_context();
-
-  let ui_theme = RwSignal::new(String::from("retro"));
+  provide_theme_resource_context();
 
   let is_routing = RwSignal::new(false);
 
@@ -52,45 +53,33 @@ pub fn App() -> impl IntoView {
       // <Script>eruda.init();</Script>
       <Title text="Brand from env"/>
 
-      <div class="flex flex-col h-screen" data-theme=ui_theme>
+      <Routes>
+        <Route path="" view=BaseLayout>
+          <Route path="/*any" view=NotFound/>
 
-        <Routes>
-          <Route path="" view=BaseLayout>
-            <Route path="/*any" view=NotFound/>
-
-            <Route
-              path=""
-              view=move || {
-                  view! {
-                    <WithFilterBar>
-                      <HomeActivity/>
-                    </WithFilterBar>
-                  }
-              }
-
-              ssr=SsrMode::Async
-            />
-
-            <Route path="create_post" view=CommunitiesActivity/>
-            <Route path="post/:id" view=PostActivity/>
-
-            <Route path="search" view=CommunitiesActivity/>
-            <Route path="communities" view=CommunitiesActivity/>
-            <Route path="create_community" view=CommunitiesActivity/>
-            <Route path="c/:id" view=CommunitiesActivity/>
-
-            <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
-            <Route path="signup" view=CommunitiesActivity/>
-
-            <Route path="inbox" view=CommunitiesActivity/>
-            <Route path="settings" view=CommunitiesActivity/>
-            <Route path="u/:id" view=CommunitiesActivity/>
-
-            <Route path="modlog" view=CommunitiesActivity/>
-            <Route path="instances" view=CommunitiesActivity/>
+          <Route path="" view=FilterBarLayout>
+            <Route path="" view=HomeActivity/>
           </Route>
-        </Routes>
-      </div>
+
+          <Route path="create_post" view=CommunitiesActivity/>
+          <Route path="post/:id" view=PostActivity/>
+
+          <Route path="search" view=CommunitiesActivity/>
+          <Route path="communities" view=CommunitiesActivity/>
+          <Route path="create_community" view=CommunitiesActivity/>
+          <Route path="c/:id" view=CommunitiesActivity/>
+
+          <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
+          <Route path="signup" view=CommunitiesActivity/>
+
+          <Route path="inbox" view=CommunitiesActivity/>
+          <Route path="settings" view=CommunitiesActivity/>
+          <Route path="u/:id" view=CommunitiesActivity/>
+
+          <Route path="modlog" view=CommunitiesActivity/>
+          <Route path="instances" view=CommunitiesActivity/>
+        </Route>
+      </Routes>
     </Router>
   }
 }

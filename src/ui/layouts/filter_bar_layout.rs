@@ -1,21 +1,30 @@
-use crate::{contexts::site_resource_context::SiteResource, i18n::*};
+use crate::{
+  contexts::site_resource_context::SiteResource,
+  use_i18n,
+  utils::derive_user_is_logged_in,
+};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
   ListingType,
   SortType,
 };
 use leptos::*;
-use leptos_router::{use_query_map, A};
+use leptos_i18n::t;
+use leptos_router::{use_query_map, Outlet, A};
 use serde::Deserialize;
 
 #[component]
-fn ListingTypeLink(
-  listing_type: Signal<ListingType>,
+fn ListingTypeLink<S>(
+  listing_type: S,
   link_listing_type: ListingType,
   children: Children,
-) -> impl IntoView {
+) -> impl IntoView
+where
+  S: SignalGet<Value = ListingType> + 'static,
+{
   let query = use_query_map();
-  let user_is_logged_in = expect_context::<Signal<bool>>();
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
   let disabled = Signal::derive(move || {
     !user_is_logged_in()
       && matches!(
@@ -39,7 +48,7 @@ fn ListingTypeLink(
       class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
       attr:aria-disabled=move || if disabled() { Some("true") } else { None }
       attr:aria-selected=move || {
-          if listing_type() == link_listing_type { Some("true") } else { None }
+          if listing_type.get() == link_listing_type { Some("true") } else { None }
       }
     >
 
@@ -49,16 +58,16 @@ fn ListingTypeLink(
 }
 
 #[component]
-fn SortTypeLink(
-  sort_type: Signal<SortType>,
-  link_sort_type: SortType,
-  children: Children,
-) -> impl IntoView {
+fn SortTypeLink<S>(sort_type: S, link_sort_type: SortType, children: Children) -> impl IntoView
+where
+  S: SignalGet<Value = SortType> + 'static,
+{
   let query = use_query_map();
+
   view! {
     <li
       class="aria-selected:btn-active"
-      attr:aria-selected=move || if sort_type() == link_sort_type { Some("true") } else { None }
+      attr:aria-selected=move || if sort_type.get() == link_sort_type { Some("true") } else { None }
     >
 
       <A href=move || {
@@ -78,46 +87,49 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
   let site_resource = expect_context::<SiteResource>();
   let query = use_query_map();
 
-  Signal::derive(move || {
-    with!(|site_resource, query| {
-      let site_response = site_resource
-        .as_ref()
-        .and_then(|site_response| site_response.as_ref().ok());
+  Signal::derive(move || with!(|site_resource, query| {
+    let site_response = site_resource
+      .as_ref()
+      .and_then(|site_response| site_response.as_ref().ok());
 
-      query
-        .get(key)
-        .and_then(|value| serde_json::from_str(format!(r#""{value}""#).as_str()).ok())
-        .or_else(|| {
-          site_response.and_then(|site_response| {
-            site_response
-              .my_user
-              .as_ref()
-              .map(|my_user| get_user_default(&my_user.local_user_view.local_user))
-          })
+    query
+      .get(key)
+      .and_then(|value| serde_json::from_str(format!(r#""{value}""#).as_str()).ok())
+      .or_else(|| {
+        site_response.and_then(|site_response| {
+          site_response
+            .my_user
+            .as_ref()
+            .map(|my_user| get_user_default(&my_user.local_user_view.local_user))
         })
-        .or_else(|| {
-          site_response.map(|site_response| get_site_default(&site_response.site_view.local_site))
-        })
-        .unwrap_or_default()
-    })
-  })
+      })
+      .or_else(|| {
+        site_response.map(|site_response| get_site_default(&site_response.site_view.local_site))
+      })
+      .unwrap_or_default()
+  }))
 }
 
 #[component]
-pub fn WithFilterBar(children: Children) -> impl IntoView {
+fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>) -> impl IntoView {
   let i18n = use_i18n();
-  let listing_type = derive_link_type(
+  let local_listing_type = derive_link_type(
     "listingType",
     |user| user.default_listing_type,
     |site| site.default_post_listing_type,
   );
-  let sort_type = derive_link_type(
+  Effect::new(move |_| {
+    listing_type.set(local_listing_type())
+  });
+
+  let local_sort_type = derive_link_type(
     "sort",
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
-  provide_context(listing_type);
-  provide_context(sort_type);
+  Effect::new(move |_| {
+    sort_type.set(local_sort_type())
+  });
 
   view! {
     <div class="block">
@@ -153,6 +165,21 @@ pub fn WithFilterBar(children: Children) -> impl IntoView {
         </menu>
       </div>
     </div>
-    {children()}
+  }
+}
+
+#[component]
+pub fn FilterBarLayout() -> impl IntoView {
+  let listing_type = RwSignal::new(ListingType::default());
+  let sort_type = RwSignal::new(SortType::default());
+
+  provide_context(listing_type.read_only());
+  provide_context(sort_type.read_only());
+
+  view! {
+    <Transition>
+      <FilterBar listing_type=listing_type sort_type=sort_type/>
+    </Transition>
+    <Outlet/>
   }
 }

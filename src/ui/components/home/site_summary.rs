@@ -2,7 +2,7 @@ use crate::{
   contexts::site_resource_context::SiteResource,
   i18n::*,
   ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
-  utils::derive_query_signal::derive_query_signal,
+  utils::derive_query_signal,
 };
 use leptos::*;
 
@@ -40,37 +40,43 @@ pub fn SiteSummary() -> impl IntoView {
     <div class="card w-full bg-base-300 text-base-content mb-3">
       <figure>
         <div class="card-body bg-neutral">
-          <Unpack item=site_name let:site_name>
-            <h2 class="card-title text-neutral-content">{site_name}</h2>
-          </Unpack>
+          <Transition>
+            <Unpack item=site_name let:site_name>
+              <h2 class="card-title text-neutral-content">{site_name}</h2>
+            </Unpack>
+          </Transition>
         </div>
       </figure>
       <div class="card-body">
-        <Unpack item=site_description let:site_description>
-          <p>{site_description}</p>
-        </Unpack>
-        <Unpack item=counts let:counts>
-          <p>
-            <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
-            <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
-            <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
-            <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
-            <CountsBadge>{counts.users} " users"</CountsBadge>
-            <CountsBadge>{counts.communities} " communities"</CountsBadge>
-            <CountsBadge>{counts.posts} " posts"</CountsBadge>
-            <CountsBadge>{counts.comments} " comments"</CountsBadge>
-            <CountsBadge>Modlog</CountsBadge>
-          </p>
+        <Transition>
+          <Unpack item=site_description let:site_description>
+            <p>{site_description}</p>
+          </Unpack>
+          <Unpack item=counts let:counts>
+            <p>
+              <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
+              <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
+              <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
+              <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
+              <CountsBadge>{counts.users} " users"</CountsBadge>
+              <CountsBadge>{counts.communities} " communities"</CountsBadge>
+              <CountsBadge>{counts.posts} " posts"</CountsBadge>
+              <CountsBadge>{counts.comments} " comments"</CountsBadge>
+              <CountsBadge>Modlog</CountsBadge>
+            </p>
 
-        </Unpack>
+          </Unpack>
+        </Transition>
         <h3 class="card-title">Admins</h3>
 
         <p>
-          <Unpack item=admins let:admins>
-            <For each=move || admins.clone() key=|c| c.0 let:admin>
-              <CountsBadge>{admin.1}</CountsBadge>
-            </For>
-          </Unpack>
+          <Transition>
+            <Unpack item=admins let:admins>
+              <For each=move || admins.clone() key=|c| c.0 let:admin>
+                <CountsBadge>{admin.1}</CountsBadge>
+              </For>
+            </Unpack>
+          </Transition>
         </p>
       </div>
     </div>

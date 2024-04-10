@@ -1,7 +1,7 @@
 use crate::{
   serverfns::list_communities::list_communities,
   ui::components::common::unpack::Unpack,
-  utils::derive_query_signal::derive_query_signal,
+  utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
   community::*,
