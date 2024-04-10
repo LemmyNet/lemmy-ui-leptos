@@ -28,7 +28,6 @@ services:
       - sleep 15
       - lemmy_server
     environment:
-      # LEMMY_CONFIG_LOCATION: /home/lemmy/config.hjson
       LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
     ports:
       - 8536
