@@ -7,22 +7,6 @@ services:
     name: lemmy
     image: dessalines/lemmy:0.19.4-beta.2
     commands:
-      # - ls -laR
-      # - cp ./end2end/config.hjson /home/lemmy/config.hjson
-      # - |-
-      #   printf '{
-      #     hostname: "lemmy"
-      #     database: {
-      #       host: postgres
-      #       password: "password"
-      #     }
-      #     setup: {
-      #       admin_username: "lemmy"
-      #       admin_password: "lemmylemmy"
-      #       site_name: "lemmy-dev"
-      #     }
-      #   }' > "$LEMMY_CONFIG_LOCATION"
-
       # wait for db to start
       - sleep 15
       - lemmy_server
