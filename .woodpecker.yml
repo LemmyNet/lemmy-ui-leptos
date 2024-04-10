@@ -7,7 +7,6 @@ services:
     name: lemmy
     image: dessalines/lemmy:0.19.4-beta.2
     commands:
-      # - pwd
       # - ls -laR
       # - cp ./end2end/config.hjson /home/lemmy/config.hjson
       # - |-
