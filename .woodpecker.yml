@@ -22,7 +22,6 @@ services:
       #       site_name: "lemmy-dev"
       #     }
       #   }' > "$LEMMY_CONFIG_LOCATION"
-
       # wait for db to start
       - sleep 15
       - lemmy_server
