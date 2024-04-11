@@ -1,5 +1,5 @@
 use crate::{
-  contexts::site_resource_context::SiteResource,
+  contexts::{site_resource_context::SiteResource, theme_resource_context::{Theme, ThemeResource}},
   i18n::*,
   ui::components::common::{
     icon::{
@@ -13,34 +13,6 @@ use crate::{
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::*;
-
-#[server(prefix = "/serverfn")]
-pub async fn logout() -> Result<(), ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get::<String>(AUTH_COOKIE)?;
-  client
-    .logout(LemmyRequest::from_jwt(jwt))
-    .await
-    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?;
-
-  session.purge();
-  Ok(())
-}
-
-// #[server(ChangeThemeFn, "/serverfn")]
-// pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
-//   // use leptos_actix::redirect;
-//   let r = set_cookie("theme", &theme, &core::time::Duration::from_secs(604800)).await;
-//   match r {
-//     Ok(_o) => Ok(()),
-//     Err(_e) => {
-//       // redirect(&format!("/login?error={}", serde_json::to_string(&e)?)[..]);
-//       Ok(())
-//     }
-//   }
-// }
 
 #[component]
 fn InstanceName() -> impl IntoView {
@@ -56,6 +28,21 @@ fn InstanceName() -> impl IntoView {
       </A>
     </Unpack>
   }
+}
+
+#[server(prefix = "/serverfn")]
+pub async fn logout() -> Result<(), ServerFnError> {
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
+  let (client, session) = get_client_and_session().await?;
+
+  let jwt = session.get::<String>(AUTH_COOKIE)?;
+  client
+    .logout(LemmyRequest::from_jwt(jwt))
+    .await
+    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?;
+
+  session.purge();
+  Ok(())
 }
 
 #[component]
@@ -146,25 +133,72 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
   }
 }
 
+#[server(prefix = "/serverfn")]
+pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
+  use actix_web::{
+    cookie::{Cookie, SameSite},
+    http::{header, header::HeaderValue},
+  };
+  use leptos_actix::ResponseOptions;
+
+  let response = expect_context::<ResponseOptions>();
+
+  let cookie = Cookie::build("theme", theme)
+    .path("/")
+    .secure(!cfg!(debug_assertions))
+    .same_site(SameSite::Strict)
+    .finish();
+
+  if let Ok(cookie) = HeaderValue::from_str(&cookie.to_string()) {
+    response.insert_header(header::SET_COOKIE, cookie);
+  }
+
+  Ok(())
+}
+
+#[component]
+fn ThemeSelect() -> impl IntoView {
+  let theme_action = Action::<ChangeTheme, _>::server();
+  let theme = expect_context::<ThemeResource>();
+
+  Effect::new(move |_| {
+    if theme_action.version()() > 0 {
+      theme.refetch();
+    }
+  });
+
+  view! {
+    <li class="z-[1]">
+      <details>
+        <summary>"Theme"</summary>
+        <ul>
+          <li>
+            <ActionForm action=theme_action>
+              <input type="hidden" name="theme" value=Theme::Dark/>
+              <button type="submit">"Dark"</button>
+            </ActionForm>
+          </li>
+          <li>
+            <ActionForm action=theme_action>
+              <input type="hidden" name="theme" value=Theme::Light/>
+              <button type="submit">"Light"</button>
+            </ActionForm>
+          </li>
+          <li>
+            <ActionForm action=theme_action>
+              <input type="hidden" name="theme" value=Theme::Retro/>
+              <button type="submit">"Retro"</button>
+            </ActionForm>
+          </li>
+        </ul>
+      </details>
+    </li>
+  }
+}
+
 #[component]
 pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
-
-  // let ui_theme = expect_context::<RwSignal<Option<String>>>();
-  // let theme_action = create_server_action::<ChangeThemeFn>();
-
-  // let on_theme_submit = move |theme_name: &'static str| {
-  //   move |ev: SubmitEvent| {
-  //     ev.prevent_default();
-  //     let _res = create_local_resource(
-  //       move || theme_name.to_string(),
-  //       move |t| async move {
-  //         let _ = set_cookie("theme", &t, &core::time::Duration::from_secs(604800)).await;
-  //       },
-  //     );
-  //     ui_theme.set(Some(theme_name.to_string()));
-  //   }
-  // };
 
   view! {
     <nav class="navbar container mx-auto">
@@ -208,32 +242,8 @@ pub fn TopNav() -> impl IntoView {
               </span>
             </A>
           </li>
-          // <li class="z-[1]">
-          // <details>
-          // <summary>"Theme"</summary>
-          // <ul>
-          // <li>
-          // <ActionForm action=theme_action on:submit=on_theme_submit("dark")>
-          // <input type="hidden" name="theme" value="dark"/>
-          // <button type="submit">"Dark"</button>
-          // </ActionForm>
-          // </li>
-          // <li>
-          // <ActionForm action=theme_action on:submit=on_theme_submit("light")>
-          // <input type="hidden" name="theme" value="light"/>
-          // <button type="submit">"Light"</button>
-          // </ActionForm>
-          // </li>
-          // <li>
-          // <ActionForm action=theme_action on:submit=on_theme_submit("retro")>
-          // <input type="hidden" name="theme" value="retro"/>
-          // <button type="submit">"Retro"</button>
-          // </ActionForm>
-          // </li>
-          // </ul>
-          // </details>
-          // </li>
           <Transition>
+            <ThemeSelect/>
             <LoggedInUserActionDropdown/>
           </Transition>
         </ul>

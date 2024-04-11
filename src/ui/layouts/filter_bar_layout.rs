@@ -87,27 +87,29 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
   let site_resource = expect_context::<SiteResource>();
   let query = use_query_map();
 
-  Signal::derive(move || with!(|site_resource, query| {
-    let site_response = site_resource
-      .as_ref()
-      .and_then(|site_response| site_response.as_ref().ok());
+  Signal::derive(move || {
+    with!(|site_resource, query| {
+      let site_response = site_resource
+        .as_ref()
+        .and_then(|site_response| site_response.as_ref().ok());
 
-    query
-      .get(key)
-      .and_then(|value| serde_json::from_str(format!(r#""{value}""#).as_str()).ok())
-      .or_else(|| {
-        site_response.and_then(|site_response| {
-          site_response
-            .my_user
-            .as_ref()
-            .map(|my_user| get_user_default(&my_user.local_user_view.local_user))
+      query
+        .get(key)
+        .and_then(|value| serde_json::from_str(format!(r#""{value}""#).as_str()).ok())
+        .or_else(|| {
+          site_response.and_then(|site_response| {
+            site_response
+              .my_user
+              .as_ref()
+              .map(|my_user| get_user_default(&my_user.local_user_view.local_user))
+          })
         })
-      })
-      .or_else(|| {
-        site_response.map(|site_response| get_site_default(&site_response.site_view.local_site))
-      })
-      .unwrap_or_default()
-  }))
+        .or_else(|| {
+          site_response.map(|site_response| get_site_default(&site_response.site_view.local_site))
+        })
+        .unwrap_or_default()
+    })
+  })
 }
 
 #[component]
@@ -118,18 +120,14 @@ fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>)
     |user| user.default_listing_type,
     |site| site.default_post_listing_type,
   );
-  Effect::new(move |_| {
-    listing_type.set(local_listing_type())
-  });
+  Effect::new(move |_| listing_type.set(local_listing_type()));
 
   let local_sort_type = derive_link_type(
     "sort",
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
-  Effect::new(move |_| {
-    sort_type.set(local_sort_type())
-  });
+  Effect::new(move |_| sort_type.set(local_sort_type()));
 
   view! {
     <div class="block">

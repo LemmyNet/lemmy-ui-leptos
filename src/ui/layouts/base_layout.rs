@@ -11,11 +11,16 @@ use leptos_router::Outlet;
 #[component]
 pub fn BaseLayout() -> impl IntoView {
   let theme = expect_context::<ThemeResource>();
+
   view! {
-    <div class="flex flex-col h-screen" data-theme="retro">
-      <TopNav/>
-      <Outlet/>
-      <BottomNav/>
-    </div>
+    <Transition>
+      <Unpack item=theme let:theme>
+        <div class="flex flex-col h-screen" data-theme=theme>
+          <TopNav/>
+          <Outlet/>
+          <BottomNav/>
+        </div>
+      </Unpack>
+    </Transition>
   }
 }
