@@ -40,9 +40,23 @@ pub fn App() -> impl IntoView {
   let ui_theme = create_rw_signal::<Option<String>>(None);
   provide_context(ui_theme);
 
+  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
+
   let ssr_site = create_resource(
     move || (user.get()),
-    move |_user| async move {
+    move |user| async move {
+      // fix login cache issue
+      // let result = if user == Some(false) {
+      //   if let Some(Ok(mut s)) = site_signal.get() {
+      //     s.my_user = None;
+      //     Ok(s)
+      //   } else {
+      //     LemmyClient.get_site().await
+      //   }
+      // } else {
+      //   LemmyClient.get_site().await
+      // };
+
       let result = LemmyClient.get_site().await;
 
       match result {
@@ -54,8 +68,6 @@ pub fn App() -> impl IntoView {
       }
     },
   );
-
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
 
   view! {
     <Transition fallback=|| {}>

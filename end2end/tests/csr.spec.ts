@@ -17,7 +17,7 @@ test("show home", async ({ page }) => {
   await showHome({ page });
 });
 
-// doesn't fail on CSR because of interceptor above
+// doesn't trigger site info cache bug because of interceptor above
 test("login, logout multiple times", async ({ page }) => {
   await page.goto("/");
   let iterations = 3;
