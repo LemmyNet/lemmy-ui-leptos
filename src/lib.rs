@@ -46,18 +46,18 @@ pub fn App() -> impl IntoView {
     move || (user.get()),
     move |user| async move {
       // fix login cache issue
-      // let result = if user == Some(false) {
-      //   if let Some(Ok(mut s)) = site_signal.get() {
-      //     s.my_user = None;
-      //     Ok(s)
-      //   } else {
-      //     LemmyClient.get_site().await
-      //   }
-      // } else {
-      //   LemmyClient.get_site().await
-      // };
+      let result = if user == Some(false) {
+        if let Some(Ok(mut s)) = site_signal.get() {
+          s.my_user = None;
+          Ok(s)
+        } else {
+          LemmyClient.get_site().await
+        }
+      } else {
+        LemmyClient.get_site().await
+      };
 
-      let result = LemmyClient.get_site().await;
+      // let result = LemmyClient.get_site().await;
 
       match result {
         Ok(o) => Ok(o),
