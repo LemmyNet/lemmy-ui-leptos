@@ -38,7 +38,7 @@ fn LoginRedirect() -> impl IntoView {
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
 
   view! {
-    <Show when=move || user_is_logged_in()>
+    <Show when=user_is_logged_in>
       <Redirect
         path="/"
         options=NavigateOptions {

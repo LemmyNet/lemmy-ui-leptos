@@ -271,7 +271,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           <span class="block text-sm sm:hidden">{score}</span>
           <ActionForm action=vote_action class="flex items-center sm:hidden">
             <input type="hidden" name="post_id" value=id/>
-            <input type="hidden" name="score" value=move || is_downvote() {0} else {-1}/>
+            <input type="hidden" name="score" value=move || if is_downvote() { 0 } else { -1 }/>
             <button
               type="submit"
               class=move || is_downvote().then_some("text-accent")

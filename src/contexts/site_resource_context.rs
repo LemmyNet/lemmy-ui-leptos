@@ -4,10 +4,8 @@ use leptos::{
   provide_context,
   server,
   server_fn::codec::GetUrl,
-  with,
   Resource,
   ServerFnError,
-  Signal,
 };
 
 #[server(prefix = "/serverfn", input = GetUrl)]

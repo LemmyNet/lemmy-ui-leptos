@@ -1,5 +1,8 @@
 use crate::{
-  contexts::{site_resource_context::SiteResource, theme_resource_context::{Theme, ThemeResource}},
+  contexts::{
+    site_resource_context::SiteResource,
+    theme_resource_context::{Theme, ThemeResource},
+  },
   i18n::*,
   ui::components::common::{
     icon::{
@@ -69,7 +72,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
 
   view! {
     <Show
-      when=move || user_is_logged_in()
+      when=user_is_logged_in
 
       fallback=move || {
           view! {
