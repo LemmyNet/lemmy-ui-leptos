@@ -3,9 +3,14 @@ import {
   loginLogoutTest,
   persistLanguageTest,
   persistThemeTest,
+  showHome,
 } from "./common";
 
-test("show home, login, logout multiple times", async ({ page }) => {
+test("show home", async ({ page }) => {
+  await showHome({ page });
+});
+
+test("login, logout multiple times", async ({ page }) => {
   await page.goto("/");
   let iterations = 3;
   while (iterations--) {

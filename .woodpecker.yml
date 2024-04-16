@@ -1,6 +1,29 @@
 variables:
-  - &rust_image "rustlang/rust:nightly"
+  - &rust_image "rust"
   - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
+
+services:
+  lemmy:
+    name: lemmy
+    image: dessalines/lemmy:0.19.4-beta.2
+    commands:
+      # wait for db to start
+      - sleep 15
+      - lemmy_server
+    environment:
+      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
+    ports:
+      - 8536
+
+  postgres:
+    name: postgres
+    image: postgres:16-alpine
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_USER=lemmy
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=lemmy
 
 steps:
   prettier_check:
@@ -18,26 +41,31 @@ steps:
       - event: pull_request
 
   cargo_fmt:
-    image: *rust_image
+    image: rustlang/rust:nightly
     environment:
       # store cargo data in repo folder so that it gets cached between steps
       CARGO_HOME: .cargo
     commands:
-      - cargo fmt -- --check
+      - rustup component add rustfmt
+      - cargo +nightly fmt -- --check
     when:
       - event: pull_request
 
   leptos_fmt:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
       - cargo binstall -y leptosfmt
-      - leptosfmt -c .leptosfmt.toml --check src
+      - .cargo/bin/leptosfmt -c .leptosfmt.toml --check src
     when:
       - event: pull_request
 
   cargo_machete:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo
     commands:
       - *install_binstall
       - cargo binstall -y cargo-machete
@@ -74,16 +102,45 @@ steps:
     when:
       - event: pull_request
 
-  # Nothing to test yet
+  # No rust unit tests yet
   # cargo_test:
   #   image: *rust_image
   #   environment:
   #     CARGO_HOME: .cargo
   #   commands:
+  #     - *install_binstall
+  #     - cargo-binstall -y cargo-leptos
   #     - apt-get update && apt-get -y install libssl-dev pkg-config
+  #     - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  #     - . /root/.profile
+  #     - nvm install --lts
+  #     - npm install -g pnpm
+  #     - pnpm install
   #     - rustup target add wasm32-unknown-unknown
-  #     - cargo install cargo-leptos
   #     - cargo leptos test
+  #   when:
+  #     - event: pull_request
+
+  playwright_check:
+    image: mcr.microsoft.com/playwright:latest
+    environment:
+      CARGO_HOME: .cargo
+    commands:
+      - apt update && apt -y install libssl-dev pkg-config  build-essential gcc make
+      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      # - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
+      - . ".cargo/env"
+      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
+      - cargo-binstall -y cargo-leptos
+      - npm install -g pnpm
+      - pnpm install
+      - rustup target add wasm32-unknown-unknown
+      - cd end2end
+      - pnpm install
+      - cd ..
+      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos end-to-end
+    when:
+      - event: pull_request
 
   notify_on_failure:
     image: alpine:3
