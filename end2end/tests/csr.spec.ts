@@ -3,6 +3,7 @@ import {
   loginLogoutTest,
   persistLanguageTest,
   persistThemeTest,
+  showHome,
 } from "./common";
 
 test.beforeEach(async ({ context }) => {
@@ -12,8 +13,12 @@ test.beforeEach(async ({ context }) => {
   });
 });
 
-// doesn't fail on CSR because of interceptor above slows down logins
-test("show home, login, logout multiple times", async ({ page }) => {
+test("show home", async ({ page }) => {
+  await showHome({ page });
+});
+
+// doesn't trigger site info cache bug because of interceptor above
+test("login, logout multiple times", async ({ page }) => {
   await page.goto("/");
   let iterations = 3;
   while (iterations--) {
