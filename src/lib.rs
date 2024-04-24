@@ -48,7 +48,7 @@ pub fn App() -> impl IntoView {
       {
       #[cfg(any(feature = "ssr", feature = "hydrate"))]
         view!{
-          <Stylesheet id="leptos" href="/pkg/lemmy_ui_leptos.css"/>
+          <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
           <Link rel="shortcut icon" href="/favicon.svg"/>
         }
       }
@@ -60,7 +60,7 @@ pub fn App() -> impl IntoView {
       <Title text="Brand from env"/>
 
       <Routes>
-        <Route path="" view=BaseLayout>
+        <Route path="" view=BaseLayout  ssr=SsrMode::Async>
           <Route path="/*any" view=NotFound/>
 
           <Route path="" view=FilterBarLayout>
@@ -75,7 +75,7 @@ pub fn App() -> impl IntoView {
           <Route path="create_community" view=CommunitiesActivity/>
           <Route path="c/:id" view=CommunitiesActivity/>
 
-          <Route path="login" view=LoginActivity ssr=SsrMode::Async/>
+          <Route path="login" view=LoginActivity/>
           <Route path="signup" view=CommunitiesActivity/>
 
           <Route path="inbox" view=CommunitiesActivity/>
