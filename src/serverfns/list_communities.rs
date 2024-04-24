@@ -4,7 +4,7 @@ use lemmy_client::lemmy_api_common::community::{
 };
 use leptos::{server_fn::codec::GetUrl, *};
 
-#[server(prefix = "/serverfn", input = GetUrl)]
+#[server(prefix = "/serverfn", input = GetUrl, endpoint = "list_communities")]
 pub async fn list_communities(
   body: ListCommunitiesBody,
 ) -> Result<ListCommunitiesResponse, ServerFnError> {

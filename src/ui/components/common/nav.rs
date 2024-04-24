@@ -33,7 +33,7 @@ fn InstanceName() -> impl IntoView {
   }
 }
 
-#[server(prefix = "/serverfn")]
+#[server(prefix = "/serverfn", endpoint = "logout")]
 pub async fn logout() -> Result<(), ServerFnError> {
   use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   let (client, session) = get_client_and_session().await?;
@@ -136,7 +136,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
   }
 }
 
-#[server(prefix = "/serverfn")]
+#[server(prefix = "/serverfn", endpoint = "change_theme")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
   use actix_web::{
     cookie::{Cookie, SameSite},

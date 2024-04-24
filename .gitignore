@@ -5,6 +5,7 @@
 # build
 target
 node_modules
+dist
 
 # test
 docker/volumes

@@ -7,7 +7,7 @@ use crate::{
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::{ActionForm, NavigateOptions, Redirect};
 
-#[server(LoginAction, "/serverfn")]
+#[server(prefix = "/serverfn", endpoint = "login")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use crate::utils::get_client_and_session;
   use lemmy_client::lemmy_api_common::person::Login as LoginBody;
@@ -53,7 +53,7 @@ fn LoginRedirect() -> impl IntoView {
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
-  let login = Action::<LoginAction, _>::server();
+  let login = Action::<Login, _>::server();
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
 

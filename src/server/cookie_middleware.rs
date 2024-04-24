@@ -10,8 +10,8 @@ pub fn cookie_middleware() -> SessionMiddleware<CookieSessionStore> {
     CookieSessionStore::default(),
     Key::from(&[0; 64]), // TODO: The key should definitely be read from a config value for production
   )
-  .cookie_name(String::from(AUTH_COOKIE))
-  .cookie_secure(false) // TODO: Make cookie secure option depend on whether in dev or prod
+  .cookie_name(AUTH_COOKIE.into())
+  .cookie_secure(cfg!(debug_assertions))
   .session_lifecycle(PersistentSession::default())
   .cookie_same_site(SameSite::Strict)
   .cookie_content_security(CookieContentSecurity::Private)

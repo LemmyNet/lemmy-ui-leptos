@@ -44,8 +44,14 @@ pub fn App() -> impl IntoView {
   view! {
     <Router set_is_routing=is_routing>
       <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
-      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
-      <Link rel="shortcut icon" type_="image/ico" href="/favicon.svg"/>
+
+      {
+      #[cfg(any(feature = "ssr", feature = "hydrate"))]
+        view!{
+          <Stylesheet id="leptos" href="/pkg/lemmy_ui_leptos.css"/>
+          <Link rel="shortcut icon" href="/favicon.svg"/>
+        }
+      }
       <Meta name="description" content="Lemmy-UI-Leptos."/>
       <Meta name="viewport" content="viewport-fit=cover"/>
       // debug where there is no visible console (mobile/live/desktop)

@@ -1,0 +1,20 @@
+trunk-version = "0.19"
+
+[build]
+minify = "on_release"
+
+[serve]
+port = 1238
+
+[tools]
+wasm_bindgen = "0.2.92"
+tailwindcss = "3.4.3"
+
+[[proxy]]
+backend = "http://localhost:1237/serverfn"
+
+# serve currently can't be run in the background
+# [[hooks]]
+# stage = "pre_build"
+# command = "cargo"
+# command_arguments = ["leptos", "serve"]

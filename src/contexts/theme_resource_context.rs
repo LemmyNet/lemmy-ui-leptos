@@ -35,7 +35,7 @@ impl IntoAttribute for Theme {
 
 pub type ThemeResource = Resource<(), Result<Theme, ServerFnError>>;
 
-#[server(prefix = "/serverfn", input = GetUrl)]
+#[server(prefix = "/serverfn", input = GetUrl, endpoint = "get_theme")]
 async fn get_theme() -> Result<Theme, ServerFnError> {
   use actix_web::HttpRequest;
   use leptos_actix::extract;

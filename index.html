@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- Setting data-wasm-opt to 4 instead of z on the assumption that the app will not be running in the browser. -->
+    <link
+      data-trunk
+      rel="rust"
+      data-target-name="lemmy-ui-leptos"
+      data-cargo-no-default-features
+      data-cargo-features="csr"
+      data-wasm-opt="4"
+    />
+    <link data-trunk rel="icon" href="public/favicon.svg" />
+    <link data-trunk rel="copy-file" href="public/icons.svg" />
+    <link data-trunk rel="tailwind-css" href="style/tailwind.css" />
+  </head>
+  <body></body>
+</html>

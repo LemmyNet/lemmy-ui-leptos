@@ -8,7 +8,7 @@ use leptos::{
   ServerFnError,
 };
 
-#[server(prefix = "/serverfn", input = GetUrl)]
+#[server(prefix = "/serverfn", input = GetUrl, endpoint = "get_site")]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   use lemmy_client::LemmyRequest;
