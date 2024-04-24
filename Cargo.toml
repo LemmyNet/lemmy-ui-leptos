@@ -30,7 +30,7 @@ actix-web = { version = "4", features = ["macros"], optional = true }
 actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.36", optional = true, features = ["macros"] }
+tokio = { version = "1.37", optional = true, features = ["macros"] }
 strum = "0.26.2"
 strum_macros = "0.26.2"
 
