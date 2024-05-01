@@ -25,10 +25,12 @@ use crate::{
     layouts::{base_layout::BaseLayout, filter_bar_layout::FilterBarLayout},
   },
 };
+use contexts::site_resource_context::SiteResource;
 use leptos::*;
 use leptos_meta::*;
 #[cfg(debug_assertions)]
 use leptos_router::*;
+use utils::derive_user_is_logged_in;
 
 leptos_i18n::load_locales!();
 
@@ -76,8 +78,26 @@ pub fn App() -> impl IntoView {
           <Route path="create_community" view=CommunitiesActivity/>
           <Route path="c/:id" view=CommunitiesActivity/>
 
-          <Route path="login" view=LoginActivity/>
-          <Route path="signup" view=CommunitiesActivity/>
+          <Route
+            path="login"
+            view=move || {
+                view! {
+                  <AnonymousOnlyRouteView>
+                    <LoginActivity/>
+                  </AnonymousOnlyRouteView>
+                }
+            }
+          />
+          <Route
+            path="signup"
+            view=move || {
+                view! {
+                  <AnonymousOnlyRouteView>
+                    <CommunitiesActivity/>
+                  </AnonymousOnlyRouteView>
+                }
+            }
+          />
 
           <Route path="inbox" view=CommunitiesActivity/>
           <Route path="settings" view=CommunitiesActivity/>
@@ -88,6 +108,35 @@ pub fn App() -> impl IntoView {
         </Route>
       </Routes>
     </Router>
+  }
+}
+
+#[component]
+fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  let children = StoredValue::new(children);
+
+  view! {
+    <Transition>
+      <Show
+        when=move || !user_is_logged_in()
+        fallback=move || {
+            view! {
+              <Redirect
+                path="/"
+                options=NavigateOptions {
+                    replace: true,
+                    ..Default::default()
+                }
+              />
+            }
+        }
+      >
+
+        {children()}
+      </Show>
+    </Transition>
   }
 }
 

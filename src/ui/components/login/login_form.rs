@@ -2,10 +2,9 @@ use crate::{
   constants::AUTH_COOKIE,
   contexts::site_resource_context::SiteResource,
   ui::components::common::text_input::{InputType, TextInput},
-  utils::derive_user_is_logged_in,
 };
 use leptos::{server_fn::error::NoCustomError, *};
-use leptos_router::{ActionForm, NavigateOptions, Redirect};
+use leptos_router::ActionForm;
 
 #[server(prefix = "/serverfn", endpoint = "login")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -33,25 +32,6 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 }
 
 #[component]
-fn LoginRedirect() -> impl IntoView {
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
-
-  view! {
-    <Show when=user_is_logged_in>
-      <Redirect
-        path="/"
-        options=NavigateOptions {
-            replace: true,
-            ..Default::default()
-        }
-      />
-
-    </Show>
-  }
-}
-
-#[component]
 pub fn LoginForm() -> impl IntoView {
   let login = Action::<Login, _>::server();
   let site_resource = expect_context::<SiteResource>();
@@ -70,9 +50,6 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <Suspense>
-      <LoginRedirect/>
-    </Suspense>
     <ActionForm class="space-y-3" action=login>
       {login_error}
       <TextInput
