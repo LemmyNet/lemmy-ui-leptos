@@ -56,10 +56,12 @@ pub fn LoginForm() -> impl IntoView {
   let login = Action::<Login, _>::server();
   let site_resource = expect_context::<SiteResource>();
   // TODO: make unified, better looking way of handling errors.
-  let login_error =
-    Signal::derive(move || login.value()().and_then(|v| v.map_err(|e| view!{
-      <div class="text-error">{e.to_string()}</div>
-    }).err()));
+  let login_error = Signal::derive(move || {
+    login.value()().and_then(|v| {
+      v.map_err(|e| view! { <div class="text-error">{e.to_string()}</div> })
+        .err()
+    })
+  });
 
   Effect::new(move |_| {
     if login.value()().is_some_and(|r| r.is_ok()) {
