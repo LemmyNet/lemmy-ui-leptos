@@ -55,10 +55,14 @@ fn LoginRedirect() -> impl IntoView {
 pub fn LoginForm() -> impl IntoView {
   let login = Action::<Login, _>::server();
   let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  // TODO: make unified, better looking way of handling errors.
+  let login_error =
+    Signal::derive(move || login.value()().and_then(|v| v.map_err(|e| view!{
+      <div class="text-error">{e.to_string()}</div>
+    }).err()));
 
   Effect::new(move |_| {
-    if login.version()() > 0 && !user_is_logged_in() {
+    if login.value()().is_some_and(|r| r.is_ok()) {
       site_resource.refetch();
     }
   });
@@ -68,6 +72,7 @@ pub fn LoginForm() -> impl IntoView {
       <LoginRedirect/>
     </Suspense>
     <ActionForm class="space-y-3" action=login>
+      {login_error}
       <TextInput
         id="username"
         name="username_or_email"
