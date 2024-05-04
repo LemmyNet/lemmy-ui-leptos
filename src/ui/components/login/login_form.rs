@@ -6,7 +6,7 @@ use crate::{
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::ActionForm;
 
-#[server(prefix = "/serverfn", endpoint = "login")]
+#[server(prefix = "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
   use crate::utils::get_client_and_session;
   use lemmy_client::lemmy_api_common::person::Login as LoginBody;

@@ -18,7 +18,7 @@ use lemmy_client::{
 use leptos::*;
 use leptos_router::*;
 
-#[server(prefix = "/serverfn", endpoint = "vote_post")]
+#[server(prefix = "/serverfn")]
 pub async fn vote_post(post_id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
   use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
 
@@ -35,7 +35,7 @@ pub async fn vote_post(post_id: PostId, score: i16) -> Result<PostResponse, Serv
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-#[server(prefix = "/serverfn", endpoint = "save_post")]
+#[server(prefix = "/serverfn")]
 pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
   use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   let (client, session) = get_client_and_session().await?;
@@ -51,7 +51,7 @@ pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, Serv
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-#[server(prefix = "/serverfn", endpoint = "block_user")]
+#[server(prefix = "/serverfn")]
 pub async fn block_user(
   person_id: PersonId,
   block: bool,
@@ -70,7 +70,7 @@ pub async fn block_user(
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-#[server(prefix = "/serverfn", endpoint = "report_post")]
+#[server(prefix = "/serverfn")]
 pub async fn report_post(
   post_id: PostId,
   reason: String,
