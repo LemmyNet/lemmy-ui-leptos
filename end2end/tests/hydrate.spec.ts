@@ -1,9 +1,5 @@
 import { test } from "@playwright/test";
-import {
-  loginLogoutTest,
-  persistThemeTest,
-  showHome,
-} from "./common";
+import { loginLogoutTest, persistThemeTest, showHome } from "./common";
 
 test("show home", async ({ page }) => {
   await showHome({ page });
