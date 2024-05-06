@@ -1,89 +1,84 @@
-use crate::{errors::LemmyAppError, i18n::*};
-use lemmy_api_common::site::GetSiteResponse;
+use crate::{
+  contexts::site_resource_context::SiteResource,
+  i18n::*,
+  ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
+  utils::derive_query_signal,
+};
 use leptos::*;
 
 #[component]
-pub fn SiteSummary(
-  site_signal: RwSignal<Option<Result<GetSiteResponse, LemmyAppError>>>,
-) -> impl IntoView {
+pub fn SiteSummary() -> impl IntoView {
   let _i18n = use_i18n();
+  let site_resource = expect_context::<SiteResource>();
+
+  let site_name = derive_query_signal(site_resource, |site_response| {
+    site_response.site_view.site.name.clone()
+  });
+
+  let site_description = derive_query_signal(site_resource, |site_response| {
+    site_response
+      .site_view
+      .site
+      .description
+      .clone()
+      .unwrap_or_default()
+  });
+
+  let counts = derive_query_signal(site_resource, |site_response| {
+    site_response.site_view.counts
+  });
+
+  let admins = derive_query_signal(site_resource, |site_response| {
+    site_response
+      .admins
+      .iter()
+      .map(|admin| (admin.person.id, admin.person.name.clone()))
+      .collect::<Vec<_>>()
+  });
 
   view! {
-    {move || {
-        site_signal
-            .get()
-            .map(|o| match o {
-                Ok(o) => {
-                    view! {
-                      <div class="card w-full bg-base-300 text-base-content mb-3">
-                        <figure>
-                          <div class="card-body bg-neutral">
-                            <h2 class="card-title text-neutral-content">{o.site_view.site.name}</h2>
-                          </div>
-                        </figure>
-                        <div class="card-body">
-                          <p>{o.site_view.site.description}</p>
-                          <p>
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.users_active_day} " user / day"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.users_active_week} " users / week"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.users_active_month} " users / month"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.users_active_half_year} " users / 6 months"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.users} " users"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.communities} " Communities"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.posts} " Posts"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              {o.site_view.counts.comments} " Comments"
-                            </span>
-                            " "
-                            <span class="badge badge-neutral inline-block whitespace-nowrap">
-                              "Modlog"
-                            </span>
-                          </p>
-                          <h3 class="card-title">"Admins"</h3>
-                          <p>
-                            <For
-                              each=move || o.admins.clone()
-                              key=|admin| admin.person.id
-                              children=move |a| {
-                                  view! {
-                                    <span class="badge badge-neutral inline-block whitespace-nowrap">
-                                      {a.person.name}
-                                    </span>
-                                    " "
-                                  }
-                              }
-                            />
+    <div class="card w-full bg-base-300 text-base-content mb-3">
+      <figure>
+        <div class="card-body bg-neutral">
+          <Transition>
+            <Unpack item=site_name let:site_name>
+              <h2 class="card-title text-neutral-content">{site_name}</h2>
+            </Unpack>
+          </Transition>
+        </div>
+      </figure>
+      <div class="card-body">
+        <Transition>
+          <Unpack item=site_description let:site_description>
+            <p>{site_description}</p>
+          </Unpack>
+          <Unpack item=counts let:counts>
+            <p>
+              <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
+              <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
+              <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
+              <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
+              <CountsBadge>{counts.users} " users"</CountsBadge>
+              <CountsBadge>{counts.communities} " communities"</CountsBadge>
+              <CountsBadge>{counts.posts} " posts"</CountsBadge>
+              <CountsBadge>{counts.comments} " comments"</CountsBadge>
+              <CountsBadge>Modlog</CountsBadge>
+            </p>
 
-                          </p>
-                        </div>
-                      </div>
-                    }
-                }
-                _ => {
-                    view! { <div class="hidden"></div> }
-                }
-            })
-    }}
+          </Unpack>
+        </Transition>
+        <h3 class="card-title">Admins</h3>
+
+        <p>
+          <Transition>
+            <Unpack item=admins let:admins>
+              <For each=move || admins.clone() key=|c| c.0 let:admin>
+                <CountsBadge>{admin.1}</CountsBadge>
+              </For>
+            </Unpack>
+          </Transition>
+        </p>
+      </div>
+    </div>
   }
 }

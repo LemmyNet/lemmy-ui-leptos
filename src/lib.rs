@@ -1,30 +1,36 @@
-// useful in development to only have errors in compiler output
-// #![allow(warnings)]
+#![allow(clippy::empty_docs)]
 
-mod config;
-mod cookie;
-mod errors;
+mod constants;
+mod contexts;
 pub mod host;
-mod layout;
-mod lemmy_client;
+#[cfg(feature = "ssr")]
+pub mod server;
+mod serverfns;
 mod ui;
+mod utils;
 
 use crate::{
-  errors::LemmyAppError,
+  contexts::{
+    site_resource_context::provide_site_resource_context,
+    theme_resource_context::provide_theme_resource_context,
+  },
   i18n::*,
-  layout::Layout,
-  lemmy_client::*,
-  ui::components::{
-    communities::communities_activity::CommunitiesActivity,
-    home::home_activity::HomeActivity,
-    login::login_activity::LoginActivity,
-    post::post_activity::PostActivity,
+  ui::{
+    components::{
+      communities::communities_activity::CommunitiesActivity,
+      home::home_activity::HomeActivity,
+      login::login_activity::LoginActivity,
+      post::post_activity::PostActivity,
+    },
+    layouts::{base_layout::BaseLayout, filter_bar_layout::FilterBarLayout},
   },
 };
-use lemmy_api_common::site::GetSiteResponse;
+use contexts::site_resource_context::SiteResource;
 use leptos::*;
 use leptos_meta::*;
+#[cfg(debug_assertions)]
 use leptos_router::*;
+use utils::derive_user_is_logged_in;
 
 leptos_i18n::load_locales!();
 
@@ -32,60 +38,32 @@ leptos_i18n::load_locales!();
 pub fn App() -> impl IntoView {
   provide_meta_context();
   provide_i18n_context();
+  provide_site_resource_context();
+  provide_theme_resource_context();
 
-  let error = create_rw_signal::<Option<LemmyAppError>>(None);
-  provide_context(error);
-  let user = create_rw_signal::<Option<bool>>(None);
-  provide_context(user);
-  let ui_theme = create_rw_signal::<Option<String>>(None);
-  provide_context(ui_theme);
-
-  let site_signal = create_rw_signal::<Option<Result<GetSiteResponse, LemmyAppError>>>(None);
-
-  let ssr_site = create_resource(
-    move || (user.get()),
-    move |user| async move {
-      // fix login cache issue
-      let result = if user == Some(false) {
-        if let Some(Ok(mut s)) = site_signal.get() {
-          s.my_user = None;
-          Ok(s)
-        } else {
-          LemmyClient.get_site().await
-        }
-      } else {
-        LemmyClient.get_site().await
-      };
-
-      // let result = LemmyClient.get_site().await;
-
-      match result {
-        Ok(o) => Ok(o),
-        Err(e) => {
-          error.set(Some(e.clone()));
-          Err(e)
-        }
-      }
-    },
-  );
+  let is_routing = RwSignal::new(false);
 
   view! {
-    <Transition fallback=|| {}>
-      {move || {
-          ssr_site
-              .get()
-              .map(|m| {
-                  site_signal.set(Some(m));
-              });
-      }}
+    <Router set_is_routing=is_routing>
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
 
-    </Transition>
-    <Router>
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
+      <Link rel="shortcut icon" href="/favicon.svg"/>
+
+      <Meta name="description" content="Lemmy-UI-Leptos."/>
+      <Meta name="viewport" content="viewport-fit=cover"/>
+      // debug where there is no visible console (mobile/live/desktop)
+      // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
+      // <Script>eruda.init();</Script>
+      <Title text="Brand from env"/>
+
       <Routes>
-        <Route path="/" view=move || view! { <Layout site_signal/> } ssr=SsrMode::Async>
+        <Route path="" view=BaseLayout ssr=SsrMode::Async>
           <Route path="/*any" view=NotFound/>
 
-          <Route path="" view=move || view! { <HomeActivity site_signal/> }/>
+          <Route path="" view=FilterBarLayout>
+            <Route path="" view=HomeActivity/>
+          </Route>
 
           <Route path="create_post" view=CommunitiesActivity/>
           <Route path="post/:id" view=PostActivity/>
@@ -95,9 +73,27 @@ pub fn App() -> impl IntoView {
           <Route path="create_community" view=CommunitiesActivity/>
           <Route path="c/:id" view=CommunitiesActivity/>
 
-          <Route path="login" view=LoginActivity/>
-          <Route path="logout" view=CommunitiesActivity/>
-          <Route path="signup" view=CommunitiesActivity/>
+          <Route
+            path="login"
+            view=move || {
+                view! {
+                  <AnonymousOnlyRouteView>
+                    <LoginActivity/>
+                  </AnonymousOnlyRouteView>
+                }
+            }
+          />
+
+          <Route
+            path="signup"
+            view=move || {
+                view! {
+                  <AnonymousOnlyRouteView>
+                    <CommunitiesActivity/>
+                  </AnonymousOnlyRouteView>
+                }
+            }
+          />
 
           <Route path="inbox" view=CommunitiesActivity/>
           <Route path="settings" view=CommunitiesActivity/>
@@ -108,6 +104,35 @@ pub fn App() -> impl IntoView {
         </Route>
       </Routes>
     </Router>
+  }
+}
+
+#[component]
+fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  let children = StoredValue::new(children);
+
+  view! {
+    <Transition>
+      <Show
+        when=move || !user_is_logged_in.get()
+        fallback=move || {
+            view! {
+              <Redirect
+                path="/"
+                options=NavigateOptions {
+                    replace: true,
+                    ..Default::default()
+                }
+              />
+            }
+        }
+      >
+
+        {children.get_value()}
+      </Show>
+    </Transition>
   }
 }
 

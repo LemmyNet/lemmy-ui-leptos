@@ -30,8 +30,8 @@ Create the environment variables to point to your instance and specify Tailwind 
 
 ```
 export LEPTOS_TAILWIND_VERSION=v3.4.1
-export LEMMY_UI_LEPTOS_LEMMY_HOST=localhost:8536
-export LEMMY_UI_LEPTOS_LEMMY_HTTPS=false
+export INTERNAL_HOST=localhost:8536
+export HTTPS=false
 ```
 
 Compile and run with:
