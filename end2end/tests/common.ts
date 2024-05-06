@@ -4,32 +4,29 @@ export async function showHome({ page }) {
   await page.goto("/");
 
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
+    page.locator("a").getByText("Login", { exact: true }).first()
   ).toHaveText("Login");
 }
 
 export async function loginLogoutTest({ page }) {
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
+    page.locator("a").getByText("Login", { exact: true }).first()
   ).toHaveText("Login");
 
   await page.locator("a").getByText("Login", { exact: true }).first().click();
 
   await expect(page.getByRole("button").getByText("Login").first()).toHaveText(
-    "Login",
+    "Login"
   );
 
   await page.getByLabel("Username", { exact: true }).fill("lemmy");
   await page.getByLabel("Password", { exact: true }).fill("lemmylemmy");
   await page.waitForTimeout(1000);
   await page.getByRole("button").getByText("Login").click();
-  await page.waitForTimeout(2000);
 
-  await expect(
-    page.locator("summary").getByText("lemmy", { exact: true }),
-  ).toBeVisible();
+  await expect(page.locator("summary").getByText("lemmy")).toBeVisible();
 
-  await page.locator("summary").getByText("lemmy", { exact: true }).click();
+  await page.locator("summary").getByText("lemmy").click();
   await page.getByRole("button").getByText("Logout", { exact: true }).click();
 }
 
@@ -65,7 +62,7 @@ export async function persistThemeTest({ page }) {
   await expect(page.locator("div[data-theme]")).toHaveAttribute("data-theme");
 
   await expect(
-    page.locator("summary").getByText("Theme", { exact: true }),
+    page.locator("summary").getByText("Theme", { exact: true })
   ).toBeVisible();
 
   await page.locator("summary").getByText("Theme", { exact: true }).click();
@@ -73,7 +70,7 @@ export async function persistThemeTest({ page }) {
 
   await expect(page.locator("div[data-theme]")).toHaveAttribute(
     "data-theme",
-    "dark",
+    "dark"
   );
 
   await page.goto("https://join-lemmy.org");
@@ -81,6 +78,6 @@ export async function persistThemeTest({ page }) {
 
   await expect(page.locator("div[data-theme]")).toHaveAttribute(
     "data-theme",
-    "dark",
+    "dark"
   );
 }
