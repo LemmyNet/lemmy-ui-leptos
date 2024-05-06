@@ -20,8 +20,8 @@ pub fn HomeActivity() -> impl IntoView {
 
   let posts_resource = create_blocking_resource(
     move || GetPosts {
-      type_: Some(listing_type()),
-      sort: Some(sort_type()),
+      type_: Some(listing_type.get()),
+      sort: Some(sort_type.get()),
       ..Default::default()
     },
     list_posts,

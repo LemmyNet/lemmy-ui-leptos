@@ -116,7 +116,7 @@ fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
   view! {
     <Transition>
       <Show
-        when=move || !user_is_logged_in()
+        when=move || !user_is_logged_in.get()
         fallback=move || {
             view! {
               <Redirect
@@ -130,7 +130,7 @@ fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
         }
       >
 
-        {children()}
+        {children.get_value()}
       </Show>
     </Transition>
   }

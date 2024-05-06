@@ -94,7 +94,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
 
-  let post_view = RwSignal::new(post_view());
+  let post_view = RwSignal::new(post_view.get());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
   let post_name = Signal::derive(move || with!(|post_view| post_view.post.name.clone()));
   let is_upvote =
@@ -123,7 +123,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
   let vote_action = Action::<VotePost, _>::server();
   Effect::new_isomorphic(move |_| {
-    let version = vote_action.version()();
+    let version = vote_action.version().get();
 
     if version > 0 {
       vote_action.value().with(|value| {
@@ -141,7 +141,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
   let save_post_action = Action::<SavePost, _>::server();
   Effect::new_isomorphic(move |_| {
-    let version = save_post_action.version()();
+    let version = save_post_action.version().get();
 
     if version > 0 {
       save_post_action.value().with(|value| {
@@ -180,7 +180,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             }
 
             title="Up vote"
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+            disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
           >
 
             <Icon icon=Upvote/>
@@ -205,7 +205,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
             title="Down vote"
 
-            disabled=move || !user_is_logged_in() || vote_action.pending()()
+            disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
           >
             <Icon icon=Downvote/>
           </button>
@@ -257,13 +257,13 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
         <span class="flex items-center gap-x-2">
           <ActionForm action=vote_action class="flex items-center sm:hidden">
             <input type="hidden" name="post_id" value=id/>
-            <input type="hidden" name="score" value=move || if is_upvote() { 0 } else { 1 }/>
+            <input type="hidden" name="score" value=move || if is_upvote.get() { 0 } else { 1 }/>
             <button
               type="submit"
-              class=move || is_upvote().then_some("text-accent")
+              class=move || is_upvote.get().then_some("text-accent")
               title="Up vote"
 
-              disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
             >
               <Icon icon=Upvote/>
             </button>
@@ -271,20 +271,20 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           <span class="block text-sm sm:hidden">{score}</span>
           <ActionForm action=vote_action class="flex items-center sm:hidden">
             <input type="hidden" name="post_id" value=id/>
-            <input type="hidden" name="score" value=move || if is_downvote() { 0 } else { -1 }/>
+            <input type="hidden" name="score" value=move || if is_downvote.get() { 0 } else { -1 }/>
             <button
               type="submit"
-              class=move || is_downvote().then_some("text-accent")
+              class=move || is_downvote.get().then_some("text-accent")
 
               title="Down vote"
 
-              disabled=move || !user_is_logged_in() || vote_action.pending()()
+              disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
             >
               <Icon icon=Downvote/>
             </button>
           </ActionForm>
-          <span class="flex items-center" title=move || format!("{} comments", unread_comments())>
-            <A href=move || { format!("/post/{}", id()) } class="text-sm whitespace-nowrap">
+          <span class="flex items-center" title=move || format!("{} comments", unread_comments.get())>
+            <A href=move || { format!("/post/{}", id.get()) } class="text-sm whitespace-nowrap">
               <Icon icon=Comments class="inline".into()/>
               " "
               {unread_comments}
@@ -297,7 +297,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               type="submit"
               title="Save post"
               class=move || if post_view.get().saved { " text-accent" } else { "" }
-              disabled=move || !user_is_logged_in() || save_post_action.pending()()
+              disabled=move || !user_is_logged_in.get() || save_post_action.pending().get()
             >
               <Icon icon=Save/>
             </button>

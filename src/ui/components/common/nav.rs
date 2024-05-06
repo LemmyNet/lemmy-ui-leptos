@@ -65,14 +65,14 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
   let logout_action = create_server_action::<Logout>();
 
   Effect::new(move |_| {
-    if logout_action.version()() > 0 {
+    if logout_action.version().get() > 0 {
       site_resource.refetch();
     }
   });
 
   view! {
     <Show
-      when=user_is_logged_in
+      when=move || user_is_logged_in.get()
 
       fallback=move || {
           view! {
@@ -165,7 +165,7 @@ fn ThemeSelect() -> impl IntoView {
   let theme = expect_context::<ThemeResource>();
 
   Effect::new(move |_| {
-    if theme_action.version()() > 0 {
+    if theme_action.version().get() > 0 {
       theme.refetch();
     }
   });

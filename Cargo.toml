@@ -7,9 +7,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.6", features = ["nightly"] }
-leptos_meta = { version = "0.6", features = ["nightly"] }
-leptos_router = { version = "0.6", features = ["nightly"] }
+leptos = { version = "0.6"}
+leptos_meta = { version = "0.6" }
+leptos_router = { version = "0.6" }
 leptos_i18n = "0"
 cfg-if = "1"
 lemmy-client = { version = "0.19.4-beta.6", features = ["leptos"] }

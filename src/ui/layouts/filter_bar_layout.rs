@@ -26,7 +26,7 @@ where
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
   let disabled = Signal::derive(move || {
-    !user_is_logged_in()
+    !user_is_logged_in.get()
       && matches!(
         link_listing_type,
         ListingType::Subscribed | ListingType::ModeratorView
@@ -36,7 +36,7 @@ where
   view! {
     <A
       href=move || {
-          if disabled() {
+          if disabled.get() {
               String::from("javascript:void(0)")
           } else {
               let mut query = query.get();
@@ -46,7 +46,7 @@ where
       }
 
       class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
-      attr:aria-disabled=move || if disabled() { Some("true") } else { None }
+      attr:aria-disabled=move || if disabled.get() { Some("true") } else { None }
       attr:aria-selected=move || {
           if listing_type.get() == link_listing_type { Some("true") } else { None }
       }
@@ -120,14 +120,14 @@ fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>)
     |user| user.default_listing_type,
     |site| site.default_post_listing_type,
   );
-  Effect::new(move |_| listing_type.set(local_listing_type()));
+  Effect::new(move |_| listing_type.set(local_listing_type.get()));
 
   let local_sort_type = derive_link_type(
     "sort",
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
-  Effect::new(move |_| sort_type.set(local_sort_type()));
+  Effect::new(move |_| sort_type.set(local_sort_type.get()));
 
   view! {
     <div class="block">

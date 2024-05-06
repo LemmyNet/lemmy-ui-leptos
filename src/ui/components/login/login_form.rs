@@ -37,14 +37,14 @@ pub fn LoginForm() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
   // TODO: make unified, better looking way of handling errors.
   let login_error = Signal::derive(move || {
-    login.value()().and_then(|v| {
+    login.value().get().and_then(|v| {
       v.map_err(|e| view! { <div class="text-error">{e.to_string()}</div> })
         .err()
     })
   });
 
   Effect::new(move |_| {
-    if login.value()().is_some_and(|r| r.is_ok()) {
+    if login.value().get().is_some_and(|r| r.is_ok()) {
       site_resource.refetch();
     }
   });
