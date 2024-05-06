@@ -38,6 +38,7 @@ phosphor-leptos = { version = "0.3", default_features = false, features = [
   "editor",
   "system",
 ] }
+web-sys = "0.3.69"
 
 [package.metadata.leptos-i18n]
 default = "en"

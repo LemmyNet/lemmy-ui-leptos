@@ -1535,6 +1535,7 @@ dependencies = [
  "strum_macros 0.26.2",
  "tokio",
  "wasm-bindgen",
+ "web-sys",
 ]
 
 [[package]]
