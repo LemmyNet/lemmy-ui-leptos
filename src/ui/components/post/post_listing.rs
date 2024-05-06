@@ -283,7 +283,10 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               <Icon icon=Downvote/>
             </button>
           </ActionForm>
-          <span class="flex items-center" title=move || format!("{} comments", unread_comments.get())>
+          <span
+            class="flex items-center"
+            title=move || format!("{} comments", unread_comments.get())
+          >
             <A href=move || { format!("/post/{}", id.get()) } class="text-sm whitespace-nowrap">
               <Icon icon=Comments class="inline".into()/>
               " "
