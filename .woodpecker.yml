@@ -121,26 +121,27 @@ steps:
   #   when:
   #     - event: pull_request
 
-  playwright_check:
-    image: mcr.microsoft.com/playwright:latest
-    environment:
-      CARGO_HOME: .cargo
-    commands:
-      - apt update && apt -y install libssl-dev pkg-config  build-essential gcc make
-      - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-      # - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
-      - . ".cargo/env"
-      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
-      - cargo-binstall -y cargo-leptos
-      - npm install -g pnpm
-      - pnpm install
-      - rustup target add wasm32-unknown-unknown
-      - cd end2end
-      - pnpm install
-      - cd ..
-      - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos end-to-end
-    when:
-      - event: pull_request
+  # Uncomment this when we find a way to test this on Arch linux
+  # playwright_check:
+  #   image: mcr.microsoft.com/playwright:latest
+  #   environment:
+  #     CARGO_HOME: .cargo
+  #   commands:
+  #     - apt update && apt -y install libssl-dev pkg-config  build-essential gcc make
+  #     - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  #     # - . "/woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/.cargo/env"
+  #     - . ".cargo/env"
+  #     - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall .cargo/bin
+  #     - cargo-binstall -y cargo-leptos
+  #     - npm install -g pnpm
+  #     - pnpm install
+  #     - rustup target add wasm32-unknown-unknown
+  #     - cd end2end
+  #     - pnpm install
+  #     - cd ..
+  #     - LEMMY_UI_LEPTOS_LEMMY_HOST=lemmy:8536 LEMMY_UI_LEPTOS_LEMMY_HTTPS=false LEPTOS_TAILWIND_VERSION=v3.4.1 cargo leptos end-to-end
+  #   when:
+  #     - event: pull_request
 
   notify_on_failure:
     image: alpine:3
