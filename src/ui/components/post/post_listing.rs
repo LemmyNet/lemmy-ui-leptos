@@ -1,11 +1,4 @@
-use crate::{
-  contexts::site_resource_context::SiteResource,
-  ui::components::common::icon::{
-    Icon,
-    IconType::{Block, Comments, Crosspost, Downvote, Report, Save, Upvote, VerticalDots},
-  },
-  utils::derive_user_is_logged_in,
-};
+use crate::{contexts::site_resource_context::SiteResource, utils::derive_user_is_logged_in};
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::{PersonId, PostId},
@@ -17,6 +10,16 @@ use lemmy_client::{
 };
 use leptos::*;
 use leptos_router::*;
+use phosphor_leptos::{
+  ArrowDown,
+  ArrowUp,
+  Bookmark,
+  ChatText,
+  DotsThreeVertical,
+  Flag,
+  IntersectThree,
+  Prohibit,
+};
 
 #[server(prefix = "/serverfn")]
 pub async fn vote_post(post_id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
@@ -183,7 +186,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
           >
 
-            <Icon icon=Upvote/>
+            <ArrowUp class="size-6"/>
           </button>
         </ActionForm>
         <span class="block text-sm">{score}</span>
@@ -207,7 +210,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
             disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
           >
-            <Icon icon=Downvote/>
+            <ArrowDown class="size-6"/>
           </button>
         </ActionForm>
       </td>
@@ -265,7 +268,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
               disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
             >
-              <Icon icon=Upvote/>
+              <ArrowUp class="size-6"/>
             </button>
           </ActionForm>
           <span class="block text-sm sm:hidden">{score}</span>
@@ -280,7 +283,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
               disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
             >
-              <Icon icon=Downvote/>
+              <ArrowDown class="size-6"/>
             </button>
           </ActionForm>
           <span
@@ -288,7 +291,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             title=move || format!("{} comments", unread_comments.get())
           >
             <A href=move || { format!("/post/{}", id.get()) } class="text-sm whitespace-nowrap">
-              <Icon icon=Comments class="inline".into()/>
+              <ChatText class="size-6 inline"/>
               " "
               {unread_comments}
             </A>
@@ -302,17 +305,17 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               class=move || if post_view.get().saved { " text-accent" } else { "" }
               disabled=move || !user_is_logged_in.get() || save_post_action.pending().get()
             >
-              <Icon icon=Save/>
+              <Bookmark class="size-6"/>
             </button>
           </ActionForm>
           <span title="Cross post">
             <A href="/create_post">
-              <Icon icon=Crosspost/>
+              <IntersectThree class="size-6"/>
             </A>
           </span>
           <div class="dropdown hidden sm:block">
             <label tabindex="0">
-              <Icon icon=VerticalDots/>
+              <DotsThreeVertical class="size-6"/>
             </label>
             <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
               <li>
@@ -325,7 +328,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
                     placeholder="reason"
                   />
                   <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                    <Icon icon=Report class="inline-block".into()/>
+                    <Flag class="size-6 inline-block"/>
                     " Report post"
                   </button>
                 </ActionForm>
@@ -335,7 +338,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
                   <input type="hidden" name="person_id" value=creator_id/>
                   <input type="hidden" name="block" value="true"/>
                   <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                    <Icon icon=Block class="inline-block".into()/>
+                    <Prohibit class="size-6 inline-block"/>
                     " Block user"
                   </button>
                 </ActionForm>

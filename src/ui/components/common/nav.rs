@@ -4,18 +4,13 @@ use crate::{
     theme_resource_context::{Theme, ThemeResource},
   },
   i18n::*,
-  ui::components::common::{
-    icon::{
-      Icon,
-      IconType::{Donate, Notifications, Search},
-    },
-    unpack::Unpack,
-  },
+  ui::components::common::unpack::Unpack,
   utils::{derive_query_signal, derive_user_is_logged_in},
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
 use leptos_router::*;
+use phosphor_leptos::{Bell, Heart, MagnifyingGlass};
 
 #[component]
 fn InstanceName() -> impl IntoView {
@@ -89,7 +84,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
       <li>
         <A href="/inbox">
           <span title=t!(i18n, unread_messages)>
-            <Icon icon=Notifications/>
+            <Bell class="size-6"/>
           </span>
         </A>
       </li>
@@ -230,7 +225,7 @@ pub fn TopNav() -> impl IntoView {
           <li>
             <a href="//join-lemmy.org/donate">
               <span title="t!(i18n, donate)">
-                <Icon icon=Donate/>
+                <Heart class="size-6"/>
               </span>
             </a>
           </li>
@@ -241,7 +236,7 @@ pub fn TopNav() -> impl IntoView {
           <li>
             <A href="/search">
               <span title="t!(i18n, search)">
-                <Icon icon=Search/>
+                <MagnifyingGlass class="size-6"/>
               </span>
             </A>
           </li>

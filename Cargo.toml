@@ -31,6 +31,13 @@ actix-session = { version = "0.9", features = [
 tokio = { version = "1.37", optional = true, features = ["macros"] }
 strum = "0.26.2"
 strum_macros = "0.26.2"
+phosphor-leptos = { version = "0.3", default_features = false, features = [
+  "arrows",
+  "objects",
+  "communication",
+  "editor",
+  "system",
+] }
 
 [package.metadata.leptos-i18n]
 default = "en"

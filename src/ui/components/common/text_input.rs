@@ -1,8 +1,5 @@
-use crate::ui::components::common::icon::{
-  Icon,
-  IconType::{Eye, EyeSlash},
-};
 use leptos::*;
+use phosphor_leptos::{Eye, EyeSlash};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InputType {
@@ -24,8 +21,6 @@ pub fn TextInput(
 ) -> impl IntoView {
   let show_password = RwSignal::new(false);
   let for_id = id.get().clone();
-  let eye_icon =
-    Signal::derive(move || with!(|show_password| if *show_password { EyeSlash } else { Eye }));
 
   view! {
     <div class="relative w-full !mt-8">
@@ -56,7 +51,9 @@ pub fn TextInput(
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-accent"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)
         >
-          <Icon icon=eye_icon/>
+          <Show when=move || show_password.get() fallback=move || view! { <Eye class="size-6"/> }>
+            <EyeSlash class="size-6"/>
+          </Show>
         </button>
       </Show>
       <label
