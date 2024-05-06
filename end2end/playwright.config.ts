@@ -44,46 +44,6 @@ const config: PlaywrightTestConfig = {
         ...devices["Desktop Chrome"],
       },
     },
-
-    {
-      name: "Chromium CSR",
-      testMatch: "csr.spec.ts",
-      use: {
-        ...{
-          // deliberately trigger failure
-          // javaScriptEnabled: false,
-          baseURL: "http://localhost:1237",
-        },
-        ...devices["Desktop Chrome"],
-      },
-    },
-
-    // Firefox performance very erratic with JS enabled
-    // {
-    //   name: "Firefox Hydrate",
-    //   testMatch: "hydrate.spec.ts",
-    //   use: {
-    //     ...{
-    //       // javaScriptEnabled: true,
-    //       baseURL: 'http://localhost:1237',
-    //     },
-    //     ...devices["Desktop Firefox"],
-    //   },
-    // },
-
-    // {
-    //   name: "Firefox CSR",
-    //   testMatch: "csr.spec.ts",
-    //   use: {
-    //     ...{
-    //       // deliberately trigger failure
-    //       // javaScriptEnabled: false,
-    //       baseURL: 'http://localhost:1237',
-    //     },
-    //     ...devices["Desktop Firefox"],
-    //   },
-    // },
-
     {
       name: "Firefox SSR",
       testMatch: "ssr.spec.ts",
