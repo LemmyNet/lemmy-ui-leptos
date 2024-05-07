@@ -10,4 +10,5 @@ trait_set! {
     pub trait ServerActionFn = DeserializeOwned + ServerFn<InputEncoding = PostUrl, Client = BrowserClient> + 'static;
 }
 
-pub type ServerAction<T: ServerActionFn> = Action<T, Result<T::Output, ServerFnError<T::Error>>>;
+pub type ServerAction<T> =
+  Action<T, Result<<T as ServerFn>::Output, ServerFnError<<T as ServerFn>::Error>>>;

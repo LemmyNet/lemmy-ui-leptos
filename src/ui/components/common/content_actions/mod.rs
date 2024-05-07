@@ -2,21 +2,19 @@ use crate::{
   contexts::site_resource_context::SiteResource,
   utils::{derive_user_is_logged_in, ServerAction, ServerActionFn},
 };
+use lemmy_client::{
+  lemmy_api_common::{
+    lemmy_db_schema::newtypes::PersonId,
+    person::{BlockPerson, BlockPersonResponse},
+  },
+  LemmyRequest,
+};
 use leptos::*;
 use leptos_router::{ActionForm, A};
 use phosphor_leptos::{Bookmark, ChatText, DotsThreeVertical, Flag, IntersectThree, Prohibit};
 
 mod post_content_actions;
-
-#[slot]
-struct Comments {
-  count: MaybeSignal<i64>,
-}
-
-#[slot]
-struct Crosspost {
-  children: ChildrenFn,
-}
+pub use post_content_actions::PostContentActions;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ContentActionType {
@@ -24,23 +22,42 @@ enum ContentActionType {
   Comment,
 }
 
+#[server(prefix = "/serverfn")]
+pub async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
+  let (client, session) = get_client_and_session().await?;
+
+  let jwt = session.get::<String>(AUTH_COOKIE)?;
+
+  client
+    .block_person(LemmyRequest {
+      body: BlockPerson {
+        person_id: id,
+        block,
+      },
+      jwt,
+    })
+    .await
+    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+}
+
 #[component]
-fn ContentActions<SA, RA, BA>(
+fn ContentActions<SA, RA>(
   content_action_type: ContentActionType,
   #[prop(into)] id: MaybeSignal<i32>,
   save_action: ServerAction<SA>,
   #[prop(into)] saved: MaybeSignal<bool>,
   report_action: ServerAction<RA>,
   #[prop(into)] creator_id: MaybeSignal<i32>,
-  block_user_action: ServerAction<BA>,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
   RA: ServerActionFn,
-  BA: ServerActionFn,
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
+
+  let block_user_action = Action::<BlockUser, _>::server();
 
   view! {
     <div class="flex items-center gap-x-2">
@@ -110,7 +127,7 @@ where
           </li>
           <li>
             <ActionForm action=block_user_action>
-              <input type="hidden" name="person_id" value=creator_id/>
+              <input type="hidden" name="id" value=creator_id/>
               <input type="hidden" name="block" value="true"/>
               <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
                 <Prohibit class="size-6 inline-block"/>

@@ -1,7 +1,6 @@
-use crate::{
-  contexts::site_resource_context::SiteResource,
-  ui::components::common::vote_buttons::PostVoteButtons,
-  utils::derive_user_is_logged_in,
+use crate::ui::components::common::{
+  content_actions::PostContentActions,
+  vote_buttons::PostVoteButtons,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -14,7 +13,6 @@ use lemmy_client::{
 };
 use leptos::*;
 use leptos_router::*;
-use phosphor_leptos::{Bookmark, ChatText, DotsThreeVertical, Flag, IntersectThree, Prohibit};
 
 #[server(prefix = "/serverfn")]
 pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
@@ -72,9 +70,6 @@ pub async fn report_post(
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
-
   let post_view = RwSignal::new(post_view.get());
   let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
   let post_name = Signal::derive(move || with!(|post_view| post_view.post.name.clone()));
@@ -96,29 +91,8 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
   let community_title =
     Signal::derive(move || with!(|post_view| post_view.community.title.clone()));
-  let unread_comments = Signal::derive(move || with!(|post_view| post_view.unread_comments));
+  let comments = Signal::derive(move || with!(|post_view| post_view.counts.comments));
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
-
-  let save_post_action = Action::<SavePost, _>::server();
-  Effect::new_isomorphic(move |_| {
-    let version = save_post_action.version().get();
-
-    if version > 0 {
-      save_post_action.value().with(|value| {
-        let new_post_view = &value.as_ref().unwrap().as_ref().unwrap().post_view;
-
-        update!(|post_view| {
-          post_view.saved = new_post_view.saved;
-        });
-      });
-    }
-  });
-
-  let block_user_action = Action::<BlockUser, _>::server();
-
-  let report_post_action = Action::<ReportPost, _>::server();
-
-  let reason = RwSignal::new(String::new());
 
   view! {
     <article>
@@ -160,68 +134,16 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             {community_title}
           </A>
         </div>
-        <div class="flex items-center gap-x-2">
-          <span
-            class="flex items-center"
-            title=move || format!("{} comments", unread_comments.get())
-          >
-            <A href=move || { format!("/post/{}", id.get()) } class="text-sm whitespace-nowrap">
-              <ChatText class="size-6 inline"/>
-              " "
-              {unread_comments}
-            </A>
-          </span>
-          <ActionForm action=save_post_action class="flex items-center">
-            <input type="hidden" name="post_id" value=id/>
-            <input type="hidden" name="save" value=saved/>
-            <button
-              type="submit"
-              title="Save post"
-              class=move || if post_view.get().saved { " text-accent" } else { "" }
-              disabled=move || !user_is_logged_in.get() || save_post_action.pending().get()
-            >
-              <Bookmark class="size-6"/>
-            </button>
-          </ActionForm>
-          <span title="Cross post">
-            <A href="/create_post">
-              <IntersectThree class="size-6"/>
-            </A>
-          </span>
-          <div class="dropdown hidden sm:block">
-            <label tabindex="0">
-              <DotsThreeVertical class="size-6"/>
-            </label>
-            <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-              <li>
-                <ActionForm action=report_post_action>
-                  <input type="hidden" name="post_id" value=id/>
-                  <input
-                    type="text"
-                    on:input=move |e| update!(| reason | * reason = event_target_value(& e))
-                    name="reason"
-                    placeholder="reason"
-                  />
-                  <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                    <Flag class="size-6 inline-block"/>
-                    " Report post"
-                  </button>
-                </ActionForm>
-              </li>
-              <li>
-                <ActionForm action=block_user_action>
-                  <input type="hidden" name="person_id" value=creator_id/>
-                  <input type="hidden" name="block" value="true"/>
-                  <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                    <Prohibit class="size-6 inline-block"/>
-                    " Block user"
-                  </button>
-                </ActionForm>
-              </li>
-            </ul>
-          </div>
-        </div>
+
       </div>
+      <PostContentActions
+        id=id
+        creator_id=creator_id
+        saved=saved
+        comments=comments
+        post_write_signal=post_view.write_only()
+      />
+
     </article>
   }
 }
