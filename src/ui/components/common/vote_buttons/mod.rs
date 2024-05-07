@@ -1,12 +1,10 @@
-use crate::{contexts::site_resource_context::SiteResource, utils::derive_user_is_logged_in};
-use leptos::{
-  server_fn::{client::Client, codec::PostUrl, request::ClientReq, ServerFn},
-  *,
+use crate::{
+  contexts::site_resource_context::SiteResource,
+  utils::{derive_user_is_logged_in, ServerAction, ServerActionFn},
 };
+use leptos::*;
 use leptos_router::ActionForm;
 use phosphor_leptos::{ArrowDown, ArrowUp};
-use serde::de::DeserializeOwned;
-use web_sys::FormData;
 
 mod comment_vote_buttons;
 mod post_vote_buttons;
@@ -15,16 +13,14 @@ pub use comment_vote_buttons::CommentVoteButtons;
 pub use post_vote_buttons::PostVoteButtons;
 
 #[component]
-fn VoteButtons<ServeFn>(
+fn VoteButtons<VA>(
   #[prop(into)] my_vote: MaybeProp<i16>,
   #[prop(into)] id: MaybeSignal<i32>,
   #[prop(into)] score: MaybeSignal<i64>,
-  vote_action: Action<ServeFn, Result<ServeFn::Output, ServerFnError<ServeFn::Error>>>,
+  vote_action: ServerAction<VA>,
 ) -> impl IntoView
 where
-  ServeFn: DeserializeOwned + ServerFn<InputEncoding = PostUrl> + 'static,
-  <<ServeFn::Client as Client<ServeFn::Error>>::Request as ClientReq<ServeFn::Error>>::FormData:
-    From<FormData>,
+  VA: ServerActionFn,
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);

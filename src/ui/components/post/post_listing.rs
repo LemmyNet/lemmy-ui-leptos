@@ -125,21 +125,21 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only()/>
       // <div >
 
-      //   <A href=move || {
-      //       with!(
-      //           | url, id | url.as_ref().map(ToOwned::to_owned).unwrap_or_else(||
-      //           format!("/post/{id}"))
-      //       )
-      //   }>
-      //     {move || {
-      //         with!(
-      //             | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < span
-      //             class = "block w-24 truncate" > < img class = "w-24" src = thumbnail_url /> </
-      //             span > })
-      //         )
-      //     }}
+      // <A href=move || {
+      // with!(
+      // | url, id | url.as_ref().map(ToOwned::to_owned).unwrap_or_else(||
+      // format!("/post/{id}"))
+      // )
+      // }>
+      // {move || {
+      // with!(
+      // | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < span
+      // class = "block w-24 truncate" > < img class = "w-24" src = thumbnail_url /> </
+      // span > })
+      // )
+      // }}
 
-      //   </A>
+      // </A>
       // </div>
       <div>
         <A href=move || with!(| id | format!("/post/{id}")) class="block text-lg">
