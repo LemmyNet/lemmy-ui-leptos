@@ -1,10 +1,10 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
+  ui::components::common::icon::{Icon, IconType},
   utils::{derive_user_is_logged_in, ServerAction, ServerActionFn},
 };
 use leptos::*;
 use leptos_router::ActionForm;
-use phosphor_leptos::{ArrowDown, ArrowUp};
 
 mod comment_vote_buttons;
 mod post_vote_buttons;
@@ -49,7 +49,7 @@ where
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
 
-          <ArrowUp class="size-6"/>
+          <Icon icon=IconType::Upvote/>
         </button>
       </ActionForm>
       <div class="text-sm text-center">{score}</div>
@@ -73,7 +73,7 @@ where
 
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
-          <ArrowDown class="size-6"/>
+          <Icon icon=IconType::Downvote/>
         </button>
       </ActionForm>
     </div>

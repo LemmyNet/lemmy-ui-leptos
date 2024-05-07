@@ -11,7 +11,7 @@ use leptos::{
 };
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use strum_macros::{EnumString, IntoStaticStr};
+use strum::{EnumString, IntoStaticStr};
 
 #[derive(
   Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumString, IntoStaticStr,

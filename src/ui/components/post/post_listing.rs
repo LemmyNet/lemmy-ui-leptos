@@ -119,8 +119,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           with!(
               | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < img class =
               "w-24" src = thumbnail_url /> } .into_view()).unwrap_or_else(|| view! { < div class =
-              "w-24" > 
-              </ div > } .into_view())
+              "w-24" > </ div > } .into_view())
           )
       }}
 

@@ -29,15 +29,7 @@ actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
 tokio = { version = "1.37", optional = true, features = ["macros"] }
-strum = "0.26.2"
-strum_macros = "0.26.2"
-phosphor-leptos = { version = "0.3", default_features = false, features = [
-  "arrows",
-  "objects",
-  "communication",
-  "editor",
-  "system",
-] }
+strum = { version = "0.26.2", features = ["derive"] }
 web-sys = "0.3.69"
 trait-set = "0.3.0"
 
@@ -78,9 +70,6 @@ ssr = [
 [package.metadata.cargo-all-features]
 denylist = ["actix-files", "actix-web", "leptos_actix"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
-
-[package.metadata.cargo-machete]
-ignored = ["strum"]
 
 [profile.release]
 codegen-units = 1

@@ -1528,11 +1528,9 @@ dependencies = [
  "leptos_i18n",
  "leptos_meta",
  "leptos_router",
- "phosphor-leptos",
  "serde",
  "serde_json",
  "strum 0.26.2",
- "strum_macros 0.26.2",
  "tokio",
  "trait-set",
  "wasm-bindgen",
@@ -2143,15 +2141,6 @@ name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
-
-[[package]]
-name = "phosphor-leptos"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3ef9a4b566b05448b28967f76494cb003a37684aa758e7449d205164966d90d"
-dependencies = [
- "leptos",
-]
 
 [[package]]
 name = "pin-project"
@@ -2788,6 +2777,9 @@ name = "strum"
 version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d8cec3501a5194c432b2b7976db6b7d10ec95c253208b45f83f7136aa985e29"
+dependencies = [
+ "strum_macros 0.26.2",
+]
 
 [[package]]
 name = "strum_macros"
