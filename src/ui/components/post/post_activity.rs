@@ -47,19 +47,20 @@ pub fn PostActivity() -> impl IntoView {
   );
 
   view! {
-    <main class="mx-auto">
-      <h2 class="p-6 text-4xl">"Post page"</h2>
-      <Unpack item=post_resource let:res>
-        <div>
-          <PostListing post_view=res.post_view.clone()/>
-        </div>
-      </Unpack>
+    <div class="container mx-auto">
+      <main>
+        <Transition>
+          <Unpack item=post_resource let:res>
+            <PostListing post_view=res.post_view.clone()/>
+          </Unpack>
+        </Transition>
 
-      <Unpack item=list_comments_resource let:res>
-        <div>
-          <CommentNodes comments=res.comments.clone()/>
-        </div>
-      </Unpack>
-    </main>
+      // <Unpack item=list_comments_resource let:res>
+      // <div>
+      // <CommentNodes comments=res.comments.clone()/>
+      // </div>
+      // </Unpack>
+      </main>
+    </div>
   }
 }

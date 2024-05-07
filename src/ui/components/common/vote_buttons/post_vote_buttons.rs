@@ -35,7 +35,7 @@ pub fn PostVoteButtons(
 ) -> impl IntoView {
   let vote_action = Action::<VotePost, _>::server();
 
-  Effect::new_isomorphic(move |_| {
+  Effect::new(move |_| {
     let version = vote_action.version().get();
 
     if version > 0 {

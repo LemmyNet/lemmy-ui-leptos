@@ -28,7 +28,7 @@ where
   let is_downvote = Signal::derive(move || my_vote.get().unwrap_or_default() == -1);
 
   view! {
-    <div>
+    <div class="w-fit">
       <ActionForm action=vote_action>
         <input type="hidden" name="id" value=id/>
         <input
@@ -52,8 +52,8 @@ where
           <ArrowUp class="size-6"/>
         </button>
       </ActionForm>
-      <span class="block text-sm">{score}</span>
-      <ActionForm action=vote_action>
+      <div class="text-sm text-center">{score}</div>
+      <ActionForm action=vote_action class="w-fit">
         <input type="hidden" name="id" value=id/>
         <input
           type="hidden"

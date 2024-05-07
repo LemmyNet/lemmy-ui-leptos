@@ -95,26 +95,35 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
 
   view! {
-    <article>
+    <article class="flex gap-1.5">
       <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only()/>
-      // <div >
+      <div>
 
-      // <A href=move || {
-      // with!(
-      // | url, id | url.as_ref().map(ToOwned::to_owned).unwrap_or_else(||
-      // format!("/post/{id}"))
-      // )
-      // }>
-      // {move || {
-      // with!(
-      // | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < span
-      // class = "block w-24 truncate" > < img class = "w-24" src = thumbnail_url /> </
-      // span > })
-      // )
-      // }}
+        <A href=move || {
+            with!(
+                | url, id | url.as_ref().map(ToOwned::to_owned).unwrap_or_else(||
+                format!("/post/{id}"))
+            )
+        }>
+          {move || {
+              with!(
+                  | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < span
+                  class = "block w-24 truncate" > < img class = "w-24" src = thumbnail_url /> </
+                  span > })
+              )
+          }}
 
-      // </A>
-      // </div>
+        </A>
+      </div>
+      {move || {
+          with!(
+              | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < img class =
+              "w-24" src = thumbnail_url /> } .into_view()).unwrap_or_else(|| view! { < div class =
+              "w-24" > 
+              </ div > } .into_view())
+          )
+      }}
+
       <div>
         <A href=move || with!(| id | format!("/post/{id}")) class="block text-lg">
           {post_name}
@@ -135,14 +144,14 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           </A>
         </div>
 
+        <PostContentActions
+          id=id
+          creator_id=creator_id
+          saved=saved
+          comments=comments
+          post_write_signal=post_view.write_only()
+        />
       </div>
-      <PostContentActions
-        id=id
-        creator_id=creator_id
-        saved=saved
-        comments=comments
-        post_write_signal=post_view.write_only()
-      />
 
     </article>
   }
