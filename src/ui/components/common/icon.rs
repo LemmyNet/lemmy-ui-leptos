@@ -15,20 +15,24 @@ pub enum IconType {
   VerticalDots,
   Report,
   Comment,
+  Comments,
   Block,
   Save,
+  SaveFilled,
 }
 
 #[component]
 pub fn Icon(
   #[prop(into)] icon: MaybeSignal<IconType>,
   #[prop(optional, into)] class: MaybeProp<TextProp>,
+  #[prop(into, default = MaybeSignal::Static(false))] large: MaybeSignal<bool>,
 ) -> impl IntoView {
   let href =
     Signal::derive(move || format!("/icons.svg#{}", Into::<&'static str>::into(icon.get())));
+  let size = Signal::derive(move || if large.get() { "3em" } else { "1.5em" });
 
   view! {
-    <svg class=class width="1.5em" height="1.5em">
+    <svg class=class width=size height=size>
       <use_ href=href xlink:href=href></use_>
     </svg>
   }

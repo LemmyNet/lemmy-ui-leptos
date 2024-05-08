@@ -8,7 +8,7 @@ use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   ListingType,
   SortType,
 };
-use leptos::*;
+use leptos::{svg::filter, *};
 use leptos_i18n::t;
 use leptos_router::{use_query_map, Outlet, A};
 use serde::Deserialize;
@@ -130,7 +130,7 @@ fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>)
   Effect::new(move |_| sort_type.set(local_sort_type.get()));
 
   view! {
-    <div class="block">
+    <div class="mb-4">
       <div class="join mr-3 hidden sm:inline-block">
         <button class="btn join-item btn-active">Posts</button>
         <button class="btn join-item btn-disabled">Comments</button>
@@ -174,10 +174,15 @@ pub fn FilterBarLayout() -> impl IntoView {
   provide_context(listing_type.read_only());
   provide_context(sort_type.read_only());
 
-  view! {
-    <Transition>
-      <FilterBar listing_type=listing_type sort_type=sort_type/>
-    </Transition>
-    <Outlet/>
-  }
+  let filter_bar = Signal::derive(move || {
+    view! {
+      <Transition>
+        <FilterBar listing_type=listing_type sort_type=sort_type/>
+      </Transition>
+    }
+  });
+
+  provide_context(filter_bar);
+
+  view! { <Outlet/> }
 }

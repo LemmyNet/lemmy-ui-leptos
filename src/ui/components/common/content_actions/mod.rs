@@ -65,19 +65,15 @@ where
           if let ContentActionType::Post { comments } = content_action_type {
               Some(
                   view! {
-                    <span
-                      class="flex items-center"
-                      title=move || format!("{} comments", comments.get())
+                    <A
+                      href=move || { format!("/post/{}", id.get()) }
+                      class="text-sm whitespace-nowrap"
+                      attr:title=move || format!("{} comments", comments.get())
                     >
-                      <A
-                        href=move || { format!("/post/{}", id.get()) }
-                        class="text-sm whitespace-nowrap"
-                      >
-                        <Icon icon=IconType::Comment/>
-                        " "
-                        {comments}
-                      </A>
-                    </span>
+                      <Icon icon=IconType::Comment class="inline align-baseline"/>
+                      " "
+                      <span class="align-sub">{comments}</span>
+                    </A>
                   },
               )
           } else {
@@ -95,10 +91,12 @@ where
               "Save post"
           }
 
-          class=move || if saved.get() { " text-accent" } else { "" }
+          class=move || if saved.get() { "text-accent" } else { "" }
           disabled=move || !user_is_logged_in.get() || save_action.pending().get()
         >
-          <Icon icon=IconType::Save/>
+          <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
+            <Icon icon=IconType::SaveFilled/>
+          </Show>
         </button>
       </ActionForm>
       <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>

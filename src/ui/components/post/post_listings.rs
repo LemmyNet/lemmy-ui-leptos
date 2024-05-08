@@ -7,7 +7,7 @@ pub fn PostListings(#[prop(into)] posts: MaybeSignal<Vec<PostView>>) -> impl Int
   view! {
     <ul>
       <For each=move || posts.get() key=|pv| pv.post.id let:pv>
-        <li>
+        <li class="[&:not(:first-child)]:border-t-neutral [&:not(:first-child)]:border-t py-4">
           <PostListing post_view=pv/>
         </li>
       </For>

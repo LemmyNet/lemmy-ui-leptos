@@ -6,6 +6,7 @@ use crate::{
   },
 };
 use leptos::*;
+use leptos_meta::Html;
 use leptos_router::Outlet;
 
 #[component]
@@ -15,11 +16,10 @@ pub fn BaseLayout() -> impl IntoView {
   view! {
     <Transition>
       <Unpack item=theme let:theme>
-        <div class="flex flex-col h-screen" data-theme=theme>
-          <TopNav/>
-          <Outlet/>
-          <BottomNav/>
-        </div>
+        <Html attr:data-theme=theme/>
+        <TopNav/>
+        <Outlet/>
+        <BottomNav/>
       </Unpack>
     </Transition>
   }

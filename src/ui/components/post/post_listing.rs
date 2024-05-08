@@ -1,5 +1,6 @@
 use crate::ui::components::common::{
   content_actions::PostContentActions,
+  icon::{Icon, IconType},
   vote_buttons::PostVoteButtons,
 };
 use lemmy_client::{
@@ -95,31 +96,15 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
 
   view! {
-    <article class="flex gap-1.5">
+    <article class="flex gap-x-3 items-center">
       <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only()/>
-      <div>
-
-        <A href=move || {
-            with!(
-                | url, id | url.as_ref().map(ToOwned::to_owned).unwrap_or_else(||
-                format!("/post/{id}"))
-            )
-        }>
-          {move || {
-              with!(
-                  | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < span
-                  class = "block w-24 truncate" > < img class = "w-24" src = thumbnail_url /> </
-                  span > })
-              )
-          }}
-
-        </A>
-      </div>
       {move || {
           with!(
-              | thumbnail_url | thumbnail_url.as_ref().map(| thumbnail_url | view! { < img class =
-              "w-24" src = thumbnail_url /> } .into_view()).unwrap_or_else(|| view! { < div class =
-              "w-24" > </ div > } .into_view())
+              | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
+              view! { < img class = "w-24 aspect-square rounded" src = thumbnail_url /> }
+              .into_view()).unwrap_or_else(|| view! { < A href = move || with!(| id |
+              format!("/post/{id}")) class = "w-24" > < Icon icon = IconType::Comments class =
+              "m-auto" large = true /></ A > } .into_view())
           )
       }}
 

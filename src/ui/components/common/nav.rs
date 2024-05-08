@@ -272,7 +272,7 @@ pub fn BottomNav() -> impl IntoView {
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
   view! {
-    <nav class="container navbar mx-auto hidden sm:flex">
+    <footer class="container navbar mx-auto hidden sm:flex mt-auto justify-self-end">
       <div class="navbar-start w-auto"></div>
       <div class="navbar-end grow w-auto">
         <ul class="menu menu-horizontal flex-nowrap items-center">
@@ -314,6 +314,6 @@ pub fn BottomNav() -> impl IntoView {
           </li>
         </ul>
       </div>
-    </nav>
+    </footer>
   }
 }
