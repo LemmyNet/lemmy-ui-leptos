@@ -9,7 +9,6 @@ use leptos_router::ActionForm;
 mod comment_vote_buttons;
 mod post_vote_buttons;
 
-pub use comment_vote_buttons::CommentVoteButtons;
 pub use post_vote_buttons::PostVoteButtons;
 
 #[component]

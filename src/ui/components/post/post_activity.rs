@@ -1,7 +1,6 @@
 use crate::{
   serverfns::{get_post::get_post, list_comments::list_comments},
   ui::components::{
-    comment::comment_nodes::CommentNodes,
     common::unpack::Unpack,
     post::post_listing::PostListing,
   },

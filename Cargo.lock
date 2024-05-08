@@ -1534,7 +1534,6 @@ dependencies = [
  "tokio",
  "trait-set",
  "wasm-bindgen",
- "web-sys",
 ]
 
 [[package]]
