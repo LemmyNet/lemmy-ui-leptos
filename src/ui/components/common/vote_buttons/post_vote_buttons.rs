@@ -36,20 +36,18 @@ pub fn PostVoteButtons(
   let vote_action = Action::<VotePost, _>::server();
 
   Effect::new(move |_| {
-    let version = vote_action.version().get();
+    let response = vote_action.value();
 
-    if version > 0 {
-      vote_action.value().with(|value| {
-        let new_post_view = &value.as_ref().unwrap().as_ref().unwrap().post_view;
-
+    with!(|response| {
+      if let Some(response) = response.as_ref().and_then(|r| r.as_ref().ok()) {
         update!(|post_write_signal| {
-          post_write_signal.counts.score = new_post_view.counts.score;
-          post_write_signal.counts.upvotes = new_post_view.counts.upvotes;
-          post_write_signal.counts.downvotes = new_post_view.counts.downvotes;
-          post_write_signal.my_vote = new_post_view.my_vote;
+          post_write_signal.counts.score = response.post_view.counts.score;
+          post_write_signal.counts.upvotes = response.post_view.counts.upvotes;
+          post_write_signal.counts.downvotes = response.post_view.counts.downvotes;
+          post_write_signal.my_vote = response.post_view.my_vote;
         });
-      });
-    }
+      }
+    });
   });
 
   view! { <VoteButtons my_vote=my_vote id=id score=score vote_action=vote_action/> }

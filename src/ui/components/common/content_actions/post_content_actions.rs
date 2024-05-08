@@ -50,18 +50,17 @@ pub fn PostContentActions(
   post_write_signal: WriteSignal<PostView>,
 ) -> impl IntoView {
   let save_action = Action::<SavePost, _>::server();
-  Effect::new_isomorphic(move |_| {
-    let version = save_action.version().get();
 
-    if version > 0 {
-      save_action.value().with(|value| {
-        let new_post_view = &value.as_ref().unwrap().as_ref().unwrap().post_view;
+  Effect::new(move |_| {
+    let response = save_action.value();
 
+    with!(|response| {
+      if let Some(response) = response.as_ref().and_then(|r| r.as_ref().ok()) {
         update!(|post_write_signal| {
-          post_write_signal.saved = new_post_view.saved;
+          post_write_signal.saved = response.post_view.saved;
         });
-      });
-    }
+      }
+    });
   });
 
   let report_action = Action::<ReportPost, _>::server();

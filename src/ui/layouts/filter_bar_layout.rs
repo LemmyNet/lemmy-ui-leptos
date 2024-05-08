@@ -8,7 +8,7 @@ use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   ListingType,
   SortType,
 };
-use leptos::{svg::filter, *};
+use leptos::*;
 use leptos_i18n::t;
 use leptos_router::{use_query_map, Outlet, A};
 use serde::Deserialize;
@@ -67,7 +67,9 @@ where
   view! {
     <li
       class="aria-selected:btn-active"
-      attr:aria-selected=move || if sort_type.get() == link_sort_type { Some("true") } else { None }
+      attr:aria-selected=move || {
+          if sort_type.get() == link_sort_type { Some("true") } else { None }
+      }
     >
 
       <A href=move || {
@@ -130,12 +132,12 @@ fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>)
   Effect::new(move |_| sort_type.set(local_sort_type.get()));
 
   view! {
-    <div class="mb-4">
-      <div class="join mr-3 hidden sm:inline-block">
+    <div class="mb-4 flex flex-wrap gap-3">
+      <div class="join">
         <button class="btn join-item btn-active">Posts</button>
         <button class="btn join-item btn-disabled">Comments</button>
       </div>
-      <div class="join mr-3 hidden sm:inline-block">
+      <div class="join">
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Subscribed>
           Subscribed
         </ListingTypeLink>
@@ -146,7 +148,7 @@ fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>)
           All
         </ListingTypeLink>
       </div>
-      <div class="dropdown hidden sm:inline-block">
+      <div class="dropdown">
         <label tabindex="0" class="btn">
           Sort type
         </label>

@@ -95,8 +95,10 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let comments = Signal::derive(move || with!(|post_view| post_view.counts.comments));
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
 
+  let is_on_post_page = use_route().path().starts_with("/post");
+
   view! {
-    <article class="flex gap-x-3 items-center">
+    <article class="flex gap-x-3 items-center w-fit">
       <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only()/>
       {move || {
           with!(
@@ -109,9 +111,21 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       }}
 
       <div>
-        <A href=move || with!(| id | format!("/post/{id}")) class="block text-lg">
-          {post_name}
-        </A>
+        <Show
+          when=move || is_on_post_page
+          fallback=move || {
+              view! {
+                <h2 class="text-lg font-medium">
+                  <A href=move || with!(| id | format!("/post/{id}"))>{post_name}</A>
+                </h2>
+              }
+          }
+        >
+
+          <h1 class="text-xl font-bold">
+            <A href=move || with!(| id | format!("/post/{id}"))>{post_name}</A>
+          </h1>
+        </Show>
         <div>
           <A
             href=move || with!(| creator_name | format!("/u/{creator_name}"))

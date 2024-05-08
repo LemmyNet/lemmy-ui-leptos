@@ -82,7 +82,7 @@ where
       }}
       <ActionForm action=save_action class="flex items-center">
         <input type="hidden" name="id" value=id/>
-        <input type="hidden" name="save" value=saved/>
+        <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
         <button
           type="submit"
           title=if matches!(content_action_type, ContentActionType::Comment) {
@@ -91,7 +91,7 @@ where
               "Save post"
           }
 
-          class=move || if saved.get() { "text-accent" } else { "" }
+          class=move || if saved.get() { Some("text-accent") } else { None }
           disabled=move || !user_is_logged_in.get() || save_action.pending().get()
         >
           <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
