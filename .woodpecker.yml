@@ -5,7 +5,7 @@ variables:
 services:
   lemmy:
     name: lemmy
-    image: dessalines/lemmy:0.19.4-beta.2
+    image: dessalines/lemmy:0.19.4-beta.6
     commands:
       # wait for db to start
       - sleep 15
