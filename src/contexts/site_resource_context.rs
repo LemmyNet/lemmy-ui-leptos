@@ -1,3 +1,4 @@
+use crate::utils::GetJwt;
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
 use leptos::{
   create_blocking_resource,
@@ -10,11 +11,11 @@ use leptos::{
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
+  use crate::utils::get_client_and_session;
   use lemmy_client::LemmyRequest;
 
   let (client, session) = get_client_and_session().await?;
-  let jwt = session.get::<String>(AUTH_COOKIE)?;
+  let jwt = session.get_jwt()?;
 
   client
     .get_site(LemmyRequest::from_jwt(jwt))
