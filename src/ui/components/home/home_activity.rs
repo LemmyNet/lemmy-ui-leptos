@@ -17,6 +17,7 @@ use leptos::*;
 pub fn HomeActivity() -> impl IntoView {
   let listing_type = expect_context::<ReadSignal<ListingType>>();
   let sort_type = expect_context::<ReadSignal<SortType>>();
+  let filter_bar = expect_context::<Signal<View>>();
 
   let posts_resource = create_blocking_resource(
     move || GetPosts {
@@ -30,23 +31,21 @@ pub fn HomeActivity() -> impl IntoView {
   let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
   view! {
-    <main role="main" class="w-full flex flex-col sm:flex-row flex-grow">
-      <div class="flex flex-col">
-        <div class="columns-1 2xl:columns-2 4xl:columns-3 gap-3">
-          <Suspense fallback=|| "Loading">
-            <ErrorBoundary fallback=|_| { "Could not load posts!" }>
-              <Unpack item=posts let:posts>
-                <PostListings posts=posts/>
-              </Unpack>
-            </ErrorBoundary>
-          </Suspense>
-        </div>
-      </div>
+    <div class="md:container md:grid md:grid-cols-5 xl:grid-cols-4 md:grid-rows-1 mx-auto my-4 md:gap-20">
+      <main class="md:col-span-3">
+        {filter_bar} <h1 class="text-4xl font-bold">Home Feed</h1> <Suspense fallback=|| "Loading">
+          <ErrorBoundary fallback=|_| { "Could not load posts!" }>
+            <Unpack item=posts let:posts>
+              <PostListings posts=posts/>
+            </Unpack>
+          </ErrorBoundary>
+        </Suspense>
+      </main>
 
-      <div class="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 hidden lg:block">
+      <aside class="hidden md:block md:col-span-2 xl:col-span-1">
         <Trending/>
         <SiteSummary/>
-      </div>
-    </main>
+      </aside>
+    </div>
   }
 }

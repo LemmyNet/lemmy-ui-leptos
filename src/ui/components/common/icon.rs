@@ -1,6 +1,8 @@
 use leptos::*;
+use strum::{EnumString, IntoStaticStr};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, IntoStaticStr)]
+#[strum(serialize_all = "kebab-case")]
 pub enum IconType {
   Eye,
   EyeSlash,
@@ -12,40 +14,25 @@ pub enum IconType {
   Crosspost,
   VerticalDots,
   Report,
+  Comment,
   Comments,
   Block,
   Save,
-}
-
-impl IconType {
-  pub fn as_str(&self) -> &'static str {
-    match self {
-      IconType::Block => "block",
-      IconType::Comments => "comments",
-      IconType::Crosspost => "crosspost",
-      IconType::Donate => "donate",
-      IconType::Downvote => "downvote",
-      IconType::Eye => "eye",
-      IconType::EyeSlash => "eye-slash",
-      IconType::Notifications => "notifications",
-      IconType::Report => "report",
-      IconType::Save => "save",
-      IconType::Search => "search",
-      IconType::Upvote => "upvote",
-      IconType::VerticalDots => "vertical-dots",
-    }
-  }
+  SaveFilled,
 }
 
 #[component]
 pub fn Icon(
   #[prop(into)] icon: MaybeSignal<IconType>,
-  #[prop(optional)] class: MaybeProp<TextProp>,
+  #[prop(optional, into)] class: MaybeProp<TextProp>,
+  #[prop(into, default = MaybeSignal::Static(false))] large: MaybeSignal<bool>,
 ) -> impl IntoView {
-  let href = Signal::derive(move || format!("/icons.svg#{}", icon.get().as_str()));
+  let href =
+    Signal::derive(move || format!("/icons.svg#{}", Into::<&'static str>::into(icon.get())));
+  let size = Signal::derive(move || if large.get() { "3em" } else { "1.5em" });
 
   view! {
-    <svg class=class width="1.5em" height="1.5em">
+    <svg class=class width=size height=size>
       <use_ href=href xlink:href=href></use_>
     </svg>
   }
