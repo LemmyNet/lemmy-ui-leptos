@@ -1,4 +1,4 @@
-use crate::{ui::components::common::vote_buttons::VoteButtons, utils::GetJwt};
+use crate::ui::components::common::vote_buttons::VoteButtons;
 use lemmy_client::{
   lemmy_api_common::{
     comment::{CommentResponse, CreateCommentLike},
@@ -10,7 +10,7 @@ use leptos::*;
 
 #[server(prefix = "/serverfn")]
 async fn vote_comment(id: CommentId, score: i16) -> Result<CommentResponse, ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
 
   let (client, session) = get_client_and_session().await?;
 

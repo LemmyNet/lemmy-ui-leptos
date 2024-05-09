@@ -1,5 +1,4 @@
 mod derive_query_signal;
-use actix_session::{Session, SessionGetError};
 pub use derive_query_signal::*;
 
 mod derive_user_is_logged_in;
@@ -13,12 +12,14 @@ use crate::constants::AUTH_COOKIE;
 #[cfg(feature = "ssr")]
 pub use get_client_and_session::*;
 
+#[cfg(feature = "ssr")]
 pub trait GetJwt {
-  fn get_jwt(&self) -> Result<Option<String>, SessionGetError>;
+  fn get_jwt(&self) -> Result<Option<String>, actix_session::SessionGetError>;
 }
 
-impl GetJwt for Session {
-  fn get_jwt(&self) -> Result<Option<String>, SessionGetError> {
+#[cfg(feature = "ssr")]
+impl GetJwt for actix_session::Session {
+  fn get_jwt(&self) -> Result<Option<String>, actix_session::SessionGetError> {
     self.get::<String>(AUTH_COOKIE)
   }
 }

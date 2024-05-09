@@ -8,7 +8,7 @@ use crate::{
     icon::{Icon, IconType},
     unpack::Unpack,
   },
-  utils::{derive_query_signal, derive_user_is_logged_in, GetJwt},
+  utils::{derive_query_signal, derive_user_is_logged_in},
 };
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
@@ -32,7 +32,7 @@ fn InstanceName() -> impl IntoView {
 
 #[server(prefix = "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;

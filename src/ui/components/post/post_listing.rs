@@ -1,10 +1,7 @@
-use crate::{
-  ui::components::common::{
-    content_actions::PostContentActions,
-    icon::{Icon, IconType},
-    vote_buttons::PostVoteButtons,
-  },
-  utils::GetJwt,
+use crate::ui::components::common::{
+  content_actions::PostContentActions,
+  icon::{Icon, IconType},
+  vote_buttons::PostVoteButtons,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -20,7 +17,7 @@ use leptos_router::*;
 
 #[server(prefix = "/serverfn")]
 pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
@@ -39,7 +36,7 @@ pub async fn block_user(
   person_id: PersonId,
   block: bool,
 ) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
@@ -58,7 +55,7 @@ pub async fn report_post(
   post_id: PostId,
   reason: String,
 ) -> Result<PostReportResponse, ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;

@@ -1,7 +1,7 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   ui::components::common::icon::{Icon, IconType},
-  utils::{derive_user_is_logged_in, GetJwt, ServerAction, ServerActionFn},
+  utils::{derive_user_is_logged_in, ServerAction, ServerActionFn},
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -27,7 +27,7 @@ enum ContentActionType {
 
 #[server(prefix = "/serverfn")]
 pub async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
