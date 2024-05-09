@@ -5,10 +5,7 @@ use crate::{
   },
   i18n::*,
   ui::components::common::{
-    icon::{
-      Icon,
-      IconType::{Donate, Notifications, Search},
-    },
+    icon::{Icon, IconType},
     unpack::Unpack,
   },
   utils::{derive_query_signal, derive_user_is_logged_in},
@@ -35,10 +32,10 @@ fn InstanceName() -> impl IntoView {
 
 #[server(prefix = "/serverfn")]
 pub async fn logout() -> Result<(), ServerFnError> {
-  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
+  use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
-  let jwt = session.get::<String>(AUTH_COOKIE)?;
+  let jwt = session.get_jwt()?;
   client
     .logout(LemmyRequest::from_jwt(jwt))
     .await
@@ -89,7 +86,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
       <li>
         <A href="/inbox">
           <span title=t!(i18n, unread_messages)>
-            <Icon icon=Notifications/>
+            <Icon icon=IconType::Notifications/>
           </span>
         </A>
       </li>
@@ -230,7 +227,7 @@ pub fn TopNav() -> impl IntoView {
           <li>
             <a href="//join-lemmy.org/donate">
               <span title="t!(i18n, donate)">
-                <Icon icon=Donate/>
+                <Icon icon=IconType::Donate/>
               </span>
             </a>
           </li>
@@ -241,7 +238,7 @@ pub fn TopNav() -> impl IntoView {
           <li>
             <A href="/search">
               <span title="t!(i18n, search)">
-                <Icon icon=Search/>
+                <Icon icon=IconType::Search/>
               </span>
             </A>
           </li>
@@ -275,7 +272,7 @@ pub fn BottomNav() -> impl IntoView {
   const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
   view! {
-    <nav class="container navbar mx-auto hidden sm:flex">
+    <footer class="container navbar mx-auto hidden sm:flex mt-auto justify-self-end">
       <div class="navbar-start w-auto"></div>
       <div class="navbar-end grow w-auto">
         <ul class="menu menu-horizontal flex-nowrap items-center">
@@ -317,6 +314,6 @@ pub fn BottomNav() -> impl IntoView {
           </li>
         </ul>
       </div>
-    </nav>
+    </footer>
   }
 }

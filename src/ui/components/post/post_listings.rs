@@ -5,10 +5,12 @@ use leptos::*;
 #[component]
 pub fn PostListings(#[prop(into)] posts: MaybeSignal<Vec<PostView>>) -> impl IntoView {
   view! {
-    <table class="table">
+    <ul>
       <For each=move || posts.get() key=|pv| pv.post.id let:pv>
-        <PostListing post_view=pv/>
+        <li class="[&:not(:first-child)]:border-t-neutral [&:not(:first-child)]:border-t py-4">
+          <PostListing post_view=pv/>
+        </li>
       </For>
-    </table>
+    </ul>
   }
 }
