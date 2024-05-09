@@ -18,7 +18,9 @@ pub use post_content_actions::PostContentActions;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ContentActionType {
-  Post { comments: MaybeSignal<i64> },
+  Post {
+    comments: MaybeSignal<i64>,
+  },
   #[allow(dead_code)]
   Comment,
 }

@@ -1,9 +1,6 @@
 use crate::{
   serverfns::{get_post::get_post, list_comments::list_comments},
-  ui::components::{
-    common::unpack::Unpack,
-    post::post_listing::PostListing,
-  },
+  ui::components::{common::unpack::Unpack, post::post_listing::PostListing},
 };
 use lemmy_client::lemmy_api_common::{
   comment::GetComments,
