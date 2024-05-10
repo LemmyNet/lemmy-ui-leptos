@@ -11,7 +11,7 @@ use leptos::*;
 use leptos_router::use_params_map;
 
 #[component]
-pub fn PostActivity() -> impl IntoView {
+pub fn PostPage() -> impl IntoView {
   let params = use_params_map();
 
   let post_id = Signal::derive(move || {
