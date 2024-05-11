@@ -1,14 +1,11 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
+  serverfns::block_user::BlockUser,
   ui::components::common::icon::{Icon, IconType},
-  utils::{derive_user_is_logged_in, ServerAction, ServerActionFn},
-};
-use lemmy_client::{
-  lemmy_api_common::{
-    lemmy_db_schema::newtypes::PersonId,
-    person::{BlockPerson, BlockPersonResponse},
+  utils::{
+    derive_user_is_logged_in,
+    types::{ServerAction, ServerActionFn},
   },
-  LemmyRequest,
 };
 use leptos::*;
 use leptos_router::{ActionForm, A};
@@ -23,25 +20,6 @@ enum ContentActionType {
   },
   #[allow(dead_code)]
   Comment,
-}
-
-#[server(prefix = "/serverfn")]
-pub async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-
-  client
-    .block_person(LemmyRequest {
-      body: BlockPerson {
-        person_id: id,
-        block,
-      },
-      jwt,
-    })
-    .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
 #[component]

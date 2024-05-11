@@ -1,11 +1,7 @@
 use crate::{
-  contexts::
-    site_resource_context::SiteResource
-  ,
+  contexts::site_resource_context::SiteResource,
   i18n::*,
-  ui::components::common::
-    unpack::Unpack
-  ,
+  ui::components::common::unpack::Unpack,
   utils::derive_query_signal,
 };
 use leptos::*;

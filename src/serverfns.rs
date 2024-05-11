@@ -1,4 +1,11 @@
+pub mod block_user;
 pub mod get_post;
+pub mod get_site;
+pub mod get_theme;
 pub mod list_comments;
 pub mod list_communities;
 pub mod list_posts;
+pub mod logout;
+pub mod report_post;
+pub mod save_post;
+pub mod vote_post;

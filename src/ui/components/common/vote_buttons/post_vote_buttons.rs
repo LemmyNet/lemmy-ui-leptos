@@ -1,30 +1,6 @@
-use crate::ui::components::common::vote_buttons::VoteButtons;
-use lemmy_client::{
-  lemmy_api_common::{
-    lemmy_db_schema::newtypes::PostId,
-    lemmy_db_views::structs::PostView,
-    post::{CreatePostLike, PostResponse},
-  },
-  LemmyRequest,
-};
+use crate::{serverfns::vote_post::VotePost, ui::components::common::vote_buttons::VoteButtons};
+use lemmy_client::lemmy_api_common::lemmy_db_views::structs::PostView;
 use leptos::*;
-
-#[server(prefix = "/serverfn")]
-async fn vote_post(id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-
-  client
-    .like_post(LemmyRequest {
-      body: CreatePostLike { post_id: id, score },
-      jwt,
-    })
-    .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
-}
 
 #[component]
 pub fn PostVoteButtons(
