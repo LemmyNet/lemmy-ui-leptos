@@ -7,8 +7,10 @@ use lemmy_client::{
 };
 use leptos::*;
 
+use crate::utils::types::ServerAction;
+
 #[server(prefix = "/serverfn")]
-pub async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
+async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
@@ -24,4 +26,8 @@ pub async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse
     })
     .await
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
+}
+
+pub fn create_block_user_action() -> ServerAction<BlockUser> {
+  Action::server()
 }

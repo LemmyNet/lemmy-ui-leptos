@@ -1,3 +1,4 @@
+use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PostId,
@@ -21,4 +22,8 @@ async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError
     })
     .await
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
+}
+
+pub fn create_save_post_action() -> ServerAction<SavePost> {
+  Action::server()
 }

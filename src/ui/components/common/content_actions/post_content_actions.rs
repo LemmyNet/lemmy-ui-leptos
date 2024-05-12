@@ -1,5 +1,5 @@
 use crate::{
-  serverfns::{report_post::ReportPost, save_post::SavePost},
+  serverfns::posts::{create_report_post_action, create_save_post_action},
   ui::components::common::content_actions::{ContentActionType, ContentActions},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::PostView;
@@ -13,7 +13,7 @@ pub fn PostContentActions(
   #[prop(into)] comments: MaybeSignal<i64>,
   post_write_signal: WriteSignal<PostView>,
 ) -> impl IntoView {
-  let save_action = Action::<SavePost, _>::server();
+  let save_action = create_save_post_action();
 
   Effect::new(move |_| {
     let response = save_action.value();
@@ -27,7 +27,7 @@ pub fn PostContentActions(
     });
   });
 
-  let report_action = Action::<ReportPost, _>::server();
+  let report_action = create_report_post_action();
 
   view! {
     <ContentActions

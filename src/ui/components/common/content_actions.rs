@@ -1,6 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  serverfns::block_user::BlockUser,
+  serverfns::users::create_block_user_action,
   ui::components::common::icon::{Icon, IconType},
   utils::{
     derive_user_is_logged_in,
@@ -38,7 +38,7 @@ where
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
 
-  let block_user_action = Action::<BlockUser, _>::server();
+  let block_user_action = create_block_user_action();
 
   view! {
     <div class="flex items-center gap-x-2">

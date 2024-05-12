@@ -1,7 +1,7 @@
 use crate::{
   contexts::{site_resource_context::SiteResource, theme_resource_context::ThemeResource},
   i18n::*,
-  serverfns::logout::Logout,
+  serverfns::auth::create_logout_action,
   ui::components::common::{
     icon::{Icon, IconType},
     unpack::Unpack,
@@ -41,7 +41,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
     })
   });
 
-  let logout_action = create_server_action::<Logout>();
+  let logout_action = create_logout_action();
 
   Effect::new(move |_| {
     if logout_action.version().get() > 0 {

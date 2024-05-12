@@ -1,8 +1,9 @@
+use crate::utils::types::ServerAction;
 use lemmy_client::LemmyRequest;
 use leptos::{server_fn::error::NoCustomError, *};
 
 #[server(prefix = "/serverfn")]
-pub async fn logout() -> Result<(), ServerFnError> {
+async fn logout() -> Result<(), ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
@@ -14,4 +15,8 @@ pub async fn logout() -> Result<(), ServerFnError> {
 
   session.purge();
   Ok(())
+}
+
+pub fn create_logout_action() -> ServerAction<Logout> {
+  Action::server()
 }

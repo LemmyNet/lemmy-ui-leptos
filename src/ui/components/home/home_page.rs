@@ -1,5 +1,5 @@
 use crate::{
-  serverfns::list_posts::list_posts,
+  serverfns::posts::list_posts,
   ui::components::{
     common::unpack::Unpack,
     home::{site_summary::SiteSummary, trending::Trending},

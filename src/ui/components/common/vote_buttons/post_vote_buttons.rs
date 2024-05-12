@@ -1,4 +1,7 @@
-use crate::{serverfns::vote_post::VotePost, ui::components::common::vote_buttons::VoteButtons};
+use crate::{
+  serverfns::posts::create_vote_post_action,
+  ui::components::common::vote_buttons::VoteButtons,
+};
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::PostView;
 use leptos::*;
 
@@ -9,7 +12,7 @@ pub fn PostVoteButtons(
   #[prop(into)] score: MaybeSignal<i64>,
   post_write_signal: WriteSignal<PostView>,
 ) -> impl IntoView {
-  let vote_action = Action::<VotePost, _>::server();
+  let vote_action = create_vote_post_action();
 
   Effect::new(move |_| {
     let response = vote_action.value();
