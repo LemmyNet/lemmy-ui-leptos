@@ -9,10 +9,7 @@ use lemmy_client::{
 use leptos::*;
 
 #[server(prefix = "/serverfn")]
-async fn report_post(
-  post_id: PostId,
-  reason: String,
-) -> Result<PostReportResponse, ServerFnError> {
+async fn report_post(post_id: PostId, reason: String) -> Result<PostReportResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 

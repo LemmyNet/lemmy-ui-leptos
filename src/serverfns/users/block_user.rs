@@ -1,3 +1,4 @@
+use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PersonId,
@@ -6,8 +7,6 @@ use lemmy_client::{
   LemmyRequest,
 };
 use leptos::*;
-
-use crate::utils::types::ServerAction;
 
 #[server(prefix = "/serverfn")]
 async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, ServerFnError> {
