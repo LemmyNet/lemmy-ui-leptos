@@ -2,9 +2,9 @@
 
 mod constants;
 mod contexts;
-pub mod host;
 #[cfg(feature = "ssr")]
-pub mod server;
+pub mod cookie_middleware;
+pub mod host;
 mod serverfns;
 mod ui;
 mod utils;
@@ -15,14 +15,12 @@ use crate::{
     theme_resource_context::provide_theme_resource_context,
   },
   i18n::*,
-  ui::{
-    components::{
-      communities::communities_activity::CommunitiesActivity,
-      home::home_activity::HomeActivity,
-      login::login_activity::LoginActivity,
-      post::post_activity::PostActivity,
-    },
+  ui::components::{
+    communities::communities_page::CommunitiesPage,
+    home::home_page::HomePage,
     layouts::{base_layout::BaseLayout, filter_bar_layout::FilterBarLayout},
+    login::login_page::LoginPage,
+    post::post_page::PostPage,
   },
 };
 use contexts::site_resource_context::SiteResource;
@@ -63,23 +61,23 @@ pub fn App() -> impl IntoView {
           <Route path="/*any" view=NotFound/>
 
           <Route path="" view=FilterBarLayout>
-            <Route path="" view=HomeActivity/>
+            <Route path="" view=HomePage/>
           </Route>
 
-          <Route path="create_post" view=CommunitiesActivity/>
-          <Route path="post/:id" view=PostActivity/>
+          <Route path="create_post" view=CommunitiesPage/>
+          <Route path="post/:id" view=PostPage/>
 
-          <Route path="search" view=CommunitiesActivity/>
-          <Route path="communities" view=CommunitiesActivity/>
-          <Route path="create_community" view=CommunitiesActivity/>
-          <Route path="c/:id" view=CommunitiesActivity/>
+          <Route path="search" view=CommunitiesPage/>
+          <Route path="communities" view=CommunitiesPage/>
+          <Route path="create_community" view=CommunitiesPage/>
+          <Route path="c/:id" view=CommunitiesPage/>
 
           <Route
             path="login"
             view=move || {
                 view! {
                   <AnonymousOnlyRouteView>
-                    <LoginActivity/>
+                    <LoginPage/>
                   </AnonymousOnlyRouteView>
                 }
             }
@@ -90,18 +88,18 @@ pub fn App() -> impl IntoView {
             view=move || {
                 view! {
                   <AnonymousOnlyRouteView>
-                    <CommunitiesActivity/>
+                    <CommunitiesPage/>
                   </AnonymousOnlyRouteView>
                 }
             }
           />
 
-          <Route path="inbox" view=CommunitiesActivity/>
-          <Route path="settings" view=CommunitiesActivity/>
-          <Route path="u/:id" view=CommunitiesActivity/>
+          <Route path="inbox" view=CommunitiesPage/>
+          <Route path="settings" view=CommunitiesPage/>
+          <Route path="u/:id" view=CommunitiesPage/>
 
-          <Route path="modlog" view=CommunitiesActivity/>
-          <Route path="instances" view=CommunitiesActivity/>
+          <Route path="modlog" view=CommunitiesPage/>
+          <Route path="instances" view=CommunitiesPage/>
         </Route>
       </Routes>
     </Router>

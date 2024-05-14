@@ -1,17 +1,14 @@
 use crate::{
-  contexts::{
-    site_resource_context::SiteResource,
-    theme_resource_context::{Theme, ThemeResource},
-  },
+  contexts::{site_resource_context::SiteResource, theme_resource_context::ThemeResource},
   i18n::*,
+  serverfns::auth::create_logout_action,
   ui::components::common::{
     icon::{Icon, IconType},
     unpack::Unpack,
   },
-  utils::{derive_query_signal, derive_user_is_logged_in},
+  utils::{derive_query_signal, derive_user_is_logged_in, types::Theme},
 };
-use lemmy_client::LemmyRequest;
-use leptos::{server_fn::error::NoCustomError, *};
+use leptos::*;
 use leptos_router::*;
 
 #[component]
@@ -30,21 +27,6 @@ fn InstanceName() -> impl IntoView {
   }
 }
 
-#[server(prefix = "/serverfn")]
-pub async fn logout() -> Result<(), ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-  client
-    .logout(LemmyRequest::from_jwt(jwt))
-    .await
-    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?;
-
-  session.purge();
-  Ok(())
-}
-
 #[component]
 fn LoggedInUserActionDropdown() -> impl IntoView {
   let i18n = use_i18n();
@@ -59,7 +41,7 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
     })
   });
 
-  let logout_action = create_server_action::<Logout>();
+  let logout_action = create_logout_action();
 
   Effect::new(move |_| {
     if logout_action.version().get() > 0 {
@@ -249,71 +231,5 @@ pub fn TopNav() -> impl IntoView {
         </ul>
       </div>
     </nav>
-  }
-}
-
-#[component]
-fn BackendVersion() -> impl IntoView {
-  let site_resource = expect_context::<SiteResource>();
-  let version = derive_query_signal(site_resource, |res| format!("BE: {}", res.version));
-
-  view! {
-    <Unpack item=version let:version>
-      <a href="//github.com/LemmyNet/lemmy/releases" class="text-md">
-        {version}
-      </a>
-    </Unpack>
-  }
-}
-
-#[component]
-pub fn BottomNav() -> impl IntoView {
-  let i18n = use_i18n();
-  const FE_VERSION: &str = env!("CARGO_PKG_VERSION");
-
-  view! {
-    <footer class="container navbar mx-auto hidden sm:flex mt-auto justify-self-end">
-      <div class="navbar-start w-auto"></div>
-      <div class="navbar-end grow w-auto">
-        <ul class="menu menu-horizontal flex-nowrap items-center">
-          <li>
-            <a href="//github.com/LemmyNet/lemmy-ui-leptos/releases" class="text-md">
-              "FE: "
-              {FE_VERSION}
-            </a>
-          </li>
-          <li>
-            <Transition>
-              <BackendVersion/>
-            </Transition>
-          </li>
-          <li>
-            <A href="/modlog" class="text-md">
-              {t!(i18n, modlog)}
-            </A>
-          </li>
-          <li>
-            <A href="/instances" class="text-md">
-              {t!(i18n, instances)}
-            </A>
-          </li>
-          <li>
-            <a href="//join-lemmy.org/docs/en/index.html" class="text-md">
-              {t!(i18n, docs)}
-            </a>
-          </li>
-          <li>
-            <a href="//github.com/LemmyNet" class="text-md">
-              {t!(i18n, code)}
-            </a>
-          </li>
-          <li>
-            <a href="//join-lemmy.org" class="text-md">
-              "join-lemmy.org"
-            </a>
-          </li>
-        </ul>
-      </div>
-    </footer>
   }
 }

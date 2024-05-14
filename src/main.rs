@@ -2,7 +2,7 @@ use cfg_if::cfg_if;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use lemmy_ui_leptos::{App, server::cookie_middleware::cookie_middleware, host::get_client};
+        use lemmy_ui_leptos::{App, cookie_middleware::cookie_middleware, host::get_client};
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
