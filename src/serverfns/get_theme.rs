@@ -1,0 +1,15 @@
+use crate::utils::types::Theme;
+use leptos::{server_fn::codec::GetUrl, *};
+use std::str::FromStr;
+
+#[server(prefix = "/serverfn", input = GetUrl)]
+pub async fn get_theme() -> Result<Theme, ServerFnError> {
+  use actix_web::HttpRequest;
+  use leptos_actix::extract;
+
+  let req = extract::<HttpRequest>().await?;
+
+  Ok(req.cookie("theme").map_or(Theme::Retro, |c| {
+    Theme::from_str(c.value()).unwrap_or(Theme::Retro)
+  }))
+}

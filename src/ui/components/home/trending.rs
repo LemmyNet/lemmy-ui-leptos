@@ -1,5 +1,5 @@
 use crate::{
-  serverfns::list_communities::list_communities,
+  serverfns::communities::list_communities,
   ui::components::common::unpack::Unpack,
   utils::derive_query_signal,
 };
