@@ -1,5 +1,5 @@
 use crate::{
-  serverfns::{get_post::get_post, list_comments::list_comments},
+  serverfns::{comments::list_comments, posts::get_post},
   ui::components::{common::unpack::Unpack, post::post_listing::PostListing},
 };
 use lemmy_client::lemmy_api_common::{
@@ -11,7 +11,7 @@ use leptos::*;
 use leptos_router::use_params_map;
 
 #[component]
-pub fn PostActivity() -> impl IntoView {
+pub fn PostPage() -> impl IntoView {
   let params = use_params_map();
 
   let post_id = Signal::derive(move || {

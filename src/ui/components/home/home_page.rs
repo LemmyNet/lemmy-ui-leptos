@@ -1,5 +1,5 @@
 use crate::{
-  serverfns::list_posts::list_posts,
+  serverfns::posts::list_posts,
   ui::components::{
     common::unpack::Unpack,
     home::{site_summary::SiteSummary, trending::Trending},
@@ -14,7 +14,7 @@ use lemmy_client::lemmy_api_common::{
 use leptos::*;
 
 #[component]
-pub fn HomeActivity() -> impl IntoView {
+pub fn HomePage() -> impl IntoView {
   let listing_type = expect_context::<ReadSignal<ListingType>>();
   let sort_type = expect_context::<ReadSignal<SortType>>();
   let filter_bar = expect_context::<Signal<View>>();
