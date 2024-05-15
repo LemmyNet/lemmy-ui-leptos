@@ -21,18 +21,25 @@ steps:
     when:
       - event: pull_request
 
+  cargo_clippy:
+    image: rust:slim-bookworm
+    commands:
+      - cargo clippy
+    when:
+      - event: pull_request
+
   build_image:
     image: docker:latest
     commands:
-      - docker build --rm -t local/rust-image --target non-leptos-rust .
-      - docker build --rm -t local/leptos-image --target leptos-rust .
+      - docker build --rm -t local/base --target base .
+      - docker build --rm -t local/leptos-ui --target leptos-ui.ci .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
       - event: pull_request
 
   leptos_fmt:
-    image: local/leptos-image
+    image: local/leptos-ui
     commands:
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
@@ -41,7 +48,7 @@ steps:
     depends_on: [build_image]
 
   cargo_machete:
-    image: local/rust-image
+    image: local/base
     commands:
       - cargo binstall -y cargo-machete
       - cargo machete
@@ -49,17 +56,8 @@ steps:
       - event: pull_request
     depends_on: [build_image]
 
-  cargo_clippy:
-    image: local/rust-image
-    commands:
-      - rustup component add clippy
-      - cargo clippy
-    when:
-      - event: pull_request
-    depends_on: [build_image]
-
   cargo_build:
-    image: local/leptos-image
+    image: local/leptos-ui
     commands:
       - cargo leptos build
     when:

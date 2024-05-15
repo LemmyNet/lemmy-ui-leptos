@@ -1,9 +1,8 @@
 services:
-  e2e:
+  end2end:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
-      target: playwright
+      target: playwright.script
     depends_on:
       - lemmy
     networks:
