@@ -1,5 +1,3 @@
-version: "3.7"
-
 x-logging: &default-logging
   driver: "json-file"
   options:
@@ -15,7 +13,6 @@ services:
       # You could use port 80 if you won't use a reverse proxy
       - "1236:1236"
       - "8536:8536"
-      - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro,Z
     restart: unless-stopped
@@ -25,14 +22,14 @@ services:
 
   lemmy:
     # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
-    image: dessalines/lemmy:0.19.4-beta.6
+    image: dessalines/lemmy:0.19.0-beta.7
     # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
     # use "build" to build your local lemmy server image for development. make sure to comment out "image".
     # run: docker compose up --build
 
-    #build:
-    # context: ../
-    # dockerfile: ./Dockerfile
+    # build:
+    #   context: ../../lemmy
+    #   dockerfile: docker/Dockerfile
     # args:
     #   RUST_RELEASE_MODE: release
     #   CARGO_BUILD_FEATURES: default
@@ -61,7 +58,7 @@ services:
     # entrypoint: /sbin/tini -- /usr/local/bin/pict-rs -p /mnt -m 4 --image-format webp
     environment:
       - PICTRS_OPENTELEMETRY_URL=http://otel:4137
-      - PICTRS__API_KEY=string
+      - PICTRS__API_KEY=API_KEY
       - RUST_LOG=debug
       - RUST_BACKTRACE=full
       - PICTRS__MEDIA__VIDEO_CODEC=vp9
@@ -69,7 +66,7 @@ services:
       - PICTRS__MEDIA__GIF__MAX_HEIGHT=256
       - PICTRS__MEDIA__GIF__MAX_AREA=65536
       - PICTRS__MEDIA__GIF__MAX_FRAME_COUNT=400
-    user: 0:0
+    user: 991:991
     volumes:
       - ./volumes/pictrs:/mnt:Z
     restart: unless-stopped
@@ -93,11 +90,13 @@ services:
         "-c",
         "auto_explain.log_analyze=true",
         "-c",
+        "auto_explain.log_triggers=true",
+        "-c",
         "track_activity_query_size=1048576",
       ]
     ports:
-      # use a different port so it doesnt conflict with potential postgres db running on the host
-      - "5432:5432"
+      # use a different port so it doesn't conflict with potential postgres db running on the host
+      - "5433:5432"
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_PASSWORD=password

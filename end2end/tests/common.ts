@@ -4,19 +4,19 @@ export async function showHome({ page }) {
   await page.goto("/");
 
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
+    page.locator("a").getByText("Login", { exact: true }).first()
   ).toHaveText("Login");
 }
 
 export async function loginLogoutTest({ page }) {
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
+    page.locator("a").getByText("Login", { exact: true }).first()
   ).toHaveText("Login");
 
   await page.locator("a").getByText("Login", { exact: true }).first().click();
 
   await expect(page.getByRole("button").getByText("Login").first()).toHaveText(
-    "Login",
+    "Login"
   );
 
   await page.getByLabel("Username", { exact: true }).fill("lemmy");
@@ -59,25 +59,19 @@ export async function loginLogoutTest({ page }) {
 export async function persistThemeTest({ page }) {
   await page.goto("/");
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute("data-theme");
+  await expect(page.locator("html")).toHaveAttribute("data-theme");
 
   await expect(
-    page.locator("summary").getByText("Theme", { exact: true }),
+    page.locator("summary").getByText("Theme", { exact: true })
   ).toBeVisible();
 
   await page.locator("summary").getByText("Theme", { exact: true }).click();
   await page.getByRole("button").getByText("Dark", { exact: true }).click();
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute(
-    "data-theme",
-    "dark",
-  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
   await page.goto("https://join-lemmy.org");
   await page.goto("/");
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute(
-    "data-theme",
-    "dark",
-  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 }

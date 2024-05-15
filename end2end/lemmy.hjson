@@ -2,7 +2,7 @@
   # for more info about the config, check out the documentation
   # https://join-lemmy.org/docs/en/administration/configuration.html
 
-  hostname: "lemmy"
+  hostname: "localhost"
   setup: {
     admin_username: "lemmy"
     admin_password: "lemmylemmy"
@@ -11,5 +11,9 @@
   database: {
     host: postgres
     password: "password"
+  }
+  pictrs: {
+    url: "http://pictrs:8080/"
+    api_key: "string"
   }
 }
