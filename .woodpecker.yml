@@ -51,7 +51,7 @@ steps:
       CARGO_HOME: .cargo
     commands:
       - cargo binstall -y cargo-machete
-      - cargo machete
+      - cargo machete --skip-target-dir # Need to skip target dir or else unused dependencies of dependencies get reported
     when:
       - event: pull_request
     depends_on: [build_image]
