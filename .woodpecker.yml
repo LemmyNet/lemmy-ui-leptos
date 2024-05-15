@@ -14,10 +14,7 @@ steps:
       - event: pull_request
 
   cargo_fmt:
-    image: rustlang/rust:nightly
-    environment:
-      # store cargo data in repo folder so that it gets cached between steps
-      CARGO_HOME: .cargo
+    image: rustlang/rust:nightly-bookworm-slim
     commands:
       - rustup component add rustfmt
       - cargo +nightly fmt -- --check
@@ -25,7 +22,7 @@ steps:
       - event: pull_request
 
   build_image:
-    image: docker:stable
+    image: docker:latest
     commands:
       - docker build --rm -t local/rust-image --target non-leptos-rust .
       - docker build --rm -t local/leptos-image --target leptos-rust .
@@ -36,8 +33,6 @@ steps:
 
   leptos_fmt:
     image: local/leptos-image
-    environment:
-      CARGO_HOME: .cargo
     commands:
       - cargo binstall -y leptosfmt
       - .cargo/bin/leptosfmt -c .leptosfmt.toml --check src
@@ -47,19 +42,15 @@ steps:
 
   cargo_machete:
     image: local/rust-image
-    environment:
-      CARGO_HOME: .cargo
     commands:
       - cargo binstall -y cargo-machete
-      - cargo machete --skip-target-dir # Need to skip target dir or else unused dependencies of dependencies get reported
+      - cargo machete
     when:
       - event: pull_request
     depends_on: [build_image]
 
   cargo_clippy:
     image: local/rust-image
-    environment:
-      CARGO_HOME: .cargo
     commands:
       - rustup component add clippy
       - cargo clippy
@@ -69,8 +60,6 @@ steps:
 
   cargo_build:
     image: local/leptos-image
-    environment:
-      CARGO_HOME: .cargo
     commands:
       - cargo leptos build
     when:
