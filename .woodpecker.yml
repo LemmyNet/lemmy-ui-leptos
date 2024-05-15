@@ -35,7 +35,7 @@ steps:
     image: local/leptos-image
     commands:
       - cargo binstall -y leptosfmt
-      - .cargo/bin/leptosfmt -c .leptosfmt.toml --check src
+      - leptosfmt -c .leptosfmt.toml --check src
     when:
       - event: pull_request
     depends_on: [build_image]
