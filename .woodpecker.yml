@@ -1,25 +1,25 @@
-services:
-  lemmy:
-    name: lemmy
-    image: dessalines/lemmy:0.19.4-beta.7
-    commands:
-      # wait for db to start
-      - sleep 15
-      - lemmy_server
-    environment:
-      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
-    ports:
-      - 8536
+# services:
+#   lemmy:
+#     name: lemmy
+#     image: dessalines/lemmy:0.19.4-beta.7
+#     commands:
+#       # wait for db to start
+#       - sleep 15
+#       - lemmy_server
+#     environment:
+#       LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
+#     ports:
+#       - 8536
 
-  postgres:
-    name: postgres
-    image: postgres:16-alpine
-    ports:
-      - 5432
-    environment:
-      - POSTGRES_USER=lemmy
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=lemmy
+#   postgres:
+#     name: postgres
+#     image: postgres:16-alpine
+#     ports:
+#       - 5432
+#     environment:
+#       - POSTGRES_USER=lemmy
+#       - POSTGRES_PASSWORD=password
+#       - POSTGRES_DB=lemmy
 
 steps:
   prettier_check:
@@ -50,10 +50,12 @@ steps:
   build_image:
     image: docker
     commands:
-      - docker build --rm -f docker/ci.dockerfile -t local/rust-image --target non-leptos-rust .
-      - docker build --rm -f docker/ci.dockerfile -t local/leptos-image --target leptos-rust .
+      - docker build --rm -f docker/Dockerfile -t local/rust-image --target non-leptos-rust .
+      - docker build --rm -f docker/Dockerfile -t local/leptos-image --target leptos-rust .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      - event: pull_request
 
   leptos_fmt:
     image: local/leptos-image

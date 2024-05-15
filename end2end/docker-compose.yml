@@ -2,7 +2,8 @@ services:
   e2e:
     build:
       context: ..
-      dockerfile: end2end/Dockerfile
+      dockerfile: docker/Dockerfile
+      target: playwright
     depends_on:
       - lemmy
     networks:

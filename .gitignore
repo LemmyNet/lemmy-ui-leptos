@@ -11,3 +11,6 @@ dist
 docker/volumes
 end2end/test-results
 end2end/playwright-report
+
+# local woodpecker exec
+.cargo/**

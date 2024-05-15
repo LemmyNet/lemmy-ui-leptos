@@ -25,4 +25,10 @@ RUN npm install -g pnpm
 RUN pnpm install
 
 FROM leptos-rust AS playwright
+COPY end2end end2end
 RUN pnpx playwright@1.44.0 install --with-deps
+RUN cd end2end
+RUN pnpm install
+RUN cd ..
+ENV INTERNAL_HOST=lemmy:8536
+ENV HTTPS=false
