@@ -25,7 +25,7 @@ steps:
       - event: pull_request
 
   build_image:
-    image: docker
+    image: docker:stable
     commands:
       - docker build --rm -f docker/Dockerfile -t local/rust-image --target non-leptos-rust .
       - docker build --rm -f docker/Dockerfile -t local/leptos-image --target leptos-rust .
