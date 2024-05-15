@@ -27,8 +27,8 @@ steps:
   build_image:
     image: docker:stable
     commands:
-      - docker build --rm -f docker/Dockerfile -t local/rust-image --target non-leptos-rust .
-      - docker build --rm -f docker/Dockerfile -t local/leptos-image --target leptos-rust .
+      - docker build --rm -t local/rust-image --target non-leptos-rust .
+      - docker build --rm -t local/leptos-image --target leptos-rust .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
