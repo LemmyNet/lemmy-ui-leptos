@@ -1,7 +1,3 @@
-variables:
-  - &rust_image "rust"
-  - &install_binstall "wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz && tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz && cp cargo-binstall /usr/local/cargo/bin"
-
 services:
   lemmy:
     name: lemmy
@@ -51,56 +47,56 @@ steps:
     when:
       - event: pull_request
 
+  build_image:
+    image: docker
+    commands:
+      - docker build --rm -f docker/ci.dockerfile -t local/rust-image --target non-leptos-rust .
+      - docker build --rm -f docker/ci.dockerfile -t local/leptos-image --target leptos-rust .
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   leptos_fmt:
-    image: *rust_image
+    image: local/leptos-image
     environment:
       CARGO_HOME: .cargo
     commands:
-      - *install_binstall
       - cargo binstall -y leptosfmt
       - .cargo/bin/leptosfmt -c .leptosfmt.toml --check src
     when:
       - event: pull_request
+    depends_on: [build_image]
 
   cargo_machete:
-    image: *rust_image
+    image: local/rust-image
     environment:
       CARGO_HOME: .cargo
     commands:
-      - *install_binstall
       - cargo binstall -y cargo-machete
       - cargo machete
     when:
       - event: pull_request
+    depends_on: [build_image]
 
   cargo_clippy:
-    image: *rust_image
+    image: local/rust-image
     environment:
       CARGO_HOME: .cargo
     commands:
-      - apt-get update && apt-get -y install libssl-dev pkg-config
       - rustup component add clippy
       - cargo clippy
     when:
       - event: pull_request
+    depends_on: [build_image]
 
   cargo_build:
-    image: *rust_image
+    image: local/leptos-image
     environment:
       CARGO_HOME: .cargo
     commands:
-      - *install_binstall
-      - cargo-binstall -y cargo-leptos
-      - apt-get update && apt-get -y install libssl-dev pkg-config
-      - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-      - . /root/.profile
-      - nvm install --lts
-      - npm install -g pnpm
-      - pnpm install
-      - rustup target add wasm32-unknown-unknown
       - cargo leptos build
     when:
       - event: pull_request
+    depends_on: [build_image]
 
   # No rust unit tests yet
   # cargo_test:
