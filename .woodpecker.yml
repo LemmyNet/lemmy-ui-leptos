@@ -32,7 +32,7 @@ steps:
     image: docker:latest
     commands:
       - docker build --rm -t local/base --target base .
-      - docker build --rm -t local/leptos-ui --target leptos-ui.ci .
+      - docker build --rm -t local/leptos-ui --target leptos-ui .
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:

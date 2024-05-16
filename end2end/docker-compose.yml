@@ -2,7 +2,7 @@ services:
   end2end:
     build:
       context: ..
-      target: playwright.script
+      target: playwright
     depends_on:
       - lemmy
     networks:
