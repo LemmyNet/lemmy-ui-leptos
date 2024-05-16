@@ -52,20 +52,6 @@ services:
     # You can use this technique to add them here
     # https://stackoverflow.com/a/30850095/1655478
     hostname: postgres
-    command:
-      [
-        "postgres",
-        "-c",
-        "session_preload_libraries=auto_explain",
-        "-c",
-        "auto_explain.log_min_duration=5ms",
-        "-c",
-        "auto_explain.log_analyze=true",
-        "-c",
-        "auto_explain.log_triggers=true",
-        "-c",
-        "track_activity_query_size=1048576",
-      ]
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_PASSWORD=password

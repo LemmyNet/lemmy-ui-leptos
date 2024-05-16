@@ -1,5 +1,7 @@
 # Script taken from the following article with some small alterations:
 # https://blog.harrison.dev/2016/06/19/integration-testing-with-docker-compose.html?source=post_page-----f288f05032c9--------------------------------
+# This script assumes docker can be run as a non-root user. See the following docs if the script fails because you need to use sudo:
+# https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
 # define some colors to use for output
 RED='\033[0;31m'
