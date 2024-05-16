@@ -4,7 +4,13 @@ RUN wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/downlo
 
 FROM base AS leptos-ui
 WORKDIR /usr/src/app
-COPY *.toml src public locales style Cargo.lock tailwind.config.js package.json pnpm-lock.yaml .
+
+COPY *.toml Cargo.lock tailwind.config.js package.json pnpm-lock.yaml .
+COPY src src
+COPY public public
+COPY locales locales
+COPY style style
+
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo-binstall -y cargo-leptos
 RUN wget -O- https://deb.nodesource.com/setup_20.x | bash
