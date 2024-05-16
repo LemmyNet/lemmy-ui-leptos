@@ -110,7 +110,7 @@ steps:
       - cargo leptos end-to-end
     when:
       - event: pull_request
-    depends_on: [lemmy]
+    depends_on: [lemmy, build_image]
 
   notify_on_failure:
     image: alpine:3
