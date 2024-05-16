@@ -24,6 +24,7 @@ steps:
   cargo_clippy:
     image: rust:slim-bookworm
     commands:
+      - rustup component add clippy
       - cargo clippy
     when:
       - event: pull_request
