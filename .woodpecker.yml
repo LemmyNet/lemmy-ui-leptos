@@ -87,20 +87,21 @@ steps:
 
   postgres:
     image: postgres:16-alpine
-    hostname: postgres
     environment:
       - POSTGRES_USER=lemmy
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=lemmy
     detach: true
+    when:
+      - event: pull_request
 
   lemmy:
     image: dessalines/lemmy:0.19.4-beta.7
     environment:
       LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
-    ports:
-      - 8536
     detach: true
+    when:
+      - event: pull_request
     depends_on: [postgres]
 
   playwright_check:
