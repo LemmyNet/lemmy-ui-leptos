@@ -3,7 +3,7 @@ RUN apt update && apt -y install libssl-dev pkg-config build-essential gcc make 
 RUN wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz | tar -xvz -C /usr/local/cargo/bin
 
 FROM base AS leptos-ui
-COPY . .
+# COPY . .
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo-binstall -y cargo-leptos
 RUN wget -O- https://deb.nodesource.com/setup_20.x | bash
@@ -12,7 +12,7 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 
 FROM leptos-ui AS playwright
-COPY . .
+# COPY . .
 RUN pnpx playwright@1.44.0 install --with-deps
 RUN cd end2end
 RUN pnpm install --frozen-lockfile
