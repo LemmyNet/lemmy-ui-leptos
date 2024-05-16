@@ -1,3 +1,6 @@
+variables:
+  - &workdir "/usr/src/app"
+
 steps:
   prettier_check:
     image: tmknom/prettier:3.2.5
@@ -43,6 +46,7 @@ steps:
   leptos_fmt:
     image: local/leptos-ui
     commands:
+      - cd *workdir
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
     when:
@@ -58,9 +62,10 @@ steps:
       - event: pull_request
     depends_on: [build_image]
 
-  cargo_build:
+  cargo_leptos_build:
     image: local/leptos-ui
     commands:
+      - cd *workdir
       - cargo leptos build
     when:
       - event: pull_request
@@ -106,6 +111,8 @@ steps:
 
   playwright_check:
     image: local/playwright
+    commands:
+      - cd *workdir
     when:
       - event: pull_request
     depends_on: [lemmy, build_image]
