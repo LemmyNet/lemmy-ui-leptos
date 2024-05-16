@@ -106,8 +106,6 @@ steps:
 
   playwright_check:
     image: local/playwright
-    commands:
-      - cargo leptos end-to-end
     when:
       - event: pull_request
     depends_on: [lemmy, build_image]

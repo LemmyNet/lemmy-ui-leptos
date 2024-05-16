@@ -3,7 +3,6 @@ services:
     build:
       context: ..
       target: playwright
-    command: cargo leptos end-to-end
     depends_on:
       - lemmy
     networks:
