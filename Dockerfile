@@ -27,3 +27,4 @@ RUN pnpm install --frozen-lockfile
 RUN cd ..
 ENV INTERNAL_HOST=lemmy:8536
 ENV HTTPS=false
+CMD cargo leptos end-to-end

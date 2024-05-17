@@ -7,10 +7,7 @@ services:
       - lemmy
     networks:
       - frontend
-    entrypoint:
-      - cargo
-      - leptos
-      - end-to-end
+
   lemmy:
     # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
     image: dessalines/lemmy:0.19.4-beta.7
