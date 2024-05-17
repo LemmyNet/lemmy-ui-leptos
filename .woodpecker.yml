@@ -113,9 +113,9 @@ steps:
     image: local/playwright
     commands:
       - *cd_workdir
+      - "cargo leptos end-to-end"
     when:
       - event: pull_request
-    entrypoint: ["cargo", "leptos", "end-to-end"]
     depends_on: [lemmy, build_image]
 
   notify_on_failure:
