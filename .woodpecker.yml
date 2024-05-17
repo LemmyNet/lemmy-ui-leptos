@@ -65,7 +65,7 @@ steps:
   cargo_leptos_build:
     image: local/leptos-ui
     commands:
-      # - *cd_workdir
+      - *cd_workdir
       - cargo leptos build
     when:
       - event: pull_request
@@ -111,6 +111,8 @@ steps:
 
   playwright_check:
     image: local/playwright
+    commands:
+      - *cd_workdir
     when:
       - event: pull_request
     depends_on: [lemmy, build_image]
