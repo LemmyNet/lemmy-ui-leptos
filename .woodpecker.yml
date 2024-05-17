@@ -115,8 +115,8 @@ steps:
       - *cd_workdir
     when:
       - event: pull_request
-    depends_on: [lemmy, build_image]
     entrypoint: ["cargo", "leptos", "end-to-end"]
+    depends_on: [lemmy, build_image]
 
   notify_on_failure:
     image: alpine:3
