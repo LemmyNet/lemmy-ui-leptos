@@ -116,6 +116,7 @@ steps:
     when:
       - event: pull_request
     depends_on: [lemmy, build_image]
+    entrypoint: ["cargo", "leptos", "end-to-end"]
 
   notify_on_failure:
     image: alpine:3
