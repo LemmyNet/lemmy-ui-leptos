@@ -1,7 +1,40 @@
-import type { PlaywrightTestConfig } from "@playwright/test";
-import { devices } from "@playwright/test";
+import {
+  devices,
+  defineConfig,
+  Project,
+  PlaywrightTestOptions,
+  PlaywrightWorkerOptions,
+} from "@playwright/test";
 
-const config: PlaywrightTestConfig = {
+type DeviceDescription = (typeof devices)[string];
+
+type ProjectDefinition = Project<
+  PlaywrightTestOptions,
+  PlaywrightWorkerOptions
+>;
+
+type UseOptions = ProjectDefinition["use"];
+
+const createProject = (
+  name: string,
+  testMatch: string,
+  use: UseOptions,
+): ProjectDefinition => ({
+  name,
+  testMatch,
+  use,
+});
+
+const createSsrProject = (name: string, device: DeviceDescription) =>
+  createProject(name, "ssr.spec.ts", {
+    ...device,
+    javaScriptEnabled: false,
+  });
+
+const createHydrateProject = (name: string, device: DeviceDescription) =>
+  createProject(name, "hydrate.spec.ts", device);
+
+export default defineConfig({
   testDir: "./tests",
   timeout: 60 * 1000,
   expect: {
@@ -18,87 +51,15 @@ const config: PlaywrightTestConfig = {
   use: {
     actionTimeout: 0,
     trace: "on-first-retry",
+    baseURL: "http://localhost:1237",
   },
 
   projects: [
-    {
-      name: "Chromium SSR",
-      testMatch: "ssr.spec.ts",
-      use: {
-        ...{
-          javaScriptEnabled: false,
-          baseURL: "http://localhost:1237",
-        },
-        ...devices["Desktop Chrome"],
-      },
-    },
-
-    {
-      name: "Chromium Hydrate",
-      testMatch: "hydrate.spec.ts",
-      use: {
-        ...{
-          // javaScriptEnabled: true,
-          baseURL: "http://localhost:1237",
-        },
-        ...devices["Desktop Chrome"],
-      },
-    },
-    {
-      name: "Firefox SSR",
-      testMatch: "ssr.spec.ts",
-      use: {
-        ...{
-          javaScriptEnabled: false,
-          baseURL: "http://localhost:1237",
-        },
-        ...devices["Desktop Firefox"],
-      },
-    },
-
-    /* Test against other browsers. */
-    // {
-    //   name: "firefox",
-    //   use: {
-    //     ...devices["Desktop Firefox"],
-    //   },
-    // },
-
-    // {
-    //   name: "webkit",
-    //   use: {
-    //     ...devices["Desktop Safari"],
-    //   },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: {
-    //     ...devices['Pixel 5'],
-    //   },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: {
-    //     ...devices['iPhone 12'],
-    //   },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: {
-    //     channel: 'msedge',
-    //   },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: {
-    //     channel: 'chrome',
-    //   },
-    // },
+    createSsrProject("Chromium SSR", devices["Desktop Chrome"]),
+    createHydrateProject("Chromium Hydrate", devices["Desktop Chrome"]),
+    createSsrProject("Firefox SSR", devices["Desktop Firefox"]),
+    createHydrateProject("Firefox Hydrate", devices["Desktop Firefox"]),
+    createSsrProject("Edge SSR", devices["Desktop Edge"]),
+    createHydrateProject("Edge Hydrate", devices["Desktop Edge"]),
   ],
-};
-
-export default config;
+});

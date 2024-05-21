@@ -1,0 +1,65 @@
+services:
+  end2end:
+    build:
+      context: ..
+      target: playwright
+    depends_on:
+      - lemmy
+    networks:
+      - frontend
+
+  lemmy:
+    # use "image" to pull down an already compiled lemmy. make sure to comment out "build".
+    image: dessalines/lemmy:0.19.4-beta.7
+    # platform: linux/x86_64 # no arm64 support. uncomment platform if using m1.
+    # use "build" to build your local lemmy server image for development. make sure to comment out "image".
+    # run: docker compose up --build
+
+    # build:
+    #   context: ../../lemmy
+    #   dockerfile: docker/Dockerfile
+    # args:
+    #   RUST_RELEASE_MODE: release
+    #   CARGO_BUILD_FEATURES: default
+    # this hostname is used in nginx reverse proxy and also for lemmy ui to connect to the backend, do not change
+    hostname: lemmy
+    restart: unless-stopped
+    volumes:
+      - ./lemmy.hjson:/config/config.hjson:Z
+    depends_on:
+      - postgres
+      - pictrs
+    networks:
+      - backend
+      - frontend
+
+  pictrs:
+    image: asonix/pictrs:0.5.13
+    # this needs to match the pictrs url in lemmy.hjson
+    hostname: pictrs
+    environment:
+      - PICTRS__API_KEY=API_KEY
+    user: 991:991
+    restart: unless-stopped
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:16-alpine
+    # this needs to match the database host in lemmy.hson
+    # Tune your settings via
+    # https://pgtune.leopard.in.ua/#/
+    # You can use this technique to add them here
+    # https://stackoverflow.com/a/30850095/1655478
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=lemmy
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=lemmy
+    restart: unless-stopped
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:

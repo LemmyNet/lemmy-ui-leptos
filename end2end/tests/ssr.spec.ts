@@ -2,7 +2,7 @@ import { test } from "@playwright/test";
 import { loginLogoutTest, persistThemeTest, showHome } from "./common";
 
 test("show home", async ({ page }) => {
-  await showHome({ page });
+  await showHome(page);
 });
 
 test("login, logout multiple times", async ({ page }) => {
@@ -10,10 +10,10 @@ test("login, logout multiple times", async ({ page }) => {
   let iterations = 3;
   while (iterations--) {
     console.log(`  SSR iteration ${3 - iterations}`);
-    await loginLogoutTest({ page });
+    await loginLogoutTest(page);
   }
 });
 
 test("persist theme selection between sessions", async ({ page }) => {
-  await persistThemeTest({ page });
+  await persistThemeTest(page);
 });

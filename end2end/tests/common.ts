@@ -1,6 +1,6 @@
-import { expect } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 
-export async function showHome({ page }) {
+export async function showHome(page: Page) {
   await page.goto("/");
 
   await expect(
@@ -8,7 +8,7 @@ export async function showHome({ page }) {
   ).toHaveText("Login");
 }
 
-export async function loginLogoutTest({ page }) {
+export async function loginLogoutTest(page: Page) {
   await expect(
     page.locator("a").getByText("Login", { exact: true }).first(),
   ).toHaveText("Login");
@@ -30,36 +30,10 @@ export async function loginLogoutTest({ page }) {
   await page.getByRole("button").getByText("Logout", { exact: true }).click();
 }
 
-// export async function persistLanguageTest({ page }) {
-//   await page.goto("/");
-
-//   await expect(page.locator("a").getByText("Modlog").first()).toHaveText(
-//     "Modlog",
-//   );
-
-//   await expect(
-//     page.locator("summary").getByText("Lang", { exact: true }),
-//   ).toBeVisible();
-
-//   await page.locator("summary").getByText("Lang", { exact: true }).click();
-//   await page.getByRole("button").getByText("FR", { exact: true }).click();
-
-//   await expect(page.locator("a").getByText("fr Modlog").first()).toHaveText(
-//     "fr Modlog",
-//   );
-
-//   await page.goto("https://join-lemmy.org");
-//   await page.goto("/");
-
-//   await expect(page.locator("a").getByText("fr Modlog").first()).toHaveText(
-//     "fr Modlog",
-//   );
-// }
-
-export async function persistThemeTest({ page }) {
+export async function persistThemeTest(page: Page) {
   await page.goto("/");
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute("data-theme");
+  await expect(page.locator("html")).toHaveAttribute("data-theme");
 
   await expect(
     page.locator("summary").getByText("Theme", { exact: true }),
@@ -68,16 +42,10 @@ export async function persistThemeTest({ page }) {
   await page.locator("summary").getByText("Theme", { exact: true }).click();
   await page.getByRole("button").getByText("Dark", { exact: true }).click();
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute(
-    "data-theme",
-    "dark",
-  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 
   await page.goto("https://join-lemmy.org");
   await page.goto("/");
 
-  await expect(page.locator("div[data-theme]")).toHaveAttribute(
-    "data-theme",
-    "dark",
-  );
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 }
