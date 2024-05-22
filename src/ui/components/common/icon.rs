@@ -19,6 +19,9 @@ pub enum IconType {
   Block,
   Save,
   SaveFilled,
+  CreatePost,
+  CreateCommunity,
+  Communities,
 }
 
 #[component]

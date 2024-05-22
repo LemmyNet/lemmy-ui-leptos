@@ -183,7 +183,7 @@ pub fn TopNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <nav class="navbar container mx-auto">
+    <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg">
       <div class="navbar-start">
         <ul class="menu menu-horizontal flex-nowrap">
           <li>
