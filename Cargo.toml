@@ -12,7 +12,7 @@ leptos_meta = { version = "0.6" }
 leptos_router = { version = "0.6" }
 leptos_i18n = "0"
 cfg-if = "1"
-lemmy-client = { version = "0.19.4-beta.6", features = ["leptos"] }
+lemmy-client = { version = "0.19.4-beta.7", features = ["leptos"] }
 serde = "1"
 serde_json = "1"
 
