@@ -100,6 +100,7 @@ pub fn App() -> impl IntoView {
 
           <Route path="modlog" view=CommunitiesPage/>
           <Route path="instances" view=CommunitiesPage/>
+          <Route path="legal" view=CommunitiesPage/>
         </Route>
       </Routes>
     </Router>

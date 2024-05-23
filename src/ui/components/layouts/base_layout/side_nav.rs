@@ -11,9 +11,12 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <aside class="w-fit px-5 whitespace-nowrap pt-8 border-e border-neutral">
-      <nav>
-        <menu class="flex flex-col gap-2">
+    <aside class="w-fit px-3.5 whitespace-nowrap pt-8 border-e border-neutral flex flex-col gap-y-12">
+      <nav aria-labelledby="pages-label">
+        <div id="pages-label" class="font-medium mb-1">
+          Pages
+        </div>
+        <ul>
           <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post)/>
           <NavLink
             href="/create_community"
@@ -21,14 +24,30 @@ pub fn SideNav() -> impl IntoView {
             text=t!(i18n, create_community)
           />
           <NavLink href="/communities" icon=IconType::Communities text=t!(i18n, communities)/>
-        // <li>
-        // <a href="//join-lemmy.org/donate">
-        // <span title="t!(i18n, donate)">
-        // <Icon icon=IconType::Donate/>
-        // </span>
-        // </a>
-        // </li>
-        </menu>
+          <NavLink href="/search" icon=IconType::Search text=t!(i18n, search)/>
+          <NavLink href="/modlog" icon=IconType::Modlog text=t!(i18n, modlog)/>
+          <NavLink href="/instances" icon=IconType::Instances text=t!(i18n, instances)/>
+          <NavLink href="/legal" icon=IconType::Legal text=t!(i18n, legal)/>
+        </ul>
+      </nav>
+      <nav aria-labelledby="lemmy-resources-label">
+        <div id="lemmy-resources-label" class="font-medium mb-1">
+          Lemmy Resources
+        </div>
+        <ul>
+          <NavLink
+            href="https://join-lemmy.org/docs/en/index.html"
+            icon=IconType::Documentation
+            text=t!(i18n, docs)
+          />
+          <NavLink href="https://github.com/LemmyNet" icon=IconType::Code text=t!(i18n, code)/>
+          <NavLink href="https://join-lemmy.org/" icon=IconType::Info text=t!(i18n, about)/>
+          <NavLink
+            href="https://join-lemmy.org/donate"
+            icon=IconType::Donate
+            text=t!(i18n, donate)
+          />
+        </ul>
       </nav>
     </aside>
   }
@@ -38,7 +57,10 @@ pub fn SideNav() -> impl IntoView {
 fn NavLink(href: &'static str, icon: IconType, #[prop(into)] text: TextProp) -> impl IntoView {
   view! {
     <li>
-      <A href=href class="block text-md leading-relaxed hover:bg-base-200 p-1.5 rounded-md">
+      <A
+        href=href
+        class="text-sm block leading-relaxed hover:bg-base-200 p-1.5 rounded-md transition duration-500 my-1"
+      >
         <Icon icon=icon class="inline me-1.5"/>
         <span class="align-bottom">{text}</span>
       </A>

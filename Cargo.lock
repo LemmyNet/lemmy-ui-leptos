@@ -1497,9 +1497,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "lemmy-client"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d14bb6b50c0393f8ea94fd15167e74bb14a154dde48fe249dfc7387142e222c0"
+checksum = "a1b1340f3042a3e85896909247bd63c475e9947e8d394f2965a8dbaafd95a6ed"
 dependencies = [
  "cfg-if",
  "gloo-net",
@@ -1538,9 +1538,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_api_common"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8ca837125f2b41203b1d03e8f71c1782c35cc172e8c6009be51f75003524461"
+checksum = "d9071cba7be84a51493564674ed249bc2a994d775ce95e43a78f3b3fb7a0b439"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1561,9 +1561,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_schema"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7abf9e97c67d1a407ad9d6af21911a3794b8fb1da363c79585e9cec229e68944"
+checksum = "6a61184db57ae2c446c6295e54245e76bd8e3e2c0c6d97d7f44f573186198033"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1582,9 +1582,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07862499cbc57db6e9f0d5f36dbb4a517e2ebc21167306834ea6d5d3fd645143"
+checksum = "759d8a715fd8af172ca06da9cf059ef00b56a091a071a111551636a4591436d9"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1594,9 +1594,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_actor"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9670b248b1d079fcbe06831f9f456409300205a2bcbd878cf10c720f57b3d286"
+checksum = "f50ade7cf552379241e44bd81794c39e888948de3c44446e96d3cb3e4d028d07"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1608,9 +1608,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_moderator"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56ccbc3043b3c7e5c6a1a4195f0efff11a6b0b380f147d46934183d1bbd1c642"
+checksum = "d0782be5576424d3adb4bc8a0326c1af0f88f20197f104cdedd22b7d0004fb71"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1619,9 +1619,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_utils"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b9fa5077fb340ad5452f9fc5c3870fd3bef3d5f7fe50a41871f404cbeff4db5"
+checksum = "8f025e5bef98f64cce5f8c5741e1f53a5af772de38c163e09124219263cedec4"
 dependencies = [
  "cfg-if",
  "rosetta-build",

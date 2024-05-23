@@ -22,6 +22,12 @@ pub enum IconType {
   CreatePost,
   CreateCommunity,
   Communities,
+  Documentation,
+  Code,
+  Info,
+  Modlog,
+  Instances,
+  Legal,
 }
 
 #[component]
