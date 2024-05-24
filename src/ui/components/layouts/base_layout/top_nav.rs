@@ -3,7 +3,7 @@ use crate::{
   i18n::*,
   serverfns::auth::create_logout_action,
   ui::components::common::{
-    icon::{Icon, IconType},
+    icon::{Icon, IconSize, IconType},
     unpack::Unpack,
   },
   utils::{derive_query_signal, derive_user_is_logged_in, types::Theme},
@@ -20,7 +20,7 @@ fn InstanceName() -> impl IntoView {
 
   view! {
     <Unpack item=instance_name let:instance_name>
-      <A href="/" class="text-xl whitespace-nowrap">
+      <A href="/" class="block navbar-start text-xl whitespace-nowrap">
         {instance_name}
       </A>
     </Unpack>
@@ -50,68 +50,79 @@ fn LoggedInUserActionDropdown() -> impl IntoView {
   });
 
   view! {
-    <Show
-      when=move || user_is_logged_in.get()
+    <nav>
+      <ul aria-label="Authentication nav" class="flex gap-x-2">
+        <Show
+          when=move || user_is_logged_in.get()
 
-      fallback=move || {
-          view! {
-            <li>
-              <A href="/login">{t!(i18n, login)}</A>
-            </li>
-            <li>
-              <A href="/signup">{t!(i18n, signup)}</A>
-            </li>
-          }
-      }
-    >
+          fallback=move || {
+              view! {
+                <li>
+                  <A href="/login" class="btn btn-ghost transition duration-500">
+                    {t!(i18n, login)}
+                  </A>
+                </li>
+                <li>
+                  <A href="/signup" class="btn btn-primary transition duration-500">
 
-      <li>
-        <A href="/inbox">
-          <span title=t!(i18n, unread_messages)>
-            <Icon icon=IconType::Notifications/>
-          </span>
-        </A>
-      </li>
-      <Unpack item=names let:names>
-        <li>
-          <details>
-            <summary>
-
-              {
-                  let (name, display_name) = names
-                      .as_ref()
-                      .expect("None case for my_user should be handled by ancestor Show component");
-                  display_name.as_ref().unwrap_or(name)
+                    {t!(i18n, signup)}
+                  </A>
+                </li>
               }
+          }
+        >
 
-            </summary>
-            <ul class="z-10">
-              <li>
-                <A href={
-                    let name = names
-                        .as_ref()
-                        .expect(
-                            "None case for my_user should be handled by ancestor Show component",
-                        )
-                        .0
-                        .as_str();
-                    format!("/u/{name}")
-                }>{t!(i18n, profile)}</A>
-              </li>
-              <li>
-                <A href="/settings">{t!(i18n, settings)}</A>
-              </li>
-              <div class="divider my-0"></div>
-              <li>
-                <ActionForm action=logout_action>
-                  <button type="submit">{t!(i18n, logout)}</button>
-                </ActionForm>
-              </li>
-            </ul>
-          </details>
-        </li>
-      </Unpack>
-    </Show>
+          <li>
+            <A href="/inbox">
+              <span title=t!(i18n, unread_messages)>
+                <Icon icon=IconType::Notifications/>
+              </span>
+            </A>
+          </li>
+          <Unpack item=names let:names>
+            <li>
+              <details>
+                <summary>
+
+                  {
+                      let (name, display_name) = names
+                          .as_ref()
+                          .expect(
+                              "None case for my_user should be handled by ancestor Show component",
+                          );
+                      display_name.as_ref().unwrap_or(name)
+                  }
+
+                </summary>
+                <ul class="z-10">
+                  <li>
+                    <A href={
+                        let name = names
+                            .as_ref()
+                            .expect(
+                                "None case for my_user should be handled by ancestor Show component",
+                            )
+                            .0
+                            .as_str();
+                        format!("/u/{name}")
+                    }>{t!(i18n, profile)}</A>
+                  </li>
+                  <li>
+                    <A href="/settings">{t!(i18n, settings)}</A>
+                  </li>
+                  <div class="divider my-0"></div>
+                  <li>
+                    <ActionForm action=logout_action>
+                      <button type="submit">{t!(i18n, logout)}</button>
+                    </ActionForm>
+                  </li>
+                </ul>
+              </details>
+            </li>
+          </Unpack>
+        </Show>
+      </ul>
+    </nav>
   }
 }
 
@@ -150,85 +161,47 @@ fn ThemeSelect() -> impl IntoView {
   });
 
   view! {
-    <li class="z-[1]">
-      <details>
-        <summary>"Theme"</summary>
-        <ul>
-          <li>
-            <ActionForm action=theme_action>
-              <input type="hidden" name="theme" value=Theme::Dark/>
-              <button type="submit">"Dark"</button>
-            </ActionForm>
-          </li>
-          <li>
-            <ActionForm action=theme_action>
-              <input type="hidden" name="theme" value=Theme::Light/>
-              <button type="submit">"Light"</button>
-            </ActionForm>
-          </li>
-          <li>
-            <ActionForm action=theme_action>
-              <input type="hidden" name="theme" value=Theme::Retro/>
-              <button type="submit">"Retro"</button>
-            </ActionForm>
-          </li>
-        </ul>
-      </details>
-    </li>
+    <details class="dropdown dropdown-end group">
+      <summary class="btn btn-circle btn-ghost relative" aria-label="Theme">
+        <Icon class="absolute left-1 inset-y-auto" icon=IconType::Theme/>
+        <Icon class="absolute right-2.5 bottom-1 group-open:rotate-180 transition-transform" icon=IconType::DropdownCaret size=IconSize::Small/>
+      </summary>
+      <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+        <li>
+          <ActionForm action=theme_action>
+            <input type="hidden" name="theme" value=Theme::Dark/>
+            <button type="submit">"Dark"</button>
+          </ActionForm>
+        </li>
+        <li>
+          <ActionForm action=theme_action>
+            <input type="hidden" name="theme" value=Theme::Light/>
+            <button type="submit">"Light"</button>
+          </ActionForm>
+        </li>
+        <li>
+          <ActionForm action=theme_action>
+            <input type="hidden" name="theme" value=Theme::Retro/>
+            <button type="submit">"Retro"</button>
+          </ActionForm>
+        </li>
+      </ul>
+    </details>
   }
 }
 
 #[component]
 pub fn TopNav() -> impl IntoView {
-  let i18n = use_i18n();
-
   view! {
-    <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg">
-      <div class="navbar-start">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <Transition>
-              <InstanceName/>
-            </Transition>
-          </li>
-          <li>
-            <A href="/communities" class="text-md">
-              {t!(i18n, communities)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_post" class="text-md">
-              {t!(i18n, create_post)}
-            </A>
-          </li>
-          <li>
-            <A href="/create_community" class="text-md">
-              {t!(i18n, create_community)}
-            </A>
-          </li>
-          <li>
-            <a href="//join-lemmy.org/donate">
-              <span title="t!(i18n, donate)">
-                <Icon icon=IconType::Donate/>
-              </span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div class="navbar-end">
-        <ul class="menu menu-horizontal flex-nowrap">
-          <li>
-            <A href="/search">
-              <span title="t!(i18n, search)">
-                <Icon icon=IconType::Search/>
-              </span>
-            </A>
-          </li>
-          <Transition>
-            <ThemeSelect/>
-            <LoggedInUserActionDropdown/>
-          </Transition>
-        </ul>
+    <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg px-7">
+      <Transition>
+        <InstanceName/>
+      </Transition>
+      <div class="navbar-end gap-x-3">
+        <Transition>
+          <ThemeSelect/>
+          <LoggedInUserActionDropdown/>
+        </Transition>
       </div>
     </nav>
   }

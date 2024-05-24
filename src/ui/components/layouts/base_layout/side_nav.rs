@@ -11,7 +11,7 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <aside class="w-fit px-3.5 whitespace-nowrap pt-8 border-e border-neutral flex flex-col gap-y-12">
+    <aside class="w-fit px-3.5 whitespace-nowrap pt-8 border-e border-neutral flex flex-col gap-y-12 bg-base-300">
       <nav aria-labelledby="pages-label">
         <div id="pages-label" class="font-medium mb-1">
           Pages
@@ -59,7 +59,7 @@ fn NavLink(href: &'static str, icon: IconType, #[prop(into)] text: TextProp) -> 
     <li>
       <A
         href=href
-        class="text-sm block leading-relaxed hover:bg-base-200 p-1.5 rounded-md transition duration-500 my-1"
+        class="text-sm block leading-relaxed hover:bg-base-100 p-1.5 rounded-md transition duration-500 my-1"
       >
         <Icon icon=icon class="inline me-1.5"/>
         <span class="align-bottom">{text}</span>
