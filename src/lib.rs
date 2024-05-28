@@ -54,7 +54,7 @@ pub fn App() -> impl IntoView {
       // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
       // <Script>eruda.init();</Script>
       <Title text="Brand from env"/>
-      <Body class="min-h-screen flex flex-col"/>
+      <Body class="h-full max-h-screen flex flex-col overflow-y-hidden"/>
 
       <Routes>
         <Route path="" view=BaseLayout ssr=SsrMode::Async>

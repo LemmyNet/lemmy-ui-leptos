@@ -164,7 +164,11 @@ fn ThemeSelect() -> impl IntoView {
     <details class="dropdown dropdown-end group">
       <summary class="btn btn-circle btn-ghost relative" aria-label="Theme">
         <Icon class="absolute left-1 inset-y-auto" icon=IconType::Theme/>
-        <Icon class="absolute right-2.5 bottom-1 group-open:rotate-180 transition-transform" icon=IconType::DropdownCaret size=IconSize::Small/>
+        <Icon
+          class="absolute right-2.5 bottom-1 group-open:rotate-180 transition-transform"
+          icon=IconType::DropdownCaret
+          size=IconSize::Small
+        />
       </summary>
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
         <li>

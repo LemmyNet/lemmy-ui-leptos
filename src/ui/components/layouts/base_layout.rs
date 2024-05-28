@@ -20,9 +20,9 @@ pub fn BaseLayout() -> impl IntoView {
   view! {
     <Transition>
       <Unpack item=theme let:theme>
-        <Html attr:data-theme=theme/>
+        <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
         <TopNav/>
-        <div class="flex gap-x-4">
+        <div class="flex gap-x-4 h-full">
           <SideNav/>
           <div class="grow">
             <Outlet/>
