@@ -32,7 +32,8 @@ pub enum IconType {
   Theme,
   DropdownCaret,
   Home,
-  Profile
+  Profile,
+  Hamburger,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -35,7 +35,7 @@ pub fn AuthDropdown() -> impl IntoView {
   });
 
   view! {
-    <nav>
+    <nav class="hidden md:block">
       <ul aria-label="Authentication nav" class="flex items-center gap-x-2">
         <Show
           when=move || user_is_logged_in.get()
@@ -57,13 +57,6 @@ pub fn AuthDropdown() -> impl IntoView {
           }
         >
 
-          <li>
-            <A href="/inbox">
-              <span title=t!(i18n, unread_messages)>
-                <Icon icon=IconType::Notifications/>
-              </span>
-            </A>
-          </li>
           <Unpack item=names let:names>
             <li>
               <details class="dropdown dropdown-end group">
@@ -106,7 +99,9 @@ pub fn AuthDropdown() -> impl IntoView {
                   <div class="divider my-0"></div>
                   <li>
                     <ActionForm action=logout_action class="p-0">
-                      <button type="submit" class="p-2.5">{t!(i18n, logout)}</button>
+                      <button type="submit" class="p-2.5">
+                        {t!(i18n, logout)}
+                      </button>
                     </ActionForm>
                   </li>
                 </ul>

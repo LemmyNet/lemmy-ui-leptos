@@ -2,14 +2,14 @@ use crate::{
   contexts::theme_resource_context::ThemeResource,
   ui::components::{
     common::unpack::Unpack,
-    layouts::base_layout::{bottom_nav::MobileNav, side_nav::SideNav, top_nav::TopNav},
+    layouts::base_layout::{mobile_nav::MobileNav, side_nav::SideNav, top_nav::TopNav},
   },
 };
 use leptos::*;
 use leptos_meta::Html;
 use leptos_router::Outlet;
 
-mod bottom_nav;
+mod mobile_nav;
 mod side_nav;
 mod top_nav;
 
@@ -18,18 +18,27 @@ pub fn BaseLayout() -> impl IntoView {
   let theme = expect_context::<ThemeResource>();
 
   view! {
-    <Transition>
-      <Unpack item=theme let:theme>
-        <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
-        <TopNav/>
-        <div class="flex gap-x-4 h-full min-h-0">
-          <SideNav/>
-          <div class="grow">
-            <Outlet/>
-          </div>
-        </div>
-        <MobileNav />
-      </Unpack>
-    </Transition>
+    <div class="drawer h-full">
+      <input id="mobile-drawer" type="checkbox" class="drawer-toggle"/>
+      <div class="drawer-content h-full">
+        <Transition>
+          <Unpack item=theme let:theme>
+            <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
+            <TopNav/>
+            <div class="flex gap-x-4 h-full min-h-0">
+              <SideNav/>
+              <div class="grow">
+                <Outlet/>
+              </div>
+            </div>
+            <MobileNav/>
+          </Unpack>
+        </Transition>
+      </div>
+      <div class="drawer-side">
+        <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay" />
+        <p>Drawer stuff</p>
+      </div>
+    </div>
   }
 }
