@@ -62,7 +62,7 @@ pub fn FilterBar(
           </span>
 
         </summary>
-        <menu class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+        <menu class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Active>
             {t!(i18n, active)}
           </SortTypeLink>

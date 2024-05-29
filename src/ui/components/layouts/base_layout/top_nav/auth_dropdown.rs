@@ -2,7 +2,7 @@ use crate::{
   contexts::site_resource_context::SiteResource,
   serverfns::auth::create_logout_action,
   ui::components::common::{
-    icon::{Icon, IconType},
+    icon::{Icon, IconSize, IconType},
     unpack::Unpack,
   },
   use_i18n,
@@ -36,7 +36,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
   view! {
     <nav>
-      <ul aria-label="Authentication nav" class="flex gap-x-2">
+      <ul aria-label="Authentication nav" class="flex items-center gap-x-2">
         <Show
           when=move || user_is_logged_in.get()
 
@@ -66,20 +66,28 @@ pub fn AuthDropdown() -> impl IntoView {
           </li>
           <Unpack item=names let:names>
             <li>
-              <details>
-                <summary>
+              <details class="dropdown dropdown-end group">
+                <summary class="btn">
 
-                  {
-                      let (name, display_name) = names
-                          .as_ref()
-                          .expect(
-                              "None case for my_user should be handled by ancestor Show component",
-                          );
-                      display_name.as_ref().unwrap_or(name)
-                  }
+                  <span class="text-nowrap leading-loose">
+
+                    {
+                        let (name, display_name) = names
+                            .as_ref()
+                            .expect(
+                                "None case for my_user should be handled by ancestor Show component",
+                            );
+                        display_name.as_ref().unwrap_or(name)
+                    } " "
+                    <Icon
+                      class="align-bottom inline group-open:rotate-180 transition-transform"
+                      icon=IconType::DropdownCaret
+                      size=IconSize::Small
+                    />
+                  </span>
 
                 </summary>
-                <ul class="z-10">
+                <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
                   <li>
                     <A href={
                         let name = names
@@ -97,8 +105,8 @@ pub fn AuthDropdown() -> impl IntoView {
                   </li>
                   <div class="divider my-0"></div>
                   <li>
-                    <ActionForm action=logout_action>
-                      <button type="submit">{t!(i18n, logout)}</button>
+                    <ActionForm action=logout_action class="p-0">
+                      <button type="submit" class="p-2.5">{t!(i18n, logout)}</button>
                     </ActionForm>
                   </li>
                 </ul>

@@ -10,7 +10,7 @@ where
   let query = use_query_map();
 
   view! {
-    <li class="p-0">
+    <li>
 
       <A
         href=move || {
