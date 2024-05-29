@@ -65,7 +65,7 @@ pub fn Icon(
 
   view! {
     <svg class=class width=size height=size>
-      <use_ href=href xlink:href=href />
+      <use_ href=href xlink:href=href></use_>
     </svg>
   }
 }

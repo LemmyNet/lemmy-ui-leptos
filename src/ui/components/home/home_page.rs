@@ -32,9 +32,11 @@ pub fn HomePage() -> impl IntoView {
   let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
   view! {
-    <div class="md:container md:grid md:grid-cols-5 xl:grid-cols-4 md:grid-rows-1 mx-auto my-4 md:gap-20 h-full">
-      <main class="md:col-span-3">
-        {filter_bar} <h1 class="text-4xl font-bold">Home Feed</h1> <Suspense fallback=|| "Loading">
+    <div class="md:container md:grid md:grid-cols-5 xl:grid-cols-4 md:grid-rows-1 mx-auto mt-4 mb-1 md:gap-20 h-full">
+      <main class="md:col-span-3 flex flex-col">
+        {filter_bar}
+        <h1 class="text-4xl font-bold pb-1.5 border-b-4 border-base-300 rounded-b-md">Home Feed</h1>
+        <Suspense fallback=|| "Loading">
           <ErrorBoundary fallback=|_| { "Could not load posts!" }>
             <Unpack item=posts let:posts>
               <PostListings posts=posts/>

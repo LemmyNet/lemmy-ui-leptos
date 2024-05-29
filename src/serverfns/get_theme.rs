@@ -9,7 +9,7 @@ pub async fn get_theme() -> Result<Theme, ServerFnError> {
 
   let req = extract::<HttpRequest>().await?;
 
-  Ok(req.cookie("theme").map_or(Theme::Retro, |c| {
-    Theme::from_str(c.value()).unwrap_or(Theme::Retro)
+  Ok(req.cookie("theme").map_or(Theme::Light, |c| {
+    Theme::from_str(c.value()).unwrap_or(Theme::Light)
   }))
 }
