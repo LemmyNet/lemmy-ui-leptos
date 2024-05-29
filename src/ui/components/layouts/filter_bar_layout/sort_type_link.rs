@@ -10,18 +10,23 @@ where
   let query = use_query_map();
 
   view! {
-    <li
-      class="aria-selected:btn-active"
-      attr:aria-selected=move || {
-          if sort_type.get() == link_sort_type { Some("true") } else { None }
-      }
-    >
+    <li class="p-0">
 
-      <A href=move || {
-          let mut query = query.get();
-          query.insert(String::from("sort"), link_sort_type.to_string());
-          query.to_query_string()
-      }>{children()}</A>
+      <A
+        href=move || {
+            let mut query = query.get();
+            query.insert(String::from("sort"), link_sort_type.to_string());
+            query.to_query_string()
+        }
+
+        class="aria-selected:btn-active"
+        attr:aria-selected=move || {
+            if sort_type.get() == link_sort_type { Some("true") } else { None }
+        }
+      >
+
+        {children()}
+      </A>
     </li>
   }
 }

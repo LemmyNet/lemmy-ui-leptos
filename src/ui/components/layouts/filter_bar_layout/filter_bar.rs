@@ -1,8 +1,11 @@
 use crate::{
-  ui::components::layouts::filter_bar_layout::{
-    derive_link_type,
-    listing_type_link::ListingTypeLink,
-    sort_type_link::SortTypeLink,
+  ui::components::{
+    common::icon::{Icon, IconSize, IconType},
+    layouts::filter_bar_layout::{
+      derive_link_type,
+      listing_type_link::ListingTypeLink,
+      sort_type_link::SortTypeLink,
+    },
   },
   use_i18n,
 };
@@ -47,11 +50,19 @@ pub fn FilterBar(
           All
         </ListingTypeLink>
       </div>
-      <div class="dropdown">
-        <label tabindex="0" class="btn">
-          Sort type
-        </label>
-        <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+      <details class="dropdown dropdown-end group">
+        <summary class="btn">
+          <span class="text-nowrap leading-loose">
+            "Sort type "
+            <Icon
+              class="align-bottom inline group-open:rotate-180 transition-transform"
+              icon=IconType::DropdownCaret
+              size=IconSize::Small
+            />
+          </span>
+
+        </summary>
+        <menu class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Active>
             {t!(i18n, active)}
           </SortTypeLink>
@@ -62,7 +73,7 @@ pub fn FilterBar(
             {t!(i18n, new)}
           </SortTypeLink>
         </menu>
-      </div>
+      </details>
     </div>
   }
 }
