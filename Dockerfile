@@ -5,7 +5,7 @@ RUN wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/downlo
 FROM base AS leptos-ui
 WORKDIR /usr/src/app
 
-COPY *.toml Cargo.lock tailwind.config.js package.json pnpm-lock.yaml .
+COPY *.toml Cargo.lock tailwind.config.js package.json pnpm-lock.yaml ./
 COPY src src
 COPY public public
 COPY locales locales
@@ -15,7 +15,9 @@ RUN rustup target add wasm32-unknown-unknown
 RUN cargo-binstall -y cargo-leptos
 RUN wget -O- https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get install -y nodejs
-RUN npm install -g pnpm
+
+# Enable corepack to use pnpm
+RUN corepack enable
 RUN pnpm install --frozen-lockfile
 
 FROM leptos-ui AS playwright
