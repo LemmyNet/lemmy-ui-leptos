@@ -1,8 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   ui::components::layouts::filter_bar_layout::filter_bar::FilterBar,
-  use_i18n,
-  utils::derive_user_is_logged_in,
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
@@ -10,7 +8,7 @@ use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   SortType,
 };
 use leptos::*;
-use leptos_router::{use_query_map, Outlet, A};
+use leptos_router::{use_query_map, Outlet};
 use serde::Deserialize;
 
 mod filter_bar;

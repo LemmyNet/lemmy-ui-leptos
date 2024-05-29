@@ -1,4 +1,4 @@
-use crate::{serverfns::get_theme::get_theme, utils::types::Theme};
+use crate::{serverfns::theme::get_theme, utils::types::Theme};
 use leptos::*;
 
 pub type ThemeResource = Resource<(), Result<Theme, ServerFnError>>;
