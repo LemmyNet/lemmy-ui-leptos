@@ -11,7 +11,7 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <aside class="w-fit px-3.5 whitespace-nowrap pb-5 pt-3 border-e border-neutral flex flex-col gap-y-12 bg-base-300 overflow-y-auto">
+    <aside class="w-fit px-3.5 whitespace-nowrap pb-5 pt-3 border-e border-neutral hidden md:flex flex-col gap-y-12 bg-base-300 overflow-y-auto">
       <nav aria-label="Pages nav">
         <ul>
           <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post)/>

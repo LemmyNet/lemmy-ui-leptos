@@ -2,7 +2,7 @@ use crate::{
   contexts::theme_resource_context::ThemeResource,
   ui::components::{
     common::unpack::Unpack,
-    layouts::base_layout::{side_nav::SideNav, top_nav::TopNav},
+    layouts::base_layout::{bottom_nav::MobileNav, side_nav::SideNav, top_nav::TopNav},
   },
 };
 use leptos::*;
@@ -28,6 +28,7 @@ pub fn BaseLayout() -> impl IntoView {
             <Outlet/>
           </div>
         </div>
+        <MobileNav />
       </Unpack>
     </Transition>
   }

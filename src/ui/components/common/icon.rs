@@ -19,6 +19,7 @@ pub enum IconType {
   Block,
   Save,
   SaveFilled,
+  Saved,
   CreatePost,
   CreateCommunity,
   Communities,
@@ -30,6 +31,8 @@ pub enum IconType {
   Legal,
   Theme,
   DropdownCaret,
+  Home,
+  Profile
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -97,6 +97,7 @@ pub fn App() -> impl IntoView {
           <Route path="inbox" view=CommunitiesPage/>
           <Route path="settings" view=CommunitiesPage/>
           <Route path="u/:id" view=CommunitiesPage/>
+          <Route path="saved" view=CommunitiesPage/>
 
           <Route path="modlog" view=CommunitiesPage/>
           <Route path="instances" view=CommunitiesPage/>
