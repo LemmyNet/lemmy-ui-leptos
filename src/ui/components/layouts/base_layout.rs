@@ -36,7 +36,7 @@ pub fn BaseLayout() -> impl IntoView {
         </Transition>
       </div>
       <div class="drawer-side">
-        <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay" />
+        <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
         <p>Drawer stuff</p>
       </div>
     </div>
