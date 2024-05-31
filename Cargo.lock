@@ -330,9 +330,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.83"
+version = "1.0.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "25bdb32cbbdce2b519a9cd7df3a678443100e265d5e25ca763b7572a5104f5f3"
+checksum = "b3d1d046238990b9cf5bcde22a3fb3584ee5cf65fb2765f454ed428c7a0063da"
 dependencies = [
  "backtrace",
 ]
@@ -1497,9 +1497,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "lemmy-client"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d14bb6b50c0393f8ea94fd15167e74bb14a154dde48fe249dfc7387142e222c0"
+checksum = "6345402558971cd36acd69f9c20dfd9edafbb092e80781d1d2cdbb7c6060b60c"
 dependencies = [
  "cfg-if",
  "gloo-net",
@@ -1530,7 +1530,7 @@ dependencies = [
  "leptos_router",
  "serde",
  "serde_json",
- "strum 0.26.2",
+ "strum",
  "tokio",
  "trait-set",
  "wasm-bindgen",
@@ -1538,9 +1538,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_api_common"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8ca837125f2b41203b1d03e8f71c1782c35cc172e8c6009be51f75003524461"
+checksum = "6bde8f89f516dc1dae921adf64dc055eab01141ade9b07ef28b71f368519a10b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1561,9 +1561,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_schema"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7abf9e97c67d1a407ad9d6af21911a3794b8fb1da363c79585e9cec229e68944"
+checksum = "af8464a03c3b9d60664753c7f6b1e47f0d8bf2f910703e2f51bbfa09269501e8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1572,8 +1572,8 @@ dependencies = [
  "moka",
  "serde",
  "serde_with",
- "strum 0.25.0",
- "strum_macros 0.25.3",
+ "strum",
+ "strum_macros",
  "tracing",
  "typed-builder",
  "url",
@@ -1582,9 +1582,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "07862499cbc57db6e9f0d5f36dbb4a517e2ebc21167306834ea6d5d3fd645143"
+checksum = "a20615789fd2e76e4cb5f9b4524f0b66922a5dd5396ca98cc65c0131791a28d9"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1594,23 +1594,23 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_actor"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9670b248b1d079fcbe06831f9f456409300205a2bcbd878cf10c720f57b3d286"
+checksum = "ca4d67a127d68a61139debb080644014642050e957605acc7684211644cb3c99"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
- "strum 0.25.0",
- "strum_macros 0.25.3",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
 name = "lemmy_db_views_moderator"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56ccbc3043b3c7e5c6a1a4195f0efff11a6b0b380f147d46934183d1bbd1c642"
+checksum = "26ece51a246535a4061a8ad3d85c28d586d9f6bfb2cde2f28ced6fc6bc76975d"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1619,15 +1619,15 @@ dependencies = [
 
 [[package]]
 name = "lemmy_utils"
-version = "0.19.4-beta.7"
+version = "0.19.4-rc.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b9fa5077fb340ad5452f9fc5c3870fd3bef3d5f7fe50a41871f404cbeff4db5"
+checksum = "7f5927d521cecc6d59f438fad93db0644f6a397c2f564dc04faaf63895a072b2"
 dependencies = [
  "cfg-if",
  "rosetta-build",
  "serde",
- "strum 0.25.0",
- "strum_macros 0.25.3",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
@@ -2773,30 +2773,11 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "strum"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "290d54ea6f91c969195bdbcd7442c8c2a2ba87da8bf60a7ee86a235d4bc1e125"
-
-[[package]]
-name = "strum"
 version = "0.26.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d8cec3501a5194c432b2b7976db6b7d10ec95c253208b45f83f7136aa985e29"
 dependencies = [
- "strum_macros 0.26.2",
-]
-
-[[package]]
-name = "strum_macros"
-version = "0.25.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23dc1fa9ac9c169a78ba62f0b841814b7abae11bdd047b9c58f893439e309ea0"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn 2.0.63",
+ "strum_macros",
 ]
 
 [[package]]
