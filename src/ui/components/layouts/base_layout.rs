@@ -20,20 +20,20 @@ pub fn BaseLayout() -> impl IntoView {
   view! {
     <div class="drawer h-full">
       <input id="mobile-drawer" type="checkbox" class="drawer-toggle"/>
-      <div class="drawer-content h-full max-h-screen">
+      <div class="drawer-content h-full min-h-screen md:max-h-screen">
         <Transition>
           <Unpack item=theme let:theme>
             <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
             <TopNav/>
-            <div class="flex gap-x-4 h-full min-h-0">
+            <div class="flex gap-x-4 h-full min-h-0 overflow-y-auto">
               <SideNav/>
-              <div class="grow">
+              <div class="grow h-fit">
                 <Outlet/>
               </div>
             </div>
-            <MobileNav/>
           </Unpack>
         </Transition>
+        <MobileNav/>
       </div>
       <div class="drawer-side">
         <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
