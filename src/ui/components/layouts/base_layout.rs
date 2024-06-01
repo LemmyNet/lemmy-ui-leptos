@@ -20,7 +20,7 @@ pub fn BaseLayout() -> impl IntoView {
   view! {
     <div class="drawer h-full">
       <input id="mobile-drawer" type="checkbox" class="drawer-toggle"/>
-      <div class="drawer-content h-full">
+      <div class="drawer-content h-full max-h-screen">
         <Transition>
           <Unpack item=theme let:theme>
             <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
