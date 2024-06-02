@@ -32,8 +32,8 @@ pub fn BaseLayout() -> impl IntoView {
               </div>
             </div>
           </Unpack>
+          <MobileNav/>
         </Transition>
-        <MobileNav/>
       </div>
       <div class="drawer-side">
         <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
