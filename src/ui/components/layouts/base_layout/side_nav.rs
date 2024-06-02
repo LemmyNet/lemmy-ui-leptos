@@ -11,8 +11,8 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <aside class="w-fit px-3.5 whitespace-nowrap pb-5 pt-3 border-e border-neutral hidden md:flex flex-col gap-y-12 bg-base-300 overflow-y-auto">
-      <nav aria-label="Pages nav">
+    <aside class="w-fit px-3.5 whitespace-nowrap pb-5 pt-3 border-e border-neutral hidden md:flex flex-col gap-y-12 bg-base-300 overflow-y-auto h-full">
+      <nav aria-label="Pages nav" class="grow">
         <ul>
           <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post)/>
           <NavLink
@@ -27,7 +27,7 @@ pub fn SideNav() -> impl IntoView {
           <NavLink href="/legal" icon=IconType::Legal text=t!(i18n, legal)/>
         </ul>
       </nav>
-      <nav aria-labelledby="lemmy-resources-label" class="mt-auto">
+      <nav aria-labelledby="lemmy-resources-label">
         <div id="lemmy-resources-label" class="font-medium mb-1">
           Lemmy Resources
         </div>
