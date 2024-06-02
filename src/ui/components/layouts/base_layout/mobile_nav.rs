@@ -6,26 +6,22 @@ use leptos_router::*;
 pub fn MobileNav() -> impl IntoView {
   view! {
     <nav aria-label="Mobile nav" class="btm-nav w-full md:hidden border-t border-neutral text-xs">
-      <A href="/">
-        <Icon icon=IconType::Home/>
-        <span class="block">Home</span>
-      </A>
-      <A href="/communities">
-        <Icon icon=IconType::Communities/>
-        <span class="block">Communities</span>
-      </A>
-      <A href="/search">
-        <Icon icon=IconType::Search/>
-        <span class="block">Search</span>
-      </A>
-      <A href="/saved">
-        <Icon icon=IconType::Saved/>
-        <span class="block">Saved</span>
-      </A>
-      <A href="/">
-        <Icon icon=IconType::Profile/>
-        <span class="block">Profile</span>
-      </A>
+      <NavLink href="/" icon=IconType::Home text="Home"/>
+      <NavLink href="/communities" icon=IconType::Communities text="Communities"/>
+      <NavLink href="/search" icon=IconType::Search text="Search"/>
+      <NavLink href="/saved" icon=IconType::Saved text="Saved"/>
+      <NavLink href="/" icon=IconType::Profile text="Profile"/>
     </nav>
+  }
+}
+
+#[component]
+fn NavLink(href: &'static str, icon: IconType, text: &'static str) -> impl IntoView {
+  // TODO: Apply active to aria-current=page once the unusual cargo-leptos bug is resolved
+  view! {
+    <A href=href>
+      <Icon icon=icon/>
+      <span class="block">{text}</span>
+    </A>
   }
 }
