@@ -34,7 +34,7 @@ services:
       - frontend
 
   pictrs:
-    image: asonix/pictrs:0.5.13
+    image: asonix/pictrs:0.5.14
     # this needs to match the pictrs url in lemmy.hjson
     hostname: pictrs
     environment:
