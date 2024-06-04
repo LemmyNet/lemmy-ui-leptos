@@ -59,7 +59,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
           <Unpack item=names let:names>
             <li>
-              <details class="dropdown dropdown-end group">
+              <details class="dropdown dropdown-end group" aria-label="Logged in user dropdown">
                 <summary class="btn">
 
                   <span class="text-nowrap leading-loose">

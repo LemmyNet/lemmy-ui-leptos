@@ -18,7 +18,7 @@ type UseOptions = ProjectDefinition["use"];
 const createProject = (
   name: string,
   testMatch: string,
-  use: UseOptions,
+  use: UseOptions
 ): ProjectDefinition => ({
   name,
   testMatch,
@@ -49,7 +49,6 @@ export default defineConfig({
   workers: 1,
   reporter: [["html", { open: "never" }]],
   use: {
-    actionTimeout: 0,
     trace: "on-first-retry",
     baseURL: "http://localhost:1237",
   },

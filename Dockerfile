@@ -23,7 +23,7 @@ RUN pnpm install --frozen-lockfile
 FROM leptos-ui AS playwright
 COPY --from=leptos-ui . .
 COPY end2end end2end
-RUN pnpx playwright@1.44.0 install --with-deps
+RUN pnpx playwright@1.44.1 install --with-deps
 RUN cd end2end
 RUN pnpm install --frozen-lockfile
 RUN cd ..

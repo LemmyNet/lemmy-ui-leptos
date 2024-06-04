@@ -4,48 +4,49 @@ export async function showHome(page: Page) {
   await page.goto("/");
 
   await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
-  ).toHaveText("Login");
+    page.getByRole("link", { name: "Login", exact: true })
+  ).toBeVisible();
 }
 
 export async function loginLogoutTest(page: Page) {
-  await expect(
-    page.locator("a").getByText("Login", { exact: true }).first(),
-  ).toHaveText("Login");
+  const loginLink = page.getByRole("link", {
+    name: "Login",
+    exact: true,
+  });
 
-  await page.locator("a").getByText("Login", { exact: true }).first().click();
+  await expect(loginLink).toBeVisible();
 
-  await expect(page.getByRole("button").getByText("Login").first()).toHaveText(
-    "Login",
-  );
+  await loginLink.click({ force: true });
+
+  const loginButton = page.getByRole("button", { name: "Login", exact: true });
+
+  await expect(loginButton).toBeVisible();
 
   await page.getByLabel("Username", { exact: true }).fill("lemmy");
   await page.getByLabel("Password", { exact: true }).fill("lemmylemmy");
-  await page.waitForTimeout(1000);
-  await page.getByRole("button").getByText("Login").click();
+  await loginButton.click({ force: true });
 
-  await expect(page.locator("summary").getByText("lemmy")).toBeVisible();
+  const userDropdownSummary = page.getByLabel("Logged in user dropdown");
 
-  await page.locator("summary").getByText("lemmy").click();
-  await page.getByRole("button").getByText("Logout", { exact: true }).click();
+  await expect(userDropdownSummary).toBeVisible();
+  await userDropdownSummary.click({ force: true });
+  await page.getByRole("button", { name: "Logout", exact: true }).click();
 }
 
 export async function persistThemeTest(page: Page) {
   await page.goto("/");
 
-  await expect(page.locator("html")).toHaveAttribute("data-theme");
+  const root = page.getByRole("document");
+  await expect(root).toHaveAttribute("data-theme");
 
-  await expect(
-    page.locator("summary").getByText("Theme", { exact: true }),
-  ).toBeVisible();
+  const themeButton = page.getByLabel("Theme");
+  await expect(themeButton).toBeVisible();
 
-  await page.locator("summary").getByText("Theme", { exact: true }).click();
-  await page.getByRole("button").getByText("Dark", { exact: true }).click();
+  await themeButton.click();
+  await page.getByRole("button", { name: "Dark", exact: true }).click();
 
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  await page.reload();
 
-  await page.goto("https://join-lemmy.org");
-  await page.goto("/");
-
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(root).toHaveAttribute("data-theme", "dark");
 }

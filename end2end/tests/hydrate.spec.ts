@@ -7,8 +7,8 @@ test("show home", async ({ page }) => {
 
 test("login, logout multiple times", async ({ page }) => {
   await page.goto("/");
-  let iterations = 3;
-  while (iterations--) {
+
+  for (let i = 3; i; --i) {
     await loginLogoutTest(page);
   }
 });
