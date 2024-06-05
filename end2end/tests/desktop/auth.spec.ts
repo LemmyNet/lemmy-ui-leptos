@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("login, logout multiple times", async ({ page }) => {
+test("Can successfully login and logout multiple times", async ({ page }) => {
   await page.goto("/");
 
   for (let i = 3; i; --i) {

@@ -6,35 +6,31 @@ import {
   PlaywrightWorkerOptions,
 } from "@playwright/test";
 
-type DeviceDescription = (typeof devices)[string];
-
 type ProjectDefinition = Project<
   PlaywrightTestOptions,
   PlaywrightWorkerOptions
 >;
 
 type UseOptions = ProjectDefinition["use"];
-interface TestOptions {
-  name: string;
-  testMatch: string;
-  use: UseOptions;
-}
 
-const createProject = ({
+const createProject = (
+  name: string,
+  use: UseOptions,
+  screen: "desktop" | "mobile"
+): ProjectDefinition => ({
   name,
-  testMatch,
   use,
-}: TestOptions): ProjectDefinition => ({
-  name,
-  testMatch,
-  use,
+  testMatch: screen === "desktop" ? "desktop/**" : "mobile/**",
 });
 
-const createMobileProject = (name: string, use: UseOptions) =>
-  createProject({ name, use, testMatch: "mobile/**" });
-
-const createDesktopProject = (name: string, use: UseOptions) =>
-  createProject({ name, use, testMatch: "desktop/**" });
+const ssr = (def: ProjectDefinition): ProjectDefinition => ({
+  ...def,
+  use: {
+    ...def.use!,
+    javaScriptEnabled: false,
+  },
+  testIgnore: /.*hydrate.*/,
+});
 
 export default defineConfig({
   testDir: "./tests",
@@ -55,21 +51,12 @@ export default defineConfig({
     baseURL: "http://localhost:1237",
   },
   projects: [
-    createDesktopProject("Chromium SSR", {
-      ...devices["Desktop Chrome"],
-      javaScriptEnabled: false,
-    }),
-    createDesktopProject("Chromium Hydrate", devices["Desktop Chrome"]),
-    createDesktopProject("Firefox SSR", {
-      ...devices["Desktop Firefox"],
-      javaScriptEnabled: false,
-    }),
-    createDesktopProject("Firefox Hydrate", devices["Desktop Firefox"]),
-    createDesktopProject("Edge SSR", {
-      ...devices["Desktop Edge"],
-      javaScriptEnabled: false,
-    }),
-    createDesktopProject("Edge Hydrate", devices["Desktop Edge"]),
+    createProject("Chromium Hydrate", devices["Desktop Chrome"], "desktop"),
+    ssr(createProject("Chromium SSR", devices["Desktop Chrome"], "desktop")),
+    createProject("Firefox Hydrate", devices["Desktop Firefox"], "desktop"),
+    ssr(createProject("Firefox SSR", devices["Desktop Firefox"], "desktop")),
+    createProject("Edge Hydrate", devices["Desktop Edge"], "desktop"),
+    ssr(createProject("Edge Hydrate", devices["Desktop Edge"], "desktop")),
     // createMobileProject("Galaxy S9+ SSR", {
     //   ...devices["Galaxy S9+"],
     //   javaScriptEnabled: false,

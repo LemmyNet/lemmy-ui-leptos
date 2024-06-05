@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("persist theme selection between sessions", async ({ page }) => {
+test("Persists theme selection between sessions", async ({ page }) => {
   await page.goto("/");
 
   const root = page.getByRole("document");

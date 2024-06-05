@@ -1,29 +1,33 @@
 import { expect, test } from "@playwright/test";
 
-test("Successfully navigates around the page", async ({ page }) => {
+test("Successfully navigates around the page", async ({ page, baseURL }) => {
   await page.goto("/");
 
-  await page.getByLabel("Create Post").click();
-  expect(page.url()).toBe("/create_post");
+  const assertUrl = (path: string) =>
+    expect(page.url()).toBe(`${baseURL}/${path}`);
 
-  await page.getByLabel("Create Community").click();
-  expect(page.url()).toBe("/create_community");
+  await page.getByRole("link", { name: "Create Post" }).click();
+  assertUrl("create_post");
 
-  await page.getByLabel("Communities").click();
-  expect(page.url()).toBe("/communities");
+  await page.getByRole("link", { name: "Create Community" }).click();
+  assertUrl("create_community");
 
-  await page.getByLabel("Search").click();
-  expect(page.url()).toBe("/search");
+  await page.getByRole("link", { name: "Communities" }).click();
+  assertUrl("communities");
 
-  await page.getByLabel("Modlog").click();
-  expect(page.url()).toBe("/modlog");
+  await page.getByRole("link", { name: "Search" }).click();
+  assertUrl("search");
 
-  await page.getByLabel("Instances").click();
-  expect(page.url()).toBe("/instances");
+  await page.getByRole("link", { name: "Modlog" }).click();
+  assertUrl("modlog");
 
-  await page.getByLabel("Legal").click();
-  expect(page.url()).toBe("/legal");
+  await page.getByRole("link", { name: "Instances" }).click();
+  assertUrl("instances");
 
-  await page.getByText("lemmy-dev").click();
-  expect(page.url()).toBe("/");
+  await page.getByRole("link", { name: "Legal" }).click();
+  assertUrl("legal");
+
+  await page.getByRole("link", { name: "lemmy-dev" }).click();
+  await page.waitForURL(`${baseURL}/`);
+  assertUrl("");
 });
