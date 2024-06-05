@@ -31,6 +31,7 @@ actix-session = { version = "0.9", features = [
 tokio = { version = "1.37", optional = true, features = ["macros"] }
 strum = { version = "0.26.2", features = ["derive"] }
 trait-set = "0.3.0"
+leptos-use = "0.10.10"
 
 [package.metadata.leptos-i18n]
 default = "en"

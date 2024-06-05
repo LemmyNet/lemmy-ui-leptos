@@ -39,11 +39,7 @@ pub fn BaseLayout() -> impl IntoView {
         </Transition>
       </div>
       <div class="drawer-side" class="md:hidden">
-        <label
-          for="mobile-drawer"
-          aria-label="Close mobile drawer"
-          class="drawer-overlay"
-        ></label>
+        <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
         <aside class="w-2/3 whitespace-nowrap px-3.5 pb-5 pt-3 flex flex-col bg-base-300 overflow-y-auto h-full border-e border-neutral">
 
           <SideNav/>
