@@ -11,7 +11,7 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <nav aria-label="Pages nav" >
+    <nav aria-label="Pages nav">
       <ul>
         <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post)/>
         <NavLink
