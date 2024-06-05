@@ -4,7 +4,7 @@ export async function showHome(page: Page) {
   await page.goto("/");
 
   await expect(
-    page.getByRole("link", { name: "Login", exact: true })
+    page.getByRole("link", { name: "Login", exact: true }),
   ).toBeVisible();
 }
 

@@ -26,7 +26,10 @@ pub fn BaseLayout() -> impl IntoView {
             <Html attr:data-theme=theme class="h-full max-h-screen overflow-y-hidden"/>
             <TopNav/>
             <div class="flex gap-x-4 h-full overflow-y-auto md:overflow-y-hidden grow">
-              <SideNav/>
+              <aside class="w-fit px-3.5 whitespace-nowrap pb-5 pt-3 border-e border-neutral hidden md:flex flex-col gap-y-12 bg-base-300 overflow-y-auto h-full">
+                <SideNav/>
+
+              </aside>
               <div class="grow h-fit md:h-auto">
                 <Outlet/>
               </div>
@@ -35,9 +38,11 @@ pub fn BaseLayout() -> impl IntoView {
           <MobileNav/>
         </Transition>
       </div>
-      <div class="drawer-side">
+      <div class="drawer-side md:hidden">
         <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
-        <p>Drawer stuff</p>
+        <aside class="w-2/3 h-full whitespace-nowrap bg-base-300 overflow-y-auto flex flex-col">
+          <SideNav/>
+        </aside>
       </div>
     </div>
   }
