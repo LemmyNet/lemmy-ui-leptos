@@ -14,25 +14,27 @@ type ProjectDefinition = Project<
 >;
 
 type UseOptions = ProjectDefinition["use"];
+interface TestOptions {
+  name: string;
+  testMatch: string;
+  use: UseOptions;
+}
 
-const createProject = (
-  name: string,
-  testMatch: string,
-  use: UseOptions,
-): ProjectDefinition => ({
+const createProject = ({
+  name,
+  testMatch,
+  use,
+}: TestOptions): ProjectDefinition => ({
   name,
   testMatch,
   use,
 });
 
-const createSsrProject = (name: string, device: DeviceDescription) =>
-  createProject(name, "ssr.spec.ts", {
-    ...device,
-    javaScriptEnabled: false,
-  });
+const createMobileProject = (name: string, use: UseOptions) =>
+  createProject({ name, use, testMatch: "mobile/**" });
 
-const createHydrateProject = (name: string, device: DeviceDescription) =>
-  createProject(name, "hydrate.spec.ts", device);
+const createDesktopProject = (name: string, use: UseOptions) =>
+  createProject({ name, use, testMatch: "desktop/**" });
 
 export default defineConfig({
   testDir: "./tests",
@@ -52,13 +54,31 @@ export default defineConfig({
     trace: "on-first-retry",
     baseURL: "http://localhost:1237",
   },
-
   projects: [
-    createSsrProject("Chromium SSR", devices["Desktop Chrome"]),
-    createHydrateProject("Chromium Hydrate", devices["Desktop Chrome"]),
-    createSsrProject("Firefox SSR", devices["Desktop Firefox"]),
-    createHydrateProject("Firefox Hydrate", devices["Desktop Firefox"]),
-    createSsrProject("Edge SSR", devices["Desktop Edge"]),
-    createHydrateProject("Edge Hydrate", devices["Desktop Edge"]),
+    createDesktopProject("Chromium SSR", {
+      ...devices["Desktop Chrome"],
+      javaScriptEnabled: false,
+    }),
+    createDesktopProject("Chromium Hydrate", devices["Desktop Chrome"]),
+    createDesktopProject("Firefox SSR", {
+      ...devices["Desktop Firefox"],
+      javaScriptEnabled: false,
+    }),
+    createDesktopProject("Firefox Hydrate", devices["Desktop Firefox"]),
+    createDesktopProject("Edge SSR", {
+      ...devices["Desktop Edge"],
+      javaScriptEnabled: false,
+    }),
+    createDesktopProject("Edge Hydrate", devices["Desktop Edge"]),
+    // createMobileProject("Galaxy S9+ SSR", {
+    //   ...devices["Galaxy S9+"],
+    //   javaScriptEnabled: false,
+    // }),
+    // createMobileProject("Galaxy S9+ Hydrate", devices["Galaxy S9+"]),
+    // createMobileProject("Pixel 7 SSr", {
+    //   ...devices["Pixel 7"],
+    //   javaScriptEnabled: false,
+    // }),
+    // createMobileProject("Pixel 7 Hydrate", devices["Pixel 7"]),
   ],
 });
