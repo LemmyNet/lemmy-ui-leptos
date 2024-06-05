@@ -57,15 +57,9 @@ export default defineConfig({
     ssr(createProject("Firefox SSR", devices["Desktop Firefox"], "desktop")),
     createProject("Edge Hydrate", devices["Desktop Edge"], "desktop"),
     ssr(createProject("Edge Hydrate", devices["Desktop Edge"], "desktop")),
-    // createMobileProject("Galaxy S9+ SSR", {
-    //   ...devices["Galaxy S9+"],
-    //   javaScriptEnabled: false,
-    // }),
-    // createMobileProject("Galaxy S9+ Hydrate", devices["Galaxy S9+"]),
-    // createMobileProject("Pixel 7 SSr", {
-    //   ...devices["Pixel 7"],
-    //   javaScriptEnabled: false,
-    // }),
-    // createMobileProject("Pixel 7 Hydrate", devices["Pixel 7"]),
+    createProject("Galaxy S9+ Hydrate", devices["Galaxy S9+"], "mobile"),
+    ssr(createProject("Galaxy S9+ SSR", devices["Galaxy S9+"], "mobile")),
+    createProject("Pixel 7 Hydrate", devices["Pixel 7"], "mobile"),
+    ssr(createProject("Pixel 7 SSR", devices["Pixel 7"], "mobile")),
   ],
 });
