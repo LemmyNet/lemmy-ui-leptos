@@ -18,7 +18,7 @@ type UseOptions = ProjectDefinition["use"];
 const createProject = (
   name: string,
   testMatch: string,
-  use: UseOptions
+  use: UseOptions,
 ): ProjectDefinition => ({
   name,
   testMatch,
