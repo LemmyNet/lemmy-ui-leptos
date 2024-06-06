@@ -16,7 +16,7 @@ type UseOptions = ProjectDefinition["use"];
 const createProject = (
   name: string,
   use: UseOptions,
-  screen: "desktop" | "mobile"
+  screen: "desktop" | "mobile",
 ): ProjectDefinition => ({
   name,
   use,
