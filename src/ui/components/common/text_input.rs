@@ -37,7 +37,7 @@ pub fn TextInput(
         id=id
         class=move || {
             format!(
-                "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-200/50 {}",
+                "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
                 validation_class.get(),
             )
         }
@@ -53,14 +53,15 @@ pub fn TextInput(
       <Show when=move || input_type == InputType::Password>
         <button
           type="button"
-          class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-accent"
+          aria-label=move || if show_password.get() { "Hide Password" } else { "Show Password" }
+          class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)
         >
           <Icon icon=eye_icon/>
         </button>
       </Show>
       <label
-        class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-neutral/50 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
+        class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-base-content/75 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
         for=for_id
       >
         {label}
