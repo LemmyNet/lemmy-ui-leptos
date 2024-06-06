@@ -1,7 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  use_i18n,
-  utils::derive_user_is_logged_in,
+  ui::components::layouts::filter_bar_layout::filter_bar::FilterBar,
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
@@ -9,77 +8,12 @@ use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   SortType,
 };
 use leptos::*;
-use leptos_i18n::t;
-use leptos_router::{use_query_map, Outlet, A};
+use leptos_router::{use_query_map, Outlet};
 use serde::Deserialize;
 
-#[component]
-fn ListingTypeLink<S>(
-  listing_type: S,
-  link_listing_type: ListingType,
-  children: Children,
-) -> impl IntoView
-where
-  S: SignalGet<Value = ListingType> + 'static,
-{
-  let query = use_query_map();
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
-  let disabled = Signal::derive(move || {
-    !user_is_logged_in.get()
-      && matches!(
-        link_listing_type,
-        ListingType::Subscribed | ListingType::ModeratorView
-      )
-  });
-
-  view! {
-    <A
-      href=move || {
-          if disabled.get() {
-              String::from("javascript:void(0)")
-          } else {
-              let mut query = query.get();
-              query.insert(String::from("listingType"), link_listing_type.to_string());
-              query.to_query_string()
-          }
-      }
-
-      class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
-      attr:aria-disabled=move || if disabled.get() { Some("true") } else { None }
-      attr:aria-selected=move || {
-          if listing_type.get() == link_listing_type { Some("true") } else { None }
-      }
-    >
-
-      {children()}
-    </A>
-  }
-}
-
-#[component]
-fn SortTypeLink<S>(sort_type: S, link_sort_type: SortType, children: Children) -> impl IntoView
-where
-  S: SignalGet<Value = SortType> + 'static,
-{
-  let query = use_query_map();
-
-  view! {
-    <li
-      class="aria-selected:btn-active"
-      attr:aria-selected=move || {
-          if sort_type.get() == link_sort_type { Some("true") } else { None }
-      }
-    >
-
-      <A href=move || {
-          let mut query = query.get();
-          query.insert(String::from("sort"), link_sort_type.to_string());
-          query.to_query_string()
-      }>{children()}</A>
-    </li>
-  }
-}
+mod filter_bar;
+mod listing_type_link;
+mod sort_type_link;
 
 fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
   key: &'static str,
@@ -112,60 +46,6 @@ fn derive_link_type<T: for<'a> Deserialize<'a> + Default>(
         .unwrap_or_default()
     })
   })
-}
-
-#[component]
-fn FilterBar(listing_type: RwSignal<ListingType>, sort_type: RwSignal<SortType>) -> impl IntoView {
-  let i18n = use_i18n();
-  let local_listing_type = derive_link_type(
-    "listingType",
-    |user| user.default_listing_type,
-    |site| site.default_post_listing_type,
-  );
-  Effect::new(move |_| listing_type.set(local_listing_type.get()));
-
-  let local_sort_type = derive_link_type(
-    "sort",
-    |user| user.default_sort_type,
-    |site| site.default_sort_type,
-  );
-  Effect::new(move |_| sort_type.set(local_sort_type.get()));
-
-  view! {
-    <div class="mb-4 flex flex-wrap gap-3">
-      <div class="join">
-        <button class="btn join-item btn-active">Posts</button>
-        <button class="btn join-item btn-disabled">Comments</button>
-      </div>
-      <div class="join">
-        <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Subscribed>
-          Subscribed
-        </ListingTypeLink>
-        <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Local>
-          Local
-        </ListingTypeLink>
-        <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::All>
-          All
-        </ListingTypeLink>
-      </div>
-      <div class="dropdown">
-        <label tabindex="0" class="btn">
-          Sort type
-        </label>
-        <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-          <SortTypeLink sort_type=sort_type link_sort_type=SortType::Active>
-            {t!(i18n, active)}
-          </SortTypeLink>
-          <SortTypeLink sort_type=sort_type link_sort_type=SortType::Hot>
-            {t!(i18n, hot)}
-          </SortTypeLink>
-          <SortTypeLink sort_type=sort_type link_sort_type=SortType::New>
-            {t!(i18n, new)}
-          </SortTypeLink>
-        </menu>
-      </div>
-    </div>
-  }
 }
 
 #[component]

@@ -6,8 +6,6 @@ import {
   PlaywrightWorkerOptions,
 } from "@playwright/test";
 
-type DeviceDescription = (typeof devices)[string];
-
 type ProjectDefinition = Project<
   PlaywrightTestOptions,
   PlaywrightWorkerOptions
@@ -17,22 +15,22 @@ type UseOptions = ProjectDefinition["use"];
 
 const createProject = (
   name: string,
-  testMatch: string,
   use: UseOptions,
+  screen: "desktop" | "mobile",
 ): ProjectDefinition => ({
   name,
-  testMatch,
   use,
+  testMatch: screen === "desktop" ? "desktop/**" : "mobile/**",
 });
 
-const createSsrProject = (name: string, device: DeviceDescription) =>
-  createProject(name, "ssr.spec.ts", {
-    ...device,
+const ssr = (def: ProjectDefinition): ProjectDefinition => ({
+  ...def,
+  use: {
+    ...def.use!,
     javaScriptEnabled: false,
-  });
-
-const createHydrateProject = (name: string, device: DeviceDescription) =>
-  createProject(name, "hydrate.spec.ts", device);
+  },
+  testIgnore: /.*hydrate.*/,
+});
 
 export default defineConfig({
   testDir: "./tests",
@@ -49,17 +47,19 @@ export default defineConfig({
   workers: 1,
   reporter: [["html", { open: "never" }]],
   use: {
-    actionTimeout: 0,
     trace: "on-first-retry",
     baseURL: "http://localhost:1237",
   },
-
   projects: [
-    createSsrProject("Chromium SSR", devices["Desktop Chrome"]),
-    createHydrateProject("Chromium Hydrate", devices["Desktop Chrome"]),
-    createSsrProject("Firefox SSR", devices["Desktop Firefox"]),
-    createHydrateProject("Firefox Hydrate", devices["Desktop Firefox"]),
-    createSsrProject("Edge SSR", devices["Desktop Edge"]),
-    createHydrateProject("Edge Hydrate", devices["Desktop Edge"]),
+    createProject("Chromium Hydrate", devices["Desktop Chrome"], "desktop"),
+    ssr(createProject("Chromium SSR", devices["Desktop Chrome"], "desktop")),
+    createProject("Firefox Hydrate", devices["Desktop Firefox"], "desktop"),
+    ssr(createProject("Firefox SSR", devices["Desktop Firefox"], "desktop")),
+    createProject("Edge Hydrate", devices["Desktop Edge"], "desktop"),
+    ssr(createProject("Edge Hydrate", devices["Desktop Edge"], "desktop")),
+    createProject("Galaxy S9+ Hydrate", devices["Galaxy S9+"], "mobile"),
+    ssr(createProject("Galaxy S9+ SSR", devices["Galaxy S9+"], "mobile")),
+    createProject("Pixel 7 Hydrate", devices["Pixel 7"], "mobile"),
+    ssr(createProject("Pixel 7 SSR", devices["Pixel 7"], "mobile")),
   ],
 });

@@ -10,7 +10,8 @@ dist
 # test
 docker/volumes
 end2end/test-results
-end2end/playwright-report
+end2end/playwright-report/**
+!end2end/playwright-report/.gitkeep
 
 # local woodpecker exec
 .cargo/**

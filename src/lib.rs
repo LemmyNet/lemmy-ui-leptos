@@ -49,12 +49,12 @@ pub fn App() -> impl IntoView {
       <Link rel="shortcut icon" href="/favicon.svg"/>
 
       <Meta name="description" content="Lemmy-UI-Leptos."/>
-      <Meta name="viewport" content="viewport-fit=cover"/>
+      <Meta name="viewport" content="width=device-width, viewport-fit=cover"/>
       // debug where there is no visible console (mobile/live/desktop)
       // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
       // <Script>eruda.init();</Script>
       <Title text="Brand from env"/>
-      <Body class="min-h-screen flex flex-col"/>
+      <Body class="h-full max-h-screen flex flex-col overflow-y-hidden"/>
 
       <Routes>
         <Route path="" view=BaseLayout ssr=SsrMode::Async>
@@ -97,9 +97,11 @@ pub fn App() -> impl IntoView {
           <Route path="inbox" view=CommunitiesPage/>
           <Route path="settings" view=CommunitiesPage/>
           <Route path="u/:id" view=CommunitiesPage/>
+          <Route path="saved" view=CommunitiesPage/>
 
           <Route path="modlog" view=CommunitiesPage/>
           <Route path="instances" view=CommunitiesPage/>
+          <Route path="legal" view=CommunitiesPage/>
         </Route>
       </Routes>
     </Router>

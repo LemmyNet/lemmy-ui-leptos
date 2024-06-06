@@ -1,7 +1,7 @@
 {
   "communities": "Communities",
-  "create_post": "Create post",
-  "create_community": "Create community",
+  "create_post": "Create Post",
+  "create_community": "Create Community",
   "donate": "Donate",
   "search": "Search",
   "login": "Login",
@@ -12,8 +12,10 @@
   "logout": "Logout",
   "modlog": "Modlog",
   "instances": "Instances",
-  "docs": "Docs",
-  "code": "Code",
+  "docs": "Documentation",
+  "code": "Source Code",
+  "about": "About",
+  "legal": "Legal",
 
   "unknown": "Sorry, an unknown error occurred. The error has been logged and an administrator has been notified. Please try again in a short while if you wish.",
   "internal": "Sorry, an internal server error occurred. The error has been logged and an administrator has been notified. Please try again in a short while if you wish.",

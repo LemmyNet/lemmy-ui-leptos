@@ -9,6 +9,9 @@ module.exports = {
         "6xl": "5120px",
         "7xl": "8640px",
       },
+      aria: {
+        "current-page": 'current="page"',
+      },
     },
   },
   content: {
