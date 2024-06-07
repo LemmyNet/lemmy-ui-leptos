@@ -2,7 +2,7 @@ use crate::{
   serverfns::posts::list_posts,
   ui::components::{
     common::unpack::Unpack,
-    home::{site_summary::SiteSummary, trending::Trending},
+    home::site_summary::SiteSummary,
     post::post_listings::PostListings,
   },
   utils::derive_query_signal,
@@ -48,7 +48,6 @@ pub fn HomePage() -> impl IntoView {
       </main>
 
       <aside class="hidden md:block md:col-span-2 xl:col-span-1">
-        <Trending/>
         <SiteSummary/>
       </aside>
     </div>

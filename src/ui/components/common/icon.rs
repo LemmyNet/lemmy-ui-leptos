@@ -3,6 +3,7 @@ use strum::{EnumString, IntoStaticStr};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, IntoStaticStr)]
 #[strum(serialize_all = "kebab-case")]
+#[non_exhaustive]
 pub enum IconType {
   Eye,
   EyeSlash,
@@ -68,7 +69,7 @@ pub fn Icon(
     Signal::derive(move || format!("/icons.svg#{}", Into::<&'static str>::into(icon.get())));
 
   view! {
-    <svg class=class width=size height=size>
+    <svg class=class width=size height=size aria-hidden="true">
       <use_ href=href xlink:href=href></use_>
     </svg>
   }
