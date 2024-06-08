@@ -37,18 +37,12 @@ pub fn SiteSummary() -> impl IntoView {
   });
 
   view! {
-    <div class="card w-full bg-base-300 text-base-content mb-3">
-      <figure>
-        <div class="card-body bg-neutral">
-          <Transition>
-            <Unpack item=site_name let:site_name>
-              <h2 class="card-title text-neutral-content">{site_name}</h2>
-            </Unpack>
-          </Transition>
-        </div>
-      </figure>
+    <div class="card w-full mb-3 bg-base-200">
       <div class="card-body">
         <Transition>
+          <Unpack item=site_name let:site_name>
+            <h2 class="card-title">{site_name}</h2>
+          </Unpack>
           <Unpack item=site_description let:site_description>
             <p>{site_description}</p>
           </Unpack>
@@ -66,18 +60,15 @@ pub fn SiteSummary() -> impl IntoView {
             </p>
 
           </Unpack>
-        </Transition>
-        <h3 class="card-title">Admins</h3>
-
-        <p>
-          <Transition>
+          <h3 class="card-title">Admins</h3>
+          <p>
             <Unpack item=admins let:admins>
               <For each=move || admins.clone() key=|c| c.0 let:admin>
                 <CountsBadge>{admin.1}</CountsBadge>
               </For>
             </Unpack>
-          </Transition>
-        </p>
+          </p>
+        </Transition>
       </div>
     </div>
   }
