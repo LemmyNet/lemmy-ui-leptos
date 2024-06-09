@@ -10,6 +10,18 @@ use crate::{
 use leptos::*;
 
 #[component]
+fn UserCount(count: i64, id: &'static str, text: &'static str) -> impl IntoView {
+  view! {
+    <section aria-labelledby=id class="text-center w-16 border border-neutral rounded-lg bg-base-100 p-1.5">
+      {format_number_si(count)}
+      <div id=id class="text-xs font-semibold">
+        {text}
+      </div>
+    </section>
+  }
+}
+
+#[component]
 pub fn SiteSummary() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
 
@@ -54,33 +66,34 @@ pub fn SiteSummary() -> impl IntoView {
             </h3>
             <Unpack item=counts let:counts>
               <section aria-labelledby="users-stats-heading">
-                <div class="flex items-center gap-x-2.5">
+                <div class="flex items-center gap-2.5">
                   <Icon icon=IconType::Users size=IconSize::Large/>
                   <h4 id="users-stats-heading" class="text-xl font-semibold">
                     Users
                   </h4>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                  <section aria-labelledby="users-active-today" class="text-center">
-                    {format_number_si(counts.users_active_day)}
-                    <div id="users-active-today" class="text-xs font-semibold">Active Today</div>
-                  </section>
-                  <section aria-labelledby="users-active-week" class="text-center">
-                    {format_number_si(counts.users_active_week)}
-                    <div id="users-active-week" class="text-xs font-semibold">Active This Week</div>
-                  </section>
-                  <section aria-labelledby="users-active-month" class="text-center">
-                    {format_number_si(counts.users_active_month)}
-                    <div id="users-active-month" class="text-xs font-semibold">Active This Month</div>
-                  </section>
-                  <section aria-labelledby="users-active-6-months" class="text-center">
-                    {format_number_si(counts.users_active_half_year)}
-                    <div id="users-active-6-months" class="text-xs font-semibold">Active Past 6 Months</div>
-                  </section>
-                  <section aria-labelledby="total-users" class="text-center">
-                    {format_number_si(counts.users_active_day)}
-                    <div id="total-users" class="text-xs font-semibold">Total Users</div>
-                  </section>
+                <div class="flex flex-wrap gap-2 my-4">
+                  <UserCount
+                    count=counts.users_active_day
+                    text="Active Today"
+                    id="users-active-today"
+                  />
+                  <UserCount
+                    count=counts.users_active_week
+                    text="Active This Week"
+                    id="users-active-week"
+                  />
+                  <UserCount
+                    count=counts.users_active_month
+                    text="Active This Month"
+                    id="users-active-month"
+                  />
+                  <UserCount
+                    count=counts.users_active_half_year
+                    text="Active Past 6 Months"
+                    id="users-active-half-year"
+                  />
+                  <UserCount count=counts.users text="Total Users" id="users-total"/>
                 </div>
               </section>
               <p>

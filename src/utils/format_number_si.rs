@@ -1,4 +1,4 @@
-const SUFFIXES: [&str; 3] = ["K", "M", "B"];
+const SUFFIXES: [&str; 3] = ["k", "M", "B"];
 
 pub fn format_number_si(number: i64) -> String {
   if number < 1000 {
@@ -58,7 +58,7 @@ mod test {
     let number = 1_001;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "1K");
+    assert_eq!(formatted.as_str(), "1k");
   }
 
   #[test]
@@ -66,7 +66,7 @@ mod test {
     let number = 1_624;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "1.6K");
+    assert_eq!(formatted.as_str(), "1.6k");
   }
 
   #[test]
@@ -74,7 +74,7 @@ mod test {
     let number = 19_007;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "19K");
+    assert_eq!(formatted.as_str(), "19k");
   }
 
   #[test]
@@ -82,7 +82,7 @@ mod test {
     let number = 73_444;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "73.4K");
+    assert_eq!(formatted.as_str(), "73.4k");
   }
 
   #[test]
@@ -90,7 +90,7 @@ mod test {
     let number = 469_070;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "469K");
+    assert_eq!(formatted.as_str(), "469k");
   }
 
   #[test]
@@ -98,7 +98,7 @@ mod test {
     let number = 945_661;
     let formatted = format_number_si(number);
 
-    assert_eq!(formatted.as_str(), "946K");
+    assert_eq!(formatted.as_str(), "946k");
   }
 
   #[test]
