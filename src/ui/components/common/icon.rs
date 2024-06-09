@@ -35,19 +35,22 @@ pub enum IconType {
   Home,
   Profile,
   Hamburger,
+  Users,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum IconSize {
   Normal,
   Large,
+  ExtraLarge,
   Small,
 }
 
 impl IntoAttribute for IconSize {
   fn into_attribute(self) -> Attribute {
     match self {
-      Self::Large => "3rem",
+      Self::ExtraLarge => "3rem",
+      Self::Large => "2.25rem",
       Self::Small => "0.75rem",
       _ => "1.5rem",
     }

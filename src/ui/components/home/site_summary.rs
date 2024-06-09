@@ -1,14 +1,16 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  i18n::*,
-  ui::components::common::{counts_badge::CountsBadge, unpack::Unpack},
-  utils::derive_query_signal,
+  ui::components::common::{
+    counts_badge::CountsBadge,
+    icon::{Icon, IconSize, IconType},
+    unpack::Unpack,
+  },
+  utils::{derive_query_signal, format_number_si},
 };
 use leptos::*;
 
 #[component]
 pub fn SiteSummary() -> impl IntoView {
-  let _i18n = use_i18n();
   let site_resource = expect_context::<SiteResource>();
 
   let site_name = derive_query_signal(site_resource, |site_response| {
@@ -46,20 +48,51 @@ pub fn SiteSummary() -> impl IntoView {
           <Unpack item=site_description let:site_description>
             <p>{site_description}</p>
           </Unpack>
-          <Unpack item=counts let:counts>
-            <p>
-              <CountsBadge>{counts.users_active_day} " users / day"</CountsBadge>
-              <CountsBadge>{counts.users_active_week} " users / week"</CountsBadge>
-              <CountsBadge>{counts.users_active_month} " users / month"</CountsBadge>
-              <CountsBadge>{counts.users_active_half_year} " users / 6 months"</CountsBadge>
-              <CountsBadge>{counts.users} " users"</CountsBadge>
-              <CountsBadge>{counts.communities} " communities"</CountsBadge>
-              <CountsBadge>{counts.posts} " posts"</CountsBadge>
-              <CountsBadge>{counts.comments} " comments"</CountsBadge>
-              <CountsBadge>Modlog</CountsBadge>
-            </p>
+          <section aria-labelledby="instance-stats-heading">
+            <h3 id="instance-stats-heading" class="text-2xl font-bold">
+              Instance Stats
+            </h3>
+            <Unpack item=counts let:counts>
+              <section aria-labelledby="users-stats-heading">
+                <div class="flex items-center gap-x-2.5">
+                  <Icon icon=IconType::Users size=IconSize::Large/>
+                  <h4 id="users-stats-heading" class="text-xl font-semibold">
+                    Users
+                  </h4>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <section aria-labelledby="users-active-today" class="text-center">
+                    {format_number_si(counts.users_active_day)}
+                    <div id="users-active-today" class="text-xs font-semibold">Active Today</div>
+                  </section>
+                  <section aria-labelledby="users-active-week" class="text-center">
+                    {format_number_si(counts.users_active_week)}
+                    <div id="users-active-week" class="text-xs font-semibold">Active This Week</div>
+                  </section>
+                  <section aria-labelledby="users-active-month" class="text-center">
+                    {format_number_si(counts.users_active_month)}
+                    <div id="users-active-month" class="text-xs font-semibold">Active This Month</div>
+                  </section>
+                  <section aria-labelledby="users-active-6-months" class="text-center">
+                    {format_number_si(counts.users_active_half_year)}
+                    <div id="users-active-6-months" class="text-xs font-semibold">Active Past 6 Months</div>
+                  </section>
+                  <section aria-labelledby="total-users" class="text-center">
+                    {format_number_si(counts.users_active_day)}
+                    <div id="total-users" class="text-xs font-semibold">Total Users</div>
+                  </section>
+                </div>
+              </section>
+              <p>
+                <CountsBadge>{counts.communities} " communities"</CountsBadge>
+                <CountsBadge>{counts.posts} " posts"</CountsBadge>
+                <CountsBadge>{counts.comments} " comments"</CountsBadge>
+                <CountsBadge>Modlog</CountsBadge>
+              </p>
 
-          </Unpack>
+            </Unpack>
+          </section>
+
           <h3 class="card-title">Admins</h3>
           <p>
             <Unpack item=admins let:admins>

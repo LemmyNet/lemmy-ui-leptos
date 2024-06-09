@@ -82,7 +82,6 @@ lto = true
 codegen-units = 1
 
 [package.metadata.leptos]
-hash-files = true
 output-name = "lemmy-ui-leptos"
 env = "DEV"
 watch = false
