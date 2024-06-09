@@ -8,18 +8,15 @@ use crate::{
   utils::{derive_query_signal, format_number_si},
 };
 use leptos::*;
+use leptos_router::A;
 
 #[component]
 fn StatCard(count: i64, text: &'static str, icon: IconType) -> impl IntoView {
   view! {
-    <li
-      class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300"
-    >
+    <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
       <Icon icon=icon size=IconSize::Large class="mx-auto"/>
       {format_number_si(count)}
-      <div class="text-xs font-semibold text-balance">
-        {text}
-      </div>
+      <div class="text-xs font-semibold text-balance">{text}</div>
     </li>
   }
 }
@@ -49,7 +46,7 @@ pub fn SiteSummary() -> impl IntoView {
     site_response
       .admins
       .iter()
-      .map(|admin| (admin.person.id, admin.person.name.clone()))
+      .map(|admin| admin.person.clone())
       .collect::<Vec<_>>()
   });
 
@@ -67,8 +64,8 @@ pub fn SiteSummary() -> impl IntoView {
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
               Instance Stats
             </h3>
-            <Unpack item=counts let:counts>
-              <ul class="flex flex-wrap gap-2 my-4 justify-around">
+            <ul class="flex flex-wrap gap-2 my-4 justify-around">
+              <Unpack item=counts let:counts>
                 <StatCard
                   count=counts.users_active_day
                   text="Users Active Today"
@@ -89,38 +86,27 @@ pub fn SiteSummary() -> impl IntoView {
                   text="Users Active Past 6 Months"
                   icon=IconType::Users
                 />
-                <StatCard
-                  count=counts.users
-                  text="Total Users"
-                  icon=IconType::Users
-                />
-                <StatCard
-                  count=counts.communities
-                  text="Communities"
-                  icon=IconType::Communities
-                />
-                <StatCard
-                  count=counts.posts
-                  text="Posts"
-                  icon=IconType::Posts
-                />
-                <StatCard
-                  count=counts.comments
-                  text="Comments"
-                  icon=IconType::Comments
-                />
-              </ul>
-            </Unpack>
+                <StatCard count=counts.users text="Total Users" icon=IconType::Users/>
+                <StatCard count=counts.communities text="Communities" icon=IconType::Communities/>
+                <StatCard count=counts.posts text="Posts" icon=IconType::Posts/>
+                <StatCard count=counts.comments text="Comments" icon=IconType::Comments/>
+              </Unpack>
+            </ul>
           </section>
-
-          <h3 class="card-title">Admins</h3>
-          <p>
-            <Unpack item=admins let:admins>
-              <For each=move || admins.clone() key=|c| c.0 let:admin>
-                <CountsBadge>{admin.1}</CountsBadge>
-              </For>
-            </Unpack>
-          </p>
+          <section aria-labelledby="instances-admins-heading">
+            <h3 id="instance-admins-heading" class="text-2xl font-bold mb-2">
+              Admins
+            </h3>
+            <ul class="flex flex-wrap gap-2 my-4">
+              <Unpack item=admins let:admins>
+                <For each=move || admins.clone() key=|admin| admin.id let:admin>
+                  <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
+                    <A href=format!("/u/{}", admin.name)>{admin.name}</A>
+                  </li>
+                </For>
+              </Unpack>
+            </ul>
+          </section>
         </Transition>
       </div>
     </div>
