@@ -5,6 +5,8 @@ mod derive_user_is_logged_in;
 pub use derive_user_is_logged_in::*;
 pub mod types;
 
+mod format_number_si;
+
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
 use crate::constants::AUTH_COOKIE;
