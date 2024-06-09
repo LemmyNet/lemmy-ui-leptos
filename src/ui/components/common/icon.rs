@@ -36,6 +36,7 @@ pub enum IconType {
   Profile,
   Hamburger,
   Users,
+  Posts,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

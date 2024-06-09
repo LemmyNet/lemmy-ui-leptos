@@ -10,14 +10,17 @@ use crate::{
 use leptos::*;
 
 #[component]
-fn UserCount(count: i64, id: &'static str, text: &'static str) -> impl IntoView {
+fn StatCard(count: i64, text: &'static str, icon: IconType) -> impl IntoView {
   view! {
-    <section aria-labelledby=id class="text-center w-16 border border-neutral rounded-lg bg-base-100 p-1.5">
+    <li
+      class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300"
+    >
+      <Icon icon=icon size=IconSize::Large class="mx-auto"/>
       {format_number_si(count)}
-      <div id=id class="text-xs font-semibold">
+      <div class="text-xs font-semibold text-balance">
         {text}
       </div>
-    </section>
+    </li>
   }
 }
 
@@ -60,49 +63,53 @@ pub fn SiteSummary() -> impl IntoView {
           <Unpack item=site_description let:site_description>
             <p>{site_description}</p>
           </Unpack>
-          <section aria-labelledby="instance-stats-heading">
-            <h3 id="instance-stats-heading" class="text-2xl font-bold">
+          <section aria-labelledby="instance-stats-heading" class="my-4">
+            <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
               Instance Stats
             </h3>
             <Unpack item=counts let:counts>
-              <section aria-labelledby="users-stats-heading">
-                <div class="flex items-center gap-2.5">
-                  <Icon icon=IconType::Users size=IconSize::Large/>
-                  <h4 id="users-stats-heading" class="text-xl font-semibold">
-                    Users
-                  </h4>
-                </div>
-                <div class="flex flex-wrap gap-2 my-4">
-                  <UserCount
-                    count=counts.users_active_day
-                    text="Active Today"
-                    id="users-active-today"
-                  />
-                  <UserCount
-                    count=counts.users_active_week
-                    text="Active This Week"
-                    id="users-active-week"
-                  />
-                  <UserCount
-                    count=counts.users_active_month
-                    text="Active This Month"
-                    id="users-active-month"
-                  />
-                  <UserCount
-                    count=counts.users_active_half_year
-                    text="Active Past 6 Months"
-                    id="users-active-half-year"
-                  />
-                  <UserCount count=counts.users text="Total Users" id="users-total"/>
-                </div>
-              </section>
-              <p>
-                <CountsBadge>{counts.communities} " communities"</CountsBadge>
-                <CountsBadge>{counts.posts} " posts"</CountsBadge>
-                <CountsBadge>{counts.comments} " comments"</CountsBadge>
-                <CountsBadge>Modlog</CountsBadge>
-              </p>
-
+              <ul class="flex flex-wrap gap-2 my-4 justify-around">
+                <StatCard
+                  count=counts.users_active_day
+                  text="Users Active Today"
+                  icon=IconType::Users
+                />
+                <StatCard
+                  count=counts.users_active_week
+                  text="Users Active This Week"
+                  icon=IconType::Users
+                />
+                <StatCard
+                  count=counts.users_active_month
+                  text="Users Active This Month"
+                  icon=IconType::Users
+                />
+                <StatCard
+                  count=counts.users_active_half_year
+                  text="Users Active Past 6 Months"
+                  icon=IconType::Users
+                />
+                <StatCard
+                  count=counts.users
+                  text="Total Users"
+                  icon=IconType::Users
+                />
+                <StatCard
+                  count=counts.communities
+                  text="Communities"
+                  icon=IconType::Communities
+                />
+                <StatCard
+                  count=counts.posts
+                  text="Posts"
+                  icon=IconType::Posts
+                />
+                <StatCard
+                  count=counts.comments
+                  text="Comments"
+                  icon=IconType::Comments
+                />
+              </ul>
             </Unpack>
           </section>
 
