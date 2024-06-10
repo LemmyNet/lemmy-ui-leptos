@@ -6,9 +6,9 @@ pub fn format_number_si(number: i64) -> String {
   } else {
     let mut number_as_float = number as f32;
     for suffix in SUFFIXES {
-      number_as_float /= 1000 as f32;
+      number_as_float /= 1000f32;
 
-      if number_as_float < 1000 as f32 {
+      if number_as_float < 1000f32 {
         return format!(
           "{:.*}{suffix}",
           if (number_as_float - number_as_float.floor()) < 0.1 || number_as_float >= 100f32 {
