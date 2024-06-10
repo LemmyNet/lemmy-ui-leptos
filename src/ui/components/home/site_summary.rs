@@ -21,6 +21,33 @@ fn StatCard(count: i64, text: &'static str, icon: IconType) -> impl IntoView {
 }
 
 #[component]
+fn AdminCard(
+  #[prop(into)] avatar: MaybeProp<String>,
+  name: String,
+  #[prop(into)] display_name: MaybeProp<String>,
+) -> impl IntoView {
+  view! {
+    <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
+      <A href=format!(
+          "/u/{}",
+          name.clone(),
+      )>
+      <img
+      src=move || {
+          avatar.get().map(|avatar| avatar).unwrap_or(String::from("/assets/default-avatar.png"))
+      }
+
+      loading="lazy"
+      class="mx-auto size-12"
+    />
+        <div class="font-medium">{display_name.get().unwrap_or_else(|| name.clone())}</div>
+        <div class="text-xs">{format!("@{}", name.clone())}</div>
+      </A>
+    </li>
+  }
+}
+
+#[component]
 pub fn SiteSummary() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
 
@@ -99,9 +126,11 @@ pub fn SiteSummary() -> impl IntoView {
             <ul class="flex flex-wrap gap-2 my-4">
               <Unpack item=admins let:admins>
                 <For each=move || admins.clone() key=|admin| admin.id let:admin>
-                  <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
-                    <A href=format!("/u/{}", admin.name)>{admin.name}</A>
-                  </li>
+                  <AdminCard
+                    avatar=admin.avatar.map(|url| url.to_string())
+                    name=admin.name
+                    display_name=admin.display_name
+                  />
                 </For>
               </Unpack>
             </ul>

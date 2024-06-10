@@ -13,10 +13,10 @@ cfg_if! {
                 #[actix_web::get($file)]
                 async fn $name(
                     leptos_options: web::Data<leptos::LeptosOptions>
-                ) -> actix_web::Result<actix_files::NamedFile> {
+                ) -> impl actix_web::Responder {
                     let leptos_options = leptos_options.into_inner();
                     let site_root = &leptos_options.site_root;
-                    Ok(actix_files::NamedFile::open(format!("{site_root}/{}", $file))?)
+                    actix_files::NamedFile::open_async(format!("{site_root}/{}", $file)).await
                 }
             };
         }

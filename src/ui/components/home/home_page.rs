@@ -47,7 +47,7 @@ pub fn HomePage() -> impl IntoView {
         </Suspense>
       </main>
 
-      <aside class="hidden md:block md:col-span-2 xl:col-span-1 me-8">
+      <aside class="hidden md:block md:col-span-2 xl:col-span-1 me-8 overflow-y-auto min-h-0">
         <SiteSummary/>
       </aside>
     </div>
