@@ -71,12 +71,11 @@ steps:
       - event: pull_request
     depends_on: [build_image]
 
-  # No rust unit tests yet
-  # cargo_test:
-  #   image: local/leptos-ui
-  #   entrypoint: [cargo, leptos, test]
-  #   when:
-  #     - event: pull_request
+  cargo_test:
+    image: local/leptos-ui
+    entrypoint: [cargo, leptos, test]
+    when:
+      - event: pull_request
 
   postgres:
     image: postgres:16-alpine
