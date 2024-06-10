@@ -1,7 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   ui::components::common::{
-    counts_badge::CountsBadge,
     icon::{Icon, IconSize, IconType},
     unpack::Unpack,
   },
