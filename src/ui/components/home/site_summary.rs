@@ -63,7 +63,7 @@ pub fn SiteSummary() -> impl IntoView {
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
               Instance Stats
             </h3>
-            <ul class="flex flex-wrap gap-2 my-4 justify-around">
+            <ul class="flex flex-wrap gap-2 my-4">
               <Unpack item=counts let:counts>
                 <StatCard
                   count=counts.users_active_day
