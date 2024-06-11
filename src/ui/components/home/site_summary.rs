@@ -26,7 +26,7 @@ fn AdminCard(
   #[prop(into)] display_name: MaybeProp<String>,
 ) -> impl IntoView {
   view! {
-    <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
+    <li class="flex-1 text-center max-w-fit border-neutral rounded-lg p-3 even:bg-base-100 odd:bg-base-300 shadow-lg">
       <A href=format!("/u/{}", name.clone())>
         <img
           src=move || {
