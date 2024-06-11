@@ -10,13 +10,12 @@ use leptos::*;
 use leptos_router::A;
 
 #[component]
-fn StatCard(count: i64, text: &'static str, icon: IconType) -> impl IntoView {
+fn UserStatRow(count: i64, text: &'static str) -> impl IntoView {
   view! {
-    <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
-      <Icon icon=icon size=IconSize::Large class="mx-auto"/>
-      {format_number_si(count)}
-      <div class="text-xs font-semibold text-balance">{text}</div>
-    </li>
+    <tr class="*:p-2.5 [&:not(:first-child)]:border-t-2 [&:not(:first-child)]:border-accent">
+      <td class="text-xs font-semibold">{text}</td>
+      <td class="text-center font-bold">{format_number_si(count)}</td>
+    </tr>
   }
 }
 
@@ -28,18 +27,18 @@ fn AdminCard(
 ) -> impl IntoView {
   view! {
     <li class="flex-1 text-center max-w-fit border border-neutral rounded-lg p-2 even:bg-base-100 odd:bg-base-300">
-      <A href=format!(
-          "/u/{}",
-          name.clone(),
-      )>
-      <img
-      src=move || {
-          avatar.get().map(|avatar| avatar).unwrap_or(String::from("/assets/default-avatar.png"))
-      }
+      <A href=format!("/u/{}", name.clone())>
+        <img
+          src=move || {
+              avatar
+                  .get()
+                  .map(|avatar| avatar)
+                  .unwrap_or(String::from("/assets/default-avatar.png"))
+          }
 
-      loading="lazy"
-      class="mx-auto size-12"
-    />
+          loading="lazy"
+          class="mx-auto size-12"
+        />
         <div class="font-medium">{display_name.get().unwrap_or_else(|| name.clone())}</div>
         <div class="text-xs">{format!("@{}", name.clone())}</div>
       </A>
@@ -90,34 +89,41 @@ pub fn SiteSummary() -> impl IntoView {
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
               Instance Stats
             </h3>
-            <ul class="flex flex-wrap gap-2 my-4">
-              <Unpack item=counts let:counts>
-                <StatCard
-                  count=counts.users_active_day
-                  text="Users Active Today"
-                  icon=IconType::Users
-                />
-                <StatCard
-                  count=counts.users_active_week
-                  text="Users Active This Week"
-                  icon=IconType::Users
-                />
-                <StatCard
-                  count=counts.users_active_month
-                  text="Users Active This Month"
-                  icon=IconType::Users
-                />
-                <StatCard
-                  count=counts.users_active_half_year
-                  text="Users Active Past 6 Months"
-                  icon=IconType::Users
-                />
-                <StatCard count=counts.users text="Total Users" icon=IconType::Users/>
-                <StatCard count=counts.communities text="Communities" icon=IconType::Communities/>
-                <StatCard count=counts.posts text="Posts" icon=IconType::Posts/>
-                <StatCard count=counts.comments text="Comments" icon=IconType::Comments/>
-              </Unpack>
-            </ul>
+            <Unpack item=counts let:counts>
+              <div class="font-semibold flex flex-wrap *:m-1 *:bg-base-100 *:rounded-lg *:shadow-md *:p-2.5">
+                <div>
+                  <Icon icon=IconType::Posts size=IconSize::Large class="inline"/>
+                  {format_number_si(counts.posts)}
+                  " "
+                  <span class="text-sm">Posts</span>
+                </div>
+                <div>
+                  <Icon icon=IconType::Comments size=IconSize::Large class="inline"/>
+                  {format_number_si(counts.comments)}
+                  " "
+                  <span class="text-sm">Comments</span>
+                </div>
+              </div>
+              <table class="w-full mt-3 table shadow-lg">
+                <caption class="text-lg font-semibold whitespace-nowrap align-middle text-start mb-2">
+                  <Icon icon=IconType::Users size=IconSize::Large class="inline me-2"/>
+                  Active Users
+                </caption>
+                <thead>
+                  <tr class="font-extrabold text-sm bg-base-300 *:p-3">
+                    <th class="text-start" scope="col">Time Frame</th>
+                    <th class="text-center" scope="col">Count</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-base-100">
+                  <UserStatRow text="Today" count=counts.users_active_day/>
+                  <UserStatRow text="Past Week" count=counts.users_active_week/>
+                  <UserStatRow text="Past Month" count=counts.users_active_month/>
+                  <UserStatRow text="Past 6 Months" count=counts.users_active_month/>
+                  <UserStatRow text="All Time" count=counts.users_active_month/>
+                </tbody>
+              </table>
+            </Unpack>
           </section>
           <section aria-labelledby="instances-admins-heading">
             <h3 id="instance-admins-heading" class="text-2xl font-bold mb-2">
