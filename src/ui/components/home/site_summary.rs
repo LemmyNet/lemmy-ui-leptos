@@ -111,8 +111,12 @@ pub fn SiteSummary() -> impl IntoView {
                 </caption>
                 <thead>
                   <tr class="font-extrabold text-sm bg-base-300 *:p-3">
-                    <th class="text-start" scope="col">Time Frame</th>
-                    <th class="text-center" scope="col">Count</th>
+                    <th class="text-start" scope="col">
+                      Time Frame
+                    </th>
+                    <th class="text-center" scope="col">
+                      Count
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
