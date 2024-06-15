@@ -30,12 +30,7 @@ fn AdminCard(
     <li class="flex-1 text-center max-w-fit border-neutral rounded-lg p-3 even:bg-base-100 odd:bg-base-300 shadow-lg">
       <A href=format!("/u/{}", name.clone())>
         <img
-          src=move || {
-              avatar
-                  .get()
-                  .map(|avatar| avatar)
-                  .unwrap_or(String::from("/assets/default-avatar.png"))
-          }
+          src=move || { avatar.get().unwrap_or(String::from("/assets/default-avatar.png")) }
 
           loading="lazy"
           class="mx-auto size-12"
