@@ -4,17 +4,18 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     unpack::Unpack,
   },
-  utils::{derive_query_signal, format_number_si},
+  utils::derive_query_signal,
 };
 use leptos::*;
 use leptos_router::A;
+use si_format::Formattable;
 
 #[component]
 fn UserStatRow(count: i64, text: &'static str) -> impl IntoView {
   view! {
     <tr class="*:p-2.5 [&:not(:first-child)]:border-t-2 [&:not(:first-child)]:border-accent">
       <td class="text-xs font-semibold">{text}</td>
-      <td class="text-center font-bold">{format_number_si(count)}</td>
+      <td class="text-center font-bold">{count.si_format().to_string()}</td>
     </tr>
   }
 }
@@ -93,13 +94,13 @@ pub fn SiteSummary() -> impl IntoView {
               <div class="font-semibold flex flex-wrap *:m-1 *:bg-base-100 *:rounded-lg *:shadow-md *:p-2.5">
                 <div>
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline"/>
-                  {format_number_si(counts.posts)}
+                  {counts.posts.si_format().to_string()}
                   " "
                   <span class="text-sm">Posts</span>
                 </div>
                 <div>
                   <Icon icon=IconType::Comments size=IconSize::Large class="inline"/>
-                  {format_number_si(counts.comments)}
+                  {counts.comments.si_format().to_string()}
                   " "
                   <span class="text-sm">Comments</span>
                 </div>

@@ -32,6 +32,7 @@ tokio = { version = "1.37", optional = true, features = ["macros"] }
 strum = { version = "0.26.2", features = ["derive"] }
 trait-set = "0.3.0"
 leptos-use = "0.10.10"
+si_format = "0.1.1"
 
 [package.metadata.leptos-i18n]
 default = "en"
