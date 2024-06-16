@@ -55,7 +55,7 @@ steps:
     depends_on: [build_image]
 
   cargo_clippy:
-    image: rust:slim-bookworm
+    image: local/base
     commands:
       - rustup component add clippy
       - cargo clippy
