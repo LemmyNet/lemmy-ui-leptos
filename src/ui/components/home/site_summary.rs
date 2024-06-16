@@ -86,7 +86,7 @@ pub fn SiteSummary() -> impl IntoView {
               Instance Stats
             </h3>
             <Unpack item=counts let:counts>
-              <div class="font-semibold flex flex-wrap *:m-1 *:bg-base-100 *:rounded-lg *:shadow-md *:p-2.5">
+              <div class="font-semibold flex flex-wrap *:m-1.5">
                 <div>
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline"/>
                   {counts.posts.si_format().to_string()}
