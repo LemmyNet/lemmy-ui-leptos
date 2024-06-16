@@ -12,7 +12,7 @@ leptos_meta = { version = "0.6" }
 leptos_router = { version = "0.6" }
 leptos_i18n = "0"
 cfg-if = "1"
-lemmy-client = { version = "0.19.4-rc.7", features = ["leptos"] }
+lemmy-client = { version = "1.0.0", features = ["leptos"] }
 serde = "1"
 serde_json = "1"
 
@@ -32,6 +32,7 @@ tokio = { version = "1.37", optional = true, features = ["macros"] }
 strum = { version = "0.26.2", features = ["derive"] }
 trait-set = "0.3.0"
 leptos-use = "0.10.10"
+si_format = "0.1.1"
 
 [package.metadata.leptos-i18n]
 default = "en"
@@ -82,7 +83,6 @@ lto = true
 codegen-units = 1
 
 [package.metadata.leptos]
-hash-files = true
 output-name = "lemmy-ui-leptos"
 env = "DEV"
 watch = false

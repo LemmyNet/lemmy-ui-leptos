@@ -6,26 +6,24 @@ cfg_if! {
         use actix_files::Files;
         use actix_web::*;
         use leptos::*;
-
         use leptos_actix::{generate_route_list, LeptosRoutes};
 
-        #[actix_web::get("favicon.svg")]
-        async fn favicon(
-            leptos_options: web::Data<leptos::LeptosOptions>,
-        ) -> actix_web::Result<actix_files::NamedFile> {
-            let leptos_options = leptos_options.into_inner();
-            let site_root = &leptos_options.site_root;
-            Ok(actix_files::NamedFile::open(format!("{site_root}/favicon.svg"))?)
+        macro_rules! asset_route {
+            ($name:ident, $file:expr) => {
+                #[actix_web::get($file)]
+                async fn $name(
+                    leptos_options: web::Data<leptos::LeptosOptions>
+                ) -> impl actix_web::Responder {
+                    let leptos_options = leptos_options.into_inner();
+                    let site_root = &leptos_options.site_root;
+                    actix_files::NamedFile::open_async(format!("{site_root}/{}", $file)).await
+                }
+            };
         }
 
-        #[actix_web::get("icons.svg")]
-        async fn icons(
-            leptos_options: web::Data<leptos::LeptosOptions>
-        ) -> actix_web::Result<actix_files::NamedFile> {
-            let leptos_options = leptos_options.into_inner();
-            let site_root = &leptos_options.site_root;
-            Ok(actix_files::NamedFile::open(format!("{site_root}/icons.svg"))?)
-        }
+        asset_route!(favicon, "favicon.svg");
+        asset_route!(icons, "icons.svg");
+        asset_route!(default_avatar, "default-avatar.png");
 
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {

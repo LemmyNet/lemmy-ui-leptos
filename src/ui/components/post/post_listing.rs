@@ -106,7 +106,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
               view! { < img class = "w-24 aspect-square rounded" src = thumbnail_url /> }
               .into_view()).unwrap_or_else(|| view! { < A href = move || with!(| id |
               format!("/post/{id}")) class = "w-24" > < Icon icon = IconType::Comments class =
-              "m-auto" size = IconSize::Large /></ A > } .into_view())
+              "m-auto" size = IconSize::ExtraLarge /></ A > } .into_view())
           )
       }}
 

@@ -2,7 +2,7 @@ use crate::{
   serverfns::posts::list_posts,
   ui::components::{
     common::unpack::Unpack,
-    home::{site_summary::SiteSummary, trending::Trending},
+    home::site_summary::SiteSummary,
     post::post_listings::PostListings,
   },
   utils::derive_query_signal,
@@ -32,8 +32,8 @@ pub fn HomePage() -> impl IntoView {
   let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
   view! {
-    <div class="md:container md:grid md:grid-cols-5 xl:grid-cols-4 md:grid-rows-1 mx-auto mt-4 mb-1 md:gap-20 h-fit md:h-full">
-      <main class="md:col-span-3 flex flex-col mx-2.5 md:mx-0 h-fit md:h-full">
+    <div class="flex lg:container mx-auto mt-4 mb-1 lg:gap-12 h-fit lg:h-full">
+      <main class="basis-full lg:basis-[65%] xl:basis-3/4 flex flex-col mx-2.5 lg:mx-0 h-fit lg:h-full">
         <div class="flex flex-wrap gap-y-2 gap-x-4 pb-1.5 border-b-4 border-base-300 rounded-b-md">
           <h1 class="text-4xl font-bold text-nowrap">Home Feed</h1>
           {filter_bar}
@@ -47,8 +47,7 @@ pub fn HomePage() -> impl IntoView {
         </Suspense>
       </main>
 
-      <aside class="hidden md:block md:col-span-2 xl:col-span-1">
-        <Trending/>
+      <aside class="hidden basis-[35%] xl:basis-1/4 lg:block me-8 overflow-y-auto min-h-0">
         <SiteSummary/>
       </aside>
     </div>

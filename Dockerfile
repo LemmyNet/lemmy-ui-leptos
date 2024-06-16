@@ -1,5 +1,5 @@
 FROM rust:slim-bookworm AS base
-RUN apt update && apt -y install wget
+RUN apt update && apt -y install wget pkg-config libssl-dev
 RUN wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz | tar -xvz -C /usr/local/cargo/bin
 
 FROM base AS leptos-ui

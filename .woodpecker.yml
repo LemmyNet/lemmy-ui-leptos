@@ -24,14 +24,6 @@ steps:
     when:
       - event: pull_request
 
-  cargo_clippy:
-    image: rust:slim-bookworm
-    commands:
-      - rustup component add clippy
-      - cargo clippy
-    when:
-      - event: pull_request
-
   build_image:
     image: docker:latest
     commands:
@@ -62,6 +54,15 @@ steps:
       - event: pull_request
     depends_on: [build_image]
 
+  cargo_clippy:
+    image: local/base
+    commands:
+      - rustup component add clippy
+      - cargo clippy
+    when:
+      - event: pull_request
+    depends_on: [build_image]
+
   cargo_leptos_build:
     image: local/leptos-ui
     commands:
@@ -71,7 +72,6 @@ steps:
       - event: pull_request
     depends_on: [build_image]
 
-  # No rust unit tests yet
   # cargo_test:
   #   image: local/leptos-ui
   #   entrypoint: [cargo, leptos, test]

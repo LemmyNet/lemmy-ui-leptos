@@ -23,7 +23,7 @@ pub fn ThemeSelect() -> impl IntoView {
   #[allow(unused_variables)]
   let dropdown_node_ref = NodeRef::<Details>::new();
   #[cfg(not(feature = "ssr"))]
-  on_click_outside(dropdown_node_ref, move |event| {
+  let _ = on_click_outside(dropdown_node_ref, move |_| {
     // Using this approach instead of conditional rendering so that the dropdown works at least somewhat when JS is disabled
     if let Some(el) = dropdown_node_ref.get() {
       let _ = el.attr("open", None::<&str>);
