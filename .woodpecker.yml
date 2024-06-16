@@ -24,14 +24,6 @@ steps:
     when:
       - event: pull_request
 
-  cargo_clippy:
-    image: rust:slim-bookworm
-    commands:
-      - rustup component add clippy
-      - cargo clippy
-    when:
-      - event: pull_request
-
   build_image:
     image: docker:latest
     commands:
@@ -58,6 +50,15 @@ steps:
     commands:
       - cargo binstall -y cargo-machete
       - cargo machete
+    when:
+      - event: pull_request
+    depends_on: [build_image]
+
+  cargo_clippy:
+    image: rust:slim-bookworm
+    commands:
+      - rustup component add clippy
+      - cargo clippy
     when:
       - event: pull_request
     depends_on: [build_image]
