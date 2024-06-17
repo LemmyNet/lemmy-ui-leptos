@@ -1717,9 +1717,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "lemmy-client"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82b4a092e0f1746f8123ea674319cb2661a249e3dfa138f482e9aaab62012e1c"
+checksum = "ec114d0b5bb572830dc869f9f5b114b266adaa44f71e0fcd4496ccdc3cccf212"
 dependencies = [
  "cfg-if",
  "gloo-net",
