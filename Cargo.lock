@@ -1753,6 +1753,7 @@ dependencies = [
  "serde_json",
  "si_format",
  "strum",
+ "tailwind_fuse",
  "tokio",
  "trait-set",
  "wasm-bindgen",
@@ -3279,6 +3280,15 @@ name = "tagptr"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b2093cf4c8eb1e67749a6762251bc9cd836b6fc171623bd0a9d324d37af2417"
+
+[[package]]
+name = "tailwind_fuse"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc6ff93981e812585b0cb150d413fcf744a528548cb185666629520b61b7d5bb"
+dependencies = [
+ "nom",
+]
 
 [[package]]
 name = "tempfile"
