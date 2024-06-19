@@ -13,6 +13,32 @@ mod comment_vote_buttons;
 mod post_vote_buttons;
 
 pub use post_vote_buttons::PostVoteButtons;
+use tailwind_fuse::{
+  tw_join,
+  AsTailwindClass,
+  IntoBuilder,
+  IntoTailwindClass,
+  TailwindFuse,
+  TailwindMerge,
+  TwClass,
+  TwVariant,
+};
+
+#[derive(TwClass)]
+#[tw(class = "align-bottom disabled:cursor-not-allowed disabled:text-neutral-content")]
+struct VoteBtn {
+  vote: Vote,
+}
+
+#[derive(TwVariant)]
+enum Vote {
+  #[tw(default, class = "text-neutral")]
+  None,
+  #[tw(class = "text-success")]
+  Up,
+  #[tw(class = "text-error")]
+  Down,
+}
 
 #[component]
 fn VoteButtons<VA>(
@@ -42,8 +68,8 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_upvote | { let mut class = String::from("align-bottom"); if * is_upvote {
-                  class.push_str(" text-accent"); } class }
+                  | is_upvote | { VoteBtn { vote : if * is_upvote { Vote::Up } else { Vote::None } }
+                  .to_class() }
               )
           }
 
@@ -66,8 +92,8 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_downvote | { let mut class = String::from("align-top"); if * is_downvote {
-                  class.push_str(" text-accent"); } class }
+                  | is_downvote | { VoteBtn { vote : if * is_downvote { Vote::Down } else {
+                  Vote::None } } .to_class() }
               )
           }
 

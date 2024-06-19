@@ -12,6 +12,7 @@ use leptos_router::{ActionForm, A};
 
 mod post_content_actions;
 pub use post_content_actions::PostContentActions;
+use tailwind_fuse::tw_join;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ContentActionType {
@@ -61,61 +62,70 @@ where
               None
           }
       }}
-      <ActionForm action=save_action class="flex items-center">
-        <input type="hidden" name="id" value=id/>
-        <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
-        <button
-          type="submit"
-          title=if matches!(content_action_type, ContentActionType::Comment) {
-              "Save comment"
-          } else {
-              "Save post"
-          }
+      <Show when=move || user_is_logged_in.get()>
+        <ActionForm action=save_action class="flex items-center">
+          <input type="hidden" name="id" value=id/>
+          <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
+          <button
+            type="submit"
+            title=if matches!(content_action_type, ContentActionType::Comment) {
+                "Save comment"
+            } else {
+                "Save post"
+            }
 
-          class=move || if saved.get() { Some("text-accent") } else { None }
-          disabled=move || !user_is_logged_in.get() || save_action.pending().get()
-        >
-          <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
-            <Icon icon=IconType::SaveFilled/>
-          </Show>
-        </button>
-      </ActionForm>
-      <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
-        <A href="/create_post">
-          <Icon icon=IconType::Crosspost/>
-        </A>
-      </Show> <div class="dropdown hidden sm:block">
-        <label tabindex="0">
-          <Icon icon=IconType::VerticalDots/>
-        </label>
-        <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-          <li>
-            <ActionForm action=report_action>
-              <input type="hidden" name="id" value=id/>
-              <input type="text" name="reason" placeholder="reason"/>
-              <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                <Icon icon=IconType::Report class="inline-block"/>
-                {if matches!(content_action_type, ContentActionType::Comment) {
-                    " Report comment"
-                } else {
-                    " Report post"
-                }}
+            class=move || {
+                tw_join!(
+                    "disabled:cursor-not-allowed disabled:text-neutral-content", if saved.get() {
+                    Some("text-accent") } else { None }
+                )
+            }
 
-              </button>
-            </ActionForm>
-          </li>
-          <li>
-            <ActionForm action=block_user_action>
-              <input type="hidden" name="id" value=creator_id/>
-              <input type="hidden" name="block" value="true"/>
-              <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                <Icon icon=IconType::Block class="inline-block"/>
-                " Block user"
-              </button>
-            </ActionForm>
-          </li>
-        </ul>
-      </div>
+            disabled=move || save_action.pending().get()
+          >
+            <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
+              <Icon icon=IconType::SaveFilled/>
+            </Show>
+          </button>
+        </ActionForm>
+        <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
+          <A href="/create_post">
+            <Icon icon=IconType::Crosspost/>
+          </A>
+        </Show>
+        <div class="dropdown hidden sm:block">
+          <label tabindex="0">
+            <Icon icon=IconType::VerticalDots/>
+          </label>
+          <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+            <li>
+              <ActionForm action=report_action>
+                <input type="hidden" name="id" value=id/>
+                <input type="text" name="reason" placeholder="reason"/>
+                <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
+                  <Icon icon=IconType::Report class="inline-block"/>
+                  {if matches!(content_action_type, ContentActionType::Comment) {
+                      " Report comment"
+                  } else {
+                      " Report post"
+                  }}
+
+                </button>
+              </ActionForm>
+            </li>
+            <li>
+              <ActionForm action=block_user_action>
+                <input type="hidden" name="id" value=creator_id/>
+                <input type="hidden" name="block" value="true"/>
+                <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
+                  <Icon icon=IconType::Block class="inline-block"/>
+                  " Block user"
+                </button>
+              </ActionForm>
+            </li>
+          </ul>
+        </div>
+      </Show>
     </div>
   }
 }

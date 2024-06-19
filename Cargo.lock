@@ -3288,6 +3288,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc6ff93981e812585b0cb150d413fcf744a528548cb185666629520b61b7d5bb"
 dependencies = [
  "nom",
+ "tailwind_fuse_macro",
+]
+
+[[package]]
+name = "tailwind_fuse_macro"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "473b0a76a09cf00567794d9aa58fafa568ddb66053cf75ae776f7034584c2e46"
+dependencies = [
+ "darling 0.20.9",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
 ]
 
 [[package]]

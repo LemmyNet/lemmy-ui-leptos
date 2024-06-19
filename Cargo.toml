@@ -33,7 +33,7 @@ strum = { version = "0.26.2", features = ["derive"] }
 trait-set = "0.3"
 leptos-use = "0.10"
 si_format = "0.1.1"
-tailwind_fuse = "0.3"
+tailwind_fuse = { version = "0.3", features = ["variant"] }
 
 [package.metadata.leptos-i18n]
 default = "en"
