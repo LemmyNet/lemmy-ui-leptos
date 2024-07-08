@@ -16,7 +16,7 @@ importers:
         version: 20.14.8
       typescript:
         specifier: ^5.4.5
-        version: 5.4.5
+        version: 5.5.3
 
 packages:
 
@@ -43,8 +43,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  typescript@5.4.5:
-    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
+  typescript@5.5.3:
+    resolution: {integrity: sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -72,6 +72,6 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  typescript@5.4.5: {}
+  typescript@5.5.3: {}
 
   undici-types@5.26.5: {}
