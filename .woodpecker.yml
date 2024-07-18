@@ -10,7 +10,7 @@ steps:
       - event: pull_request
 
   toml_fmt:
-    image: tamasfe/taplo:0.8.1
+    image: tamasfe/taplo:0.9.2
     commands:
       - taplo format --check
     when:
