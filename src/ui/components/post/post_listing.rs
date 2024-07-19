@@ -1,8 +1,5 @@
 use crate::ui::components::common::{
-  content_actions::PostContentActions,
-  creator_listing::CreatorListing,
-  icon::{Icon, IconSize, IconType},
-  vote_buttons::PostVoteButtons,
+  community_listing::CommunityListing, content_actions::PostContentActions, creator_listing::CreatorListing, icon::{Icon, IconSize, IconType}, vote_buttons::PostVoteButtons
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -88,11 +85,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   });
 
   let creator_id = Signal::derive(move || with!(|post_view| post_view.creator.id.0));
-  let creator_name = Signal::derive(move || with!(|post_view| post_view.creator.name.clone()));
-  let community_name = Signal::derive(move || with!(|post_view| post_view.community.name.clone()));
 
-  let community_title =
-    Signal::derive(move || with!(|post_view| post_view.community.title.clone()));
   let comments = Signal::derive(move || with!(|post_view| post_view.counts.comments));
   let saved = Signal::derive(move || with!(|post_view| post_view.saved));
 
@@ -127,15 +120,10 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
             <A href=move || with!(| id | format!("/post/{id}"))>{post_name}</A>
           </h1>
         </Show>
-        <div>
+        <div class="flex items-center gap-1.5">
           <CreatorListing creator=with!(| post_view | post_view.creator.clone())/>
-          " to "
-          <A
-            class="text-sm inline-block"
-            href=move || with!(| community_name | format!("/c/{community_name}"))
-          >
-            {community_title}
-          </A>
+          <div class="text-sm">to</div>
+          <CommunityListing community=with!(|post_view| post_view.community.clone())/>
         </div>
 
         <PostContentActions

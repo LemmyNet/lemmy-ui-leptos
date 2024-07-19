@@ -24,6 +24,7 @@ pub enum IconType {
   CreatePost,
   CreateCommunity,
   Communities,
+  Community,
   Documentation,
   Code,
   Info,
