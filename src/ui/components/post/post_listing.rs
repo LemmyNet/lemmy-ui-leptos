@@ -1,5 +1,6 @@
 use crate::ui::components::common::{
   content_actions::PostContentActions,
+  creator_listing::CreatorListing,
   icon::{Icon, IconSize, IconType},
   vote_buttons::PostVoteButtons,
 };
@@ -127,12 +128,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           </h1>
         </Show>
         <div>
-          <A
-            href=move || with!(| creator_name | format!("/u/{creator_name}"))
-            class="text-sm inline-block"
-          >
-            {creator_name}
-          </A>
+          <CreatorListing creator=with!(| post_view | post_view.creator.clone())/>
           " to "
           <A
             class="text-sm inline-block"
