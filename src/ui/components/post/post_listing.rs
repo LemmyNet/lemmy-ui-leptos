@@ -1,5 +1,9 @@
 use crate::ui::components::common::{
-  community_listing::CommunityListing, content_actions::PostContentActions, creator_listing::CreatorListing, icon::{Icon, IconSize, IconType}, vote_buttons::PostVoteButtons
+  community_listing::CommunityListing,
+  content_actions::PostContentActions,
+  creator_listing::CreatorListing,
+  icon::{Icon, IconSize, IconType},
+  vote_buttons::PostVoteButtons,
 };
 use lemmy_client::{
   lemmy_api_common::{
@@ -70,10 +74,10 @@ pub async fn report_post(
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
   let post_view = RwSignal::new(post_view.get());
-  let id = Signal::derive(move || with!(|post_view| post_view.post.id.0));
-  let post_name = Signal::derive(move || with!(|post_view| post_view.post.name.clone()));
-  let my_vote = Signal::derive(move || with!(|post_view| post_view.my_vote));
-  let score = Signal::derive(move || with!(|post_view| post_view.counts.score));
+  let (id, _) = slice!(post_view.post.id.0);
+  let (post_name, _) = slice!(post_view.post.name);
+  let (my_vote, _) = slice!(post_view.my_vote);
+  let (score, _) = slice!(post_view.counts.score);
   let url =
     Signal::derive(move || with!(|post_view| post_view.post.url.as_ref().map(ToString::to_string)));
   let thumbnail_url = Signal::derive(move || {
@@ -84,10 +88,9 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
       .map(ToString::to_string))
   });
 
-  let creator_id = Signal::derive(move || with!(|post_view| post_view.creator.id.0));
-
-  let comments = Signal::derive(move || with!(|post_view| post_view.counts.comments));
-  let saved = Signal::derive(move || with!(|post_view| post_view.saved));
+  let (creator_id, _) = slice!(post_view.creator.id.0);
+  let (comments, _) = slice!(post_view.counts.comments);
+  let (saved, _) = slice!(post_view.saved);
 
   let is_on_post_page = use_route().path().starts_with("/post");
 
