@@ -12,6 +12,7 @@ pub fn PostContentActions(
   #[prop(into)] creator_id: MaybeSignal<i32>,
   #[prop(into)] comments: MaybeSignal<i64>,
   post_write_signal: WriteSignal<PostView>,
+  #[prop(into)] apub_link: TextProp,
 ) -> impl IntoView {
   let save_action = create_save_post_action();
 
@@ -39,6 +40,8 @@ pub fn PostContentActions(
       content_action_type=ContentActionType::Post {
           comments,
       }
+
+      apub_link=apub_link
     />
   }
 }

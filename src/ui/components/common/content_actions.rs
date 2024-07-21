@@ -1,7 +1,10 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   serverfns::users::create_block_user_action,
-  ui::components::common::icon::{Icon, IconType},
+  ui::components::common::{
+    fedilink::Fedilink,
+    icon::{Icon, IconType},
+  },
   utils::{
     derive_user_is_logged_in,
     types::{ServerAction, ServerActionFn},
@@ -31,6 +34,7 @@ fn ContentActions<SA, RA>(
   #[prop(into)] saved: MaybeSignal<bool>,
   report_action: ServerAction<RA>,
   #[prop(into)] creator_id: MaybeSignal<i32>,
+  apub_link: TextProp,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
@@ -62,7 +66,7 @@ where
               None
           }
       }}
-      <Show when=move || user_is_logged_in.get()>
+      <Fedilink href=apub_link/> <Show when=move || user_is_logged_in.get()>
         <ActionForm action=save_action class="flex items-center">
           <input type="hidden" name="id" value=id/>
           <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>

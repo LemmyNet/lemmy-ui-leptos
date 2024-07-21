@@ -19,7 +19,10 @@ pub fn CreatorListing(creator: Person) -> impl IntoView {
         <div class="text-sm mb-px font-medium">
           {creator.display_name.clone().unwrap_or(creator.name.clone())}
         </div>
-        <A href=format!("/u/{}", creator.name.clone()) class="text-xs block text-primary font-light">
+        <A
+          href=format!("/u/{}", creator.name.clone())
+          class="text-xs block text-primary font-light"
+        >
           {format!("@{}@{}", creator.name, get_host())}
         </A>
       </div>

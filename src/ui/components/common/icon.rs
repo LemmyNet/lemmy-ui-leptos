@@ -38,6 +38,7 @@ pub enum IconType {
   Hamburger,
   Users,
   Posts,
+  Fediverse,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

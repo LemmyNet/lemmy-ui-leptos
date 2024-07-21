@@ -21,7 +21,10 @@ pub fn CommunityListing(community: Community) -> impl IntoView {
       }}
       <div>
         <div class="text-sm mb-px font-medium">{community.title.clone()}</div>
-        <A href=format!("/c/{}", community.name.clone()) class="text-xs block text-secondary font-light">
+        <A
+          href=format!("/c/{}", community.name.clone())
+          class="text-xs block text-secondary font-light"
+        >
           {format!("!{}@{}", community.name, get_host())}
         </A>
       </div>

@@ -91,6 +91,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let (creator_id, _) = slice!(post_view.creator.id.0);
   let (comments, _) = slice!(post_view.counts.comments);
   let (saved, _) = slice!(post_view.saved);
+  let apub_link = with!(|post_view| post_view.post.ap_id.to_string());
 
   let is_on_post_page = use_route().path().starts_with("/post");
 
@@ -107,7 +108,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           )
       }}
 
-      <div>
+      <div class="space-y-1.5">
         <Show
           when=move || is_on_post_page
           fallback=move || {
@@ -126,7 +127,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
         <div class="flex items-center gap-1.5">
           <CreatorListing creator=with!(| post_view | post_view.creator.clone())/>
           <div class="text-sm">to</div>
-          <CommunityListing community=with!(|post_view| post_view.community.clone())/>
+          <CommunityListing community=with!(| post_view | post_view.community.clone())/>
         </div>
 
         <PostContentActions
@@ -135,6 +136,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           saved=saved
           comments=comments
           post_write_signal=post_view.write_only()
+          apub_link=apub_link
         />
       </div>
 
