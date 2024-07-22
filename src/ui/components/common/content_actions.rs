@@ -42,19 +42,45 @@ where
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  let logged_in_user_id = Signal::derive(move || {
+    with!(|site_resource| site_resource
+      .as_ref()
+      .and_then(|data| data
+        .as_ref()
+        .ok()
+        .map(|data| data
+          .my_user
+          .as_ref()
+          .map(|data| data.local_user_view.person.id.0))))
+    .flatten()
+  });
 
   let block_user_action = create_block_user_action();
+
+  let save_content_label = if matches!(content_action_type, ContentActionType::Comment) {
+    "Save comment"
+  } else {
+    "Save post"
+  };
+  let crosspost_label = "Crosspost";
+  let report_content_label = if matches!(content_action_type, ContentActionType::Comment) {
+    " Report comment"
+  } else {
+    " Report post"
+  };
 
   view! {
     <div class="flex items-center gap-x-2">
       {move || {
           if let ContentActionType::Post { comments } = content_action_type {
+              let num_comments_label = format!("{} comments", comments.get());
               Some(
                   view! {
                     <A
                       href=move || { format!("/post/{}", id.get()) }
                       class="text-sm whitespace-nowrap"
-                      attr:title=move || format!("{} comments", comments.get())
+                      attr:title=num_comments_label.clone()
+                      attr:aria-label=num_comments_label
                     >
                       <Icon icon=IconType::Comment class="inline align-baseline"/>
                       " "
@@ -72,11 +98,8 @@ where
           <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
           <button
             type="submit"
-            title=if matches!(content_action_type, ContentActionType::Comment) {
-                "Save comment"
-            } else {
-                "Save post"
-            }
+            title=save_content_label
+            aria-label=save_content_label
 
             class=move || {
                 tw_join!(
@@ -93,41 +116,40 @@ where
           </button>
         </ActionForm>
         <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
-          <A href="/create_post">
+          <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
             <Icon icon=IconType::Crosspost/>
           </A>
         </Show>
-        <div class="dropdown hidden sm:block">
-          <label tabindex="0">
+        <div class="dropdown">
+          <div tabindex="0" role="button">
             <Icon icon=IconType::VerticalDots/>
-          </label>
-          <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-            <li>
-              <ActionForm action=report_action>
-                <input type="hidden" name="id" value=id/>
-                <input type="text" name="reason" placeholder="reason"/>
-                <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                  <Icon icon=IconType::Report class="inline-block"/>
-                  {if matches!(content_action_type, ContentActionType::Comment) {
-                      " Report comment"
-                  } else {
-                      " Report post"
-                  }}
+          </div>
+          <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+            <Show when=move || {
+                logged_in_user_id.get().map(|id| id != creator_id.get()).unwrap_or(false)
+            }>
+              <li>
+                <ActionForm action=report_action>
+                  <input type="hidden" name="id" value=id/>
+                  <button class="text-xs whitespace-nowrap" type="submit">
+                    <Icon icon=IconType::Report class="inline-block"/>
+                    {report_content_label}
 
-                </button>
-              </ActionForm>
-            </li>
-            <li>
-              <ActionForm action=block_user_action>
-                <input type="hidden" name="id" value=creator_id/>
-                <input type="hidden" name="block" value="true"/>
-                <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                  <Icon icon=IconType::Block class="inline-block"/>
-                  " Block user"
-                </button>
-              </ActionForm>
-            </li>
-          </ul>
+                  </button>
+                </ActionForm>
+              </li>
+              <li>
+                <ActionForm action=block_user_action>
+                  <input type="hidden" name="id" value=creator_id/>
+                  <input type="hidden" name="block" value="true"/>
+                  <button class="text-xs whitespace-nowrap" type="submit">
+                    <Icon icon=IconType::Block class="inline-block"/>
+                    " Block user"
+                  </button>
+                </ActionForm>
+              </li>
+            </Show>
+          </menu>
         </div>
       </Show>
     </div>
