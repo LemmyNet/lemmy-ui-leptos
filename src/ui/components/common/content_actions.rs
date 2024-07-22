@@ -1,13 +1,12 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  serverfns::users::create_block_user_action,
+  serverfns::{posts::HidePostAction, users::create_block_user_action},
   ui::components::common::{
     fedilink::Fedilink,
     icon::{Icon, IconType},
   },
   utils::{
-    derive_user_is_logged_in,
-    types::{ServerAction, ServerActionFn},
+    derive_user_is_logged_in, traits::ToStr, types::{ServerAction, ServerActionFn}
   },
 };
 use leptos::*;
@@ -17,10 +16,12 @@ mod post_content_actions;
 pub use post_content_actions::PostContentActions;
 use tailwind_fuse::tw_join;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy)]
 enum ContentActionType {
   Post {
     comments: MaybeSignal<i64>,
+    hide_post_action: HidePostAction,
+    hidden: MaybeSignal<bool>,
   },
   #[allow(dead_code)]
   Comment,
@@ -64,15 +65,15 @@ where
   };
   let crosspost_label = "Crosspost";
   let report_content_label = if matches!(content_action_type, ContentActionType::Comment) {
-    " Report comment"
+    "Report comment"
   } else {
-    " Report post"
+    "Report post"
   };
 
   view! {
     <div class="flex items-center gap-x-2">
       {move || {
-          if let ContentActionType::Post { comments } = content_action_type {
+          if let ContentActionType::Post { comments, .. } = content_action_type {
               let num_comments_label = format!("{} comments", comments.get());
               Some(
                   view! {
@@ -95,7 +96,7 @@ where
       <Fedilink href=apub_link/> <Show when=move || user_is_logged_in.get()>
         <ActionForm action=save_action class="flex items-center">
           <input type="hidden" name="id" value=id/>
-          <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
+          <input type="hidden" name="save" value=move || (!saved.get()).to_str()/>
           <button
             type="submit"
             title=save_content_label
@@ -128,17 +129,45 @@ where
             <Show when=move || {
                 logged_in_user_id.get().map(|id| id != creator_id.get()).unwrap_or(false)
             }>
+              {move || {
+                  if let ContentActionType::Post { hide_post_action, hidden, .. } = content_action_type {
+                      let icon = Signal::derive(move || {
+                          if hidden.get() { IconType::EyeSlash } else { IconType::Eye }
+                      });
+                      let hide_post_label = Signal::derive(move || {
+                          if hidden.get() { "Unhide Post" } else { "Hide Post" }
+                      });
+
+                      
+                      Some(
+                          view! {
+                            <li>
+                              <ActionForm action=hide_post_action>
+                                <input type="hidden" name="id" value=id/>
+                                <input type="hidden" name="hide" value=move || (!hidden.get()).to_str()/>
+                                <button class="text-xs whitespace-nowrap" type="submit">
+                                  <Icon icon=icon class="inline-block"/>
+                                  " "
+                                  {hide_post_label}
+                                </button>
+                              </ActionForm>
+                            </li>
+                          },
+                      )
+                  } else {
+                      None
+                  }
+              }}
               <li>
                 <ActionForm action=report_action>
                   <input type="hidden" name="id" value=id/>
                   <button class="text-xs whitespace-nowrap" type="submit">
                     <Icon icon=IconType::Report class="inline-block"/>
+                    " "
                     {report_content_label}
-
                   </button>
                 </ActionForm>
-              </li>
-              <li>
+              </li> <li>
                 <ActionForm action=block_user_action>
                   <input type="hidden" name="id" value=creator_id/>
                   <input type="hidden" name="block" value="true"/>

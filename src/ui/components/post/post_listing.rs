@@ -16,6 +16,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
   let (post_name, _) = slice!(post_view.post.name);
   let (my_vote, _) = slice!(post_view.my_vote);
   let (score, _) = slice!(post_view.counts.score);
+  let (hidden, _) = slice!(post_view.hidden);
   let url =
     Signal::derive(move || with!(|post_view| post_view.post.url.as_ref().map(ToString::to_string)));
   let thumbnail_url = Signal::derive(move || {
@@ -75,6 +76,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
           comments=comments
           post_write_signal=post_view.write_only()
           apub_link=apub_link
+          hidden=hidden
         />
       </div>
 

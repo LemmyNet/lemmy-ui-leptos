@@ -29,7 +29,7 @@ actix-session = { version = "0.9", features = [
   "cookie-session",
 ], optional = true }
 tokio = { version = "1.37", optional = true, features = ["macros"] }
-strum = { version = "0.26.2", features = ["derive"] }
+strum = { version = "0.26.3", features = ["derive"] }
 trait-set = "0.3"
 leptos-use = "0.10"
 si_format = "0.1.1"

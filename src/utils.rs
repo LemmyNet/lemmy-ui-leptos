@@ -4,6 +4,7 @@ pub use derive_query_signal::*;
 mod derive_user_is_logged_in;
 pub use derive_user_is_logged_in::*;
 pub mod types;
+pub mod traits;
 
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
