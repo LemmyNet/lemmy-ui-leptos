@@ -5,71 +5,9 @@ use crate::ui::components::common::{
   icon::{Icon, IconSize, IconType},
   vote_buttons::PostVoteButtons,
 };
-use lemmy_client::{
-  lemmy_api_common::{
-    lemmy_db_schema::newtypes::{PersonId, PostId},
-    lemmy_db_views::structs::*,
-    person::*,
-    post::{SavePost as SavePostBody, *},
-  },
-  *,
-};
+use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
-
-#[server(prefix = "/serverfn")]
-pub async fn save_post(post_id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-
-  client
-    .save_post(LemmyRequest {
-      body: SavePostBody { post_id, save },
-      jwt,
-    })
-    .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
-}
-
-#[server(prefix = "/serverfn")]
-pub async fn block_user(
-  person_id: PersonId,
-  block: bool,
-) -> Result<BlockPersonResponse, ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-
-  client
-    .block_person(LemmyRequest {
-      body: BlockPerson { person_id, block },
-      jwt,
-    })
-    .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
-}
-
-#[server(prefix = "/serverfn")]
-pub async fn report_post(
-  post_id: PostId,
-  reason: String,
-) -> Result<PostReportResponse, ServerFnError> {
-  use crate::utils::{get_client_and_session, GetJwt};
-  let (client, session) = get_client_and_session().await?;
-
-  let jwt = session.get_jwt()?;
-
-  client
-    .report_post(LemmyRequest {
-      body: CreatePostReport { post_id, reason },
-      jwt,
-    })
-    .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
-}
 
 #[component]
 pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoView {
