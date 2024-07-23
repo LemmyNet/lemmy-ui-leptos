@@ -8,11 +8,6 @@ use crate::{
 };
 use leptos::*;
 use leptos_router::ActionForm;
-
-mod comment_vote_buttons;
-mod post_vote_buttons;
-
-pub use post_vote_buttons::PostVoteButtons;
 use tailwind_fuse::{
   AsTailwindClass,
   IntoBuilder,
@@ -40,10 +35,10 @@ enum Vote {
 }
 
 #[component]
-fn VoteButtons<VA>(
-  #[prop(into)] my_vote: MaybeProp<i16>,
-  #[prop(into)] id: MaybeSignal<i32>,
-  #[prop(into)] score: MaybeSignal<i64>,
+pub fn VoteButtons<VA>(
+  my_vote: Signal<Option<i16>>,
+  id: i32,
+  score: Signal<i64>,
   vote_action: ServerAction<VA>,
 ) -> impl IntoView
 where

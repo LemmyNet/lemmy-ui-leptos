@@ -6,36 +6,37 @@ use crate::{
     icon::{Icon, IconType},
   },
   utils::{
-    derive_user_is_logged_in, traits::ToStr, types::{ServerAction, ServerActionFn}
+    derive_user_is_logged_in,
+    traits::ToStr,
+    types::{ServerAction, ServerActionFn},
   },
 };
 use leptos::*;
 use leptos_router::{ActionForm, A};
-
-mod post_content_actions;
-pub use post_content_actions::PostContentActions;
 use tailwind_fuse::tw_join;
 
-#[derive(Clone, Copy)]
-enum ContentActionType {
-  Post {
-    comments: MaybeSignal<i64>,
-    hide_post_action: HidePostAction,
-    hidden: MaybeSignal<bool>,
-  },
+#[derive(Clone, Copy, PartialEq)]
+pub enum ContentActionType {
+  Post,
   #[allow(dead_code)]
   Comment,
 }
 
+#[derive(Clone, Copy, PartialEq)]
+pub struct Comments(pub i64);
+
+#[derive(Clone, Copy, PartialEq)]
+pub struct Hidden(pub bool);
+
 #[component]
-fn ContentActions<SA, RA>(
+pub fn ContentActions<SA, RA>(
   content_action_type: ContentActionType,
-  #[prop(into)] id: MaybeSignal<i32>,
+  id: i32,
+  saved: Signal<bool>,
   save_action: ServerAction<SA>,
-  #[prop(into)] saved: MaybeSignal<bool>,
   report_action: ServerAction<RA>,
-  #[prop(into)] creator_id: MaybeSignal<i32>,
-  apub_link: TextProp,
+  creator_id: i32,
+  apub_link: String,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
@@ -58,13 +59,14 @@ where
 
   let block_user_action = create_block_user_action();
 
-  let save_content_label = if matches!(content_action_type, ContentActionType::Comment) {
+  let save_content_label = if content_action_type == ContentActionType::Comment {
     "Save comment"
   } else {
     "Save post"
   };
+  let save_icon = Signal::derive(move || if saved.get() {IconType::SaveFilled} else {IconType::Save});
   let crosspost_label = "Crosspost";
-  let report_content_label = if matches!(content_action_type, ContentActionType::Comment) {
+  let report_content_label = if content_action_type == ContentActionType::Comment {
     "Report comment"
   } else {
     "Report post"
@@ -72,27 +74,7 @@ where
 
   view! {
     <div class="flex items-center gap-x-2">
-      {move || {
-          if let ContentActionType::Post { comments, .. } = content_action_type {
-              let num_comments_label = format!("{} comments", comments.get());
-              Some(
-                  view! {
-                    <A
-                      href=move || { format!("/post/{}", id.get()) }
-                      class="text-sm whitespace-nowrap"
-                      attr:title=num_comments_label.clone()
-                      attr:aria-label=num_comments_label
-                    >
-                      <Icon icon=IconType::Comment class="inline align-baseline"/>
-                      " "
-                      <span class="align-sub">{comments}</span>
-                    </A>
-                  },
-              )
-          } else {
-              None
-          }
-      }}
+      {(content_action_type == ContentActionType::Post).then(|| view! { <CommentCount id=id/> })}
       <Fedilink href=apub_link/> <Show when=move || user_is_logged_in.get()>
         <ActionForm action=save_action class="flex items-center">
           <input type="hidden" name="id" value=id/>
@@ -104,61 +86,36 @@ where
 
             class=move || {
                 tw_join!(
-                    "disabled:cursor-not-allowed disabled:text-neutral-content", if saved.get() {
-                    Some("text-accent") } else { None }
+                    "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
+                    .then_some("text-accent")
                 )
             }
 
             disabled=move || save_action.pending().get()
           >
-            <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
-              <Icon icon=IconType::SaveFilled/>
-            </Show>
+            <Icon icon=save_icon />
+
           </button>
         </ActionForm>
-        <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
-          <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
-            <Icon icon=IconType::Crosspost/>
-          </A>
-        </Show>
+        {(content_action_type == ContentActionType::Post)
+            .then(|| {
+                view! {
+                  <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
+                    <Icon icon=IconType::Crosspost/>
+                  </A>
+                }
+            })}
+
         <div class="dropdown">
           <div tabindex="0" role="button">
             <Icon icon=IconType::VerticalDots/>
           </div>
           <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
             <Show when=move || {
-                logged_in_user_id.get().map(|id| id != creator_id.get()).unwrap_or(false)
+                logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
             }>
-              {move || {
-                  if let ContentActionType::Post { hide_post_action, hidden, .. } = content_action_type {
-                      let icon = Signal::derive(move || {
-                          if hidden.get() { IconType::EyeSlash } else { IconType::Eye }
-                      });
-                      let hide_post_label = Signal::derive(move || {
-                          if hidden.get() { "Unhide Post" } else { "Hide Post" }
-                      });
-
-                      
-                      Some(
-                          view! {
-                            <li>
-                              <ActionForm action=hide_post_action>
-                                <input type="hidden" name="id" value=id/>
-                                <input type="hidden" name="hide" value=move || (!hidden.get()).to_str()/>
-                                <button class="text-xs whitespace-nowrap" type="submit">
-                                  <Icon icon=icon class="inline-block"/>
-                                  " "
-                                  {hide_post_label}
-                                </button>
-                              </ActionForm>
-                            </li>
-                          },
-                      )
-                  } else {
-                      None
-                  }
-              }}
-              <li>
+              {(content_action_type == ContentActionType::Post)
+                  .then(|| view! { <HidePostButton id=id/> })} <li>
                 <ActionForm action=report_action>
                   <input type="hidden" name="id" value=id/>
                   <button class="text-xs whitespace-nowrap" type="submit">
@@ -182,5 +139,51 @@ where
         </div>
       </Show>
     </div>
+  }
+}
+
+#[component]
+fn HidePostButton(id: i32) -> impl IntoView {
+  let hide_post_action = expect_context::<HidePostAction>();
+  let hidden = expect_context::<Signal<Hidden>>();
+  let icon = Signal::derive(move || {
+    if hidden.get().0 {
+      IconType::Eye
+    } else {
+      IconType::EyeSlash
+    }
+  });
+
+  view! {
+    <li>
+      <ActionForm action=hide_post_action>
+        <input type="hidden" name="id" value=id/>
+        <input type="hidden" name="hide" value=move || (!hidden.get().0).to_str()/>
+        <button class="text-xs whitespace-nowrap" type="submit">
+          <Icon icon=icon class="inline-block"/>
+          " "
+          {move || if hidden.get().0 { "Unhide post" } else { "Hide post" }}
+        </button>
+      </ActionForm>
+    </li>
+  }
+}
+
+#[component]
+fn CommentCount(id: i32) -> impl IntoView {
+  let comments = expect_context::<Signal<Comments>>();
+  let num_comments_label = Signal::derive(move || format!("{} comments", comments.get().0));
+
+  view! {
+    <A
+      href=move || { format!("/post/{id}") }
+      class="text-sm whitespace-nowrap"
+      attr:title=num_comments_label
+      attr:aria-label=num_comments_label
+    >
+      <Icon icon=IconType::Comment class="inline align-baseline"/>
+      " "
+      <span class="align-sub">{move || comments.get().0}</span>
+    </A>
   }
 }
