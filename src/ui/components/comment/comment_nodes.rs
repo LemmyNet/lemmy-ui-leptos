@@ -8,7 +8,7 @@ pub fn CommentNodes(#[prop(into)] comments: MaybeSignal<Vec<CommentView>>) -> im
     <ul>
       <For each=move || comments.get() key=|cv| cv.comment.id let:cv>
         <li>
-          <CommentNode comment_view=cv.into()/>
+          <CommentNode comment_view=cv.into() />
         </li>
       </For>
     </ul>

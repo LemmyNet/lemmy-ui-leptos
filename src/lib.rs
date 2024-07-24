@@ -42,41 +42,41 @@ pub fn App() -> impl IntoView {
 
   view! {
     <Router set_is_routing=is_routing>
-      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250)/>
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250) />
 
-      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css"/>
-      <Link rel="shortcut icon" href="/favicon.svg"/>
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css" />
+      <Link rel="shortcut icon" href="/favicon.svg" />
 
-      <Meta name="description" content="Lemmy-UI-Leptos."/>
-      <Meta name="viewport" content="width=device-width, viewport-fit=cover"/>
+      <Meta name="description" content="Lemmy-UI-Leptos." />
+      <Meta name="viewport" content="width=device-width, viewport-fit=cover" />
       // debug where there is no visible console (mobile/live/desktop)
       // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
       // <Script>eruda.init();</Script>
-      <Title text="Brand from env"/>
-      <Body class="h-full max-h-screen flex flex-col overflow-y-hidden"/>
+      <Title text="Brand from env" />
+      <Body class="h-full max-h-screen flex flex-col overflow-y-hidden" />
 
       <Routes>
         <Route path="" view=BaseLayout ssr=SsrMode::Async>
-          <Route path="/*any" view=NotFound/>
+          <Route path="/*any" view=NotFound />
 
           <Route path="" view=FilterBarLayout>
-            <Route path="" view=HomePage/>
+            <Route path="" view=HomePage />
           </Route>
 
-          <Route path="create_post" view=CommunitiesPage/>
-          <Route path="post/:id" view=PostPage/>
+          <Route path="create_post" view=CommunitiesPage />
+          <Route path="post/:id" view=PostPage />
 
-          <Route path="search" view=CommunitiesPage/>
-          <Route path="communities" view=CommunitiesPage/>
-          <Route path="create_community" view=CommunitiesPage/>
-          <Route path="c/:id" view=CommunitiesPage/>
+          <Route path="search" view=CommunitiesPage />
+          <Route path="communities" view=CommunitiesPage />
+          <Route path="create_community" view=CommunitiesPage />
+          <Route path="c/:id" view=CommunitiesPage />
 
           <Route
             path="login"
             view=move || {
                 view! {
                   <AnonymousOnlyRouteView>
-                    <LoginPage/>
+                    <LoginPage />
                   </AnonymousOnlyRouteView>
                 }
             }
@@ -87,20 +87,20 @@ pub fn App() -> impl IntoView {
             view=move || {
                 view! {
                   <AnonymousOnlyRouteView>
-                    <CommunitiesPage/>
+                    <CommunitiesPage />
                   </AnonymousOnlyRouteView>
                 }
             }
           />
 
-          <Route path="inbox" view=CommunitiesPage/>
-          <Route path="settings" view=CommunitiesPage/>
-          <Route path="u/:id" view=CommunitiesPage/>
-          <Route path="saved" view=CommunitiesPage/>
+          <Route path="inbox" view=CommunitiesPage />
+          <Route path="settings" view=CommunitiesPage />
+          <Route path="u/:id" view=CommunitiesPage />
+          <Route path="saved" view=CommunitiesPage />
 
-          <Route path="modlog" view=CommunitiesPage/>
-          <Route path="instances" view=CommunitiesPage/>
-          <Route path="legal" view=CommunitiesPage/>
+          <Route path="modlog" view=CommunitiesPage />
+          <Route path="instances" view=CommunitiesPage />
+          <Route path="legal" view=CommunitiesPage />
         </Route>
       </Routes>
     </Router>

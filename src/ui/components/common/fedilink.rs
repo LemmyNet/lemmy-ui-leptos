@@ -9,7 +9,7 @@ pub fn Fedilink(#[prop(into)] href: TextProp) -> impl IntoView {
   let label = "View content on origin instance";
   view! {
     <a href=href class=class title=label aria-label=label>
-      <Icon icon=IconType::Fediverse/>
+      <Icon icon=IconType::Fediverse />
     </a>
   }
 }

@@ -13,13 +13,12 @@ pub fn CommunityListing(community: Community) -> impl IntoView {
     <div class="flex items-center gap-x-2">
       {if community.icon.is_some() {
           view! {
-            <img src=community.icon.clone().map(|url| url.to_string()).unwrap() class="size-8"/>
+            <img src=community.icon.clone().map(|url| url.to_string()).unwrap() class="size-8" />
           }
               .into_view()
       } else {
-          view! { <Icon icon=IconType::Community/> }.into_view()
-      }}
-      <div>
+          view! { <Icon icon=IconType::Community /> }.into_view()
+      }} <div>
         <div class="text-sm mb-px font-medium">{community.title.clone()}</div>
         <A
           href=format!("/c/{}", community.name.clone())

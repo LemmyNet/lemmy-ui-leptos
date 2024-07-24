@@ -64,7 +64,13 @@ where
   } else {
     "Save post"
   };
-  let save_icon = Signal::derive(move || if saved.get() {IconType::SaveFilled} else {IconType::Save});
+  let save_icon = Signal::derive(move || {
+    if saved.get() {
+      IconType::SaveFilled
+    } else {
+      IconType::Save
+    }
+  });
   let crosspost_label = "Crosspost";
   let report_content_label = if content_action_type == ContentActionType::Comment {
     "Report comment"
@@ -74,11 +80,11 @@ where
 
   view! {
     <div class="flex items-center gap-x-2">
-      {(content_action_type == ContentActionType::Post).then(|| view! { <CommentCount id=id/> })}
-      <Fedilink href=apub_link/> <Show when=move || user_is_logged_in.get()>
+      {(content_action_type == ContentActionType::Post).then(|| view! { <CommentCount id=id /> })}
+      <Fedilink href=apub_link /> <Show when=move || user_is_logged_in.get()>
         <ActionForm action=save_action class="flex items-center">
-          <input type="hidden" name="id" value=id/>
-          <input type="hidden" name="save" value=move || (!saved.get()).to_str()/>
+          <input type="hidden" name="id" value=id />
+          <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
           <button
             type="submit"
             title=save_content_label
@@ -101,35 +107,35 @@ where
             .then(|| {
                 view! {
                   <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
-                    <Icon icon=IconType::Crosspost/>
+                    <Icon icon=IconType::Crosspost />
                   </A>
                 }
             })}
 
         <div class="dropdown">
           <div tabindex="0" role="button">
-            <Icon icon=IconType::VerticalDots/>
+            <Icon icon=IconType::VerticalDots />
           </div>
           <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
             <Show when=move || {
                 logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
             }>
               {(content_action_type == ContentActionType::Post)
-                  .then(|| view! { <HidePostButton id=id/> })} <li>
+                  .then(|| view! { <HidePostButton id=id /> })} <li>
                 <ActionForm action=report_action>
-                  <input type="hidden" name="id" value=id/>
+                  <input type="hidden" name="id" value=id />
                   <button class="text-xs whitespace-nowrap" type="submit">
-                    <Icon icon=IconType::Report class="inline-block"/>
+                    <Icon icon=IconType::Report class="inline-block" />
                     " "
                     {report_content_label}
                   </button>
                 </ActionForm>
               </li> <li>
                 <ActionForm action=block_user_action>
-                  <input type="hidden" name="id" value=creator_id/>
-                  <input type="hidden" name="block" value="true"/>
+                  <input type="hidden" name="id" value=creator_id />
+                  <input type="hidden" name="block" value="true" />
                   <button class="text-xs whitespace-nowrap" type="submit">
-                    <Icon icon=IconType::Block class="inline-block"/>
+                    <Icon icon=IconType::Block class="inline-block" />
                     " Block user"
                   </button>
                 </ActionForm>
@@ -157,10 +163,10 @@ fn HidePostButton(id: i32) -> impl IntoView {
   view! {
     <li>
       <ActionForm action=hide_post_action>
-        <input type="hidden" name="id" value=id/>
-        <input type="hidden" name="hide" value=move || (!hidden.get().0).to_str()/>
+        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="hide" value=move || (!hidden.get().0).to_str() />
         <button class="text-xs whitespace-nowrap" type="submit">
-          <Icon icon=icon class="inline-block"/>
+          <Icon icon=icon class="inline-block" />
           " "
           {move || if hidden.get().0 { "Unhide post" } else { "Hide post" }}
         </button>
@@ -181,7 +187,7 @@ fn CommentCount(id: i32) -> impl IntoView {
       attr:title=num_comments_label
       attr:aria-label=num_comments_label
     >
-      <Icon icon=IconType::Comment class="inline align-baseline"/>
+      <Icon icon=IconType::Comment class="inline align-baseline" />
       " "
       <span class="align-sub">{move || comments.get().0}</span>
     </A>

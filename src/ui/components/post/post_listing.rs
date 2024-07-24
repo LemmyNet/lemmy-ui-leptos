@@ -108,7 +108,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
 
   view! {
     <article class="flex gap-x-3 items-center w-fit">
-      <VoteButtons id=id my_vote=my_vote score=score vote_action=vote_action/>
+      <VoteButtons id=id my_vote=my_vote score=score vote_action=vote_action />
       {move || {
           with!(
               | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
@@ -136,9 +136,9 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           </h1>
         </Show>
         <div class="flex items-center gap-1.5">
-          <CreatorListing creator=creator/>
+          <CreatorListing creator=creator />
           <div class="text-sm">to</div>
-          <CommunityListing community=community/>
+          <CommunityListing community=community />
         </div>
 
         <ContentActions
