@@ -1,17 +1,13 @@
 use crate::{
-  serverfns::posts::{
-    create_hide_post_action,
-    create_report_post_action,
-    create_save_post_action,
-    create_vote_post_action,
-  },
+  serverfns::posts::{create_hide_post_action, create_save_post_action, create_vote_post_action},
   ui::components::common::{
     community_listing::CommunityListing,
-    content_actions::{Comments, ContentActionType, ContentActions, Hidden},
+    content_actions::ContentActions,
     creator_listing::CreatorListing,
     icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
+  utils::types::{Comments, ContentActionType, Hidden},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
@@ -21,10 +17,18 @@ use leptos_router::*;
 pub fn PostListing(post_view: PostView) -> impl IntoView {
   // These post fields cannot change, so no need for signals
   let id = post_view.post.id.0;
-  let apub_link = post_view.post.ap_id.to_string();
-  let creator = post_view.creator.clone();
-  let creator_id = creator.id.0;
-  let community = post_view.community.clone();
+  let actor_id = post_view.post.ap_id.to_string();
+
+  let creator_id = post_view.creator.id.0;
+  let creator_avatar = post_view.creator.avatar.clone().map(|url| url.to_string());
+  let creator_name = post_view.creator.name.clone();
+  let creator_display_name = post_view.creator.display_name.clone();
+  let creator_actor_id = post_view.creator.actor_id.clone().to_string();
+
+  let community_icon = post_view.community.icon.clone().map(|url| url.to_string());
+  let community_name = post_view.community.name.clone();
+  let community_title = post_view.community.title.clone();
+  let community_actor_id = post_view.community.actor_id.clone().to_string();
 
   let post_state = RwSignal::new(post_view);
 
@@ -102,8 +106,6 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
   provide_context(hidden);
   provide_context(hide_post_action);
 
-  let report_action = create_report_post_action();
-
   let is_on_post_page = use_route().path().starts_with("/post");
 
   view! {
@@ -136,9 +138,19 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           </h1>
         </Show>
         <div class="flex items-center gap-1.5">
-          <CreatorListing creator=creator />
+          <CreatorListing
+            avatar=creator_avatar
+            name=creator_name
+            display_name=creator_display_name
+            actor_id=creator_actor_id.clone()
+          />
           <div class="text-sm">to</div>
-          <CommunityListing community=community />
+          <CommunityListing
+            icon=community_icon
+            name=community_name
+            title=community_title
+            actor_id=community_actor_id
+          />
         </div>
 
         <ContentActions
@@ -146,9 +158,9 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           id=id
           saved=saved
           save_action=save_action
-          report_action=report_action
           creator_id=creator_id
-          apub_link=apub_link
+          apub_link=actor_id
+          creator_actor_id=creator_actor_id
         />
       </div>
 

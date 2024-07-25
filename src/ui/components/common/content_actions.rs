@@ -8,42 +8,37 @@ use crate::{
   utils::{
     derive_user_is_logged_in,
     traits::ToStr,
-    types::{ServerAction, ServerActionFn},
+    types::{
+      Comments,
+      ContentActionType,
+      Hidden,
+      ReportModalData,
+      ReportModalNode,
+      ServerAction,
+      ServerActionFn,
+    },
   },
 };
 use leptos::*;
 use leptos_router::{ActionForm, A};
 use tailwind_fuse::tw_join;
 
-#[derive(Clone, Copy, PartialEq)]
-pub enum ContentActionType {
-  Post,
-  #[allow(dead_code)]
-  Comment,
-}
-
-#[derive(Clone, Copy, PartialEq)]
-pub struct Comments(pub i64);
-
-#[derive(Clone, Copy, PartialEq)]
-pub struct Hidden(pub bool);
-
 #[component]
-pub fn ContentActions<SA, RA>(
+pub fn ContentActions<SA>(
   content_action_type: ContentActionType,
   id: i32,
   saved: Signal<bool>,
   save_action: ServerAction<SA>,
-  report_action: ServerAction<RA>,
   creator_id: i32,
+  creator_actor_id: String,
   apub_link: String,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
-  RA: ServerActionFn,
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  let creator_actor_id = StoredValue::new(creator_actor_id);
   let logged_in_user_id = Signal::derive(move || {
     with!(|site_resource| site_resource
       .as_ref()
@@ -72,11 +67,6 @@ where
     }
   });
   let crosspost_label = "Crosspost";
-  let report_content_label = if content_action_type == ContentActionType::Comment {
-    "Report comment"
-  } else {
-    "Report post"
-  };
 
   view! {
     <div class="flex items-center gap-x-2">
@@ -122,14 +112,11 @@ where
             }>
               {(content_action_type == ContentActionType::Post)
                   .then(|| view! { <HidePostButton id=id /> })} <li>
-                <ActionForm action=report_action>
-                  <input type="hidden" name="id" value=id />
-                  <button class="text-xs whitespace-nowrap" type="submit">
-                    <Icon icon=IconType::Report class="inline-block" />
-                    " "
-                    {report_content_label}
-                  </button>
-                </ActionForm>
+                <ReportButton
+                  id=id
+                  content_action_type=content_action_type
+                  creator_actor_id=creator_actor_id
+                />
               </li> <li>
                 <ActionForm action=block_user_action>
                   <input type="hidden" name="id" value=creator_id />
@@ -191,5 +178,45 @@ fn CommentCount(id: i32) -> impl IntoView {
       " "
       <span class="align-sub">{move || comments.get().0}</span>
     </A>
+  }
+}
+
+fn report_content(id: i32, content_type: ContentActionType, creator_actor_id: String) {
+  let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
+  let report_modal = expect_context::<ReportModalNode>().0;
+
+  set_report_modal_data.set(ReportModalData {
+    id,
+    content_type,
+    creator_actor_id,
+  });
+  let _ = report_modal
+    .get_untracked()
+    .expect("Report dialog should exist")
+    .show_modal();
+}
+
+#[component]
+fn ReportButton(
+  id: i32,
+  content_action_type: ContentActionType,
+  creator_actor_id: StoredValue<String>,
+) -> impl IntoView {
+  let report_content_label = if content_action_type == ContentActionType::Comment {
+    "Report comment"
+  } else {
+    "Report post"
+  };
+
+  view! {
+    <button
+      class="text-xs whitespace-nowrap"
+      type="button"
+      on:click=move |_| report_content(id, content_action_type, creator_actor_id.get_value())
+    >
+      <Icon icon=IconType::Report class="inline-block" />
+      " "
+      {report_content_label}
+    </button>
   }
 }

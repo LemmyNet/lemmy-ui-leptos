@@ -7,33 +7,33 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.6" }
-leptos_meta = { version = "0.6" }
-leptos_router = { version = "0.6" }
-leptos_i18n = "0"
-cfg-if = "1"
+leptos = { version = "0.6.13" }
+leptos_meta = { version = "0.6.13" }
+leptos_router = { version = "0.6.13" }
+leptos_i18n = "0.3.3"
+cfg-if = "1.0.0"
 lemmy-client = { version = "1.0.2", features = ["leptos"] }
-serde = "1"
-serde_json = "1"
-
-wasm-bindgen = { version = "0.2", optional = true }
+serde = "1.0.204"
+serde_json = "1.0.120"
+js-sys = { version = "0.3.69", optional = true }
 
 # required for better debug messages
-console_error_panic_hook = { version = "0", optional = true }
+console_error_panic_hook = { version = "0.1.7", optional = true }
 
 # dependecies for server (enable when ssr set)
-leptos_actix = { version = "0.6", optional = true }
-actix-files = { version = "0", optional = true }
-actix-web = { version = "4", features = ["macros"], optional = true }
-actix-session = { version = "0.9", features = [
+leptos_actix = { version = "0.6.13", optional = true }
+actix-files = { version = "0.6.6", optional = true }
+actix-web = { version = "4.8.0", features = ["macros"], optional = true }
+actix-session = { version = "0.9.0", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.39", optional = true, features = ["macros"] }
+tokio = { version = "1.39.1", optional = true, features = ["macros"] }
 strum = { version = "0.26.3", features = ["derive"] }
-trait-set = "0.3"
-leptos-use = "0.10"
+trait-set = "0.3.0"
+leptos-use = "0.10.10"
 si_format = "0.1.1"
-tailwind_fuse = { version = "0.3", features = ["variant"] }
+tailwind_fuse = { version = "0.3.1", features = ["variant"] }
+regex = { version = "1.10.5", optional = true }
 
 [package.metadata.leptos-i18n]
 default = "en"
@@ -46,16 +46,16 @@ hydrate = [
   "leptos_meta/hydrate",
   "leptos_router/hydrate",
   "leptos_i18n/hydrate",
-  "dep:wasm-bindgen",
   "dep:console_error_panic_hook",
+  "dep:js-sys",
 ]
 csr = [
   "leptos/csr",
   "leptos_meta/csr",
   "leptos_router/csr",
   "leptos_i18n/csr",
-  "dep:wasm-bindgen",
   "dep:console_error_panic_hook",
+  "dep:js-sys",
 ]
 ssr = [
   "leptos/ssr",
@@ -67,6 +67,7 @@ ssr = [
   "dep:actix-files",
   "dep:actix-session",
   "dep:tokio",
+  "dep:regex",
 ]
 
 [package.metadata.cargo-all-features]
