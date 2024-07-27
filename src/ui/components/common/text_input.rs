@@ -47,7 +47,7 @@ pub fn TextInput(
         disabled=disabled
         required=required
         min_length=min_length
-        pattern=pattern
+        pattern=move || pattern.get().map(|p| p.get())
       />
 
       <Show when=move || input_type == InputType::Password>
