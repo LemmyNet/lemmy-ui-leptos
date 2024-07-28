@@ -598,6 +598,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "codee"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af40247be877a1e3353fb406aa27ab3ef4bd3ff18cef91e75e667bfa3fde701d"
+dependencies = [
+ "thiserror",
+]
+
+[[package]]
 name = "collection_literals"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1764,12 +1773,13 @@ dependencies = [
 
 [[package]]
 name = "leptos-use"
-version = "0.10.10"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3272d90b77cdbb99e9060f90eb6f5738e56128b2f912db57a50efb006a26e262"
+checksum = "118fc5800f2ad58888ee849f0c133d9d62a63244c99f6e67170bf3558241b562"
 dependencies = [
  "async-trait",
  "cfg-if",
+ "codee",
  "cookie 0.18.1",
  "default-struct-builder",
  "futures-util",
