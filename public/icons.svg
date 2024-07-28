@@ -129,6 +129,11 @@
       <line x1="71.79" y1="171.72" x2="128" y2="128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
       <line x1="55.2" y1="164.02" x2="52.8" y2="103.98" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
     </symbol>
+    <symbol id="x" fill="currentColor" viewBox="0 0 256 256">
+      <rect width="256" height="256" fill="none"/>
+      <line x1="200" y1="56" x2="56" y2="200" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+      <line x1="200" y1="200" x2="56" y2="56" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+    </symbol>
   </defs>
 </svg>
 

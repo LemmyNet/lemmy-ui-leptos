@@ -115,7 +115,7 @@ pub fn App() -> impl IntoView {
         </Route>
       </Routes>
 
-      <ReportModal node_ref=report_modal.0 modal_data=report_modal_data />
+      <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
     </Router>
   }
 }
