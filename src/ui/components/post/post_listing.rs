@@ -7,7 +7,7 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
-  utils::types::{Comments, ContentActionType, Hidden},
+  utils::types::{ContentActionType, Hidden},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
@@ -46,12 +46,8 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
   );
 
   // TODO: Will need setter once creating comments is supported
-  let (comments, _set_comments) = create_slice(
-    post_state,
-    |state| Comments(state.counts.comments),
-    |state, comments| state.counts.comments = comments,
-  );
-  provide_context(comments);
+  let (comments, _set_comments) = slice!(post_state.counts.comments);
+  let num_comments_label = Signal::derive(move || format!("{} comments", comments.get()));
 
   let (my_vote, set_my_vote) = slice!(post_state.my_vote);
   let (score, set_score) = slice!(post_state.counts.score);
@@ -153,15 +149,27 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           />
         </div>
 
-        <ContentActions
-          content_action_type=ContentActionType::Post
-          id=id
-          saved=saved
-          save_action=save_action
-          creator_id=creator_id
-          apub_link=actor_id
-          creator_actor_id=creator_actor_id
-        />
+        <div class="flex items-center gap-x-2">
+          <A
+            href=move || { format!("/post/{id}") }
+            class="text-sm whitespace-nowrap"
+            attr:title=num_comments_label
+            attr:aria-label=num_comments_label
+          >
+            <Icon icon=IconType::Comment class="inline align-baseline" />
+            " "
+            <span class="align-sub">{move || comments.get()}</span>
+          </A>
+          <ContentActions
+            content_action_type=ContentActionType::Post
+            id=id
+            saved=saved
+            save_action=save_action
+            creator_id=creator_id
+            apub_link=actor_id
+            creator_actor_id=creator_actor_id
+          />
+        </div>
       </div>
 
     </article>

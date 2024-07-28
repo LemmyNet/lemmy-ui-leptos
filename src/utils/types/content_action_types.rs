@@ -7,7 +7,4 @@ pub enum ContentActionType {
 }
 
 #[derive(Clone, Copy, PartialEq)]
-pub struct Comments(pub i64);
-
-#[derive(Clone, Copy, PartialEq)]
 pub struct Hidden(pub bool);

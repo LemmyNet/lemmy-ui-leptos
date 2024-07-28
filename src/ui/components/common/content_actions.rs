@@ -11,14 +11,12 @@ use crate::{
     types::{ContentActionType, ServerAction, ServerActionFn},
   },
 };
-use comment_count::CommentCount;
 use hide_post_button::HidePostButton;
 use leptos::*;
 use leptos_router::{ActionForm, A};
 use report_button::ReportButton;
 use tailwind_fuse::tw_join;
 
-mod comment_count;
 mod hide_post_button;
 mod report_button;
 
@@ -68,68 +66,66 @@ where
   let crosspost_label = "Crosspost";
 
   view! {
-    <div class="flex items-center gap-x-2">
-      {(content_action_type == ContentActionType::Post).then(|| view! { <CommentCount id=id /> })}
-      <Fedilink href=apub_link /> <Show when=move || user_is_logged_in.get()>
-        <ActionForm action=save_action class="flex items-center">
-          <input type="hidden" name="id" value=id />
-          <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
-          <button
-            type="submit"
-            title=save_content_label
-            aria-label=save_content_label
+    <Fedilink href=apub_link />
+    <Show when=move || user_is_logged_in.get()>
+      <ActionForm action=save_action class="flex items-center">
+        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
+        <button
+          type="submit"
+          title=save_content_label
+          aria-label=save_content_label
 
-            class=move || {
-                tw_join!(
-                    "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
+          class=move || {
+              tw_join!(
+                  "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
                     .then_some("text-accent")
-                )
-            }
+              )
+          }
 
-            disabled=move || save_action.pending().get()
-          >
-            <Icon icon=save_icon />
+          disabled=move || save_action.pending().get()
+        >
+          <Icon icon=save_icon />
 
-          </button>
-        </ActionForm>
-        {(content_action_type == ContentActionType::Post)
-            .then(|| {
-                view! {
-                  <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
-                    <Icon icon=IconType::Crosspost />
-                  </A>
-                }
-            })}
+        </button>
+      </ActionForm>
+      {(content_action_type == ContentActionType::Post)
+          .then(|| {
+              view! {
+                <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
+                  <Icon icon=IconType::Crosspost />
+                </A>
+              }
+          })}
 
-        <div class="dropdown">
-          <div tabindex="0" role="button">
-            <Icon icon=IconType::VerticalDots />
-          </div>
-          <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-            <Show when=move || {
-                logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
-            }>
-              {(content_action_type == ContentActionType::Post)
-                  .then(|| view! { <HidePostButton id=id /> })} <li>
-                <ReportButton
-                  id=id
-                  content_action_type=content_action_type
-                  creator_actor_id=creator_actor_id
-                />
-              </li> <li>
-                <ActionForm action=block_user_action>
-                  <input type="hidden" name="id" value=creator_id />
-                  <input type="hidden" name="block" value="true" />
-                  <button class="text-xs whitespace-nowrap" type="submit">
-                    <Icon icon=IconType::Block class="inline-block" />
-                    " Block user"
-                  </button>
-                </ActionForm>
-              </li>
-            </Show>
-          </menu>
+      <div class="dropdown">
+        <div tabindex="0" role="button">
+          <Icon icon=IconType::VerticalDots />
         </div>
-      </Show>
-    </div>
+        <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+          <Show when=move || {
+              logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
+          }>
+            {(content_action_type == ContentActionType::Post)
+                .then(|| view! { <HidePostButton id=id /> })} <li>
+              <ReportButton
+                id=id
+                content_action_type=content_action_type
+                creator_actor_id=creator_actor_id
+              />
+            </li> <li>
+              <ActionForm action=block_user_action>
+                <input type="hidden" name="id" value=creator_id />
+                <input type="hidden" name="block" value="true" />
+                <button class="text-xs whitespace-nowrap" type="submit">
+                  <Icon icon=IconType::Block class="inline-block" />
+                  " Block user"
+                </button>
+              </ActionForm>
+            </li>
+          </Show>
+        </menu>
+      </div>
+    </Show>
   }
 }
