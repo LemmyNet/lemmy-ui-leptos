@@ -14,7 +14,8 @@ fn format_apub_name<const PREFIX: char>(instance: &str, name: &str) -> String {
 }
 
 fn create_apub_name<const PREFIX: char>(actor_id: &str) -> String {
-  const REGEX_STR: &str = r"https?:\/\/((?:(?:[^.]\.)*[^.]+\.[^:]+)|localhost)(?::\d{1,5})?\/[uc]\/([^?#]+)";
+  const REGEX_STR: &str =
+    r"https?:\/\/((?:(?:[^.]\.)*[^.]+\.[^:]+)|localhost)(?::\d{1,5})?\/[uc]\/([^?#]+)";
 
   cfg_if! {
       if #[cfg(feature = "ssr")] {
@@ -58,8 +59,8 @@ fn create_apub_name<const PREFIX: char>(actor_id: &str) -> String {
 // TODO: Figure out how to test functions when targeting wasm
 #[cfg(test)]
 mod tests {
-  use rstest::rstest;
   use super::{create_community_apub_name, create_user_apub_name};
+  use rstest::rstest;
 
   #[rstest]
   #[case("https://lemmy.ml/u/lemmy", String::from("@lemmy@lemmy.ml"))]
@@ -67,7 +68,10 @@ mod tests {
   #[case("http://lemmy.ml:3000/u/lemmy", String::from("@lemmy@lemmy.ml"))]
   #[case("http://localhost/u/lemmy", String::from("@lemmy@localhost"))]
   #[case("http://localhost:8536/u/lemmy", String::from("@lemmy@localhost"))]
-  #[case("http://sh.itjust.works/u/lemmy", String::from("@lemmy@sh.itjust.works"))]
+  #[case(
+    "http://sh.itjust.works/u/lemmy",
+    String::from("@lemmy@sh.itjust.works")
+  )]
   #[case("http://lemmy.ml/post/123", String::new())]
   #[case("https://foo/u/person", String::new())]
   fn formats_user_apub_correctly(#[case] actor_id: &str, #[case] expected: String) {
@@ -80,7 +84,10 @@ mod tests {
   #[case("http://lemmy.ml:3000/c/memes", String::from("!memes@lemmy.ml"))]
   #[case("http://localhost/c/memes", String::from("!memes@localhost"))]
   #[case("http://localhost:8536/c/memes", String::from("!memes@localhost"))]
-  #[case("http://sh.itjust.works/c/memes", String::from("!memes@sh.itjust.works"))]
+  #[case(
+    "http://sh.itjust.works/c/memes",
+    String::from("!memes@sh.itjust.works")
+  )]
   #[case("http://lemmy.ml/post/123", String::new())]
   #[case("https://foo/c/comm", String::new())]
   fn formats_community_apub_correctly(#[case] actor_id: &str, #[case] expected: String) {

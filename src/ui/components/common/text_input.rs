@@ -21,6 +21,7 @@ pub fn TextInput(
   #[prop(into)] label: TextProp,
   #[prop(default = InputType::Text)] input_type: InputType,
   #[prop(optional)] validation_class: MaybeSignal<String>,
+  #[prop(default = false)] autofocus: bool,
 ) -> impl IntoView {
   let show_password = RwSignal::new(false);
   let for_id = id.get().clone();
@@ -48,6 +49,7 @@ pub fn TextInput(
         required=required
         min_length=min_length
         pattern=move || pattern.get().map(|p| p.get())
+        autofocus=autofocus
       />
 
       <Show when=move || input_type == InputType::Password>

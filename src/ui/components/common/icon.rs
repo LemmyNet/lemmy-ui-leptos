@@ -40,7 +40,7 @@ pub enum IconType {
   Users,
   Posts,
   Fediverse,
-  X
+  X,
 }
 
 #[derive(Debug, TwVariant)]
