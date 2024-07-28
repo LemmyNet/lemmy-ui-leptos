@@ -1,6 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  serverfns::{posts::HidePostAction, users::create_block_user_action},
+  serverfns::users::create_block_user_action,
   ui::components::common::{
     fedilink::Fedilink,
     icon::{Icon, IconType},
@@ -8,20 +8,19 @@ use crate::{
   utils::{
     derive_user_is_logged_in,
     traits::ToStr,
-    types::{
-      Comments,
-      ContentActionType,
-      Hidden,
-      ReportModalData,
-      ReportModalNode,
-      ServerAction,
-      ServerActionFn,
-    },
+    types::{ContentActionType, ServerAction, ServerActionFn},
   },
 };
+use comment_count::CommentCount;
+use hide_post_button::HidePostButton;
 use leptos::*;
 use leptos_router::{ActionForm, A};
+use report_button::ReportButton;
 use tailwind_fuse::tw_join;
+
+mod comment_count;
+mod hide_post_button;
+mod report_button;
 
 #[component]
 pub fn ContentActions<SA>(
@@ -132,91 +131,5 @@ where
         </div>
       </Show>
     </div>
-  }
-}
-
-#[component]
-fn HidePostButton(id: i32) -> impl IntoView {
-  let hide_post_action = expect_context::<HidePostAction>();
-  let hidden = expect_context::<Signal<Hidden>>();
-  let icon = Signal::derive(move || {
-    if hidden.get().0 {
-      IconType::Eye
-    } else {
-      IconType::EyeSlash
-    }
-  });
-
-  view! {
-    <li>
-      <ActionForm action=hide_post_action>
-        <input type="hidden" name="id" value=id />
-        <input type="hidden" name="hide" value=move || (!hidden.get().0).to_str() />
-        <button class="text-xs whitespace-nowrap" type="submit">
-          <Icon icon=icon class="inline-block" />
-          " "
-          {move || if hidden.get().0 { "Unhide post" } else { "Hide post" }}
-        </button>
-      </ActionForm>
-    </li>
-  }
-}
-
-#[component]
-fn CommentCount(id: i32) -> impl IntoView {
-  let comments = expect_context::<Signal<Comments>>();
-  let num_comments_label = Signal::derive(move || format!("{} comments", comments.get().0));
-
-  view! {
-    <A
-      href=move || { format!("/post/{id}") }
-      class="text-sm whitespace-nowrap"
-      attr:title=num_comments_label
-      attr:aria-label=num_comments_label
-    >
-      <Icon icon=IconType::Comment class="inline align-baseline" />
-      " "
-      <span class="align-sub">{move || comments.get().0}</span>
-    </A>
-  }
-}
-
-fn report_content(id: i32, content_type: ContentActionType, creator_actor_id: String) {
-  let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
-  let report_modal = expect_context::<ReportModalNode>().0;
-
-  set_report_modal_data.set(ReportModalData {
-    id,
-    content_type,
-    creator_actor_id,
-  });
-  let _ = report_modal
-    .get_untracked()
-    .expect("Report dialog should exist")
-    .show_modal();
-}
-
-#[component]
-fn ReportButton(
-  id: i32,
-  content_action_type: ContentActionType,
-  creator_actor_id: StoredValue<String>,
-) -> impl IntoView {
-  let report_content_label = if content_action_type == ContentActionType::Comment {
-    "Report comment"
-  } else {
-    "Report post"
-  };
-
-  view! {
-    <button
-      class="text-xs whitespace-nowrap"
-      type="button"
-      on:click=move |_| report_content(id, content_action_type, creator_actor_id.get_value())
-    >
-      <Icon icon=IconType::Report class="inline-block" />
-      " "
-      {report_content_label}
-    </button>
   }
 }
