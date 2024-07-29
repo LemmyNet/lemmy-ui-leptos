@@ -60,6 +60,7 @@ steps:
     image: *rust_image
     commands:
       - <<: *install_binstall
+      - rustup target add wasm32-unknown-unknown
       - cargo binstall -y cargo-leptos
       - cargo leptos build
     when:
