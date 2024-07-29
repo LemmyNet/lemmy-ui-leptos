@@ -42,7 +42,6 @@ steps:
   cargo_machete:
     image: *rust_image
     commands:
-      - <<: *install_binstall
       - cargo binstall -y cargo-machete
       - cargo machete
     when:
