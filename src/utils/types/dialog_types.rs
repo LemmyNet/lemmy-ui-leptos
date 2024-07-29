@@ -5,6 +5,7 @@ use leptos::{html::Dialog, NodeRef};
 pub struct ReportModalData {
   pub content_id: ContentId,
   pub creator_actor_id: String,
+  pub creator_name: String,
 }
 
 #[derive(Clone, Copy)]

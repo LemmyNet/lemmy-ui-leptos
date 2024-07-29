@@ -21,7 +21,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
 
   let creator_id = post_view.creator.id.0;
   let creator_avatar = post_view.creator.avatar.clone().map(|url| url.to_string());
-  let creator_name = post_view.creator.name.clone();
+  let creator_name = StoredValue::new(post_view.creator.name.clone());
   let creator_display_name = post_view.creator.display_name.clone();
   let creator_actor_id = post_view.creator.actor_id.clone().to_string();
 
@@ -136,7 +136,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
         <div class="flex items-center gap-1.5">
           <CreatorListing
             avatar=creator_avatar
-            name=creator_name
+            name=creator_name.get_value().clone()
             display_name=creator_display_name
             actor_id=creator_actor_id.clone()
           />
@@ -167,6 +167,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             creator_id=creator_id
             apub_link=actor_id
             creator_actor_id=creator_actor_id
+            creator_name=creator_name
           />
         </div>
       </div>

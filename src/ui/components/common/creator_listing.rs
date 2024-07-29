@@ -25,7 +25,7 @@ pub fn CreatorListing(
           {display_name.as_ref().map(ToString::to_string).unwrap_or_else(|| name.get_value())}
         </div>
         <A href=format!("/u/{}", name.get_value()) class="text-xs block text-primary font-light">
-          {create_user_apub_name(&actor_id)}
+          {create_user_apub_name(&name.get_value(), &actor_id)}
         </A>
       </div>
     </div>

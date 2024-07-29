@@ -21,7 +21,7 @@ pub fn CommunityListing(
           )} <div>
         <div class="text-sm mb-px font-medium">{title}</div>
         <A href=format!("/c/{}", name) class="text-xs block text-secondary font-light">
-          {create_community_apub_name(&actor_id)}
+          {create_community_apub_name(&name, &actor_id)}
         </A>
       </div>
     </div>
