@@ -93,7 +93,7 @@ steps:
     image: alpine:3
     commands:
       - apk add curl
-      - "curl -d'Lemmy-UI-leptos build failed: ${CI_BUILD_LINK}' ntfy.sh/lemmy_drone_ci"
+      - "curl -d'Lemmy-UI-leptos build failed: ${CI_PIPELINE_URL}' ntfy.sh/lemmy_drone_ci"
     when:
       - event: pull_request
         status: failure
