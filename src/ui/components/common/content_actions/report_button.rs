@@ -1,16 +1,15 @@
 use crate::{
   ui::components::common::icon::{Icon, IconType},
-  utils::types::{ContentActionType, ReportModalData, ReportModalNode},
+  utils::types::{ContentId, ReportModalData, ReportModalNode},
 };
 use leptos::*;
 
-fn report_content(id: i32, content_type: ContentActionType, creator_actor_id: String) {
+fn report_content(content_id: ContentId, creator_actor_id: String) {
   let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
   let report_modal = expect_context::<ReportModalNode>().0;
 
   set_report_modal_data.set(ReportModalData {
-    id,
-    content_type,
+    content_id,
     creator_actor_id,
   });
   let _ = report_modal
@@ -20,12 +19,8 @@ fn report_content(id: i32, content_type: ContentActionType, creator_actor_id: St
 }
 
 #[component]
-pub fn ReportButton(
-  id: i32,
-  content_action_type: ContentActionType,
-  creator_actor_id: StoredValue<String>,
-) -> impl IntoView {
-  let report_content_label = if content_action_type == ContentActionType::Comment {
+pub fn ReportButton(content_id: ContentId, creator_actor_id: StoredValue<String>) -> impl IntoView {
+  let report_content_label = if matches!(content_id, ContentId::Comment(_)) {
     "Report comment"
   } else {
     "Report post"
@@ -35,7 +30,7 @@ pub fn ReportButton(
     <button
       class="text-xs whitespace-nowrap"
       type="button"
-      on:click=move |_| report_content(id, content_action_type, creator_actor_id.get_value())
+      on:click=move |_| report_content(content_id, creator_actor_id.get_value())
     >
       <Icon icon=IconType::Report class="inline-block" />
       " "

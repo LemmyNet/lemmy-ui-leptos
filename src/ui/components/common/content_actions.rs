@@ -8,7 +8,7 @@ use crate::{
   utils::{
     derive_user_is_logged_in,
     traits::ToStr,
-    types::{ContentActionType, ServerAction, ServerActionFn},
+    types::{ContentId, ServerAction, ServerActionFn},
   },
 };
 use hide_post_button::HidePostButton;
@@ -22,8 +22,7 @@ mod report_button;
 
 #[component]
 pub fn ContentActions<SA>(
-  content_action_type: ContentActionType,
-  id: i32,
+  content_id: ContentId,
   saved: Signal<bool>,
   save_action: ServerAction<SA>,
   creator_id: i32,
@@ -51,7 +50,7 @@ where
 
   let block_user_action = create_block_user_action();
 
-  let save_content_label = if content_action_type == ContentActionType::Comment {
+  let save_content_label = if matches!(content_id, ContentId::Post(_)) {
     "Save comment"
   } else {
     "Save post"
@@ -69,7 +68,7 @@ where
     <Fedilink href=apub_link />
     <Show when=move || user_is_logged_in.get()>
       <ActionForm action=save_action class="flex items-center">
-        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="id" value=content_id.get_id() />
         <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
         <button
           type="submit"
@@ -89,7 +88,7 @@ where
 
         </button>
       </ActionForm>
-      {(content_action_type == ContentActionType::Post)
+      {(matches!(content_id, ContentId::Post(_)))
           .then(|| {
               view! {
                 <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
@@ -106,13 +105,12 @@ where
           <Show when=move || {
               logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
           }>
-            {(content_action_type == ContentActionType::Post)
-                .then(|| view! { <HidePostButton id=id /> })} <li>
-              <ReportButton
-                id=id
-                content_action_type=content_action_type
-                creator_actor_id=creator_actor_id
-              />
+            {if let ContentId::Post(id) = content_id {
+                Some(view! { <HidePostButton id=id /> })
+            } else {
+                None
+            }} <li>
+              <ReportButton content_id=content_id creator_actor_id=creator_actor_id />
             </li> <li>
               <ActionForm action=block_user_action>
                 <input type="hidden" name="id" value=creator_id />

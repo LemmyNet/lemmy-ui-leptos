@@ -7,7 +7,7 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
-  utils::types::{ContentActionType, Hidden},
+  utils::types::{ContentId, Hidden},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
@@ -161,8 +161,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             <span class="align-sub">{move || comments.get()}</span>
           </A>
           <ContentActions
-            content_action_type=ContentActionType::Post
-            id=id
+            content_id=ContentId::Post(id)
             saved=saved
             save_action=save_action
             creator_id=creator_id

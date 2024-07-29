@@ -1,10 +1,9 @@
-use super::ContentActionType;
+use super::ContentId;
 use leptos::{html::Dialog, NodeRef};
 
 #[derive(Clone, Default)]
 pub struct ReportModalData {
-  pub id: i32,
-  pub content_type: ContentActionType,
+  pub content_id: ContentId,
   pub creator_actor_id: String,
 }
 

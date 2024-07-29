@@ -6,7 +6,7 @@ use crate::{
   },
   utils::{
     create_user_apub_name,
-    types::{ContentActionType, ReportModalData},
+    types::{ContentId, ReportModalData},
   },
 };
 use html::Dialog;
@@ -14,13 +14,9 @@ use leptos::*;
 use leptos_router::ActionForm;
 
 #[component]
-fn ReportForm(
-  id: Signal<i32>,
-  creator_actor_id: Signal<String>,
-  content_action_type: Signal<ContentActionType>,
-) -> impl IntoView {
+fn ReportForm(creator_actor_id: Signal<String>, content_id: Signal<ContentId>) -> impl IntoView {
   let content_type_str = Signal::derive(move || {
-    if content_action_type.get() == ContentActionType::Post {
+    if matches!(content_id.get(), ContentId::Post(_)) {
       "post"
     } else {
       "comment"
@@ -45,7 +41,7 @@ fn ReportForm(
       ": "
       <span>{move || with!(|creator_actor_id| create_user_apub_name(creator_actor_id))}</span>
     </div>
-    <input type="hidden" name="id" value=id />
+    <input type="hidden" name="id" value=move || content_id.get().get_id() />
     <TextInput required=true id="report_reason_id" name="reason" label="Reason" autofocus=true />
     <div class="modal-action">
       <button formmethod="dialog" formnovalidate=true class="btn btn-outline">
@@ -63,8 +59,7 @@ pub fn ReportModal(
   dialog_ref: NodeRef<Dialog>,
   modal_data: ReadSignal<ReportModalData>,
 ) -> impl IntoView {
-  let id = Signal::derive(move || with!(|modal_data| modal_data.id));
-  let content_action_type = Signal::derive(move || with!(|modal_data| modal_data.content_type));
+  let content_id = Signal::derive(move || with!(|modal_data| modal_data.content_id));
   let creator_actor_id =
     Signal::derive(move || modal_data.with(|data| data.creator_actor_id.clone()));
 
@@ -101,25 +96,17 @@ pub fn ReportModal(
       }
     >
       <Show
-        when=move || content_action_type.get() == ContentActionType::Post
+        when=move || matches!(content_id.get(), ContentId::Post(_))
         fallback=move || {
             view! {
               <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
-                <ReportForm
-                  id=id
-                  creator_actor_id=creator_actor_id
-                  content_action_type=content_action_type
-                />
+                <ReportForm creator_actor_id=creator_actor_id content_id=content_id />
               </ActionForm>
             }
         }
       >
         <ActionForm node_ref=form_ref action=report_post_action class="modal-box">
-          <ReportForm
-            id=id
-            creator_actor_id=creator_actor_id
-            content_action_type=content_action_type
-          />
+          <ReportForm creator_actor_id=creator_actor_id content_id=content_id />
         </ActionForm>
       </Show>
     </dialog>
