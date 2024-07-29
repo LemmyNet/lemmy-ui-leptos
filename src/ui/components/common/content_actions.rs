@@ -28,6 +28,7 @@ pub fn ContentActions<SA>(
   save_action: ServerAction<SA>,
   creator_id: PersonId,
   creator_actor_id: String,
+  creator_name: StoredValue<String>,
   apub_link: String,
 ) -> impl IntoView
 where
@@ -108,7 +109,11 @@ where
             } else {
                 None
             }} <li>
-              <ReportButton content_id=content_id creator_actor_id=creator_actor_id />
+              <ReportButton
+                creator_name=creator_name
+                content_id=content_id
+                creator_actor_id=creator_actor_id
+              />
             </li> <li>
               <ActionForm action=block_user_action>
                 <input type="hidden" name="id" value=creator_id.0 />

@@ -161,7 +161,7 @@ fn NotFound() -> impl IntoView {
 }
 
 #[cfg(feature = "hydrate")]
-#[js_sys::wasm_bindgen::prelude::wasm_bindgen]
+#[web_sys::wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
   console_error_panic_hook::set_once();
   mount_to_body(App);

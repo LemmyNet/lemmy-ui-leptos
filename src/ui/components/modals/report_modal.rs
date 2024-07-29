@@ -15,6 +15,7 @@ use leptos_router::ActionForm;
 
 #[component]
 fn ReportForm(
+  creator_name: Signal<String>,
   creator_actor_id: Signal<String>,
   content_id: Signal<PostOrCommentId>,
 ) -> impl IntoView {
@@ -42,7 +43,13 @@ fn ReportForm(
         {move || format!("Creator of {}", content_type_str.get())}
       </strong>
       ": "
-      <span>{move || with!(|creator_actor_id| create_user_apub_name(creator_actor_id))}</span>
+      <span>
+        {move || {
+            with!(
+                |creator_name, creator_actor_id| create_user_apub_name(creator_name, creator_actor_id)
+            )
+        }}
+      </span>
     </div>
     <input type="hidden" name="id" value=move || content_id.get().get_id() />
     <TextInput required=true id="report_reason_id" name="reason" label="Reason" autofocus=true />
@@ -64,7 +71,8 @@ pub fn ReportModal(
 ) -> impl IntoView {
   let content_id = Signal::derive(move || with!(|modal_data| modal_data.content_id));
   let creator_actor_id =
-    Signal::derive(move || modal_data.with(|data| data.creator_actor_id.clone()));
+    Signal::derive(move || with!(|modal_data| modal_data.creator_actor_id.clone()));
+  let creator_name = Signal::derive(move || with!(|modal_data| modal_data.creator_name.clone()));
 
   let form_ref = create_node_ref::<html::Form>();
   let close = move |_| {
@@ -103,13 +111,21 @@ pub fn ReportModal(
         fallback=move || {
             view! {
               <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
-                <ReportForm creator_actor_id=creator_actor_id content_id=content_id />
+                <ReportForm
+                  creator_name=creator_name
+                  creator_actor_id=creator_actor_id
+                  content_id=content_id
+                />
               </ActionForm>
             }
         }
       >
         <ActionForm node_ref=form_ref action=report_post_action class="modal-box">
-          <ReportForm creator_actor_id=creator_actor_id content_id=content_id />
+          <ReportForm
+            creator_name=creator_name
+            creator_actor_id=creator_actor_id
+            content_id=content_id
+          />
         </ActionForm>
       </Show>
     </dialog>
