@@ -3,7 +3,7 @@ use crate::{
   ui::components::common::icon::{Icon, IconType},
   utils::{
     derive_user_is_logged_in,
-    types::{ServerAction, ServerActionFn},
+    types::{PostOrCommentId, ServerAction, ServerActionFn},
   },
 };
 use leptos::*;
@@ -37,7 +37,7 @@ enum Vote {
 #[component]
 pub fn VoteButtons<VA>(
   my_vote: Signal<Option<i16>>,
-  id: i32,
+  id: PostOrCommentId,
   score: Signal<i64>,
   vote_action: ServerAction<VA>,
 ) -> impl IntoView
@@ -52,7 +52,7 @@ where
   view! {
     <div class="w-fit">
       <ActionForm action=vote_action>
-        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="id" value=id.get_id() />
         <input
           type="hidden"
           name="score"
@@ -76,7 +76,7 @@ where
       </ActionForm>
       <div class="text-sm text-center">{score}</div>
       <ActionForm action=vote_action class="w-fit">
-        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="id" value=id.get_id() />
         <input
           type="hidden"
           name="score"

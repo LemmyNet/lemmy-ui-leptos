@@ -1,22 +1,24 @@
+use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::{CommentId, PostId};
+
 #[derive(Clone, Copy)]
-pub enum ContentId {
-  Post(i32),
+pub enum PostOrCommentId {
+  Post(PostId),
   #[allow(dead_code)]
-  Comment(i32),
+  Comment(CommentId),
 }
 
-impl ContentId {
+impl PostOrCommentId {
   pub fn get_id(&self) -> i32 {
     match self {
-      Self::Post(id) => *id,
-      Self::Comment(id) => *id,
+      Self::Post(id) => id.0,
+      Self::Comment(id) => id.0,
     }
   }
 }
 
-impl Default for ContentId {
+impl Default for PostOrCommentId {
   fn default() -> Self {
-    Self::Post(0)
+    Self::Post(PostId(0))
   }
 }
 

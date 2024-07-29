@@ -1,9 +1,9 @@
-use super::ContentId;
+use super::PostOrCommentId;
 use leptos::{html::Dialog, NodeRef};
 
 #[derive(Clone, Default)]
 pub struct ReportModalData {
-  pub content_id: ContentId,
+  pub post_or_comment_id: PostOrCommentId,
   pub creator_actor_id: String,
   pub creator_name: String,
 }

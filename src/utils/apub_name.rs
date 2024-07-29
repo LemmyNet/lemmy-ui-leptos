@@ -26,7 +26,7 @@ fn create_apub_name<const PREFIX: char>(name: &str, actor_id: &str) -> String {
       }
   }
 
-  format_apub_name::<PREFIX>(&name, instance)
+  format_apub_name::<PREFIX>(name, instance)
 }
 
 // TODO: Figure out how to test functions when targeting wasm
