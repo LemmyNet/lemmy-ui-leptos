@@ -51,7 +51,7 @@ where
                       class="text-sm whitespace-nowrap"
                       attr:title=move || format!("{} comments", comments.get())
                     >
-                      <Icon icon=IconType::Comment class="inline align-baseline"/>
+                      <Icon icon=IconType::Comment class="inline align-baseline" />
                       " "
                       <span class="align-sub">{comments}</span>
                     </A>
@@ -60,10 +60,9 @@ where
           } else {
               None
           }
-      }}
-      <ActionForm action=save_action class="flex items-center">
-        <input type="hidden" name="id" value=id/>
-        <input type="hidden" name="save" value=move || (!saved.get()).to_string()/>
+      }} <ActionForm action=save_action class="flex items-center">
+        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="save" value=move || (!saved.get()).to_string() />
         <button
           type="submit"
           title=if matches!(content_action_type, ContentActionType::Comment) {
@@ -75,26 +74,26 @@ where
           class=move || if saved.get() { Some("text-accent") } else { None }
           disabled=move || !user_is_logged_in.get() || save_action.pending().get()
         >
-          <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save/> }>
-            <Icon icon=IconType::SaveFilled/>
+          <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save /> }>
+            <Icon icon=IconType::SaveFilled />
           </Show>
         </button>
       </ActionForm>
       <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
         <A href="/create_post">
-          <Icon icon=IconType::Crosspost/>
+          <Icon icon=IconType::Crosspost />
         </A>
       </Show> <div class="dropdown hidden sm:block">
         <label tabindex="0">
-          <Icon icon=IconType::VerticalDots/>
+          <Icon icon=IconType::VerticalDots />
         </label>
         <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
           <li>
             <ActionForm action=report_action>
-              <input type="hidden" name="id" value=id/>
-              <input type="text" name="reason" placeholder="reason"/>
+              <input type="hidden" name="id" value=id />
+              <input type="text" name="reason" placeholder="reason" />
               <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                <Icon icon=IconType::Report class="inline-block"/>
+                <Icon icon=IconType::Report class="inline-block" />
                 {if matches!(content_action_type, ContentActionType::Comment) {
                     " Report comment"
                 } else {
@@ -106,10 +105,10 @@ where
           </li>
           <li>
             <ActionForm action=block_user_action>
-              <input type="hidden" name="id" value=creator_id/>
-              <input type="hidden" name="block" value="true"/>
+              <input type="hidden" name="id" value=creator_id />
+              <input type="hidden" name="block" value="true" />
               <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                <Icon icon=IconType::Block class="inline-block"/>
+                <Icon icon=IconType::Block class="inline-block" />
                 " Block user"
               </button>
             </ActionForm>

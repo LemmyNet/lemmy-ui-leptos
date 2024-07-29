@@ -33,7 +33,7 @@ pub fn ThemeSelect() -> impl IntoView {
   view! {
     <details class="dropdown dropdown-end group" node_ref=dropdown_node_ref>
       <summary class="btn btn-circle btn-ghost relative" aria-label="Theme">
-        <Icon class="absolute left-1 inset-y-auto" icon=IconType::Theme/>
+        <Icon class="absolute left-1 inset-y-auto" icon=IconType::Theme />
         <Icon
           class="absolute right-2.5 bottom-1 group-open:rotate-180 transition-transform"
           icon=IconType::DropdownCaret
@@ -43,7 +43,7 @@ pub fn ThemeSelect() -> impl IntoView {
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
         <li>
           <ActionForm action=theme_action class="p-0">
-            <input type="hidden" name="theme" value=Theme::Dark/>
+            <input type="hidden" name="theme" value=Theme::Dark />
             <button type="submit" class="p-2.5">
               "Dark"
             </button>
@@ -51,7 +51,7 @@ pub fn ThemeSelect() -> impl IntoView {
         </li>
         <li>
           <ActionForm action=theme_action class="p-0">
-            <input type="hidden" name="theme" value=Theme::Light/>
+            <input type="hidden" name="theme" value=Theme::Light />
             <button type="submit" class="p-2.5">
               "Light"
             </button>
@@ -59,7 +59,7 @@ pub fn ThemeSelect() -> impl IntoView {
         </li>
         <li>
           <ActionForm action=theme_action class="p-0">
-            <input type="hidden" name="theme" value=Theme::Retro/>
+            <input type="hidden" name="theme" value=Theme::Retro />
             <button type="submit" class="p-2.5">
               "Retro"
             </button>

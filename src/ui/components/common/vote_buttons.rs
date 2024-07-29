@@ -32,7 +32,7 @@ where
   view! {
     <div class="w-fit">
       <ActionForm action=vote_action>
-        <input type="hidden" name="id" value=id/>
+        <input type="hidden" name="id" value=id />
         <input
           type="hidden"
           name="score"
@@ -51,12 +51,12 @@ where
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
 
-          <Icon icon=IconType::Upvote/>
+          <Icon icon=IconType::Upvote />
         </button>
       </ActionForm>
       <div class="text-sm text-center">{score}</div>
       <ActionForm action=vote_action class="w-fit">
-        <input type="hidden" name="id" value=id/>
+        <input type="hidden" name="id" value=id />
         <input
           type="hidden"
           name="score"
@@ -75,7 +75,7 @@ where
 
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
-          <Icon icon=IconType::Downvote/>
+          <Icon icon=IconType::Downvote />
         </button>
       </ActionForm>
     </div>

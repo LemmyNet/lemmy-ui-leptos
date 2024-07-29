@@ -35,5 +35,5 @@ pub fn CommentVoteButtons(
   #[prop(into)] score: i64,
 ) -> impl IntoView {
   let vote_action = Action::<VoteComment, _>::server();
-  view! { <VoteButtons my_vote=my_vote id=id score=score vote_action=vote_action/> }
+  view! { <VoteButtons my_vote=my_vote id=id score=score vote_action=vote_action /> }
 }

@@ -57,7 +57,7 @@ pub fn TextInput(
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)
         >
-          <Icon icon=eye_icon/>
+          <Icon icon=eye_icon />
         </button>
       </Show>
       <label

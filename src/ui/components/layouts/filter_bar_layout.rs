@@ -59,12 +59,12 @@ pub fn FilterBarLayout() -> impl IntoView {
   let filter_bar = Signal::derive(move || {
     view! {
       <Transition>
-        <FilterBar listing_type=listing_type sort_type=sort_type/>
+        <FilterBar listing_type=listing_type sort_type=sort_type />
       </Transition>
     }
   });
 
   provide_context(filter_bar);
 
-  view! { <Outlet/> }
+  view! { <Outlet /> }
 }

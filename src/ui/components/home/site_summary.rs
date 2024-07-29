@@ -88,13 +88,13 @@ pub fn SiteSummary() -> impl IntoView {
             <Unpack item=counts let:counts>
               <div class="font-semibold flex flex-wrap *:m-1.5">
                 <div>
-                  <Icon icon=IconType::Posts size=IconSize::Large class="inline"/>
+                  <Icon icon=IconType::Posts size=IconSize::Large class="inline" />
                   {counts.posts.si_format().to_string()}
                   " "
                   <span class="text-sm">Posts</span>
                 </div>
                 <div>
-                  <Icon icon=IconType::Comments size=IconSize::Large class="inline"/>
+                  <Icon icon=IconType::Comments size=IconSize::Large class="inline" />
                   {counts.comments.si_format().to_string()}
                   " "
                   <span class="text-sm">Comments</span>
@@ -102,7 +102,7 @@ pub fn SiteSummary() -> impl IntoView {
               </div>
               <table class="w-full mt-3 table shadow-lg">
                 <caption class="text-lg font-semibold whitespace-nowrap align-middle text-start mb-2">
-                  <Icon icon=IconType::Users size=IconSize::Large class="inline me-2"/>
+                  <Icon icon=IconType::Users size=IconSize::Large class="inline me-2" />
                   Active Users
                 </caption>
                 <thead>
@@ -116,11 +116,11 @@ pub fn SiteSummary() -> impl IntoView {
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text="Today" count=counts.users_active_day/>
-                  <UserStatRow text="Past Week" count=counts.users_active_week/>
-                  <UserStatRow text="Past Month" count=counts.users_active_month/>
-                  <UserStatRow text="Past 6 Months" count=counts.users_active_month/>
-                  <UserStatRow text="All Time" count=counts.users_active_month/>
+                  <UserStatRow text="Today" count=counts.users_active_day />
+                  <UserStatRow text="Past Week" count=counts.users_active_week />
+                  <UserStatRow text="Past Month" count=counts.users_active_month />
+                  <UserStatRow text="Past 6 Months" count=counts.users_active_month />
+                  <UserStatRow text="All Time" count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>

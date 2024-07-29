@@ -29,5 +29,5 @@ pub fn PostVoteButtons(
     });
   });
 
-  view! { <VoteButtons my_vote=my_vote id=id score=score vote_action=vote_action/> }
+  view! { <VoteButtons my_vote=my_vote id=id score=score vote_action=vote_action /> }
 }

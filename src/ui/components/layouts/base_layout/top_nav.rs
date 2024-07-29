@@ -42,19 +42,19 @@ pub fn TopNav() -> impl IntoView {
     <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg md:px-7">
       <div class="navbar-start md:hidden">
         <label for="mobile-drawer" aria-label="Open mobile drawer" class="btn btn-square btn-ghost">
-          <Icon icon=IconType::Hamburger/>
+          <Icon icon=IconType::Hamburger />
         </label>
       </div>
       <div class="navbar-center md:navbar-start">
         <Transition>
-          <InstanceName/>
+          <InstanceName />
         </Transition>
       </div>
       <div class="navbar-end gap-x-3">
         <Transition>
-          <ThemeSelect/>
-          <NotificationBell/>
-          <AuthDropdown/>
+          <ThemeSelect />
+          <NotificationBell />
+          <AuthDropdown />
         </Transition>
       </div>
     </nav>

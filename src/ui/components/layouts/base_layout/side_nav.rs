@@ -13,17 +13,17 @@ pub fn SideNav() -> impl IntoView {
   view! {
     <nav aria-label="Pages nav">
       <ul>
-        <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post)/>
+        <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post) />
         <NavLink
           href="/create_community"
           icon=IconType::CreateCommunity
           text=t!(i18n, create_community)
         />
-        <NavLink href="/communities" icon=IconType::Communities text=t!(i18n, communities)/>
-        <NavLink href="/search" icon=IconType::Search text=t!(i18n, search)/>
-        <NavLink href="/modlog" icon=IconType::Modlog text=t!(i18n, modlog)/>
-        <NavLink href="/instances" icon=IconType::Instances text=t!(i18n, instances)/>
-        <NavLink href="/legal" icon=IconType::Legal text=t!(i18n, legal)/>
+        <NavLink href="/communities" icon=IconType::Communities text=t!(i18n, communities) />
+        <NavLink href="/search" icon=IconType::Search text=t!(i18n, search) />
+        <NavLink href="/modlog" icon=IconType::Modlog text=t!(i18n, modlog) />
+        <NavLink href="/instances" icon=IconType::Instances text=t!(i18n, instances) />
+        <NavLink href="/legal" icon=IconType::Legal text=t!(i18n, legal) />
       </ul>
     </nav>
     <nav aria-labelledby="lemmy-resources-label" class="mt-auto">
@@ -36,9 +36,9 @@ pub fn SideNav() -> impl IntoView {
           icon=IconType::Documentation
           text=t!(i18n, docs)
         />
-        <NavLink href="https://github.com/LemmyNet" icon=IconType::Code text=t!(i18n, code)/>
-        <NavLink href="https://join-lemmy.org/" icon=IconType::Info text=t!(i18n, about)/>
-        <NavLink href="https://join-lemmy.org/donate" icon=IconType::Donate text=t!(i18n, donate)/>
+        <NavLink href="https://github.com/LemmyNet" icon=IconType::Code text=t!(i18n, code) />
+        <NavLink href="https://join-lemmy.org/" icon=IconType::Info text=t!(i18n, about) />
+        <NavLink href="https://join-lemmy.org/donate" icon=IconType::Donate text=t!(i18n, donate) />
       </ul>
     </nav>
   }
@@ -52,7 +52,7 @@ fn NavLink(href: &'static str, icon: IconType, #[prop(into)] text: TextProp) -> 
         href=href
         class="text-sm block leading-relaxed hover:bg-base-100 p-1.5 rounded-md transition duration-500 my-1 aria-current-page:bg-secondary aria-current-page:text-neutral aria-current-page:hover:bg-secondary/[0.6]"
       >
-        <Icon icon=icon class="inline me-1.5"/>
+        <Icon icon=icon class="inline me-1.5" />
         <span class="align-bottom">{text}</span>
       </A>
     </li>

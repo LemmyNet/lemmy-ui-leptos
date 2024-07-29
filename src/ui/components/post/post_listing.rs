@@ -99,7 +99,7 @@ pub fn PostListing(#[prop(into)] post_view: MaybeSignal<PostView>) -> impl IntoV
 
   view! {
     <article class="flex gap-x-3 items-center w-fit">
-      <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only()/>
+      <PostVoteButtons id=id my_vote=my_vote score=score post_write_signal=post_view.write_only() />
       {move || {
           with!(
               | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |

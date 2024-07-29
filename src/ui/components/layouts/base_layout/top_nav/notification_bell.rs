@@ -18,7 +18,7 @@ pub fn NotificationBell() -> impl IntoView {
     <Show when=move || user_is_logged_in.get()>
       <A href="/inbox" class="me-2">
         <span title=t!(i18n, unread_messages)>
-          <Icon icon=IconType::Notifications/>
+          <Icon icon=IconType::Notifications />
         </span>
       </A>
     </Show>
