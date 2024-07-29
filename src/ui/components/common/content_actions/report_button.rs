@@ -4,12 +4,16 @@ use crate::{
 };
 use leptos::*;
 
-fn report_content(creator_name: String, content_id: PostOrCommentId, creator_actor_id: String) {
+fn report_content(
+  creator_name: String,
+  post_or_comment_id: PostOrCommentId,
+  creator_actor_id: String,
+) {
   let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
   let report_modal = expect_context::<ReportModalNode>().0;
 
   set_report_modal_data.set(ReportModalData {
-    content_id,
+    post_or_comment_id,
     creator_actor_id,
     creator_name,
   });
@@ -22,10 +26,10 @@ fn report_content(creator_name: String, content_id: PostOrCommentId, creator_act
 #[component]
 pub fn ReportButton(
   creator_name: StoredValue<String>,
-  content_id: PostOrCommentId,
+  post_or_comment_id: PostOrCommentId,
   creator_actor_id: StoredValue<String>,
 ) -> impl IntoView {
-  let report_content_label = if matches!(content_id, PostOrCommentId::Comment(_)) {
+  let report_content_label = if matches!(post_or_comment_id, PostOrCommentId::Comment(_)) {
     "Report comment"
   } else {
     "Report post"
@@ -37,7 +41,7 @@ pub fn ReportButton(
       type="button"
       on:click=move |_| report_content(
           creator_name.get_value(),
-          content_id,
+          post_or_comment_id,
           creator_actor_id.get_value(),
       )
     >

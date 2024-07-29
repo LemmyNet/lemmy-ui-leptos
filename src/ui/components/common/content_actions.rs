@@ -23,7 +23,7 @@ mod report_button;
 
 #[component]
 pub fn ContentActions<SA>(
-  content_id: PostOrCommentId,
+  post_or_comment_id: PostOrCommentId,
   saved: Signal<bool>,
   save_action: ServerAction<SA>,
   creator_id: PersonId,
@@ -49,7 +49,7 @@ where
 
   let block_user_action = create_block_user_action();
 
-  let save_content_label = if matches!(content_id, PostOrCommentId::Post(_)) {
+  let save_content_label = if matches!(post_or_comment_id, PostOrCommentId::Post(_)) {
     "Save comment"
   } else {
     "Save post"
@@ -67,7 +67,7 @@ where
     <Fedilink href=apub_link />
     <Show when=move || user_is_logged_in.get()>
       <ActionForm action=save_action class="flex items-center">
-        <input type="hidden" name="id" value=content_id.get_id() />
+        <input type="hidden" name="id" value=post_or_comment_id.get_id() />
         <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
         <button
           type="submit"
@@ -87,7 +87,7 @@ where
 
         </button>
       </ActionForm>
-      {(matches!(content_id, PostOrCommentId::Post(_)))
+      {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
           .then(|| {
               view! {
                 <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
@@ -104,14 +104,14 @@ where
           <Show when=move || {
               logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
           }>
-            {if let PostOrCommentId::Post(id) = content_id {
+            {if let PostOrCommentId::Post(id) = post_or_comment_id {
                 Some(view! { <HidePostButton id=id /> })
             } else {
                 None
             }} <li>
               <ReportButton
                 creator_name=creator_name
-                content_id=content_id
+                post_or_comment_id=post_or_comment_id
                 creator_actor_id=creator_actor_id
               />
             </li> <li>

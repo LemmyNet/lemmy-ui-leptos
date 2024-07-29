@@ -17,10 +17,10 @@ use leptos_router::ActionForm;
 fn ReportForm(
   creator_name: Signal<String>,
   creator_actor_id: Signal<String>,
-  content_id: Signal<PostOrCommentId>,
+  post_or_comment_id: Signal<PostOrCommentId>,
 ) -> impl IntoView {
   let content_type_str = Signal::derive(move || {
-    if matches!(content_id.get(), PostOrCommentId::Post(_)) {
+    if matches!(post_or_comment_id.get(), PostOrCommentId::Post(_)) {
       "post"
     } else {
       "comment"
@@ -51,7 +51,7 @@ fn ReportForm(
         }}
       </span>
     </div>
-    <input type="hidden" name="id" value=move || content_id.get().get_id() />
+    <input type="hidden" name="id" value=move || post_or_comment_id.get().get_id() />
     <TextInput required=true id="report_reason_id" name="reason" label="Reason" autofocus=true />
     <div class="modal-action">
       <button formmethod="dialog" formnovalidate=true class="btn btn-outline">
@@ -69,7 +69,8 @@ pub fn ReportModal(
   dialog_ref: NodeRef<Dialog>,
   modal_data: ReadSignal<ReportModalData>,
 ) -> impl IntoView {
-  let content_id = Signal::derive(move || with!(|modal_data| modal_data.content_id));
+  let post_or_comment_id =
+    Signal::derive(move || with!(|modal_data| modal_data.post_or_comment_id));
   let creator_actor_id =
     Signal::derive(move || with!(|modal_data| modal_data.creator_actor_id.clone()));
   let creator_name = Signal::derive(move || with!(|modal_data| modal_data.creator_name.clone()));
@@ -107,14 +108,14 @@ pub fn ReportModal(
       }
     >
       <Show
-        when=move || matches!(content_id.get(), PostOrCommentId::Post(_))
+        when=move || matches!(post_or_comment_id.get(), PostOrCommentId::Post(_))
         fallback=move || {
             view! {
               <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
                 <ReportForm
                   creator_name=creator_name
                   creator_actor_id=creator_actor_id
-                  content_id=content_id
+                  post_or_comment_id=post_or_comment_id
                 />
               </ActionForm>
             }
@@ -124,7 +125,7 @@ pub fn ReportModal(
           <ReportForm
             creator_name=creator_name
             creator_actor_id=creator_actor_id
-            content_id=content_id
+            post_or_comment_id=post_or_comment_id
           />
         </ActionForm>
       </Show>

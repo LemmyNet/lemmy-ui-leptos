@@ -3,7 +3,7 @@ use leptos::{html::Dialog, NodeRef};
 
 #[derive(Clone, Default)]
 pub struct ReportModalData {
-  pub content_id: PostOrCommentId,
+  pub post_or_comment_id: PostOrCommentId,
   pub creator_actor_id: String,
   pub creator_name: String,
 }

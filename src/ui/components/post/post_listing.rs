@@ -166,7 +166,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             <span class="align-sub">{move || comments.get()}</span>
           </A>
           <ContentActions
-            content_id=PostOrCommentId::Post(id)
+            post_or_comment_id=PostOrCommentId::Post(id)
             saved=saved
             save_action=save_action
             creator_id=creator_id
