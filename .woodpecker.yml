@@ -1,8 +1,7 @@
 variables:
   - &cd_workdir "cd /usr/src/app"
-  - &rust_image "rustlang/rust:nightly-bookworm-slim"
+  - &rust_image "rustlang/rust:nightly-bookworm"
   - install_binstall: &install_binstall
-      - apt-get update && apt-get upgrade -y && apt-get install -y wget
       - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
       - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
       - cp cargo-binstall /usr/local/cargo/bin
