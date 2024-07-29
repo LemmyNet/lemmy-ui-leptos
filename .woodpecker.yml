@@ -59,6 +59,8 @@ steps:
   cargo_leptos_build:
     image: *rust_image
     commands:
+      - <<: *install_binstall
+      - cargo binstall -y cargo-leptos
       - cargo leptos build
     when:
       - event: pull_request
