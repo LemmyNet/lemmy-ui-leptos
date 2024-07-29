@@ -69,14 +69,6 @@ steps:
   #   when:
   #     - event: pull_request
 
-  lemmy:
-    image: dessalines/lemmy:0.19.4-beta.7
-    environment:
-      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
-    detach: true
-    when:
-      - event: pull_request
-
   build_image:
     image: docker:latest
     commands:
@@ -119,3 +111,12 @@ services:
       POSTGRES_USER: lemmy
       POSTGRES_PASSWORD: password
       POSTGRES_DB: lemmy
+    when:
+      - event: pull_request
+
+  lemmy:
+    image: dessalines/lemmy:0.19.4-beta.7
+    environment:
+      LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
+    when:
+      - event: pull_request
