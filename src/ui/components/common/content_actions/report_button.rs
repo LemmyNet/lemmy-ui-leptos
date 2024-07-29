@@ -1,10 +1,10 @@
 use crate::{
   ui::components::common::icon::{Icon, IconType},
-  utils::types::{ContentId, ReportModalData, ReportModalNode},
+  utils::types::{PostOrCommentId, ReportModalData, ReportModalNode},
 };
 use leptos::*;
 
-fn report_content(content_id: ContentId, creator_actor_id: String) {
+fn report_content(content_id: PostOrCommentId, creator_actor_id: String) {
   let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
   let report_modal = expect_context::<ReportModalNode>().0;
 
@@ -19,8 +19,11 @@ fn report_content(content_id: ContentId, creator_actor_id: String) {
 }
 
 #[component]
-pub fn ReportButton(content_id: ContentId, creator_actor_id: StoredValue<String>) -> impl IntoView {
-  let report_content_label = if matches!(content_id, ContentId::Comment(_)) {
+pub fn ReportButton(
+  content_id: PostOrCommentId,
+  creator_actor_id: StoredValue<String>,
+) -> impl IntoView {
+  let report_content_label = if matches!(content_id, PostOrCommentId::Comment(_)) {
     "Report comment"
   } else {
     "Report post"

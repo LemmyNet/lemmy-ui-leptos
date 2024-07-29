@@ -7,7 +7,7 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
-  utils::types::{ContentId, Hidden},
+  utils::types::{Hidden, PostOrCommentId},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
@@ -16,10 +16,10 @@ use leptos_router::*;
 #[component]
 pub fn PostListing(post_view: PostView) -> impl IntoView {
   // These post fields cannot change, so no need for signals
-  let id = post_view.post.id.0;
+  let id = post_view.post.id;
   let actor_id = post_view.post.ap_id.to_string();
 
-  let creator_id = post_view.creator.id.0;
+  let creator_id = post_view.creator.id;
   let creator_avatar = post_view.creator.avatar.clone().map(|url| url.to_string());
   let creator_name = post_view.creator.name.clone();
   let creator_display_name = post_view.creator.display_name.clone();
@@ -106,7 +106,12 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
 
   view! {
     <article class="flex gap-x-3 items-center w-fit">
-      <VoteButtons id=id my_vote=my_vote score=score vote_action=vote_action />
+      <VoteButtons
+        id=PostOrCommentId::Post(id)
+        my_vote=my_vote
+        score=score
+        vote_action=vote_action
+      />
       {move || {
           with!(
               | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
@@ -161,7 +166,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             <span class="align-sub">{move || comments.get()}</span>
           </A>
           <ContentActions
-            content_id=ContentId::Post(id)
+            content_id=PostOrCommentId::Post(id)
             saved=saved
             save_action=save_action
             creator_id=creator_id

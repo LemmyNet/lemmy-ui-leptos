@@ -6,7 +6,7 @@ use crate::{
   },
   utils::{
     create_user_apub_name,
-    types::{ContentId, ReportModalData},
+    types::{PostOrCommentId, ReportModalData},
   },
 };
 use html::Dialog;
@@ -14,9 +14,12 @@ use leptos::*;
 use leptos_router::ActionForm;
 
 #[component]
-fn ReportForm(creator_actor_id: Signal<String>, content_id: Signal<ContentId>) -> impl IntoView {
+fn ReportForm(
+  creator_actor_id: Signal<String>,
+  content_id: Signal<PostOrCommentId>,
+) -> impl IntoView {
   let content_type_str = Signal::derive(move || {
-    if matches!(content_id.get(), ContentId::Post(_)) {
+    if matches!(content_id.get(), PostOrCommentId::Post(_)) {
       "post"
     } else {
       "comment"
@@ -96,7 +99,7 @@ pub fn ReportModal(
       }
     >
       <Show
-        when=move || matches!(content_id.get(), ContentId::Post(_))
+        when=move || matches!(content_id.get(), PostOrCommentId::Post(_))
         fallback=move || {
             view! {
               <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">

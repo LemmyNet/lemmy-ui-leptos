@@ -8,10 +8,11 @@ use crate::{
   utils::{
     derive_user_is_logged_in,
     traits::ToStr,
-    types::{ContentId, ServerAction, ServerActionFn},
+    types::{PostOrCommentId, ServerAction, ServerActionFn},
   },
 };
 use hide_post_button::HidePostButton;
+use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PersonId;
 use leptos::*;
 use leptos_router::{ActionForm, A};
 use report_button::ReportButton;
@@ -22,10 +23,10 @@ mod report_button;
 
 #[component]
 pub fn ContentActions<SA>(
-  content_id: ContentId,
+  content_id: PostOrCommentId,
   saved: Signal<bool>,
   save_action: ServerAction<SA>,
-  creator_id: i32,
+  creator_id: PersonId,
   creator_actor_id: String,
   apub_link: String,
 ) -> impl IntoView
@@ -38,19 +39,16 @@ where
   let logged_in_user_id = Signal::derive(move || {
     with!(|site_resource| site_resource
       .as_ref()
-      .and_then(|data| data
+      .and_then(|data| data.as_ref().ok().map(|data| data
+        .my_user
         .as_ref()
-        .ok()
-        .map(|data| data
-          .my_user
-          .as_ref()
-          .map(|data| data.local_user_view.person.id.0))))
+        .map(|data| data.local_user_view.person.id))))
     .flatten()
   });
 
   let block_user_action = create_block_user_action();
 
-  let save_content_label = if matches!(content_id, ContentId::Post(_)) {
+  let save_content_label = if matches!(content_id, PostOrCommentId::Post(_)) {
     "Save comment"
   } else {
     "Save post"
@@ -88,7 +86,7 @@ where
 
         </button>
       </ActionForm>
-      {(matches!(content_id, ContentId::Post(_)))
+      {(matches!(content_id, PostOrCommentId::Post(_)))
           .then(|| {
               view! {
                 <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
@@ -105,7 +103,7 @@ where
           <Show when=move || {
               logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
           }>
-            {if let ContentId::Post(id) = content_id {
+            {if let PostOrCommentId::Post(id) = content_id {
                 Some(view! { <HidePostButton id=id /> })
             } else {
                 None
@@ -113,7 +111,7 @@ where
               <ReportButton content_id=content_id creator_actor_id=creator_actor_id />
             </li> <li>
               <ActionForm action=block_user_action>
-                <input type="hidden" name="id" value=creator_id />
+                <input type="hidden" name="id" value=creator_id.0 />
                 <input type="hidden" name="block" value="true" />
                 <button class="text-xs whitespace-nowrap" type="submit">
                   <Icon icon=IconType::Block class="inline-block" />
