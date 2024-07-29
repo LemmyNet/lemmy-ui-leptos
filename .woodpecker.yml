@@ -28,7 +28,6 @@ steps:
   leptos_fmt:
     image: *rust_image
     commands:
-      - *cd_workdir
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
     when:
@@ -53,7 +52,6 @@ steps:
   cargo_leptos_build:
     image: *rust_image
     commands:
-      - *cd_workdir
       - cargo leptos build
     when:
       - event: pull_request
