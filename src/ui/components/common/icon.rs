@@ -1,5 +1,6 @@
 use leptos::*;
 use strum::{EnumString, IntoStaticStr};
+use tailwind_fuse::{tw_merge, AsTailwindClass, TwVariant};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString, IntoStaticStr)]
 #[strum(serialize_all = "kebab-case")]
@@ -24,6 +25,7 @@ pub enum IconType {
   CreatePost,
   CreateCommunity,
   Communities,
+  Community,
   Documentation,
   Code,
   Info,
@@ -37,43 +39,34 @@ pub enum IconType {
   Hamburger,
   Users,
   Posts,
+  Fediverse,
+  X,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, TwVariant)]
 pub enum IconSize {
+  #[tw(default, class = "size-6")]
   Normal,
+  #[tw(class = "size-9")]
   Large,
+  #[tw(class = "size-12")]
   ExtraLarge,
+  #[tw(class = "size-3")]
   Small,
-}
-
-impl IntoAttribute for IconSize {
-  fn into_attribute(self) -> Attribute {
-    match self {
-      Self::ExtraLarge => "3rem",
-      Self::Large => "2.25rem",
-      Self::Small => "0.75rem",
-      _ => "1.5rem",
-    }
-    .into_attribute()
-  }
-
-  fn into_attribute_boxed(self: Box<Self>) -> Attribute {
-    self.into_attribute()
-  }
 }
 
 #[component]
 pub fn Icon(
   #[prop(into)] icon: MaybeSignal<IconType>,
-  #[prop(optional, into)] class: MaybeProp<TextProp>,
+  #[prop(into, default = TextProp::from(""))] class: TextProp,
   #[prop(into, default = MaybeSignal::Static(IconSize::Normal))] size: MaybeSignal<IconSize>,
 ) -> impl IntoView {
   let href =
     Signal::derive(move || format!("/icons.svg#{}", Into::<&'static str>::into(icon.get())));
+  let class = Signal::derive(move || tw_merge!(class.get().to_string(), size.get()));
 
   view! {
-    <svg class=class width=size height=size aria-hidden="true">
+    <svg class=class aria-hidden="true">
       <use_ href=href xlink:href=href></use_>
     </svg>
   }

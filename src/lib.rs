@@ -24,10 +24,15 @@ use crate::{
   },
 };
 use contexts::site_resource_context::SiteResource;
+use html::Dialog;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use utils::derive_user_is_logged_in;
+use ui::components::modals::ReportModal;
+use utils::{
+  derive_user_is_logged_in,
+  types::{ReportModalData, ReportModalNode},
+};
 
 leptos_i18n::load_locales!();
 
@@ -39,6 +44,12 @@ pub fn App() -> impl IntoView {
   provide_theme_resource_context();
 
   let is_routing = RwSignal::new(false);
+
+  let (report_modal_data, set_report_modal_data) =
+    RwSignal::new(ReportModalData::default()).split();
+  let report_modal = ReportModalNode(NodeRef::<Dialog>::new());
+  provide_context(set_report_modal_data);
+  provide_context(report_modal);
 
   view! {
     <Router set_is_routing=is_routing>
@@ -103,6 +114,8 @@ pub fn App() -> impl IntoView {
           <Route path="legal" view=CommunitiesPage />
         </Route>
       </Routes>
+
+      <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
     </Router>
   }
 }
@@ -148,7 +161,7 @@ fn NotFound() -> impl IntoView {
 }
 
 #[cfg(feature = "hydrate")]
-#[wasm_bindgen::prelude::wasm_bindgen]
+#[web_sys::wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
   console_error_panic_hook::set_once();
   mount_to_body(App);

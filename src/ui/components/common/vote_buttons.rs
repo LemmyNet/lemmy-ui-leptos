@@ -3,22 +3,42 @@ use crate::{
   ui::components::common::icon::{Icon, IconType},
   utils::{
     derive_user_is_logged_in,
-    types::{ServerAction, ServerActionFn},
+    types::{PostOrCommentId, ServerAction, ServerActionFn},
   },
 };
 use leptos::*;
 use leptos_router::ActionForm;
+use tailwind_fuse::{
+  AsTailwindClass,
+  IntoBuilder,
+  IntoTailwindClass,
+  TailwindFuse,
+  TailwindMerge,
+  TwClass,
+  TwVariant,
+};
 
-mod comment_vote_buttons;
-mod post_vote_buttons;
+#[derive(TwClass)]
+#[tw(class = "align-bottom disabled:cursor-not-allowed disabled:text-neutral-content")]
+struct VoteBtn {
+  vote: Vote,
+}
 
-pub use post_vote_buttons::PostVoteButtons;
+#[derive(TwVariant)]
+enum Vote {
+  #[tw(default, class = "text-neutral")]
+  None,
+  #[tw(class = "text-success")]
+  Up,
+  #[tw(class = "text-error")]
+  Down,
+}
 
 #[component]
-fn VoteButtons<VA>(
-  #[prop(into)] my_vote: MaybeProp<i16>,
-  #[prop(into)] id: MaybeSignal<i32>,
-  #[prop(into)] score: MaybeSignal<i64>,
+pub fn VoteButtons<VA>(
+  my_vote: Signal<Option<i16>>,
+  id: PostOrCommentId,
+  score: Signal<i64>,
   vote_action: ServerAction<VA>,
 ) -> impl IntoView
 where
@@ -32,7 +52,7 @@ where
   view! {
     <div class="w-fit">
       <ActionForm action=vote_action>
-        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="id" value=id.get_id() />
         <input
           type="hidden"
           name="score"
@@ -42,8 +62,8 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_upvote | { let mut class = String::from("align-bottom"); if * is_upvote {
-                  class.push_str(" text-accent"); } class }
+                  | is_upvote | { VoteBtn { vote : if * is_upvote { Vote::Up } else { Vote::None } }
+                  .to_class() }
               )
           }
 
@@ -56,7 +76,7 @@ where
       </ActionForm>
       <div class="text-sm text-center">{score}</div>
       <ActionForm action=vote_action class="w-fit">
-        <input type="hidden" name="id" value=id />
+        <input type="hidden" name="id" value=id.get_id() />
         <input
           type="hidden"
           name="score"
@@ -66,8 +86,8 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_downvote | { let mut class = String::from("align-top"); if * is_downvote {
-                  class.push_str(" text-accent"); } class }
+                  | is_downvote | { VoteBtn { vote : if * is_downvote { Vote::Down } else {
+                  Vote::None } } .to_class() }
               )
           }
 

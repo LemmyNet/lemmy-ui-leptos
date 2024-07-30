@@ -21,6 +21,7 @@ pub fn TextInput(
   #[prop(into)] label: TextProp,
   #[prop(default = InputType::Text)] input_type: InputType,
   #[prop(optional)] validation_class: MaybeSignal<String>,
+  #[prop(default = false)] autofocus: bool,
 ) -> impl IntoView {
   let show_password = RwSignal::new(false);
   let for_id = id.get().clone();
@@ -47,13 +48,15 @@ pub fn TextInput(
         disabled=disabled
         required=required
         min_length=min_length
-        pattern=pattern
+        pattern=move || pattern.get().map(|p| p.get())
+        autofocus=autofocus
       />
 
       <Show when=move || input_type == InputType::Password>
         <button
           type="button"
-          aria-label=move || if show_password.get() { "Hide Password" } else { "Show Password" }
+          aria-label=move || { if show_password.get() { "Hide Password" } else { "Show Password" } }
+
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)
         >

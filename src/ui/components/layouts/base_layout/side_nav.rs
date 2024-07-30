@@ -11,7 +11,7 @@ pub fn SideNav() -> impl IntoView {
   let i18n = use_i18n();
 
   view! {
-    <nav aria-label="Pages nav">
+    <section aria-label="Main navigation links">
       <ul>
         <NavLink href="/create_post" icon=IconType::CreatePost text=t!(i18n, create_post) />
         <NavLink
@@ -25,8 +25,8 @@ pub fn SideNav() -> impl IntoView {
         <NavLink href="/instances" icon=IconType::Instances text=t!(i18n, instances) />
         <NavLink href="/legal" icon=IconType::Legal text=t!(i18n, legal) />
       </ul>
-    </nav>
-    <nav aria-labelledby="lemmy-resources-label" class="mt-auto">
+    </section>
+    <section aria-labelledby="lemmy-resources-label" class="mt-auto">
       <div id="lemmy-resources-label" class="font-medium mb-1">
         Lemmy Resources
       </div>
@@ -40,7 +40,7 @@ pub fn SideNav() -> impl IntoView {
         <NavLink href="https://join-lemmy.org/" icon=IconType::Info text=t!(i18n, about) />
         <NavLink href="https://join-lemmy.org/donate" icon=IconType::Donate text=t!(i18n, donate) />
       </ul>
-    </nav>
+    </section>
   }
 }
 

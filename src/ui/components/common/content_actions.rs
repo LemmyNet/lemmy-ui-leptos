@@ -1,120 +1,132 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   serverfns::users::create_block_user_action,
-  ui::components::common::icon::{Icon, IconType},
+  ui::components::common::{
+    fedilink::Fedilink,
+    icon::{Icon, IconType},
+  },
   utils::{
     derive_user_is_logged_in,
-    types::{ServerAction, ServerActionFn},
+    traits::ToStr,
+    types::{PostOrCommentId, ServerAction, ServerActionFn},
   },
 };
+use hide_post_button::HidePostButton;
+use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PersonId;
 use leptos::*;
 use leptos_router::{ActionForm, A};
+use report_button::ReportButton;
+use tailwind_fuse::tw_join;
 
-mod post_content_actions;
-pub use post_content_actions::PostContentActions;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum ContentActionType {
-  Post {
-    comments: MaybeSignal<i64>,
-  },
-  #[allow(dead_code)]
-  Comment,
-}
+mod hide_post_button;
+mod report_button;
 
 #[component]
-fn ContentActions<SA, RA>(
-  content_action_type: ContentActionType,
-  #[prop(into)] id: MaybeSignal<i32>,
+pub fn ContentActions<SA>(
+  post_or_comment_id: PostOrCommentId,
+  saved: Signal<bool>,
   save_action: ServerAction<SA>,
-  #[prop(into)] saved: MaybeSignal<bool>,
-  report_action: ServerAction<RA>,
-  #[prop(into)] creator_id: MaybeSignal<i32>,
+  creator_id: PersonId,
+  creator_actor_id: String,
+  creator_name: StoredValue<String>,
+  apub_link: String,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
-  RA: ServerActionFn,
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
+  let creator_actor_id = StoredValue::new(creator_actor_id);
+  let logged_in_user_id = Signal::derive(move || {
+    with!(|site_resource| site_resource
+      .as_ref()
+      .and_then(|data| data.as_ref().ok().map(|data| data
+        .my_user
+        .as_ref()
+        .map(|data| data.local_user_view.person.id))))
+    .flatten()
+  });
 
   let block_user_action = create_block_user_action();
 
+  let save_content_label = if matches!(post_or_comment_id, PostOrCommentId::Post(_)) {
+    "Save comment"
+  } else {
+    "Save post"
+  };
+  let save_icon = Signal::derive(move || {
+    if saved.get() {
+      IconType::SaveFilled
+    } else {
+      IconType::Save
+    }
+  });
+  let crosspost_label = "Crosspost";
+
   view! {
-    <div class="flex items-center gap-x-2">
-      {move || {
-          if let ContentActionType::Post { comments } = content_action_type {
-              Some(
-                  view! {
-                    <A
-                      href=move || { format!("/post/{}", id.get()) }
-                      class="text-sm whitespace-nowrap"
-                      attr:title=move || format!("{} comments", comments.get())
-                    >
-                      <Icon icon=IconType::Comment class="inline align-baseline" />
-                      " "
-                      <span class="align-sub">{comments}</span>
-                    </A>
-                  },
-              )
-          } else {
-              None
-          }
-      }} <ActionForm action=save_action class="flex items-center">
-        <input type="hidden" name="id" value=id />
-        <input type="hidden" name="save" value=move || (!saved.get()).to_string() />
+    <Fedilink href=apub_link />
+    <Show when=move || user_is_logged_in.get()>
+      <ActionForm action=save_action class="flex items-center">
+        <input type="hidden" name="id" value=post_or_comment_id.get_id() />
+        <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
         <button
           type="submit"
-          title=if matches!(content_action_type, ContentActionType::Comment) {
-              "Save comment"
-          } else {
-              "Save post"
+          title=save_content_label
+          aria-label=save_content_label
+
+          class=move || {
+              tw_join!(
+                  "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
+                    .then_some("text-accent")
+              )
           }
 
-          class=move || if saved.get() { Some("text-accent") } else { None }
-          disabled=move || !user_is_logged_in.get() || save_action.pending().get()
+          disabled=move || save_action.pending().get()
         >
-          <Show when=move || saved.get() fallback=move || view! { <Icon icon=IconType::Save /> }>
-            <Icon icon=IconType::SaveFilled />
-          </Show>
+          <Icon icon=save_icon />
+
         </button>
       </ActionForm>
-      <Show when=move || matches!(content_action_type, ContentActionType::Post { .. })>
-        <A href="/create_post">
-          <Icon icon=IconType::Crosspost />
-        </A>
-      </Show> <div class="dropdown hidden sm:block">
-        <label tabindex="0">
-          <Icon icon=IconType::VerticalDots />
-        </label>
-        <ul tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-          <li>
-            <ActionForm action=report_action>
-              <input type="hidden" name="id" value=id />
-              <input type="text" name="reason" placeholder="reason" />
-              <button class="text-xs whitespace-nowrap" title="Report post" type="submit">
-                <Icon icon=IconType::Report class="inline-block" />
-                {if matches!(content_action_type, ContentActionType::Comment) {
-                    " Report comment"
-                } else {
-                    " Report post"
-                }}
+      {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
+          .then(|| {
+              view! {
+                <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
+                  <Icon icon=IconType::Crosspost />
+                </A>
+              }
+          })}
 
-              </button>
-            </ActionForm>
-          </li>
-          <li>
-            <ActionForm action=block_user_action>
-              <input type="hidden" name="id" value=creator_id />
-              <input type="hidden" name="block" value="true" />
-              <button class="text-xs whitespace-nowrap" title="Block user" type="submit">
-                <Icon icon=IconType::Block class="inline-block" />
-                " Block user"
-              </button>
-            </ActionForm>
-          </li>
-        </ul>
+      <div class="dropdown">
+        <div tabindex="0" role="button">
+          <Icon icon=IconType::VerticalDots />
+        </div>
+        <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
+          <Show when=move || {
+              logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
+          }>
+            {if let PostOrCommentId::Post(id) = post_or_comment_id {
+                Some(view! { <HidePostButton id=id /> })
+            } else {
+                None
+            }} <li>
+              <ReportButton
+                creator_name=creator_name
+                post_or_comment_id=post_or_comment_id
+                creator_actor_id=creator_actor_id
+              />
+            </li> <li>
+              <ActionForm action=block_user_action>
+                <input type="hidden" name="id" value=creator_id.0 />
+                <input type="hidden" name="block" value="true" />
+                <button class="text-xs whitespace-nowrap" type="submit">
+                  <Icon icon=IconType::Block class="inline-block" />
+                  " Block user"
+                </button>
+              </ActionForm>
+            </li>
+          </Show>
+        </menu>
       </div>
-    </div>
+    </Show>
   }
 }

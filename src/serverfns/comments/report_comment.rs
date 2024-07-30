@@ -1,24 +1,24 @@
 use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
-    lemmy_db_schema::newtypes::PostId,
-    post::{CreatePostReport, PostReportResponse},
+    comment::{CommentResponse, CreateCommentReport},
+    lemmy_db_schema::newtypes::CommentId,
   },
   LemmyRequest,
 };
 use leptos::*;
 
 #[server(prefix = "/serverfn")]
-async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, ServerFnError> {
+async fn report_comment(id: CommentId, reason: String) -> Result<CommentResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
 
   client
-    .report_post(LemmyRequest {
-      body: CreatePostReport {
-        post_id: id,
+    .create_comment_report(LemmyRequest {
+      body: CreateCommentReport {
+        comment_id: id,
         reason,
       },
       jwt,
@@ -27,6 +27,6 @@ async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, S
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-pub fn create_report_post_action() -> ServerAction<ReportPost> {
+pub fn create_report_comment_action() -> ServerAction<ReportComment> {
   Action::server()
 }

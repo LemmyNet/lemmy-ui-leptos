@@ -2,24 +2,25 @@ use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PostId,
-    post::{CreatePostReport, PostReportResponse},
+    post::HidePost as HidePostForm,
+    SuccessResponse,
   },
   LemmyRequest,
 };
 use leptos::*;
 
 #[server(prefix = "/serverfn")]
-async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, ServerFnError> {
+async fn hide_post(id: PostId, hide: bool) -> Result<SuccessResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
 
   client
-    .report_post(LemmyRequest {
-      body: CreatePostReport {
-        post_id: id,
-        reason,
+    .hide_post(LemmyRequest {
+      body: HidePostForm {
+        post_ids: Vec::from([id]),
+        hide,
       },
       jwt,
     })
@@ -27,6 +28,8 @@ async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, S
     .map_err(|e| ServerFnError::ServerError(e.to_string()))
 }
 
-pub fn create_report_post_action() -> ServerAction<ReportPost> {
+pub fn create_hide_post_action() -> ServerAction<HidePost> {
   Action::server()
 }
+
+pub type HidePostAction = ServerAction<HidePost>;

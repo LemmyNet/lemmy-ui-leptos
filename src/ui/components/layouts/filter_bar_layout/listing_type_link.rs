@@ -1,4 +1,7 @@
-use crate::{contexts::site_resource_context::SiteResource, utils::derive_user_is_logged_in};
+use crate::{
+  contexts::site_resource_context::SiteResource,
+  utils::{derive_user_is_logged_in, traits::BoolOptionStr},
+};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::ListingType;
 use leptos::*;
 use leptos_router::{use_query_map, A};
@@ -36,10 +39,8 @@ where
       }
 
       class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
-      attr:aria-disabled=move || if disabled.get() { Some("true") } else { None }
-      attr:aria-selected=move || {
-          if listing_type.get() == link_listing_type { Some("true") } else { None }
-      }
+      attr:aria-disabled=move || disabled.get().then_str()
+      attr:aria-selected=move || { (listing_type.get() == link_listing_type).then_str() }
     >
 
       {children()}
