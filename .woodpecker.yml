@@ -1,10 +1,7 @@
 variables:
   - &cd_workdir "cd /usr/src/app"
   - &rust_image "rustlang/rust:nightly-bookworm"
-  - install_binstall: &install_binstall
-      - wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
-      - cp cargo-binstall /usr/local/cargo/bin
+  - &install_binstall "wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz | tar -xvz -C /usr/local/cargo/bin"
 
 steps:
   prettier_check:
@@ -35,7 +32,7 @@ steps:
   leptos_fmt:
     image: *rust_image
     commands:
-      - <<: *install_binstall
+      - *install_binstall
       - cargo binstall -y leptosfmt
       - leptosfmt -c .leptosfmt.toml --check src
     when:
@@ -44,7 +41,7 @@ steps:
   cargo_machete:
     image: *rust_image
     commands:
-      - <<: *install_binstall
+      - *install_binstall
       - cargo binstall -y cargo-machete
       - cargo machete
     when:
@@ -61,12 +58,21 @@ steps:
     when:
       - event: pull_request
 
+  cargo_test:
+    image: *rust_image
+    environment:
+      CARGO_HOME: .cargo_home
+    commands:
+      - cargo test
+    when:
+      - event: pull_request
+
   cargo_leptos_build:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo_home
     commands:
-      - <<: *install_binstall
+      - *install_binstall
       - rustup target add wasm32-unknown-unknown
       - wget -O- https://deb.nodesource.com/setup_20.x | bash
       - apt-get install -y nodejs
@@ -74,23 +80,6 @@ steps:
       - pnpm install --frozen-lockfile
       - cargo binstall -y cargo-leptos
       - cargo leptos build
-    when:
-      - event: pull_request
-
-  # cargo_test:
-  #   image: local/leptos-ui
-  #   entrypoint: [cargo, leptos, test]
-  #   when:
-  #     - event: pull_request
-
-  build_image:
-    image: docker:latest
-    commands:
-      - docker build --rm -t local/base --target base .
-      - docker build --rm -t local/leptos-ui --target leptos-ui .
-      - docker build --rm -t local/playwright --target playwright .
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     when:
       - event: pull_request
 
@@ -129,7 +118,7 @@ services:
       - event: pull_request
 
   lemmy:
-    image: dessalines/lemmy:0.19.4-beta.7
+    image: dessalines/lemmy:0.19.5
     environment:
       LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
     when:
