@@ -1623,6 +1623,7 @@ dependencies = [
  "actix-files",
  "actix-session",
  "actix-web",
+ "anyhow",
  "cfg-if",
  "console_error_panic_hook",
  "lemmy-client",

@@ -35,6 +35,9 @@ tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
 url = { version = "2.5", optional = true }
 
+[dev-dependencies]
+anyhow = "1.0.86"
+
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en"]
@@ -69,6 +72,11 @@ ssr = [
   "dep:tokio",
   "dep:url",
 ]
+
+[lints.clippy]
+# leptos can't deal with these lints
+needless_lifetimes = "allow"
+let_unit_value = "allow"
 
 [package.metadata.cargo-all-features]
 denylist = ["actix-files", "actix-web", "leptos_actix"]

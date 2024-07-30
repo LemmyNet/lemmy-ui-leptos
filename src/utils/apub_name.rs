@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use std::str::FromStr;
 
 pub fn create_user_apub_name(name: &str, actor_id: &str) -> String {
   create_apub_name::<'@'>(name, actor_id)
@@ -14,14 +13,17 @@ fn format_apub_name<const PREFIX: char>(name: &str, instance: &str) -> String {
 }
 
 fn create_apub_name<const PREFIX: char>(name: &str, actor_id: &str) -> String {
+  // TODO Strange issue where the must be defined, or leptos will fail at startup
+  let default_url = "https://example.com";
+
   cfg_if! {
       if #[cfg(feature = "ssr")] {
-        use actix_web::http::Uri;
-        let url = Uri::from_str(actor_id).expect("Could not parse actor host name from actor id");
-        let instance = url.host().expect("No host name in actor id");
+        use url::Url;
+        let url = Url::parse(actor_id).unwrap_or(Url::parse(default_url).unwrap());
+        let instance = url.host_str().expect("No host name in actor id");
       } else {
         use web_sys::Url;
-        let instance = Url::new(actor_id).expect("Could not parse actor host name from actor id").host();
+        let instance = Url::new(actor_id).unwrap_or(Url::new(default_url).unwrap()).host();
         let instance = instance.as_str();
       }
   }

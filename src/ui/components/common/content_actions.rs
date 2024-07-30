@@ -12,7 +12,7 @@ use crate::{
   },
 };
 use hide_post_button::HidePostButton;
-use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PersonId;
+use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_router::{ActionForm, A};
 use report_button::ReportButton;
@@ -22,21 +22,18 @@ mod hide_post_button;
 mod report_button;
 
 #[component]
-pub fn ContentActions<SA>(
+pub fn ContentActions<SA, 'a>(
   post_or_comment_id: PostOrCommentId,
   saved: Signal<bool>,
   save_action: ServerAction<SA>,
-  creator_id: PersonId,
-  creator_actor_id: String,
-  creator_name: StoredValue<String>,
-  apub_link: String,
+  creator: &'a Person,
+  ap_id: &'a str,
 ) -> impl IntoView
 where
   SA: ServerActionFn,
 {
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
-  let creator_actor_id = StoredValue::new(creator_actor_id);
   let logged_in_user_id = Signal::derive(move || {
     with!(|site_resource| site_resource
       .as_ref()
@@ -63,8 +60,11 @@ where
   });
   let crosspost_label = "Crosspost";
 
+  // TODO a very strange bug, where when using Show, you have to use a stored value
+  let creator_stored = StoredValue::new(creator.clone());
+
   view! {
-    <Fedilink href=apub_link />
+    <Fedilink href=ap_id.to_string() />
     <Show when=move || user_is_logged_in.get()>
       <ActionForm action=save_action class="flex items-center">
         <input type="hidden" name="id" value=post_or_comment_id.get_id() />
@@ -77,7 +77,7 @@ where
           class=move || {
               tw_join!(
                   "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
-                    .then_some("text-accent")
+                      .then_some("text-accent")
               )
           }
 
@@ -102,7 +102,7 @@ where
         </div>
         <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
           <Show when=move || {
-              logged_in_user_id.get().map(|id| id != creator_id).unwrap_or(false)
+              logged_in_user_id.get().map(|id| id != creator_stored.get_value().id).unwrap_or(false)
           }>
             {if let PostOrCommentId::Post(id) = post_or_comment_id {
                 Some(view! { <HidePostButton id=id /> })
@@ -110,13 +110,12 @@ where
                 None
             }} <li>
               <ReportButton
-                creator_name=creator_name
+                creator=&creator_stored.get_value()
                 post_or_comment_id=post_or_comment_id
-                creator_actor_id=creator_actor_id
               />
             </li> <li>
               <ActionForm action=block_user_action>
-                <input type="hidden" name="id" value=creator_id.0 />
+                <input type="hidden" name="id" value=creator_stored.get_value().id.0 />
                 <input type="hidden" name="block" value="true" />
                 <button class="text-xs whitespace-nowrap" type="submit">
                   <Icon icon=IconType::Block class="inline-block" />
