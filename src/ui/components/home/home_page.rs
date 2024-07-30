@@ -41,14 +41,14 @@ pub fn HomePage() -> impl IntoView {
         <Suspense fallback=|| "Loading">
           <ErrorBoundary fallback=|_| { "Could not load posts!" }>
             <Unpack item=posts let:posts>
-              <PostListings posts=posts/>
+              <PostListings posts=posts />
             </Unpack>
           </ErrorBoundary>
         </Suspense>
       </main>
 
       <aside class="hidden basis-[35%] xl:basis-1/4 lg:block me-8 overflow-y-auto min-h-0">
-        <SiteSummary/>
+        <SiteSummary />
       </aside>
     </div>
   }

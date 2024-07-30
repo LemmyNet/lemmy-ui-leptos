@@ -1,3 +1,4 @@
+use crate::utils::traits::BoolOptionStr;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::SortType;
 use leptos::*;
 use leptos_router::{use_query_map, A};
@@ -20,9 +21,7 @@ where
         }
 
         class="aria-selected:btn-active"
-        attr:aria-selected=move || {
-            if sort_type.get() == link_sort_type { Some("true") } else { None }
-        }
+        attr:aria-selected=move || { (sort_type.get() == link_sort_type).then_str() }
       >
 
         {children()}

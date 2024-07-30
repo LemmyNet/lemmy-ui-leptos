@@ -5,7 +5,7 @@ use leptos::*;
 pub fn LoginPage() -> impl IntoView {
   view! {
     <main class="mx-auto max-w-screen-md p-3">
-      <LoginForm/>
+      <LoginForm />
     </main>
   }
 }
