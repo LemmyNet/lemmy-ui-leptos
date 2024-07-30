@@ -34,8 +34,6 @@ steps:
 
   leptos_fmt:
     image: *rust_image
-    environment:
-      CARGO_HOME: .cargo_home
     commands:
       - <<: *install_binstall
       - cargo binstall -y leptosfmt
@@ -45,8 +43,6 @@ steps:
 
   cargo_machete:
     image: *rust_image
-    environment:
-      CARGO_HOME: .cargo_home
     commands:
       - <<: *install_binstall
       - cargo binstall -y cargo-machete
