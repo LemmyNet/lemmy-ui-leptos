@@ -23,6 +23,9 @@ steps:
 
   cargo_fmt:
     image: *rust_image
+    environment:
+      # store cargo data in repo folder so that it gets cached between steps
+      CARGO_HOME: .cargo_home
     commands:
       - rustup component add rustfmt
       - cargo +nightly fmt -- --check
@@ -31,6 +34,8 @@ steps:
 
   leptos_fmt:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo_home
     commands:
       - <<: *install_binstall
       - cargo binstall -y leptosfmt
@@ -40,6 +45,8 @@ steps:
 
   cargo_machete:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo_home
     commands:
       - <<: *install_binstall
       - cargo binstall -y cargo-machete
@@ -49,6 +56,8 @@ steps:
 
   cargo_clippy:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo_home
     commands:
       - apt-get update && apt-get upgrade -y && apt-get install -y pkg-config
       - rustup component add clippy
@@ -58,6 +67,8 @@ steps:
 
   cargo_leptos_build:
     image: *rust_image
+    environment:
+      CARGO_HOME: .cargo_home
     commands:
       - <<: *install_binstall
       - rustup target add wasm32-unknown-unknown
