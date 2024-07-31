@@ -3,6 +3,7 @@ use crate::{
   utils::types::{PostOrCommentId, ReportModalData, ReportModalNode},
 };
 use leptos::*;
+use leptos_fluent::tr;
 
 fn report_content(
   creator_name: String,
@@ -30,9 +31,9 @@ pub fn ReportButton(
   creator_actor_id: StoredValue<String>,
 ) -> impl IntoView {
   let report_content_label = if matches!(post_or_comment_id, PostOrCommentId::Comment(_)) {
-    "Report comment"
+    tr!("report-comment")
   } else {
-    "Report post"
+    tr!("report-post")
   };
 
   view! {

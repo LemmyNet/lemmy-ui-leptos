@@ -14,6 +14,7 @@ use crate::{
 use hide_post_button::HidePostButton;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PersonId;
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::{ActionForm, A};
 use report_button::ReportButton;
 use tailwind_fuse::tw_join;
@@ -50,9 +51,9 @@ where
   let block_user_action = create_block_user_action();
 
   let save_content_label = if matches!(post_or_comment_id, PostOrCommentId::Post(_)) {
-    "Save comment"
+    tr!("save-post")
   } else {
-    "Save post"
+    tr!("save-comment")
   };
   let save_icon = Signal::derive(move || {
     if saved.get() {
@@ -61,17 +62,17 @@ where
       IconType::Save
     }
   });
-  let crosspost_label = "Crosspost";
+  let crosspost_label = tr!("crosspost");
 
   view! {
     <Fedilink href=apub_link />
     <Show when=move || user_is_logged_in.get()>
-      <ActionForm action=save_action class="flex items-center">
+      <ActionForm action=save_action class="flex items-center" clone:save_content_label>
         <input type="hidden" name="id" value=post_or_comment_id.get_id() />
         <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
         <button
           type="submit"
-          title=save_content_label
+          title=save_content_label.clone()
           aria-label=save_content_label
 
           class=move || {
@@ -90,7 +91,11 @@ where
       {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
           .then(|| {
               view! {
-                <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
+                <A
+                  href="/create_post"
+                  attr:title=crosspost_label.clone()
+                  attr:aria-label=crosspost_label.clone()
+                >
                   <Icon icon=IconType::Crosspost />
                 </A>
               }
@@ -120,7 +125,8 @@ where
                 <input type="hidden" name="block" value="true" />
                 <button class="text-xs whitespace-nowrap" type="submit">
                   <Icon icon=IconType::Block class="inline-block" />
-                  " Block user"
+                  " "
+                  {tr!("block-user")}
                 </button>
               </ActionForm>
             </li>

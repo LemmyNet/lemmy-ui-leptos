@@ -7,6 +7,7 @@ use crate::{
   },
 };
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::ActionForm;
 use tailwind_fuse::{
   AsTailwindClass,
@@ -67,7 +68,7 @@ where
               )
           }
 
-          title="Up vote"
+          title=tr!("upvote")
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
 
@@ -91,7 +92,7 @@ where
               )
           }
 
-          title="Down vote"
+          title=tr!("downvote")
 
           disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
         >
