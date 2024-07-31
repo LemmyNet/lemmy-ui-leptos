@@ -3,6 +3,7 @@ use crate::ui::components::common::icon::{
   IconType::{Eye, EyeSlash},
 };
 use leptos::*;
+use leptos_fluent::tr;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum InputType {
@@ -55,7 +56,9 @@ pub fn TextInput(
       <Show when=move || input_type == InputType::Password>
         <button
           type="button"
-          aria-label=move || { if show_password.get() { "Hide Password" } else { "Show Password" } }
+          aria-label=move || {
+              if show_password.get() { tr!("hide-password") } else { tr!("show-password") }
+          }
 
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)

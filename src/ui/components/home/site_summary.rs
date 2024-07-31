@@ -7,11 +7,12 @@ use crate::{
   utils::derive_query_signal,
 };
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::A;
 use si_format::Formattable;
 
 #[component]
-fn UserStatRow(count: i64, text: &'static str) -> impl IntoView {
+fn UserStatRow(count: i64, text: String) -> impl IntoView {
   view! {
     <tr class="*:p-2.5 [&:not(:first-child)]:border-t-2 [&:not(:first-child)]:border-accent">
       <td class="text-xs font-semibold">{text}</td>
@@ -71,6 +72,12 @@ pub fn SiteSummary() -> impl IntoView {
       .collect::<Vec<_>>()
   });
 
+  let today = StoredValue::new(tr!("today"));
+  let past_week = StoredValue::new(tr!("past-week"));
+  let past_month = StoredValue::new(tr!("past-month"));
+  let past_6_months = StoredValue::new(tr!("past-6-months"));
+  let all_time = StoredValue::new(tr!("all-time"));
+
   view! {
     <div class="card w-full mb-3 bg-base-200">
       <div class="card-body">
@@ -83,7 +90,7 @@ pub fn SiteSummary() -> impl IntoView {
           </Unpack>
           <section aria-labelledby="instance-stats-heading" class="my-4">
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
-              Instance Stats
+              {tr!("instance-stats")}
             </h3>
             <Unpack item=counts let:counts>
               <div class="font-semibold flex flex-wrap *:m-1.5">
@@ -91,43 +98,43 @@ pub fn SiteSummary() -> impl IntoView {
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline" />
                   {counts.posts.si_format().to_string()}
                   " "
-                  <span class="text-sm">Posts</span>
+                  <span class="text-sm">{tr!("posts")}</span>
                 </div>
                 <div>
                   <Icon icon=IconType::Comments size=IconSize::Large class="inline" />
                   {counts.comments.si_format().to_string()}
                   " "
-                  <span class="text-sm">Comments</span>
+                  <span class="text-sm">{tr!("comments")}</span>
                 </div>
               </div>
               <table class="w-full mt-3 table shadow-lg">
                 <caption class="text-lg font-semibold whitespace-nowrap align-middle text-start mb-2">
                   <Icon icon=IconType::Users size=IconSize::Large class="inline me-2" />
-                  Active Users
+                  {tr!("active-users")}
                 </caption>
                 <thead>
                   <tr class="font-extrabold text-sm bg-base-300 *:p-3">
                     <th class="text-start" scope="col">
-                      Time Frame
+                      {tr!("time-frame")}
                     </th>
                     <th class="text-center" scope="col">
-                      Count
+                      {tr!("count")}
                     </th>
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text="Today" count=counts.users_active_day />
-                  <UserStatRow text="Past Week" count=counts.users_active_week />
-                  <UserStatRow text="Past Month" count=counts.users_active_month />
-                  <UserStatRow text="Past 6 Months" count=counts.users_active_month />
-                  <UserStatRow text="All Time" count=counts.users_active_month />
+                  <UserStatRow text=today.get_value() count=counts.users_active_day />
+                  <UserStatRow text=past_week.get_value() count=counts.users_active_week />
+                  <UserStatRow text=past_month.get_value() count=counts.users_active_month />
+                  <UserStatRow text=past_6_months.get_value() count=counts.users_active_month />
+                  <UserStatRow text=all_time.get_value() count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>
           </section>
           <section aria-labelledby="instances-admins-heading">
             <h3 id="instance-admins-heading" class="text-2xl font-bold mb-2">
-              Admins
+              {tr!("admins")}
             </h3>
             <ul class="flex flex-wrap gap-2 my-4">
               <Unpack item=admins let:admins>
