@@ -1,22 +1,23 @@
 use crate::ui::components::common::icon::{Icon, IconType};
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::*;
 
 #[component]
 pub fn MobileNav() -> impl IntoView {
   view! {
     <nav aria-label="Mobile nav" class="btm-nav w-full md:hidden border-t border-neutral text-xs">
-      <NavLink href="/" icon=IconType::Home text="Home" />
-      <NavLink href="/communities" icon=IconType::Communities text="Communities" />
-      <NavLink href="/search" icon=IconType::Search text="Search" />
-      <NavLink href="/saved" icon=IconType::Saved text="Saved" />
-      <NavLink href="/" icon=IconType::Profile text="Profile" />
+      <NavLink href="/" icon=IconType::Home text=tr!("home") />
+      <NavLink href="/communities" icon=IconType::Communities text=tr!("communities") />
+      <NavLink href="/search" icon=IconType::Search text=tr!("search") />
+      <NavLink href="/saved" icon=IconType::Saved text=tr!("saved") />
+      <NavLink href="/" icon=IconType::Profile text=tr!("profile") />
     </nav>
   }
 }
 
 #[component]
-fn NavLink(href: &'static str, icon: IconType, text: &'static str) -> impl IntoView {
+fn NavLink(href: &'static str, icon: IconType, text: String) -> impl IntoView {
   // TODO: Apply active to aria-current=page once the unusual cargo-leptos bug is resolved
   view! {
     <A href=href>

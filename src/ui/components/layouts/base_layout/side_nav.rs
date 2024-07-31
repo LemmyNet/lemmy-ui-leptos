@@ -6,7 +6,7 @@ use leptos_router::A;
 #[component]
 pub fn SideNav() -> impl IntoView {
   view! {
-    <section aria-label="Main navigation links">
+    <section aria-label=tr!("main-nav-links")>
       <ul>
         <NavLink href="/create_post" icon=IconType::CreatePost text=tr!("create-post") />
         <NavLink
@@ -23,7 +23,7 @@ pub fn SideNav() -> impl IntoView {
     </section>
     <section aria-labelledby="lemmy-resources-label" class="mt-auto">
       <div id="lemmy-resources-label" class="font-medium mb-1">
-        Lemmy Resources
+        {tr!("lemmy-resources")}
       </div>
       <ul>
         <NavLink

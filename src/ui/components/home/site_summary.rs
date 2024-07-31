@@ -7,11 +7,12 @@ use crate::{
   utils::derive_query_signal,
 };
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::A;
 use si_format::Formattable;
 
 #[component]
-fn UserStatRow(count: i64, text: &'static str) -> impl IntoView {
+fn UserStatRow(count: i64, text: String) -> impl IntoView {
   view! {
     <tr class="*:p-2.5 [&:not(:first-child)]:border-t-2 [&:not(:first-child)]:border-accent">
       <td class="text-xs font-semibold">{text}</td>
@@ -116,11 +117,11 @@ pub fn SiteSummary() -> impl IntoView {
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text="Today" count=counts.users_active_day />
-                  <UserStatRow text="Past Week" count=counts.users_active_week />
-                  <UserStatRow text="Past Month" count=counts.users_active_month />
-                  <UserStatRow text="Past 6 Months" count=counts.users_active_month />
-                  <UserStatRow text="All Time" count=counts.users_active_month />
+                  <UserStatRow text=tr!("today") count=counts.users_active_day />
+                  <UserStatRow text=tr!("past-week") count=counts.users_active_week />
+                  <UserStatRow text=tr!("past-month") count=counts.users_active_month />
+                  <UserStatRow text=tr!("past-6-months") count=counts.users_active_month />
+                  <UserStatRow text=tr!("all-time") count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>

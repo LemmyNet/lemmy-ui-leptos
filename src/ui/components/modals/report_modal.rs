@@ -11,6 +11,7 @@ use crate::{
 };
 use html::Dialog;
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::ActionForm;
 
 #[component]
@@ -19,11 +20,18 @@ fn ReportForm(
   creator_actor_id: Signal<String>,
   post_or_comment_id: Signal<PostOrCommentId>,
 ) -> impl IntoView {
-  let content_type_str = Signal::derive(move || {
+  let content_type = Signal::derive(move || {
     if matches!(post_or_comment_id.get(), PostOrCommentId::Post(_)) {
-      "post"
+      tr!("report-post")
     } else {
-      "comment"
+      tr!("report-comment")
+    }
+  });
+  let creator_of_start = Signal::derive(move || {
+    if matches!(post_or_comment_id.get(), PostOrCommentId::Post(_)) {
+      tr!("creator-of-post")
+    } else {
+      tr!("creator-of-comment")
     }
   });
 
@@ -36,11 +44,11 @@ fn ReportForm(
       <Icon icon=IconType::X />
     </button>
     <h2 class="text-xl font-bold mb-2">
-      {move || { format!("Report {}", content_type_str.get()) }}
+      {move || content_type.get()}
     </h2>
     <div>
       <strong class="font-semibold">
-        {move || format!("Creator of {}", content_type_str.get())}
+        {move || creator_of_start.get()}
       </strong>
       ": "
       <span>
@@ -52,13 +60,13 @@ fn ReportForm(
       </span>
     </div>
     <input type="hidden" name="id" value=move || post_or_comment_id.get().get_id() />
-    <TextInput required=true id="report_reason_id" name="reason" label="Reason" autofocus=true />
+    <TextInput required=true id="report_reason_id" name="reason" label=tr!("reason") autofocus=true />
     <div class="modal-action">
       <button formmethod="dialog" formnovalidate=true class="btn btn-outline">
-        Cancel
+        {tr!("cancel")}
       </button>
       <button type="submit" class="btn btn-error">
-        Submit report
+        {tr!("submit-report")}
       </button>
     </div>
   }

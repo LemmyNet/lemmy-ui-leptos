@@ -5,6 +5,7 @@ use crate::{
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PostId;
 use leptos::*;
+use leptos_fluent::tr;
 use leptos_router::ActionForm;
 
 #[component]
@@ -27,7 +28,7 @@ pub fn HidePostButton(id: PostId) -> impl IntoView {
         <button class="text-xs whitespace-nowrap" type="submit">
           <Icon icon=icon class="inline-block" />
           " "
-          {move || if hidden.get().0 { "Unhide post" } else { "Hide post" }}
+          {move || if hidden.get().0 { tr!("show-post") } else { tr!("hide-post") }}
         </button>
       </ActionForm>
     </li>

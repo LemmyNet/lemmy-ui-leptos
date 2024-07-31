@@ -32,8 +32,8 @@ pub fn FilterBar(
   view! {
     <div class="mb-4 flex flex-wrap gap-3">
       <div class="join">
-        <button class="btn join-item btn-active">Posts</button>
-        <button class="btn join-item btn-disabled">Comments</button>
+        <button class="btn join-item btn-active">{tr!("posts")}</button>
+        <button class="btn join-item btn-disabled">{tr!("comments")}</button>
       </div>
       <div class="join">
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Subscribed>
@@ -49,7 +49,7 @@ pub fn FilterBar(
       <details class="dropdown dropdown-end group">
         <summary class="btn">
           <span class="text-nowrap leading-loose">
-            "Sort type "
+            {tr!("sort-type")}" "
             <Icon
               class="align-bottom inline group-open:rotate-180 transition-transform"
               icon=IconType::DropdownCaret

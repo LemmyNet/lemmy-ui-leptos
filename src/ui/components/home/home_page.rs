@@ -12,6 +12,7 @@ use lemmy_client::lemmy_api_common::{
   post::GetPosts,
 };
 use leptos::*;
+use leptos_fluent::tr;
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -39,7 +40,7 @@ pub fn HomePage() -> impl IntoView {
           {filter_bar}
         </div>
         <Suspense fallback=|| "Loading">
-          <ErrorBoundary fallback=|_| { "Could not load posts!" }>
+          <ErrorBoundary fallback=|_| { tr!("could-not-load-posts") }>
             <Unpack item=posts let:posts>
               <PostListings posts=posts />
             </Unpack>
