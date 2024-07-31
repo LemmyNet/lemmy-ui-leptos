@@ -28,7 +28,7 @@ pub fn HidePostButton(id: PostId) -> impl IntoView {
         <button class="text-xs whitespace-nowrap" type="submit">
           <Icon icon=icon class="inline-block" />
           " "
-          {move || if hidden.get().0 { tr!("show-post") } else { tr!("hide-post") }}
+          {move || if hidden.get().0 { tr!("unhide-post") } else { tr!("hide-post") }}
         </button>
       </ActionForm>
     </li>

@@ -31,7 +31,7 @@ pub fn LoginForm() -> impl IntoView {
       <TextInput
         id="username"
         name="username_or_email"
-        label={tr!("username")}
+        label=tr!("username")
         required=true
         min_length=3
       />
@@ -39,7 +39,7 @@ pub fn LoginForm() -> impl IntoView {
       <TextInput
         id="password"
         name="password"
-        label={tr!("password")}
+        label=tr!("password")
         input_type=InputType::Password
         pattern=".{10,60}"
         required=true

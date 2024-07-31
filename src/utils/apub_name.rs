@@ -2,11 +2,11 @@ use cfg_if::cfg_if;
 use std::str::FromStr;
 
 pub fn create_user_apub_name(name: &str, actor_id: &str) -> String {
-  create_apub_name::<'@'>(name, actor_id).unwrap_or_else(String::new)
+  create_apub_name::<'@'>(name, actor_id).unwrap_or_default()
 }
 
 pub fn create_community_apub_name(name: &str, actor_id: &str) -> String {
-  create_apub_name::<'!'>(name, actor_id).unwrap_or_else(String::new)
+  create_apub_name::<'!'>(name, actor_id).unwrap_or_default()
 }
 
 fn format_apub_name<const PREFIX: char>(name: &str, instance: &str) -> String {

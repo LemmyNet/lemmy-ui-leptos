@@ -91,7 +91,11 @@ where
       {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
           .then(|| {
               view! {
-                <A href="/create_post" attr:title=crosspost_label.clone() attr:aria-label=crosspost_label.clone()>
+                <A
+                  href="/create_post"
+                  attr:title=crosspost_label.clone()
+                  attr:aria-label=crosspost_label.clone()
+                >
                   <Icon icon=IconType::Crosspost />
                 </A>
               }
@@ -121,7 +125,8 @@ where
                 <input type="hidden" name="block" value="true" />
                 <button class="text-xs whitespace-nowrap" type="submit">
                   <Icon icon=IconType::Block class="inline-block" />
-                  " "{tr!("block-user")}
+                  " "
+                  {tr!("block-user")}
                 </button>
               </ActionForm>
             </li>

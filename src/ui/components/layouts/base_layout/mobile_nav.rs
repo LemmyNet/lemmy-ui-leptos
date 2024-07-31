@@ -6,7 +6,7 @@ use leptos_router::*;
 #[component]
 pub fn MobileNav() -> impl IntoView {
   view! {
-    <nav aria-label="Mobile nav" class="btm-nav w-full md:hidden border-t border-neutral text-xs">
+    <nav aria-label=tr!("mobile-nav") class="btm-nav w-full md:hidden border-t border-neutral text-xs">
       <NavLink href="/" icon=IconType::Home text=tr!("home") />
       <NavLink href="/communities" icon=IconType::Communities text=tr!("communities") />
       <NavLink href="/search" icon=IconType::Search text=tr!("search") />

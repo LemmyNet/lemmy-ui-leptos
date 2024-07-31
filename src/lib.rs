@@ -8,8 +8,6 @@ pub mod host;
 mod serverfns;
 mod ui;
 mod utils;
-use fluent_templates::static_loader;
-use leptos_fluent::leptos_fluent;
 use crate::{
   contexts::{
     site_resource_context::provide_site_resource_context,
@@ -24,8 +22,10 @@ use crate::{
   },
 };
 use contexts::site_resource_context::SiteResource;
+use fluent_templates::static_loader;
 use html::Dialog;
 use leptos::*;
+use leptos_fluent::leptos_fluent;
 use leptos_meta::*;
 use leptos_router::*;
 use ui::components::modals::ReportModal;

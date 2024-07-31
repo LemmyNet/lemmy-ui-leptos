@@ -84,7 +84,7 @@ pub fn SiteSummary() -> impl IntoView {
           </Unpack>
           <section aria-labelledby="instance-stats-heading" class="my-4">
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
-              Instance Stats
+              {tr!("instance-stats")}
             </h3>
             <Unpack item=counts let:counts>
               <div class="font-semibold flex flex-wrap *:m-1.5">
@@ -92,43 +92,43 @@ pub fn SiteSummary() -> impl IntoView {
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline" />
                   {counts.posts.si_format().to_string()}
                   " "
-                  <span class="text-sm">Posts</span>
+                  <span class="text-sm">{tr!("posts")}</span>
                 </div>
                 <div>
                   <Icon icon=IconType::Comments size=IconSize::Large class="inline" />
                   {counts.comments.si_format().to_string()}
                   " "
-                  <span class="text-sm">Comments</span>
+                  <span class="text-sm">{tr!("comments")}</span>
                 </div>
               </div>
               <table class="w-full mt-3 table shadow-lg">
                 <caption class="text-lg font-semibold whitespace-nowrap align-middle text-start mb-2">
                   <Icon icon=IconType::Users size=IconSize::Large class="inline me-2" />
-                  Active Users
+                  {tr!("active-users")}
                 </caption>
                 <thead>
                   <tr class="font-extrabold text-sm bg-base-300 *:p-3">
                     <th class="text-start" scope="col">
-                      Time Frame
+                      {tr!("time-frame")}
                     </th>
                     <th class="text-center" scope="col">
-                      Count
+                      {tr!("count")}
                     </th>
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text=tr!("today") count=counts.users_active_day />
-                  <UserStatRow text=tr!("past-week") count=counts.users_active_week />
-                  <UserStatRow text=tr!("past-month") count=counts.users_active_month />
-                  <UserStatRow text=tr!("past-6-months") count=counts.users_active_month />
-                  <UserStatRow text=tr!("all-time") count=counts.users_active_month />
+                  <UserStatRow text={tr!("today")} count=counts.users_active_day />
+                  <UserStatRow text={tr!("past-week")} count=counts.users_active_week />
+                  <UserStatRow text={tr!("past-month")} count=counts.users_active_month />
+                  <UserStatRow text={tr!("past-6-months")} count=counts.users_active_month />
+                  <UserStatRow text={tr!("all-time")} count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>
           </section>
           <section aria-labelledby="instances-admins-heading">
             <h3 id="instance-admins-heading" class="text-2xl font-bold mb-2">
-              Admins
+              {tr!("admins")}
             </h3>
             <ul class="flex flex-wrap gap-2 my-4">
               <Unpack item=admins let:admins>

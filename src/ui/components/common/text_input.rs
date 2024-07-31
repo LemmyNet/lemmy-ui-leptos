@@ -56,7 +56,9 @@ pub fn TextInput(
       <Show when=move || input_type == InputType::Password>
         <button
           type="button"
-          aria-label=move || { if show_password.get() { tr!("hide-password") } else { tr!("shoow-password") } }
+          aria-label=move || {
+              if show_password.get() { tr!("hide-password") } else { tr!("show-password") }
+          }
 
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
           on:click=move |_| update!(| show_password | * show_password = !* show_password)

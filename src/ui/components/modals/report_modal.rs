@@ -43,13 +43,9 @@ fn ReportForm(
     >
       <Icon icon=IconType::X />
     </button>
-    <h2 class="text-xl font-bold mb-2">
-      {move || content_type.get()}
-    </h2>
+    <h2 class="text-xl font-bold mb-2">{move || content_type.get()}</h2>
     <div>
-      <strong class="font-semibold">
-        {move || creator_of_start.get()}
-      </strong>
+      <strong class="font-semibold">{move || creator_of_start.get()}</strong>
       ": "
       <span>
         {move || {
@@ -60,7 +56,13 @@ fn ReportForm(
       </span>
     </div>
     <input type="hidden" name="id" value=move || post_or_comment_id.get().get_id() />
-    <TextInput required=true id="report_reason_id" name="reason" label=tr!("reason") autofocus=true />
+    <TextInput
+      required=true
+      id="report_reason_id"
+      name="reason"
+      label=tr!("reason")
+      autofocus=true
+    />
     <div class="modal-action">
       <button formmethod="dialog" formnovalidate=true class="btn btn-outline">
         {tr!("cancel")}

@@ -1,11 +1,11 @@
 use crate::ui::components::{
-    common::icon::{Icon, IconSize, IconType},
-    layouts::filter_bar_layout::{
-      derive_link_type,
-      listing_type_link::ListingTypeLink,
-      sort_type_link::SortTypeLink,
-    },
-  };
+  common::icon::{Icon, IconSize, IconType},
+  layouts::filter_bar_layout::{
+    derive_link_type,
+    listing_type_link::ListingTypeLink,
+    sort_type_link::SortTypeLink,
+  },
+};
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{ListingType, SortType};
 use leptos::*;
 use leptos_fluent::tr;
@@ -37,13 +37,13 @@ pub fn FilterBar(
       </div>
       <div class="join">
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Subscribed>
-          Subscribed
+          {tr!("subscribed")}
         </ListingTypeLink>
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Local>
-          Local
+          {tr!("local")}
         </ListingTypeLink>
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::All>
-          All
+          {tr!("all")}
         </ListingTypeLink>
       </div>
       <details class="dropdown dropdown-end group">

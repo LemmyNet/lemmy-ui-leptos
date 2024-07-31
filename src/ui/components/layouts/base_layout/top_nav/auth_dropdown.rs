@@ -34,7 +34,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
   view! {
     <nav class="hidden md:block">
-      <ul aria-label="Authentication nav" class="flex items-center gap-x-2">
+      <ul aria-label=tr!("authentication-nav") class="flex items-center gap-x-2">
         <Show
           when=move || user_is_logged_in.get()
 
@@ -57,7 +57,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
           <Unpack item=names let:names>
             <li>
-              <details class="dropdown dropdown-end group" aria-label="Logged in user dropdown">
+              <details class="dropdown dropdown-end group" aria-label=tr!("logged-in-user-dropdown")>
                 <summary class="btn">
 
                   <span class="text-nowrap leading-loose">
