@@ -8,13 +8,13 @@ pub mod host;
 mod serverfns;
 mod ui;
 mod utils;
-
+use fluent_templates::static_loader;
+use leptos_fluent::leptos_fluent;
 use crate::{
   contexts::{
     site_resource_context::provide_site_resource_context,
     theme_resource_context::provide_theme_resource_context,
   },
-  i18n::*,
   ui::components::{
     communities::communities_page::CommunitiesPage,
     home::home_page::HomePage,
@@ -34,14 +34,30 @@ use utils::{
   types::{ReportModalData, ReportModalNode},
 };
 
-leptos_i18n::load_locales!();
+static_loader! {
+  pub static TRANSLATIONS = {
+      locales: "./locales",
+      fallback_language: "en",
+  };
+}
 
 #[component]
 pub fn App() -> impl IntoView {
   provide_meta_context();
-  provide_i18n_context();
   provide_site_resource_context();
   provide_theme_resource_context();
+
+  leptos_fluent! {{
+    translations: [TRANSLATIONS],
+    locales: "./locales",
+    check_translations: "./src/**/*.rs",
+    sync_html_tag_lang: true,
+    initial_language_from_accept_language_header: true,
+    cookie_attrs: "SameSite=Strict; Secure;",
+    initial_language_from_cookie: true,
+    set_language_to_cookie: true,
+    initial_language_from_navigator: true
+  }};
 
   let is_routing = RwSignal::new(false);
 

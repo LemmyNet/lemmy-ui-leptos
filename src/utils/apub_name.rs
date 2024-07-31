@@ -2,31 +2,31 @@ use cfg_if::cfg_if;
 use std::str::FromStr;
 
 pub fn create_user_apub_name(name: &str, actor_id: &str) -> String {
-  create_apub_name::<'@'>(name, actor_id)
+  create_apub_name::<'@'>(name, actor_id).unwrap_or_else(String::new)
 }
 
 pub fn create_community_apub_name(name: &str, actor_id: &str) -> String {
-  create_apub_name::<'!'>(name, actor_id)
+  create_apub_name::<'!'>(name, actor_id).unwrap_or_else(String::new)
 }
 
 fn format_apub_name<const PREFIX: char>(name: &str, instance: &str) -> String {
   format!("{PREFIX}{name}@{instance}")
 }
 
-fn create_apub_name<const PREFIX: char>(name: &str, actor_id: &str) -> String {
+fn create_apub_name<const PREFIX: char>(name: &str, actor_id: &str) -> Option<String> {
   cfg_if! {
       if #[cfg(feature = "ssr")] {
         use actix_web::http::Uri;
-        let url = Uri::from_str(actor_id).expect("Could not parse actor host name from actor id");
+        let url = Uri::from_str(actor_id).ok()?;
         let instance = url.host().expect("No host name in actor id");
       } else {
         use web_sys::Url;
-        let instance = Url::new(actor_id).expect("Could not parse actor host name from actor id").host();
+        let instance = Url::new(actor_id).ok()?.host();
         let instance = instance.as_str();
       }
   }
 
-  format_apub_name::<PREFIX>(name, instance)
+  Some(format_apub_name::<PREFIX>(name, instance))
 }
 
 // TODO: Figure out how to test functions when targeting wasm

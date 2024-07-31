@@ -1,24 +1,20 @@
-use crate::{
-  ui::components::{
+use crate::ui::components::{
     common::icon::{Icon, IconSize, IconType},
     layouts::filter_bar_layout::{
       derive_link_type,
       listing_type_link::ListingTypeLink,
       sort_type_link::SortTypeLink,
     },
-  },
-  use_i18n,
-};
+  };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{ListingType, SortType};
 use leptos::*;
-use leptos_i18n::t;
+use leptos_fluent::tr;
 
 #[component]
 pub fn FilterBar(
   listing_type: RwSignal<ListingType>,
   sort_type: RwSignal<SortType>,
 ) -> impl IntoView {
-  let i18n = use_i18n();
   let local_listing_type = derive_link_type(
     "listingType",
     |user| user.default_listing_type,
@@ -64,13 +60,13 @@ pub fn FilterBar(
         </summary>
         <menu class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Active>
-            {t!(i18n, active)}
+            {tr!("active")}
           </SortTypeLink>
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Hot>
-            {t!(i18n, hot)}
+            {tr!("hot")}
           </SortTypeLink>
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::New>
-            {t!(i18n, new)}
+            {tr!("new")}
           </SortTypeLink>
         </menu>
       </details>

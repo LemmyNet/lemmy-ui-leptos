@@ -5,16 +5,14 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     unpack::Unpack,
   },
-  use_i18n,
   utils::{derive_query_signal, derive_user_is_logged_in},
 };
 use leptos::*;
-use leptos_i18n::t;
+use leptos_fluent::tr;
 use leptos_router::{ActionForm, A};
 
 #[component]
 pub fn AuthDropdown() -> impl IntoView {
-  let i18n = use_i18n();
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
   let names = derive_query_signal(site_resource, |site_response| {
@@ -44,13 +42,13 @@ pub fn AuthDropdown() -> impl IntoView {
               view! {
                 <li>
                   <A href="/login" class="btn btn-ghost transition duration-500">
-                    {t!(i18n, login)}
+                    {tr!("login")}
                   </A>
                 </li>
                 <li>
                   <A href="/signup" class="btn btn-primary transition duration-500">
 
-                    {t!(i18n, signup)}
+                    {tr!("signup")}
                   </A>
                 </li>
               }
@@ -91,16 +89,16 @@ pub fn AuthDropdown() -> impl IntoView {
                             .0
                             .as_str();
                         format!("/u/{name}")
-                    }>{t!(i18n, profile)}</A>
+                    }>{tr!("profile")}</A>
                   </li>
                   <li>
-                    <A href="/settings">{t!(i18n, settings)}</A>
+                    <A href="/settings">{tr!("settings")}</A>
                   </li>
                   <div class="divider my-0"></div>
                   <li>
                     <ActionForm action=logout_action class="p-0">
                       <button type="submit" class="p-2.5">
-                        {t!(i18n, logout)}
+                        {tr!("logout")}
                       </button>
                     </ActionForm>
                   </li>
