@@ -7,7 +7,7 @@ use crate::{
   utils::derive_query_signal,
 };
 use leptos::*;
-use leptos_fluent::{move_tr, tr};
+use leptos_fluent::tr;
 use leptos_router::A;
 use si_format::Formattable;
 
@@ -72,11 +72,11 @@ pub fn SiteSummary() -> impl IntoView {
       .collect::<Vec<_>>()
   });
 
-  let today = move_tr!("today");
-  let past_week = move_tr!("past-week");
-  let past_month = move_tr!("past-month");
-  let past_6_months = move_tr!("past-6-months");
-  let all_time = move_tr!("all-time");
+  let today = StoredValue::new(tr!("today"));
+  let past_week = StoredValue::new(tr!("past-week"));
+  let past_month = StoredValue::new(tr!("past-month"));
+  let past_6_months = StoredValue::new(tr!("past-6-months"));
+  let all_time = StoredValue::new(tr!("all-time"));
 
   view! {
     <div class="card w-full mb-3 bg-base-200">
@@ -123,11 +123,11 @@ pub fn SiteSummary() -> impl IntoView {
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text=today.get() count=counts.users_active_day />
-                  <UserStatRow text=past_week.get() count=counts.users_active_week />
-                  <UserStatRow text=past_month.get() count=counts.users_active_month />
-                  <UserStatRow text=past_6_months.get() count=counts.users_active_month />
-                  <UserStatRow text=all_time.get() count=counts.users_active_month />
+                  <UserStatRow text=today.get_value() count=counts.users_active_day />
+                  <UserStatRow text=past_week.get_value() count=counts.users_active_week />
+                  <UserStatRow text=past_month.get_value() count=counts.users_active_month />
+                  <UserStatRow text=past_6_months.get_value() count=counts.users_active_month />
+                  <UserStatRow text=all_time.get_value() count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>
