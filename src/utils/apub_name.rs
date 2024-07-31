@@ -1,4 +1,5 @@
 use cfg_if::cfg_if;
+use std::str::FromStr;
 
 pub fn create_user_apub_name(name: &str, actor_id: &str) -> String {
   create_apub_name::<'@'>(name, actor_id).unwrap_or_default()
