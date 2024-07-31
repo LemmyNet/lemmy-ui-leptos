@@ -60,8 +60,8 @@ where
   });
   let crosspost_label = "Crosspost";
 
-  // TODO a very strange bug, where when using Show, you have to use a stored value
-  let creator_stored = StoredValue::new(creator.clone());
+  // See https://book.leptos.dev/interlude_projecting_children.html
+  let creator_stored = store_value(creator.clone());
 
   view! {
     <Fedilink href=ap_id.to_string() />

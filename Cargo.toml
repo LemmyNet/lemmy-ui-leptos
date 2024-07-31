@@ -35,9 +35,6 @@ tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
 url = { version = "2.5", optional = true }
 
-[dev-dependencies]
-anyhow = "1.0.86"
-
 [package.metadata.leptos-i18n]
 default = "en"
 locales = ["en"]

@@ -27,10 +27,11 @@ pub fn ReportButton<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId
   } else {
     "Report post"
   };
-  let onclick = report_content(creator, post_or_comment_id);
+  let creator_stored = store_value(creator.clone());
+  let onclick = move |_| report_content(&creator_stored.get_value(), post_or_comment_id);
 
   view! {
-    <button class="text-xs whitespace-nowrap" type="button" on:click=move |_| onclick>
+    <button class="text-xs whitespace-nowrap" type="button" on:click=onclick>
       <Icon icon=IconType::Report class="inline-block" />
       " "
       {report_content_label}
