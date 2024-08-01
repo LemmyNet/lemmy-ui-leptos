@@ -14,23 +14,14 @@ use leptos::*;
 use leptos_router::*;
 
 #[component]
-pub fn PostListing(post_view: PostView) -> impl IntoView {
+pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   // These post fields cannot change, so no need for signals
   let id = post_view.post.id;
-  let actor_id = post_view.post.ap_id.to_string();
+  let ap_id = post_view.post.ap_id.inner().as_str();
+  let creator = &post_view.creator;
+  let community = &post_view.community;
 
-  let creator_id = post_view.creator.id;
-  let creator_avatar = post_view.creator.avatar.clone().map(|url| url.to_string());
-  let creator_name = StoredValue::new(post_view.creator.name.clone());
-  let creator_display_name = post_view.creator.display_name.clone();
-  let creator_actor_id = post_view.creator.actor_id.clone().to_string();
-
-  let community_icon = post_view.community.icon.clone().map(|url| url.to_string());
-  let community_name = post_view.community.name.clone();
-  let community_title = post_view.community.title.clone();
-  let community_actor_id = post_view.community.actor_id.clone().to_string();
-
-  let post_state = RwSignal::new(post_view);
+  let post_state = RwSignal::new(post_view.clone());
 
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
@@ -139,19 +130,9 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           </h1>
         </Show>
         <div class="flex items-center gap-1.5">
-          <CreatorListing
-            avatar=creator_avatar
-            name=creator_name.get_value().clone()
-            display_name=creator_display_name
-            actor_id=creator_actor_id.clone()
-          />
+          <CreatorListing creator=creator />
           <div class="text-sm">to</div>
-          <CommunityListing
-            icon=community_icon
-            name=community_name
-            title=community_title
-            actor_id=community_actor_id
-          />
+          <CommunityListing community=community />
         </div>
 
         <div class="flex items-center gap-x-2">
@@ -169,10 +150,8 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             post_or_comment_id=PostOrCommentId::Post(id)
             saved=saved
             save_action=save_action
-            creator_id=creator_id
-            apub_link=actor_id
-            creator_actor_id=creator_actor_id
-            creator_name=creator_name
+            creator=creator
+            ap_id=ap_id
           />
         </div>
       </div>

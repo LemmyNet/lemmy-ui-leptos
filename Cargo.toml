@@ -67,6 +67,11 @@ ssr = [
   "dep:url",
 ]
 
+[lints.clippy]
+# leptos can't deal with these lints
+needless_lifetimes = "allow"
+let_unit_value = "allow"
+
 [package.metadata.cargo-all-features]
 denylist = ["actix-files", "actix-web", "leptos_actix"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]

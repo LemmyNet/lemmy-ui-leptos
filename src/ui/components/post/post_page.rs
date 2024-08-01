@@ -46,7 +46,7 @@ pub fn PostPage() -> impl IntoView {
     <main class="md:container mx-auto flex flex-col items-center">
       <Transition>
         <Unpack item=post_resource let:res>
-          <PostListing post_view=res.post_view.clone() />
+          <PostListing post_view=&res.post_view />
         </Unpack>
       </Transition>
 
