@@ -31,9 +31,17 @@ pub fn SideNav() -> impl IntoView {
           icon=IconType::Documentation
           text=move_tr!("documentation")
         />
-        <NavLink href="https://github.com/LemmyNet" icon=IconType::Code text=move_tr!("source-code") />
+        <NavLink
+          href="https://github.com/LemmyNet"
+          icon=IconType::Code
+          text=move_tr!("source-code")
+        />
         <NavLink href="https://join-lemmy.org/" icon=IconType::Info text=move_tr!("about") />
-        <NavLink href="https://join-lemmy.org/donate" icon=IconType::Donate text=move_tr!("donate") />
+        <NavLink
+          href="https://join-lemmy.org/donate"
+          icon=IconType::Donate
+          text=move_tr!("donate")
+        />
       </ul>
     </section>
   }

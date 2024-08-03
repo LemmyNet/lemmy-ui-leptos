@@ -91,11 +91,7 @@ where
       {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
           .then(|| {
               view! {
-                <A
-                  href="/create_post"
-                  attr:title=crosspost_label
-                  attr:aria-label=crosspost_label
-                >
+                <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
                   <Icon icon=IconType::Crosspost />
                 </A>
               }
