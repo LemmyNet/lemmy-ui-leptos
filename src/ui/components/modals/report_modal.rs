@@ -11,7 +11,7 @@ use crate::{
 };
 use html::Dialog;
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::{move_tr, tr};
 use leptos_router::ActionForm;
 
 #[component]
@@ -60,15 +60,15 @@ fn ReportForm(
       required=true
       id="report_reason_id"
       name="reason"
-      label=tr!("reason")
+      label=move || tr!("reason")
       autofocus=true
     />
     <div class="modal-action">
       <button formmethod="dialog" formnovalidate=true class="btn btn-outline">
-        {tr!("cancel")}
+        {move_tr!("cancel")}
       </button>
       <button type="submit" class="btn btn-error">
-        {tr!("submit-report")}
+        {move_tr!("submit-report")}
       </button>
     </div>
   }

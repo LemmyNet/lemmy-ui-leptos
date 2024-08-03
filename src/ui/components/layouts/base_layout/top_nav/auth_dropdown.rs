@@ -8,7 +8,7 @@ use crate::{
   utils::{derive_query_signal, derive_user_is_logged_in},
 };
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 use leptos_router::{ActionForm, A};
 
 #[component]
@@ -34,7 +34,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
   view! {
     <nav class="hidden md:block">
-      <ul aria-label=tr!("authentication-nav") class="flex items-center gap-x-2">
+      <ul aria-label=move_tr!("authentication-nav") class="flex items-center gap-x-2">
         <Show
           when=move || user_is_logged_in.get()
 
@@ -42,13 +42,13 @@ pub fn AuthDropdown() -> impl IntoView {
               view! {
                 <li>
                   <A href="/login" class="btn btn-ghost transition duration-500">
-                    {tr!("login")}
+                    {move_tr!("login")}
                   </A>
                 </li>
                 <li>
                   <A href="/signup" class="btn btn-primary transition duration-500">
 
-                    {tr!("signup")}
+                    {move_tr!("signup")}
                   </A>
                 </li>
               }
@@ -59,7 +59,7 @@ pub fn AuthDropdown() -> impl IntoView {
             <li>
               <details
                 class="dropdown dropdown-end group"
-                aria-label=tr!("logged-in-user-dropdown")
+                aria-label=move_tr!("logged-in-user-dropdown")
               >
                 <summary class="btn">
 
@@ -92,16 +92,16 @@ pub fn AuthDropdown() -> impl IntoView {
                             .0
                             .as_str();
                         format!("/u/{name}")
-                    }>{tr!("profile")}</A>
+                    }>{move_tr!("profile")}</A>
                   </li>
                   <li>
-                    <A href="/settings">{tr!("settings")}</A>
+                    <A href="/settings">{move_tr!("settings")}</A>
                   </li>
                   <div class="divider my-0"></div>
                   <li>
                     <ActionForm action=logout_action class="p-0">
                       <button type="submit" class="p-2.5">
-                        {tr!("logout")}
+                        {move_tr!("logout")}
                       </button>
                     </ActionForm>
                   </li>
