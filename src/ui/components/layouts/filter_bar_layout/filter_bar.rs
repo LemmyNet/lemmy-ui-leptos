@@ -8,7 +8,7 @@ use crate::ui::components::{
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{ListingType, SortType};
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 
 #[component]
 pub fn FilterBar(
@@ -32,24 +32,24 @@ pub fn FilterBar(
   view! {
     <div class="mb-4 flex flex-wrap gap-3">
       <div class="join">
-        <button class="btn join-item btn-active">{tr!("posts")}</button>
-        <button class="btn join-item btn-disabled">{tr!("comments")}</button>
+        <button class="btn join-item btn-active">{move_tr!("posts")}</button>
+        <button class="btn join-item btn-disabled">{move_tr!("comments")}</button>
       </div>
       <div class="join">
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Subscribed>
-          {tr!("subscribed")}
+          {move_tr!("subscribed")}
         </ListingTypeLink>
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::Local>
-          {tr!("local")}
+          {move_tr!("local")}
         </ListingTypeLink>
         <ListingTypeLink listing_type=listing_type link_listing_type=ListingType::All>
-          {tr!("all")}
+          {move_tr!("all")}
         </ListingTypeLink>
       </div>
       <details class="dropdown dropdown-end group">
         <summary class="btn">
           <span class="text-nowrap leading-loose">
-            {tr!("sort-type")}" "
+            {move_tr!("sort-type")}" "
             <Icon
               class="align-bottom inline group-open:rotate-180 transition-transform"
               icon=IconType::DropdownCaret
@@ -60,13 +60,13 @@ pub fn FilterBar(
         </summary>
         <menu class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Active>
-            {tr!("active")}
+            {move_tr!("active")}
           </SortTypeLink>
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::Hot>
-            {tr!("hot")}
+            {move_tr!("hot")}
           </SortTypeLink>
           <SortTypeLink sort_type=sort_type link_sort_type=SortType::New>
-            {tr!("new")}
+            {move_tr!("new")}
           </SortTypeLink>
         </menu>
       </details>

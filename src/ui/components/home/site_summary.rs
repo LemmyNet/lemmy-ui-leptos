@@ -7,12 +7,12 @@ use crate::{
   utils::derive_query_signal,
 };
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 use leptos_router::A;
 use si_format::Formattable;
 
 #[component]
-fn UserStatRow(count: i64, text: String) -> impl IntoView {
+fn UserStatRow(count: i64, text: Signal<String>) -> impl IntoView {
   view! {
     <tr class="*:p-2.5 [&:not(:first-child)]:border-t-2 [&:not(:first-child)]:border-accent">
       <td class="text-xs font-semibold">{text}</td>
@@ -72,11 +72,11 @@ pub fn SiteSummary() -> impl IntoView {
       .collect::<Vec<_>>()
   });
 
-  let today = StoredValue::new(tr!("today"));
-  let past_week = StoredValue::new(tr!("past-week"));
-  let past_month = StoredValue::new(tr!("past-month"));
-  let past_6_months = StoredValue::new(tr!("past-6-months"));
-  let all_time = StoredValue::new(tr!("all-time"));
+  let today = move_tr!("today");
+  let past_week = move_tr!("past-week");
+  let past_month = move_tr!("past-month");
+  let past_6_months = move_tr!("past-6-months");
+  let all_time = move_tr!("all-time");
 
   view! {
     <div class="card w-full mb-3 bg-base-200">
@@ -90,7 +90,7 @@ pub fn SiteSummary() -> impl IntoView {
           </Unpack>
           <section aria-labelledby="instance-stats-heading" class="my-4">
             <h3 id="instance-stats-heading" class="text-2xl font-bold mb-2">
-              {tr!("instance-stats")}
+              {move_tr!("instance-stats")}
             </h3>
             <Unpack item=counts let:counts>
               <div class="font-semibold flex flex-wrap *:m-1.5">
@@ -98,43 +98,43 @@ pub fn SiteSummary() -> impl IntoView {
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline" />
                   {counts.posts.si_format().to_string()}
                   " "
-                  <span class="text-sm">{tr!("posts")}</span>
+                  <span class="text-sm">{move_tr!("posts")}</span>
                 </div>
                 <div>
                   <Icon icon=IconType::Comments size=IconSize::Large class="inline" />
                   {counts.comments.si_format().to_string()}
                   " "
-                  <span class="text-sm">{tr!("comments")}</span>
+                  <span class="text-sm">{move_tr!("comments")}</span>
                 </div>
               </div>
               <table class="w-full mt-3 table shadow-lg">
                 <caption class="text-lg font-semibold whitespace-nowrap align-middle text-start mb-2">
                   <Icon icon=IconType::Users size=IconSize::Large class="inline me-2" />
-                  {tr!("active-users")}
+                  {move_tr!("active-users")}
                 </caption>
                 <thead>
                   <tr class="font-extrabold text-sm bg-base-300 *:p-3">
                     <th class="text-start" scope="col">
-                      {tr!("time-frame")}
+                      {move_tr!("time-frame")}
                     </th>
                     <th class="text-center" scope="col">
-                      {tr!("count")}
+                      {move_tr!("count")}
                     </th>
                   </tr>
                 </thead>
                 <tbody class="bg-base-100">
-                  <UserStatRow text=today.get_value() count=counts.users_active_day />
-                  <UserStatRow text=past_week.get_value() count=counts.users_active_week />
-                  <UserStatRow text=past_month.get_value() count=counts.users_active_month />
-                  <UserStatRow text=past_6_months.get_value() count=counts.users_active_month />
-                  <UserStatRow text=all_time.get_value() count=counts.users_active_month />
+                  <UserStatRow text=today count=counts.users_active_day />
+                  <UserStatRow text=past_week count=counts.users_active_week />
+                  <UserStatRow text=past_month count=counts.users_active_month />
+                  <UserStatRow text=past_6_months count=counts.users_active_month />
+                  <UserStatRow text=all_time count=counts.users_active_month />
                 </tbody>
               </table>
             </Unpack>
           </section>
           <section aria-labelledby="instances-admins-heading">
             <h3 id="instance-admins-heading" class="text-2xl font-bold mb-2">
-              {tr!("admins")}
+              {move_tr!("admins")}
             </h3>
             <ul class="flex flex-wrap gap-2 my-4">
               <Unpack item=admins let:admins>

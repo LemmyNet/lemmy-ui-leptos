@@ -12,7 +12,7 @@ use lemmy_client::lemmy_api_common::{
   post::GetPosts,
 };
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 
 #[component]
 pub fn HomePage() -> impl IntoView {
@@ -36,11 +36,11 @@ pub fn HomePage() -> impl IntoView {
     <div class="flex lg:container mx-auto mt-4 mb-1 lg:gap-12 h-fit lg:h-full">
       <main class="basis-full lg:basis-[65%] xl:basis-3/4 flex flex-col mx-2.5 lg:mx-0 h-fit lg:h-full">
         <div class="flex flex-wrap gap-y-2 gap-x-4 pb-1.5 border-b-4 border-base-300 rounded-b-md">
-          <h1 class="text-4xl font-bold text-nowrap">{tr!("home-feed")}</h1>
+          <h1 class="text-4xl font-bold text-nowrap">{move_tr!("home-feed")}</h1>
           {filter_bar}
         </div>
-        <Suspense fallback=|| tr!("loading")>
-          <ErrorBoundary fallback=|_| { tr!("could-not-load-posts") }>
+        <Suspense fallback=|| move_tr!("loading")>
+          <ErrorBoundary fallback=|_| { move_tr!("could-not-load-posts") }>
             <Unpack item=posts let:posts>
               <PostListings posts=posts />
             </Unpack>

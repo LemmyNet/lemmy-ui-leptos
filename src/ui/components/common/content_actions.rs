@@ -14,7 +14,7 @@ use crate::{
 use hide_post_button::HidePostButton;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 use leptos_router::{ActionForm, A};
 use report_button::ReportButton;
 use tailwind_fuse::tw_join;
@@ -48,9 +48,9 @@ where
   let block_user_action = create_block_user_action();
 
   let save_content_label = if matches!(post_or_comment_id, PostOrCommentId::Post(_)) {
-    tr!("save-post")
+    move_tr!("save-post")
   } else {
-    tr!("save-comment")
+    move_tr!("save-comment")
   };
   let save_icon = Signal::derive(move || {
     if saved.get() {
@@ -59,7 +59,7 @@ where
       IconType::Save
     }
   });
-  let crosspost_label = tr!("crosspost");
+  let crosspost_label = move_tr!("crosspost");
 
   // See https://book.leptos.dev/interlude_projecting_children.html
   let creator_stored = store_value(creator.clone());
@@ -67,12 +67,12 @@ where
   view! {
     <Fedilink href=ap_id.to_string() />
     <Show when=move || user_is_logged_in.get()>
-      <ActionForm action=save_action class="flex items-center" clone:save_content_label>
+      <ActionForm action=save_action class="flex items-center">
         <input type="hidden" name="id" value=post_or_comment_id.get_id() />
         <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
         <button
           type="submit"
-          title=save_content_label.clone()
+          title=save_content_label
           aria-label=save_content_label
 
           class=move || {
@@ -93,8 +93,8 @@ where
               view! {
                 <A
                   href="/create_post"
-                  attr:title=crosspost_label.clone()
-                  attr:aria-label=crosspost_label.clone()
+                  attr:title=crosspost_label
+                  attr:aria-label=crosspost_label
                 >
                   <Icon icon=IconType::Crosspost />
                 </A>
@@ -125,7 +125,7 @@ where
                 <button class="text-xs whitespace-nowrap" type="submit">
                   <Icon icon=IconType::Block class="inline-block" />
                   " "
-                  {tr!("block-user")}
+                  {move_tr!("block-user")}
                 </button>
               </ActionForm>
             </li>

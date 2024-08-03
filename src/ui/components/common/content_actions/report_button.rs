@@ -4,7 +4,7 @@ use crate::{
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
-use leptos_fluent::tr;
+use leptos_fluent::move_tr;
 
 fn report_content<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId) {
   let set_report_modal_data = expect_context::<WriteSignal<ReportModalData>>();
@@ -24,9 +24,9 @@ fn report_content<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId) 
 #[component]
 pub fn ReportButton<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId) -> impl IntoView {
   let report_content_label = if matches!(post_or_comment_id, PostOrCommentId::Comment(_)) {
-    tr!("report-comment")
+    move_tr!("report-comment")
   } else {
-    tr!("report-post")
+    move_tr!("report-post")
   };
   let creator_stored = store_value(creator.clone());
   let onclick = move |_| report_content(&creator_stored.get_value(), post_or_comment_id);
