@@ -12,6 +12,7 @@ use crate::{
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
+use tailwind_fuse::tw_join;
 
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
@@ -96,7 +97,9 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   let is_on_post_page = use_route().path().starts_with("/post");
 
   view! {
-    <article class="flex gap-x-3 items-center w-fit">
+    <article class=tw_join!(
+        "flex gap-x-3 items-center", if is_on_post_page { "w-fit" } else { "" }
+    )>
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote

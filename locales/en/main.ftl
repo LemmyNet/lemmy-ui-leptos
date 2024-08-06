@@ -68,3 +68,5 @@ loading = Loading
 home-feed = Home Feed
 upvote = Upvote
 downvote = Downvote
+local-subscribers = Local Subscribers
+subscribers = Subscribers
