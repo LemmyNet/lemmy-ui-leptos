@@ -83,12 +83,13 @@ steps:
     when:
       - event: pull_request
 
-  playwright_check:
-    image: local/playwright
-    commands:
-      - *cd_workdir
-    when:
-      - event: pull_request
+  # Commenting this for now, until we figure out how to do it.
+  # playwright_check:
+  #   image: local/playwright
+  #   commands:
+  #     - *cd_workdir
+  #   when:
+  #     - event: pull_request
 
   notify_on_failure:
     image: alpine:3
