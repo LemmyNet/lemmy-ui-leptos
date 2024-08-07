@@ -564,6 +564,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cfg-expr"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "345c78335be0624ed29012dc10c49102196c6882c12dde65d9f35b02da2aada8"
+dependencies = [
+ "smallvec",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -824,6 +833,12 @@ checksum = "0369ee1ad671834580515889b80f2ea915f23b8be8d0daa4bbaf2ac5c7590835"
 dependencies = [
  "cipher",
 ]
+
+[[package]]
+name = "current_platform"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a74858bcfe44b22016cb49337d7b6f04618c58e5dbfdef61b06b8c434324a0bc"
 
 [[package]]
 name = "darling"
@@ -1954,9 +1969,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.8"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a98da7ae8e29aa93765ba7980be7e2c36a4120d7b988e64d8b60a33ba202d6b6"
+checksum = "126f30b9d579bed44ca73c14e315248ed62dd678cd6ea9799b90db492937d3a1"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -1967,10 +1982,12 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.8"
+version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "826568a26c156f49e6645c37a233da2d2b462c7765e684fff3b86a9835dcfcc1"
+checksum = "fae76ced6a010e5d9043cc3f242071fa7e630b7922fd818a98b4464042f0fbc7"
 dependencies = [
+ "cfg-expr",
+ "current_platform",
  "fluent-syntax",
  "fluent-templates",
  "globwalk",
