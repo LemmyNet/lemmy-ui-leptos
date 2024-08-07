@@ -29,7 +29,7 @@ tokio = { version = "1.39", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
 leptos-use = "0.11"
-si_format = "0.1"
+format_num = "0.1.0"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
 url = { version = "2.5", optional = true }

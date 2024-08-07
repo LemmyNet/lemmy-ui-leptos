@@ -7,6 +7,7 @@ pub use apub_name::*;
 mod derive_user_is_logged_in;
 pub use derive_user_is_logged_in::*;
 
+pub mod format;
 pub mod traits;
 pub mod types;
 

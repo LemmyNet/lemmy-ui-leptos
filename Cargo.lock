@@ -1218,6 +1218,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "format_num"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14ac05eb8d2eb4ed1eeff847911deae077b0b53332465de9d6a26b0ea9961bc8"
+dependencies = [
+ "regex",
+]
+
+[[package]]
 name = "futures"
 version = "0.3.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1834,6 +1843,7 @@ dependencies = [
  "cfg-if",
  "console_error_panic_hook",
  "fluent-templates",
+ "format_num",
  "lemmy-client",
  "leptos",
  "leptos-fluent",
@@ -1843,7 +1853,6 @@ dependencies = [
  "leptos_router",
  "serde",
  "serde_json",
- "si_format",
  "strum",
  "tailwind_fuse",
  "tokio",
@@ -3251,12 +3260,6 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
-
-[[package]]
-name = "si_format"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96604db7b736d5bb8ba2e0b70868d6a34203eb3273985a85c12abc43ccb4965e"
 
 [[package]]
 name = "signal-hook-registry"
