@@ -1,7 +1,11 @@
 use crate::{
+  contexts::site_resource_context::SiteResource,
   serverfns::posts::list_posts,
   ui::components::{
-    common::{sidebar::SiteSidebar, unpack::Unpack},
+    common::{
+      sidebar::{Sidebar, SidebarData},
+      unpack::Unpack,
+    },
     post::post_listings::PostListings,
   },
   utils::derive_query_signal,
@@ -31,6 +35,20 @@ pub fn HomePage() -> impl IntoView {
 
   let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
+  let site_resource = expect_context::<SiteResource>();
+  let sidebar_data = derive_query_signal(site_resource, |site_response| SidebarData::Site {
+    name: site_response.site_view.site.name.clone(),
+    description: site_response.site_view.site.description.clone(),
+    counts: site_response.site_view.counts.clone(),
+  });
+  let admins = derive_query_signal(site_resource, |site_response| {
+    site_response
+      .admins
+      .iter()
+      .map(|admin| admin.person.clone())
+      .collect()
+  });
+
   view! {
     <div class="flex lg:container mx-auto mt-4 mb-1 lg:gap-12 h-fit lg:h-full">
       <main class="basis-full lg:basis-[65%] xl:basis-3/4 flex flex-col mx-2.5 lg:mx-0 h-fit lg:h-full">
@@ -48,7 +66,7 @@ pub fn HomePage() -> impl IntoView {
       </main>
 
       <aside class="hidden basis-[35%] xl:basis-1/4 lg:block me-8 overflow-y-auto min-h-0">
-        <SiteSidebar />
+        <Sidebar data=sidebar_data team=admins />
       </aside>
     </div>
   }

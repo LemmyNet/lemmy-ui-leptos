@@ -70,3 +70,5 @@ upvote = Upvote
 downvote = Downvote
 local-subscribers = Local Subscribers
 subscribers = Subscribers
+community-stats = Community Stats
+moderators = Moderators
