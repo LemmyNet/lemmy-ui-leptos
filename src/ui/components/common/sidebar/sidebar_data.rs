@@ -12,7 +12,7 @@ pub enum SidebarData {
   },
   Community {
     name: String,
-    title: Option<String>,
+    title: String,
     icon: Option<String>,
     description: Option<String>,
     counts: CommunityAggregates,

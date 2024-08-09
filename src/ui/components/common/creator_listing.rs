@@ -11,7 +11,7 @@ pub fn CreatorListing<'a>(creator: &'a Person) -> impl IntoView {
     .avatar
     .as_ref()
     .map(|url| url.inner().to_string())
-    .unwrap_or_else(|| String::from("assets/default-avatar.png"));
+    .unwrap_or_else(|| String::from("/assets/default-avatar.png"));
 
   view! {
     <div class="flex items-center gap-x-2">

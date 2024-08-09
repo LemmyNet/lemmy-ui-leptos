@@ -10,6 +10,7 @@ use leptos::*;
 use leptos_fluent::move_tr;
 use leptos_router::ActionForm;
 use tailwind_fuse::{
+  tw_merge,
   AsTailwindClass,
   IntoBuilder,
   IntoTailwindClass,
@@ -41,6 +42,7 @@ pub fn VoteButtons<VA>(
   id: PostOrCommentId,
   score: Signal<i64>,
   vote_action: ServerAction<VA>,
+  #[prop(optional)] class: &'static str,
 ) -> impl IntoView
 where
   VA: ServerActionFn,
@@ -51,7 +53,7 @@ where
   let is_downvote = Signal::derive(move || my_vote.get().unwrap_or_default() == -1);
 
   view! {
-    <div class="w-fit">
+    <div class=tw_merge!("w-fit flex flex-col justify-center", class)>
       <ActionForm action=vote_action>
         <input type="hidden" name="id" value=id.get_id() />
         <input

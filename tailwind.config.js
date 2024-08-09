@@ -2,6 +2,26 @@
 module.exports = {
   theme: {
     extend: {
+      gridTemplateAreas: {
+        "post-listing-homepage": [
+          "vote thumbnail title",
+          "vote thumbnail to",
+          "vote thumbnail actions",
+        ],
+        "post-listing-homepage-mobile": [
+          "title title title thumbnail",
+          ". to to thumbnail",
+          "vote actions actions thumbnail",
+        ],
+      },
+      gridTemplateColumns: {
+        "post-listing-homepage": "1fr 2fr auto",
+        "post-listing-homepage-mobile": "1fr 2fr auto 2fr",
+      },
+      gridAutoRows: {
+        "post-listing-homepage": "1fr 2fr 1fr",
+        "post-listing-homepage-mobile": "1fr 1fr 1fr",
+      },
       screens: {
         "3xl": "1920px",
         "4xl": "2560px",
@@ -41,7 +61,7 @@ module.exports = {
   content: {
     files: ["*.html", "./src/**/*.rs"],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require("@savvywombat/tailwindcss-grid-areas")],
   daisyui: {
     themes: ["light", "dark", "retro"],
   },

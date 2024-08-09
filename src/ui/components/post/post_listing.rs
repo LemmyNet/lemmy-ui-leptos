@@ -97,48 +97,44 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   let is_on_post_page = use_route().path().starts_with("/post");
 
   view! {
-    <article class=tw_join!(
-        "flex gap-x-3 items-center", if is_on_post_page { "w-fit" } else { "" }
-    )>
+    <article class="grid grid-areas-post-listing-homepage grid-cols-post-listing-homepage grid-rows-post-listing-homepage w-fit h-fit">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote
         score=score
         vote_action=vote_action
+        class="grid-in-vote"
       />
       {move || {
           with!(
               | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
-              view! { < img class = "w-24 aspect-square rounded" src = thumbnail_url /> }
+              view! { < img class = "w-16 aspect-square rounded grid-in-thumbnail" src = thumbnail_url /> }
               .into_view()).unwrap_or_else(|| view! { < A href = format!("/post/{id}") class =
-              "w-24" > < Icon icon = IconType::Comments class = "m-auto" size = IconSize::ExtraLarge
+              "w-16 grid-in-thumbnail" > < Icon icon = IconType::Comments class = "m-auto" size = IconSize::ExtraLarge
               /></ A > } .into_view())
           )
       }}
 
-      <div class="space-y-1.5">
         <Show
           when=move || is_on_post_page
           fallback=move || {
               view! {
-                <h2 class="text-lg font-medium">
+                <h2 class="text-lg font-medium grid-in-title">
                   <A href=format!("/post/{id}")>{post_name}</A>
                 </h2>
               }
           }
         >
 
-          <h1 class="text-xl font-bold">
-            <A href=format!("/post/{id}")>{post_name}</A>
-          </h1>
+          <h1 class="text-2xl font-bold">{post_name}</h1>
         </Show>
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 grid-in-to">
           <CreatorListing creator=creator />
           <div class="text-sm">to</div>
           <CommunityListing community=community />
         </div>
 
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-x-2 grid-in-actions">
           <A
             href=move || { format!("/post/{id}") }
             class="text-sm whitespace-nowrap"
@@ -157,7 +153,6 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
             ap_id=ap_id
           />
         </div>
-      </div>
 
     </article>
   }
