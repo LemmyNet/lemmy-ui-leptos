@@ -8,7 +8,7 @@ use crate::{
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_fluent::move_tr;
-use si_format::Formattable;
+use pretty_num::PrettyNumber;
 use team_member_card::TeamMemberCard;
 use user_stat_row::UserStatRow;
 
@@ -42,13 +42,13 @@ pub fn Sidebar(data: QuerySignal<SidebarData>, team: QuerySignal<Vec<Person>>) -
               <div class="font-semibold flex flex-wrap *:m-1.5">
                 <div>
                   <Icon icon=IconType::Posts size=IconSize::Large class="inline" />
-                  {data.posts().si_format().to_string()}
+                  {data.posts().pretty_format()}
                   " "
                   <span class="text-sm">{move_tr!("posts")}</span>
                 </div>
                 <div>
                   <Icon icon=IconType::Comments size=IconSize::Large class="inline" />
-                  {data.comments().si_format().to_string()}
+                  {data.comments().pretty_format()}
                   " "
                   <span class="text-sm">{move_tr!("comments")}</span>
                 </div>
@@ -57,7 +57,7 @@ pub fn Sidebar(data: QuerySignal<SidebarData>, team: QuerySignal<Vec<Person>>) -
                         view! {
                           <div>
                             <Icon icon=IconType::Communities size=IconSize::Large class="inline" />
-                            {counts.communities.si_format().to_string()}
+                            {counts.communities.pretty_format()}
                             " "
                             <span class="text-sm">{move_tr!("communities")}</span>
                           </div>
