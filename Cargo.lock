@@ -1841,9 +1841,9 @@ dependencies = [
  "leptos_actix",
  "leptos_meta",
  "leptos_router",
+ "pretty-num",
  "serde",
  "serde_json",
- "si_format",
  "strum",
  "tailwind_fuse",
  "tokio",
@@ -2643,6 +2643,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "pretty-num"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2bfff55c3353ff43605263111dcc4dee89b5e09fc8660f174c53e980d8db8cf"
+
+[[package]]
 name = "prettyplease"
 version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3251,12 +3257,6 @@ dependencies = [
  "cpufeatures",
  "digest",
 ]
-
-[[package]]
-name = "si_format"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "96604db7b736d5bb8ba2e0b70868d6a34203eb3273985a85c12abc43ccb4965e"
 
 [[package]]
 name = "signal-hook-registry"
