@@ -5,7 +5,7 @@ use crate::{
     content_actions::ContentActions,
     creator_listing::CreatorListing,
     icon::{Icon, IconSize, IconType},
-    vote_buttons::VoteButtons,
+    vote_buttons::{VoteButtons, VotesOrientation},
   },
   utils::types::{Hidden, PostOrCommentId},
 };
@@ -96,14 +96,21 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let is_on_post_page = use_route().path().starts_with("/post");
 
+  let orientation = if is_on_post_page {
+    VotesOrientation::Horizontal
+  } else {
+    VotesOrientation::Vertical
+  };
+
   view! {
-    <article class="grid grid-areas-post-listing-homepage grid-cols-post-listing-homepage grid-rows-post-listing-homepage w-fit h-fit">
+    <article class="grid md:grid-areas-post-listing-list md:grid-cols-post-listing-list md:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-fit h-fit items-center gap-y-2">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote
         score=score
         vote_action=vote_action
         class="grid-in-vote"
+        orientation=orientation
       />
       {move || {
           with!(
@@ -115,44 +122,44 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           )
       }}
 
-        <Show
-          when=move || is_on_post_page
-          fallback=move || {
-              view! {
-                <h2 class="text-lg font-medium grid-in-title">
-                  <A href=format!("/post/{id}")>{post_name}</A>
-                </h2>
-              }
-          }
+      <Show
+        when=move || is_on_post_page
+        fallback=move || {
+            view! {
+              <h2 class="text-lg font-medium grid-in-title">
+                <A href=format!("/post/{id}")>{post_name}</A>
+              </h2>
+            }
+        }
+      >
+
+        <h1 class="text-2xl font-bold">{post_name}</h1>
+      </Show>
+      <div class="flex flex-wrap items-center gap-1.5 grid-in-to">
+        <CreatorListing creator=creator />
+        <div class="text-sm">to</div>
+        <CommunityListing community=community />
+      </div>
+
+      <div class="flex items-center gap-x-2 grid-in-actions">
+        <A
+          href=move || { format!("/post/{id}") }
+          class="text-sm whitespace-nowrap"
+          attr:title=num_comments_label
+          attr:aria-label=num_comments_label
         >
-
-          <h1 class="text-2xl font-bold">{post_name}</h1>
-        </Show>
-        <div class="flex items-center gap-1.5 grid-in-to">
-          <CreatorListing creator=creator />
-          <div class="text-sm">to</div>
-          <CommunityListing community=community />
-        </div>
-
-        <div class="flex items-center gap-x-2 grid-in-actions">
-          <A
-            href=move || { format!("/post/{id}") }
-            class="text-sm whitespace-nowrap"
-            attr:title=num_comments_label
-            attr:aria-label=num_comments_label
-          >
-            <Icon icon=IconType::Comment class="inline align-baseline" />
-            " "
-            <span class="align-sub">{move || comments.get()}</span>
-          </A>
-          <ContentActions
-            post_or_comment_id=PostOrCommentId::Post(id)
-            saved=saved
-            save_action=save_action
-            creator=creator
-            ap_id=ap_id
-          />
-        </div>
+          <Icon icon=IconType::Comment class="inline align-baseline" />
+          " "
+          <span class="align-sub">{move || comments.get()}</span>
+        </A>
+        <ContentActions
+          post_or_comment_id=PostOrCommentId::Post(id)
+          saved=saved
+          save_action=save_action
+          creator=creator
+          ap_id=ap_id
+        />
+      </div>
 
     </article>
   }

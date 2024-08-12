@@ -3,24 +3,24 @@ module.exports = {
   theme: {
     extend: {
       gridTemplateAreas: {
-        "post-listing-homepage": [
+        "post-listing-list": [
           "vote thumbnail title",
           "vote thumbnail to",
           "vote thumbnail actions",
         ],
-        "post-listing-homepage-mobile": [
+        "post-listing-list-mobile": [
           "title title title thumbnail",
-          ". to to thumbnail",
+          "to to to thumbnail",
           "vote actions actions thumbnail",
         ],
       },
       gridTemplateColumns: {
-        "post-listing-homepage": "1fr 2fr auto",
-        "post-listing-homepage-mobile": "1fr 2fr auto 2fr",
+        "post-listing-list": "1fr 2fr auto",
+        "post-listing-list-mobile": "1fr 2fr auto min-content",
       },
       gridAutoRows: {
-        "post-listing-homepage": "1fr 2fr 1fr",
-        "post-listing-homepage-mobile": "1fr 1fr 1fr",
+        "post-listing-list": "1fr 2fr 1fr",
+        "post-listing-list-mobile": "1fr 1fr 1fr",
       },
       screens: {
         "3xl": "1920px",

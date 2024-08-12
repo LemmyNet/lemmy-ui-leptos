@@ -9,6 +9,7 @@ use crate::{
 use leptos::*;
 use leptos_fluent::move_tr;
 use leptos_router::ActionForm;
+use pretty_num::PrettyNumber;
 use tailwind_fuse::{
   tw_merge,
   AsTailwindClass,
@@ -36,6 +37,15 @@ enum Vote {
   Down,
 }
 
+#[derive(TwVariant)]
+#[tw(class = "w-fit flex justify-center gap-1.5")]
+pub enum VotesOrientation {
+  #[tw(default, class = "flex-row md:flex-col")]
+  Vertical,
+  #[tw(class = "flex-row")]
+  Horizontal,
+}
+
 #[component]
 pub fn VoteButtons<VA>(
   my_vote: Signal<Option<i16>>,
@@ -43,6 +53,7 @@ pub fn VoteButtons<VA>(
   score: Signal<i64>,
   vote_action: ServerAction<VA>,
   #[prop(optional)] class: &'static str,
+  orientation: VotesOrientation,
 ) -> impl IntoView
 where
   VA: ServerActionFn,
@@ -53,7 +64,7 @@ where
   let is_downvote = Signal::derive(move || my_vote.get().unwrap_or_default() == -1);
 
   view! {
-    <div class=tw_merge!("w-fit flex flex-col justify-center", class)>
+    <div class=tw_merge!(orientation.as_class(), class)>
       <ActionForm action=vote_action>
         <input type="hidden" name="id" value=id.get_id() />
         <input
@@ -77,7 +88,7 @@ where
           <Icon icon=IconType::Upvote />
         </button>
       </ActionForm>
-      <div class="text-sm text-center">{score}</div>
+      <div class="text-sm text-center font-medium">{move || with!(|score| score.pretty_format())}</div>
       <ActionForm action=vote_action class="w-fit">
         <input type="hidden" name="id" value=id.get_id() />
         <input
