@@ -21,14 +21,14 @@ console_error_panic_hook = { version = "0.1", optional = true }
 # dependecies for server (enable when ssr set)
 leptos_actix = { version = "0.6", optional = true }
 actix-files = { version = "0.6", optional = true }
-actix-web = { version = "4.8", features = ["macros"], optional = true }
+actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
 tokio = { version = "1.39", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.11"
+leptos-use = "0.12"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
