@@ -40,7 +40,7 @@ enum Vote {
 #[derive(TwVariant)]
 #[tw(class = "w-fit flex justify-center gap-1.5")]
 pub enum VotesOrientation {
-  #[tw(default, class = "flex-row md:flex-col")]
+  #[tw(default, class = "flex-row sm:flex-col")]
   Vertical,
   #[tw(class = "flex-row")]
   Horizontal,
@@ -88,7 +88,9 @@ where
           <Icon icon=IconType::Upvote />
         </button>
       </ActionForm>
-      <div class="text-sm text-center font-medium">{move || with!(|score| score.pretty_format())}</div>
+      <div class="text-sm text-center font-medium">
+        {move || with!(|score| score.pretty_format())}
+      </div>
       <ActionForm action=vote_action class="w-fit">
         <input type="hidden" name="id" value=id.get_id() />
         <input

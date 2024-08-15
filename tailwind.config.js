@@ -22,13 +22,6 @@ module.exports = {
         "post-listing-list": "1fr 2fr 1fr",
         "post-listing-list-mobile": "1fr 1fr 1fr",
       },
-      screens: {
-        "3xl": "1920px",
-        "4xl": "2560px",
-        "5xl": "3840px",
-        "6xl": "5120px",
-        "7xl": "8640px",
-      },
       aria: {
         "current-page": 'current="page"',
       },

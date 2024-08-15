@@ -39,13 +39,13 @@ fn InstanceName() -> impl IntoView {
 #[component]
 pub fn TopNav() -> impl IntoView {
   view! {
-    <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg md:px-7">
-      <div class="navbar-start md:hidden">
+    <nav class="navbar bg-gradient-to-br from-base-100 to-base-200 to-90% shadow-lg sm:px-7">
+      <div class="navbar-start sm:hidden">
         <label for="mobile-drawer" aria-label="Open mobile drawer" class="btn btn-square btn-ghost">
           <Icon icon=IconType::Hamburger />
         </label>
       </div>
-      <div class="navbar-center md:navbar-start">
+      <div class="navbar-center sm:navbar-start">
         <Transition>
           <InstanceName />
         </Transition>

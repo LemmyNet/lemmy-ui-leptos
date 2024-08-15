@@ -12,7 +12,6 @@ use crate::{
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
-use tailwind_fuse::tw_join;
 
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
@@ -103,7 +102,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   };
 
   view! {
-    <article class="grid md:grid-areas-post-listing-list md:grid-cols-post-listing-list md:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-fit h-fit items-center gap-y-2">
+    <article class="grid sm:grid-areas-post-listing-list sm:grid-cols-post-listing-list sm:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-full sm:w-fit h-fit items-center gap-y-2">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote

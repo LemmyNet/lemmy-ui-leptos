@@ -8,7 +8,7 @@ pub fn MobileNav() -> impl IntoView {
   view! {
     <nav
       aria-label=move_tr!("mobile-nav")
-      class="btm-nav w-full md:hidden border-t border-neutral text-xs"
+      class="btm-nav w-full sm:hidden border-t border-neutral text-xs"
     >
       <NavLink href="/" icon=IconType::Home text=move_tr!("home") />
       <NavLink href="/communities" icon=IconType::Communities text=move_tr!("communities") />
