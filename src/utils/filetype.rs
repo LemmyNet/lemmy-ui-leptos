@@ -10,6 +10,9 @@ pub fn is_video(url: &str) -> bool {
 }
 
 fn is_filetype(url: &str, exts: &[&str]) -> bool {
-  let ext = url.rsplit('.').next().map(str::to_lowercase);
-  ext.is_some_and(|ext| exts.iter().any(|file_type| ext.ends_with(file_type)))
+  url
+    .split('?')
+    .next()
+    .and_then(|s| s.rsplit('.').next().map(str::to_lowercase))
+    .is_some_and(|ext| exts.iter().any(|file_type| ext.ends_with(file_type)))
 }
