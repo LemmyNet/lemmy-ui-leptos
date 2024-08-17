@@ -13,6 +13,8 @@ use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
 
+mod thumbnail;
+
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   // These post fields cannot change, so no need for signals
