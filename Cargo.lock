@@ -1158,21 +1158,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fluent-template-macros"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da77a943b6ad467c33ea31ce0998c33b3c566c5ef3f64416995ed61b4c473404"
-dependencies = [
- "flume",
- "ignore",
- "once_cell",
- "proc-macro2",
- "quote",
- "syn 2.0.75",
- "unic-langid",
-]
-
-[[package]]
 name = "fluent-templates"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1183,7 +1168,7 @@ dependencies = [
  "fluent-bundle",
  "fluent-langneg",
  "fluent-syntax",
- "fluent-template-macros 0.9.4",
+ "fluent-template-macros",
  "flume",
  "heck",
  "ignore",
@@ -1191,26 +1176,6 @@ dependencies = [
  "log",
  "once_cell",
  "serde_json",
- "thiserror",
- "unic-langid",
-]
-
-[[package]]
-name = "fluent-templates"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e311f7dcf02d2af6c66cf6fda01348cefb912976698ac99abf0498ee2a62155"
-dependencies = [
- "fluent",
- "fluent-bundle",
- "fluent-langneg",
- "fluent-syntax",
- "fluent-template-macros 0.10.0",
- "flume",
- "ignore",
- "intl-memoizer",
- "log",
- "once_cell",
  "thiserror",
  "unic-langid",
 ]
@@ -1909,7 +1874,7 @@ dependencies = [
  "actix-web",
  "cfg-if",
  "console_error_panic_hook",
- "fluent-templates 0.10.0",
+ "fluent-templates",
  "lemmy-client",
  "leptos",
  "leptos-fluent",
@@ -2050,7 +2015,7 @@ version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed6f0c7684f034decab4bfe92291c57e82ab27dd5aa3beef325c8d5f3ce42e63"
 dependencies = [
- "fluent-templates 0.9.4",
+ "fluent-templates",
  "leptos",
  "leptos-fluent-macros",
  "leptos_meta",
@@ -2066,7 +2031,7 @@ dependencies = [
  "cfg-expr",
  "current_platform",
  "fluent-syntax",
- "fluent-templates 0.9.4",
+ "fluent-templates",
  "globwalk",
  "pathdiff",
  "proc-macro2",
