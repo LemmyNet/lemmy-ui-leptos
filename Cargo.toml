@@ -34,7 +34,7 @@ tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
 url = { version = "2.5", optional = true }
 leptos-fluent = { version = "0.1", features = ["actix"] }
-fluent-templates = "0.9"
+fluent-templates = "0.10"
 
 [features]
 default = ["ssr"]

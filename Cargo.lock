@@ -342,12 +342,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "arc-swap"
-version = "1.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69f7f8c3906b62b754cd5326047894316021dcfe5a194c8ea52bdd94934a3457"
-
-[[package]]
 name = "async-lock"
 version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1144,9 +1138,9 @@ dependencies = [
 
 [[package]]
 name = "fluent-template-macros"
-version = "0.9.4"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "77d2bcae1f3ec390c50161fcf130d3228750e9ecf965618584e046d884199b83"
+checksum = "da77a943b6ad467c33ea31ce0998c33b3c566c5ef3f64416995ed61b4c473404"
 dependencies = [
  "flume",
  "ignore",
@@ -1155,29 +1149,28 @@ dependencies = [
  "quote",
  "syn 2.0.75",
  "unic-langid",
+ "walkdir",
 ]
 
 [[package]]
 name = "fluent-templates"
-version = "0.9.4"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "197feb1e37209c6b3d29f0754b11fc070890efb2b1d761caac4e5287a200e9db"
+checksum = "4e311f7dcf02d2af6c66cf6fda01348cefb912976698ac99abf0498ee2a62155"
 dependencies = [
- "arc-swap",
  "fluent",
  "fluent-bundle",
  "fluent-langneg",
  "fluent-syntax",
  "fluent-template-macros",
  "flume",
- "heck",
  "ignore",
  "intl-memoizer",
  "log",
  "once_cell",
- "serde_json",
  "thiserror",
  "unic-langid",
+ "walkdir",
 ]
 
 [[package]]
@@ -2011,9 +2004,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.17"
+version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed6f0c7684f034decab4bfe92291c57e82ab27dd5aa3beef325c8d5f3ce42e63"
+checksum = "2c519597e6e5ad29c1b84b9af7b90faeb8a7bafa38051d91ee8ee92d40ce2980"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -2024,9 +2017,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.17"
+version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "347676182d2064b95924f063a31ffac63ab3836e8d619adc722ea9bff367a37b"
+checksum = "42a96e0a05f45cdfb87ecc9a61b125f73a63537b5bb4f0aec0dfc6219b479c8e"
 dependencies = [
  "cfg-expr",
  "current_platform",
