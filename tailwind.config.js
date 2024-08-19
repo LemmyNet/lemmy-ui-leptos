@@ -15,7 +15,7 @@ module.exports = {
         ],
       },
       gridTemplateColumns: {
-        "post-listing-list": "1fr 2fr auto",
+        "post-listing-list": "1fr 3fr auto",
         "post-listing-list-mobile": "1fr 2fr auto min-content",
       },
       gridAutoRows: {

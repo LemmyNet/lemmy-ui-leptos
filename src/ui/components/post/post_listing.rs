@@ -4,16 +4,27 @@ use crate::{
     community_listing::CommunityListing,
     content_actions::ContentActions,
     creator_listing::CreatorListing,
-    icon::{Icon, IconSize, IconType},
+    icon::{Icon, IconType},
     vote_buttons::{VoteButtons, VotesOrientation},
   },
-  utils::types::{Hidden, PostOrCommentId},
+  utils::{
+    is_image,
+    types::{Hidden, PostOrCommentId},
+  },
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
+use std::rc::Rc;
+use thumbnail::Thumbnail;
 
 mod thumbnail;
+
+#[derive(Clone, PartialEq)]
+struct PostImage(pub Rc<str>);
+
+#[derive(Clone, PartialEq)]
+struct PostUrl(pub Rc<str>);
 
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
@@ -25,18 +36,44 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let post_state = RwSignal::new(post_view.clone());
 
+  let post_url = Memo::new(move |_| {
+    with!(|post_state| post_state
+      .post
+      .url
+      .as_deref()
+      .map(AsRef::as_ref)
+      .map(Rc::from)
+      .map(PostUrl))
+  });
+  provide_context(post_url);
+
+  let post_image = Memo::new(move |_| {
+    with!(|post_state| post_state
+      .post
+      .thumbnail_url
+      .as_deref()
+      .map(AsRef::as_ref)
+      .map(Rc::from)
+      .or_else(|| post_url
+        .get()
+        .map(|url| url.0)
+        .filter(|url| is_image(url.as_ref()))) // Fall back to post url if no thumbnail, but only if it is an image url
+      .map(PostImage))
+  });
+  provide_context(post_image);
+
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
-  let (url, _set_url) = create_slice(
-    post_state,
-    |state| state.post.url.as_ref().map(|url| url.to_string()),
-    |state, url| state.post.url = url,
-  );
-  let (thumbnail_url, _set_thumbnail_url) = create_slice(
-    post_state,
-    |state| state.post.thumbnail_url.as_ref().map(ToString::to_string),
-    |state, thumbnail_url| state.post.thumbnail_url = thumbnail_url,
-  );
+  // let (url, _set_url) = create_slice(
+  //   post_state,
+  //   |state| state.post.url.as_ref().map(|url| url.to_string()),
+  //   |state, url| state.post.url = url,
+  // );
+  // let (thumbnail_url, _set_thumbnail_url) = create_slice(
+  //   post_state,
+  //   |state| state.post.thumbnail_url.as_ref().map(ToString::to_string),
+  //   |state, thumbnail_url| state.post.thumbnail_url = thumbnail_url,
+  // );
 
   // TODO: Will need setter once creating comments is supported
   let (comments, _set_comments) = slice!(post_state.counts.comments);
@@ -104,7 +141,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   };
 
   view! {
-    <article class="grid sm:grid-areas-post-listing-list sm:grid-cols-post-listing-list sm:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-full sm:w-fit h-fit items-center gap-y-2">
+    <article class="grid sm:grid-areas-post-listing-list sm:grid-cols-post-listing-list sm:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-full sm:w-fit h-fit items-center gap-2.5 pe-1">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote
@@ -113,15 +150,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
         class="grid-in-vote"
         orientation=orientation
       />
-      {move || {
-          with!(
-              | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
-              view! { < img class = "w-16 aspect-square rounded grid-in-thumbnail" src = thumbnail_url /> }
-              .into_view()).unwrap_or_else(|| view! { < A href = format!("/post/{id}") class =
-              "w-16 grid-in-thumbnail" > < Icon icon = IconType::Comments class = "m-auto" size = IconSize::ExtraLarge
-              /></ A > } .into_view())
-          )
-      }}
+      <Thumbnail post_state=post_state.read_only() id=id />
 
       <Show
         when=move || is_on_post_page

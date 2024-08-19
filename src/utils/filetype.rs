@@ -19,8 +19,8 @@ fn is_filetype(url: &str, exts: &[&str]) -> bool {
 
 #[cfg(test)]
 mod test {
-  use rstest::rstest;
   use crate::utils::{is_image, is_video};
+  use rstest::rstest;
 
   #[rstest]
   #[case("https://my.test.image.co/keNu2D9.jpg")]
