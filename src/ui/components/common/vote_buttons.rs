@@ -10,24 +10,10 @@ use leptos::*;
 use leptos_fluent::move_tr;
 use leptos_router::ActionForm;
 use pretty_num::PrettyNumber;
-use tailwind_fuse::{
-  tw_merge,
-  AsTailwindClass,
-  IntoBuilder,
-  IntoTailwindClass,
-  TailwindFuse,
-  TailwindMerge,
-  TwClass,
-  TwVariant,
-};
-
-#[derive(TwClass)]
-#[tw(class = "align-bottom disabled:cursor-not-allowed disabled:text-neutral-content")]
-struct VoteBtn {
-  vote: Vote,
-}
+use tailwind_fuse::{tw_merge, AsTailwindClass, TwVariant};
 
 #[derive(TwVariant)]
+#[tw(class = "align-bottom disabled:cursor-not-allowed disabled:text-neutral-content")]
 enum Vote {
   #[tw(default, class = "text-neutral")]
   None,
@@ -76,8 +62,7 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_upvote | { VoteBtn { vote : if * is_upvote { Vote::Up } else { Vote::None } }
-                  .to_class() }
+                  | is_upvote | if * is_upvote { Vote::Up } else { Vote::None }.as_class().to_owned()
               )
           }
 
@@ -102,8 +87,8 @@ where
           type="submit"
           class=move || {
               with!(
-                  | is_downvote | { VoteBtn { vote : if * is_downvote { Vote::Down } else {
-                  Vote::None } } .to_class() }
+                  | is_downvote | if * is_downvote { Vote::Down } else {
+                    Vote::None }.as_class().to_owned()
               )
           }
 

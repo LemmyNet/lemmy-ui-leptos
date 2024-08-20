@@ -20,12 +20,6 @@ use thumbnail::Thumbnail;
 
 mod thumbnail;
 
-#[derive(Clone, PartialEq)]
-struct PostImage(pub Rc<str>);
-
-#[derive(Clone, PartialEq)]
-struct PostUrl(pub Rc<str>);
-
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   // These post fields cannot change, so no need for signals
@@ -42,25 +36,28 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
       .url
       .as_deref()
       .map(AsRef::as_ref)
-      .map(Rc::from)
-      .map(PostUrl))
+      .map(Rc::<str>::from))
   });
-  provide_context(post_url);
 
-  let post_image = Memo::new(move |_| {
+  let image_url = Memo::new(move |_| {
+    with!(
+      |post_state| post_state
+        .post
+        .thumbnail_url
+        .as_deref()
+        .map(AsRef::as_ref)
+        .map(Rc::from)
+        .or_else(|| post_url.get().filter(|url| is_image(url.as_ref()))) // Fall back to post url if no thumbnail, but only if it is an image url
+    )
+  });
+
+  let embed_video_url = Memo::new(move |_| {
     with!(|post_state| post_state
       .post
-      .thumbnail_url
-      .as_deref()
-      .map(AsRef::as_ref)
-      .map(Rc::from)
-      .or_else(|| post_url
-        .get()
-        .map(|url| url.0)
-        .filter(|url| is_image(url.as_ref()))) // Fall back to post url if no thumbnail, but only if it is an image url
-      .map(PostImage))
+      .embed_video_url
+      .as_ref()
+      .map(ToString::to_string))
   });
-  provide_context(post_image);
 
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
@@ -150,7 +147,12 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
         class="grid-in-vote"
         orientation=orientation
       />
-      <Thumbnail post_state=post_state.read_only() id=id />
+      <Thumbnail
+        url=post_url
+        image_url=image_url
+        has_embed_url=move || with!(|embed_video_url| embed_video_url.is_some())
+        id=id
+      />
 
       <Show
         when=move || is_on_post_page
