@@ -51,7 +51,7 @@ pub fn HomePage() -> impl IntoView {
 
   view! {
     <div class="flex mx-auto mt-4 mb-1 gap-6 h-fit sm:h-full">
-      <main class="basis-full lg:basis-3/5 xl:basis-2/3 flex flex-col mx-2.5 lg:mx-0 h-fit sm:h-full">
+      <main class="basis-full lg:basis-[65%] xl:basis-3/4 flex flex-col mx-2.5 lg:mx-0 h-fit sm:h-full">
         <div class="flex flex-wrap gap-y-2 gap-x-4 pb-1.5 border-b-4 border-base-300 rounded-b-md">
           <h1 class="text-4xl font-bold text-nowrap">{move_tr!("home-feed")}</h1>
           {filter_bar}
@@ -65,7 +65,7 @@ pub fn HomePage() -> impl IntoView {
         </Suspense>
       </main>
 
-      <aside class="hidden basis-2/5 xl:basis-1/3 lg:block me-8 overflow-y-auto min-h-0">
+      <aside class="hidden basis-[35%] xl:basis-1/4 lg:block me-8 overflow-y-auto min-h-0">
         <Sidebar data=sidebar_data team=admins />
       </aside>
     </div>

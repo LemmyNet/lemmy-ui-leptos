@@ -5,7 +5,7 @@ use crate::{
     content_actions::ContentActions,
     creator_listing::CreatorListing,
     icon::{Icon, IconType},
-    vote_buttons::{VoteButtons, VotesOrientation},
+    vote_buttons::VoteButtons,
   },
   utils::{
     is_image,
@@ -131,21 +131,14 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let is_on_post_page = use_route().path().starts_with("/post");
 
-  let orientation = if is_on_post_page {
-    VotesOrientation::Horizontal
-  } else {
-    VotesOrientation::Vertical
-  };
-
   view! {
-    <article class="grid sm:grid-areas-post-listing-list sm:grid-cols-post-listing-list sm:grid-rows-post-listing-list grid-areas-post-listing-list-mobile grid-cols-post-listing-list-mobile grid-rows-post-listing-list-mobile w-full sm:w-fit h-fit items-center gap-2.5 pe-1">
+    <article class="grid sm:grid-areas-post-listing sm:grid-cols-post-listing sm:grid-rows-post-listing grid-areas-post-listing-mobile grid-cols-post-listing-mobile grid-rows-post-listing-mobile w-full h-fit items-center gap-2.5 pe-1">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote
         score=score
         vote_action=vote_action
         class="grid-in-vote"
-        orientation=orientation
       />
       <Thumbnail
         url=post_url
@@ -165,7 +158,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
         }
       >
 
-        <h1 class="text-2xl font-bold">{post_name}</h1>
+        <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
       </Show>
       <div class="flex flex-wrap items-center gap-1.5 grid-in-to">
         <CreatorListing creator=creator />
