@@ -4,10 +4,11 @@ use crate::{
     community_listing::CommunityListing,
     content_actions::ContentActions,
     creator_listing::CreatorListing,
-    icon::{Icon, IconType},
+    icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
   utils::{
+    get_time_since,
     is_image,
     types::{Hidden, PostOrCommentId},
   },
@@ -58,6 +59,9 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
       .as_ref()
       .map(ToString::to_string))
   });
+
+  let time_since_post =
+    Memo::new(move |_| with!(|post_state| get_time_since(&post_state.post.published)));
 
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
@@ -160,10 +164,16 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
         <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
       </Show>
-      <div class="flex flex-wrap items-center gap-1.5 grid-in-to">
-        <CreatorListing creator=creator />
-        <div class="text-sm">to</div>
-        <CommunityListing community=community />
+      <div class="grid-in-to">
+        <div class="flex flex-wrap items-center gap-1.5">
+          <CreatorListing creator=creator />
+          <div class="text-sm">to</div>
+          <CommunityListing community=community />
+        </div>
+        <div class="text-xs badge badge-ghost gap-x-0.5 mt-2">
+          <Icon icon=IconType::Clock size=IconSize::Small />
+          {time_since_post}
+        </div>
       </div>
 
       <div class="flex items-center gap-x-2 grid-in-actions">

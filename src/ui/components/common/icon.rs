@@ -44,6 +44,7 @@ pub enum IconType {
   Image,
   Video,
   ExternalLink,
+  Clock,
 }
 
 #[derive(Debug, TwVariant)]
