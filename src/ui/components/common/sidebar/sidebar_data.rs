@@ -12,7 +12,9 @@ pub enum SidebarData {
   },
   Community {
     name: String,
+    #[allow(dead_code)]
     title: String,
+    #[allow(dead_code)]
     icon: Option<String>,
     description: Option<String>,
     counts: CommunityAggregates,

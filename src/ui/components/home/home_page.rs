@@ -39,7 +39,7 @@ pub fn HomePage() -> impl IntoView {
   let sidebar_data = derive_query_signal(site_resource, |site_response| SidebarData::Site {
     name: site_response.site_view.site.name.clone(),
     description: site_response.site_view.site.description.clone(),
-    counts: site_response.site_view.counts.clone(),
+    counts: site_response.site_view.counts,
   });
   let admins = derive_query_signal(site_resource, |site_response| {
     site_response
