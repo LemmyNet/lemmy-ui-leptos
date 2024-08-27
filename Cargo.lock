@@ -566,9 +566,9 @@ dependencies = [
 
 [[package]]
 name = "cfg-expr"
-version = "0.16.0"
+version = "0.15.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "345c78335be0624ed29012dc10c49102196c6882c12dde65d9f35b02da2aada8"
+checksum = "d067ad48b8650848b989a59a86c6c36a995d02d2bf778d45c3c5d57bc2718f02"
 dependencies = [
  "smallvec",
 ]
@@ -1177,6 +1177,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "unic-langid",
+ "walkdir",
 ]
 
 [[package]]
@@ -1976,9 +1977,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.13"
+version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1454d2a875f8bde6cfdb9290897dee9ec2b1a0f21d72e6a51a29e294d6187b7"
+checksum = "4bd17071f7c70384d36e1bab61ae2d47b995f26f35dcd5ccd52553210063097f"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -1989,9 +1990,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.13"
+version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49b1911cb1a8e11dc0d988fe704929ac2126a42c27cfc649db05e005f5caae99"
+checksum = "eb3cb6c22216f2f34781d3a595fc3311f1a65111af504b456e77c5d6bc0c985b"
 dependencies = [
  "cfg-expr",
  "current_platform",
@@ -3994,7 +3995,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]
