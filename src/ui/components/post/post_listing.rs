@@ -1,4 +1,5 @@
 use crate::{
+  contexts::site_resource_context::SiteResource,
   serverfns::posts::{create_hide_post_action, create_save_post_action, create_vote_post_action},
   ui::components::common::{
     community_listing::CommunityListing,
@@ -62,19 +63,22 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let time_since_post =
     Memo::new(move |_| with!(|post_state| get_time_since(&post_state.post.published)));
+  let site_resource = expect_context::<SiteResource>();
+  let post_language = Memo::new(move |_| {
+    with!(|site_resource, post_state| site_resource
+      .as_ref()
+      .and_then(|r| r.as_ref().ok())
+      .and_then(|site_resource| (post_state.post.language_id.0 != 0)
+        .then(|| site_resource
+          .all_languages
+          .iter()
+          .find(|l| l.id == post_state.post.language_id)
+          .map(|l| l.name.clone()))
+        .flatten()))
+  });
 
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
-  // let (url, _set_url) = create_slice(
-  //   post_state,
-  //   |state| state.post.url.as_ref().map(|url| url.to_string()),
-  //   |state, url| state.post.url = url,
-  // );
-  // let (thumbnail_url, _set_thumbnail_url) = create_slice(
-  //   post_state,
-  //   |state| state.post.thumbnail_url.as_ref().map(ToString::to_string),
-  //   |state, thumbnail_url| state.post.thumbnail_url = thumbnail_url,
-  // );
 
   // TODO: Will need setter once creating comments is supported
   let (comments, _set_comments) = slice!(post_state.counts.comments);
@@ -170,9 +174,21 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           <div class="text-sm">to</div>
           <CommunityListing community=community />
         </div>
-        <div class="text-xs badge badge-ghost gap-x-0.5 mt-2">
-          <Icon icon=IconType::Clock size=IconSize::Small />
-          {time_since_post}
+        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+          <div class="text-xs badge badge-ghost gap-x-0.5">
+            <Icon icon=IconType::Clock size=IconSize::Small />
+            {time_since_post}
+          </div>
+          {move || {
+              with!(
+                  |post_language| post_language.as_ref().map(|lang| view! {
+                  <div class="text-xs badge badge-ghost gap-x-0.5">
+                    <Icon icon=IconType::Language size=IconSize::Small />
+                    {lang}
+                  </div>
+            })
+              )
+          }}
         </div>
       </div>
 
