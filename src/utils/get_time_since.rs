@@ -41,6 +41,5 @@ pub fn get_time_since(date_time: &DateTime<Utc>) -> String {
     return tr!("seconds-ago", { "seconds" => seconds });
   }
 
-  let now = tr!("now");
-  now
+  tr!("now")
 }

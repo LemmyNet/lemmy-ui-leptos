@@ -71,7 +71,7 @@ pub fn PostPage() -> impl IntoView {
 
   view! {
     <div class="flex mx-auto mt-4 mb-1 sm:gap-12 h-fit sm:h-full">
-      <main class="basis-full lg:basis-[65%] xl:basis-3/4 flex flex-col mx-2.5 sm:mx-0 h-fit sm:h-full">
+      <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 sm:mx-0 h-fit sm:h-full">
         <Transition>
           <Unpack item=post_resource let:res>
             <PostListing post_view=&res.post_view />
@@ -84,7 +84,7 @@ pub fn PostPage() -> impl IntoView {
       // </div>
       // </Unpack>
       </main>
-      <aside class="hidden basis-[35%] xl:basis-1/4 lg:block me-8 overflow-y-auto min-h-0">
+      <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 overflow-y-auto min-h-0">
         <Sidebar data=sidebar_data team=moderators />
       </aside>
     </div>

@@ -23,6 +23,7 @@ pub fn Sidebar(data: QuerySignal<SidebarData>, team: QuerySignal<Vec<Person>>) -
   let past_week = move_tr!("past-week");
   let past_month = move_tr!("past-month");
   let past_6_months = move_tr!("past-6-months");
+  let time_frame = move_tr!("time-frame");
 
   view! {
     <div class="card w-full mb-3 bg-base-200">
@@ -75,7 +76,7 @@ pub fn Sidebar(data: QuerySignal<SidebarData>, team: QuerySignal<Vec<Person>>) -
                 <thead>
                   <tr class="font-extrabold text-sm bg-base-300 *:p-3">
                     <th class="text-start" scope="col">
-                      {move_tr!("time-frame")}
+                      {time_frame}
                     </th>
                     <th class="text-center" scope="col">
                       {move_tr!("count")}
