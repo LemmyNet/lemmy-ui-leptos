@@ -1,6 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  ui::components::common::icon::{Icon, IconType},
+  ui::components::common::icon::IconType,
   utils::{
     derive_user_is_logged_in,
     types::{PostOrCommentId, ServerAction, ServerActionFn},
@@ -8,20 +8,11 @@ use crate::{
 };
 use leptos::*;
 use leptos_fluent::move_tr;
-use leptos_router::ActionForm;
 use pretty_num::PrettyNumber;
-use tailwind_fuse::{tw_merge, AsTailwindClass, TwVariant};
+use tailwind_fuse::tw_merge;
+use vote_button::{VoteButton, VoteType};
 
-#[derive(TwVariant)]
-#[tw(class = "align-bottom disabled:cursor-not-allowed disabled:text-neutral-content")]
-enum Vote {
-  #[tw(default, class = "text-neutral")]
-  None,
-  #[tw(class = "text-success")]
-  Up,
-  #[tw(class = "text-error")]
-  Down,
-}
+mod vote_button;
 
 #[component]
 pub fn VoteButtons<VA>(
@@ -41,54 +32,29 @@ where
 
   view! {
     <div class=tw_merge!("w-fit flex justify-center gap-1.5 flex-row sm:flex-col", class)>
-      <ActionForm action=vote_action>
-        <input type="hidden" name="id" value=id.get_id() />
-        <input
-          type="hidden"
-          name="score"
-          value=move || with!(| is_upvote | if * is_upvote { 0 } else { 1 })
-        />
-        <button
-          type="submit"
-          class=move || {
-              with!(
-                  | is_upvote | if * is_upvote { Vote::Up } else { Vote::None }.as_class().to_owned()
-              )
-          }
-
-          title=move_tr!("upvote")
-          disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
-        >
-
-          <Icon icon=IconType::Upvote />
-        </button>
-      </ActionForm>
+      <VoteButton
+        vote_action=vote_action
+        id=id
+        is_voted=is_upvote
+        user_is_logged_in=user_is_logged_in
+        title=move_tr!("upvote")
+        icon=IconType::Upvote
+        vote_value=1
+        vote_type=VoteType::Up
+      />
       <div class="text-sm text-center font-medium">
         {move || with!(|score| score.pretty_format())}
       </div>
-      <ActionForm action=vote_action class="w-fit">
-        <input type="hidden" name="id" value=id.get_id() />
-        <input
-          type="hidden"
-          name="score"
-          value=move || with!(| is_downvote | if * is_downvote { 0 } else { - 1 })
-        />
-        <button
-          type="submit"
-          class=move || {
-              with!(
-                  | is_downvote | if * is_downvote { Vote::Down } else {
-                    Vote::None }.as_class().to_owned()
-              )
-          }
-
-          title=move_tr!("downvote")
-
-          disabled=move || !user_is_logged_in.get() || vote_action.pending().get()
-        >
-          <Icon icon=IconType::Downvote />
-        </button>
-      </ActionForm>
+      <VoteButton
+        vote_action=vote_action
+        id=id
+        is_voted=is_downvote
+        user_is_logged_in=user_is_logged_in
+        title=move_tr!("downvote")
+        icon=IconType::Downvote
+        vote_value=-1
+        vote_type=VoteType::Down
+      />
     </div>
   }
 }
