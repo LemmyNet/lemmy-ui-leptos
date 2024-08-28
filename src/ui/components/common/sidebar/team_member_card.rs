@@ -1,3 +1,4 @@
+use crate::constants::DEFAULT_AVATAR_PATH;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
 use leptos::*;
 use leptos_router::A;
@@ -9,8 +10,10 @@ pub fn TeamMemberCard(person: Person) -> impl IntoView {
       <img
         src=person
             .avatar
-            .map(|p| p.to_string())
-            .unwrap_or(String::from("/assets/default-avatar.png"))
+            .as_deref()
+            .map(AsRef::as_ref)
+            .map(ToOwned::to_owned)
+            .unwrap_or(DEFAULT_AVATAR_PATH.to_owned())
 
         loading="lazy"
         class="mx-auto size-12"
