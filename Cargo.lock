@@ -634,9 +634,9 @@ dependencies = [
 
 [[package]]
 name = "codee"
-version = "0.1.2"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af40247be877a1e3353fb406aa27ab3ef4bd3ff18cef91e75e667bfa3fde701d"
+checksum = "5d3ad3122b0001c7f140cf4d605ef9a9e2c24d96ab0b4fb4347b76de2425f445"
 dependencies = [
  "thiserror",
 ]
@@ -1881,7 +1881,6 @@ dependencies = [
  "tailwind_fuse",
  "tokio",
  "trait-set",
- "url",
  "web-sys",
 ]
 
@@ -2035,18 +2034,16 @@ dependencies = [
 
 [[package]]
 name = "leptos-use"
-version = "0.12.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "268b9df23d8c68ed0518c39d6f0d3b99fcbe30190a6dce4a7e5f342027ab0033"
+checksum = "2fbd7025172d634eed266a57bd45c7bf872562e97e5768c543d69b6e907c4b86"
 dependencies = [
- "async-trait",
  "cfg-if",
  "codee",
  "cookie 0.18.1",
  "default-struct-builder",
  "futures-util",
  "gloo-timers",
- "gloo-utils",
  "js-sys",
  "lazy_static",
  "leptos",

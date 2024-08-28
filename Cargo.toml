@@ -28,11 +28,10 @@ actix-session = { version = "0.10", features = [
 tokio = { version = "1.39", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.12"
+leptos-use = "0.13"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-url = { version = "2.5", optional = true }
 leptos-fluent = { version = "0.1", features = ["actix"] }
 fluent-templates = "0.10"
 chrono = "0.4.38"
@@ -65,7 +64,6 @@ ssr = [
   "dep:actix-files",
   "dep:actix-session",
   "dep:tokio",
-  "dep:url",
 ]
 
 [lints.clippy]
