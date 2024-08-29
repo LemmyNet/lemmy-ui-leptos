@@ -17,6 +17,9 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
   let past_month = move_tr!("past-month");
   let past_6_months = move_tr!("past-6-months");
   let time_frame = move_tr!("time-frame");
+  let all_time = move_tr!("all-time");
+  let local_subscribers = move_tr!("local-subscribers");
+  let subscribers = move_tr!("subscribers");
 
   // Extract the common elements
   let (
@@ -120,16 +123,12 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
               <UserStatRow text=past_6_months count=users_6_months />
               {match data {
                   SidebarData::Site(s) => {
-                      view! { <UserStatRow text=move_tr!("all-time") count=s.counts.users /> }
-                          .into_view()
+                      view! { <UserStatRow text=all_time count=s.counts.users /> }.into_view()
                   }
                   SidebarData::Community(c) => {
                       view! {
-                        <UserStatRow
-                          text=move_tr!("local-subscribers")
-                          count=c.counts.subscribers_local
-                        />
-                        <UserStatRow text=move_tr!("subscribers") count=c.counts.subscribers />
+                        <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
+                        <UserStatRow text=subscribers count=c.counts.subscribers />
                       }
                           .into_view()
                   }
