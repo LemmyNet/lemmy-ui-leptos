@@ -3,7 +3,10 @@ use crate::{
   serverfns::posts::list_posts,
   ui::components::{
     common::{
-      sidebar::{Sidebar, SidebarData},
+      sidebar::{
+        sidebar_data::{SidebarData, SiteSidebarData},
+        Sidebar,
+      },
       unpack::Unpack,
     },
     post::post_listings::PostListings,
@@ -36,17 +39,16 @@ pub fn HomePage() -> impl IntoView {
   let posts = derive_query_signal(posts_resource, |r| r.posts.clone());
 
   let site_resource = expect_context::<SiteResource>();
-  let sidebar_data = derive_query_signal(site_resource, |site_response| SidebarData::Site {
-    name: site_response.site_view.site.name.clone(),
-    description: site_response.site_view.site.description.clone(),
-    counts: site_response.site_view.counts,
-  });
-  let admins = derive_query_signal(site_resource, |site_response| {
-    site_response
-      .admins
-      .iter()
-      .map(|admin| admin.person.clone())
-      .collect()
+  let sidebar_data = derive_query_signal(site_resource, |site_response| {
+    SidebarData::Site(SiteSidebarData {
+      site: site_response.site_view.site.clone(),
+      counts: site_response.site_view.counts,
+      admins: site_response
+        .admins
+        .iter()
+        .map(|admin| admin.person.clone())
+        .collect(),
+    })
   });
 
   view! {
@@ -66,7 +68,11 @@ pub fn HomePage() -> impl IntoView {
       </main>
 
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 overflow-y-auto min-h-0">
-        <Sidebar data=sidebar_data team=admins />
+        <Transition>
+          <Unpack item=sidebar_data let:data>
+            <Sidebar data=&data />
+          </Unpack>
+        </Transition>
       </aside>
     </div>
   }

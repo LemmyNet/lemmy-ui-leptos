@@ -2,7 +2,10 @@ use crate::{
   serverfns::{comments::list_comments, posts::get_post},
   ui::components::{
     common::{
-      sidebar::{Sidebar, SidebarData},
+      sidebar::{
+        sidebar_data::{CommunitySidebarData, SidebarData},
+        Sidebar,
+      },
       unpack::Unpack,
     },
     post::post_listing::PostListing,
@@ -49,24 +52,16 @@ pub fn PostPage() -> impl IntoView {
     list_comments,
   );
 
-  let sidebar_data = derive_query_signal(post_resource, |post_response| SidebarData::Community {
-    name: post_response.community_view.community.name.clone(),
-    title: post_response.community_view.community.title.clone(),
-    icon: post_response
-      .community_view
-      .community
-      .icon
-      .as_ref()
-      .map(|url| url.to_string()),
-    description: post_response.community_view.community.description.clone(),
-    counts: post_response.community_view.counts.clone(),
-  });
-  let moderators = derive_query_signal(post_resource, |post_response| {
-    post_response
-      .moderators
-      .iter()
-      .map(|moderator| moderator.moderator.clone())
-      .collect()
+  let sidebar_data = derive_query_signal(post_resource, |post_response| {
+    SidebarData::Community(CommunitySidebarData {
+      community: post_response.community_view.community.clone(),
+      counts: post_response.community_view.counts.clone(),
+      moderators: post_response
+        .moderators
+        .iter()
+        .map(|moderator| moderator.moderator.clone())
+        .collect(),
+    })
   });
 
   view! {
@@ -85,7 +80,11 @@ pub fn PostPage() -> impl IntoView {
       // </Unpack>
       </main>
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 overflow-y-auto min-h-0">
-        <Sidebar data=sidebar_data team=moderators />
+        <Transition>
+          <Unpack item=sidebar_data let:data>
+            <Sidebar data=&data />
+          </Unpack>
+        </Transition>
       </aside>
     </div>
   }
