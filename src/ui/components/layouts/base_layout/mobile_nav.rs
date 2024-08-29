@@ -8,7 +8,7 @@ pub fn MobileNav() -> impl IntoView {
   view! {
     <nav
       aria-label=move_tr!("mobile-nav")
-      class="btm-nav w-full md:hidden border-t border-neutral text-xs"
+      class="btm-nav w-full sm:hidden border-t border-neutral text-xs"
     >
       <NavLink href="/" icon=IconType::Home text=move_tr!("home") />
       <NavLink href="/communities" icon=IconType::Communities text=move_tr!("communities") />
@@ -21,7 +21,7 @@ pub fn MobileNav() -> impl IntoView {
 
 #[component]
 fn NavLink(href: &'static str, icon: IconType, text: Signal<String>) -> impl IntoView {
-  // TODO: Apply active to aria-current=page once the unusual cargo-leptos bug is resolved
+  // TODO: Apply active to aria-current=page once the relevant Daisy UI issue is fixed: https://github.com/saadeghi/daisyui/issues/3170
   view! {
     <A href=href>
       <Icon icon=icon />

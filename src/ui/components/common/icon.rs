@@ -41,6 +41,11 @@ pub enum IconType {
   Posts,
   Fediverse,
   X,
+  Image,
+  Video,
+  ExternalLink,
+  Clock,
+  Language,
 }
 
 #[derive(Debug, TwVariant)]

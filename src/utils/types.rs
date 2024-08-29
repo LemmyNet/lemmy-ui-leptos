@@ -1,3 +1,5 @@
+use leptos::{ServerFnError, Signal};
+
 mod theme;
 pub use theme::Theme;
 
@@ -9,3 +11,5 @@ pub use dialog_types::*;
 
 mod content_action_types;
 pub use content_action_types::*;
+
+pub type QuerySignal<R> = Signal<Option<Result<R, ServerFnError>>>;

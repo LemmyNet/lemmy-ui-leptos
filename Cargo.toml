@@ -21,20 +21,20 @@ console_error_panic_hook = { version = "0.1", optional = true }
 # dependecies for server (enable when ssr set)
 leptos_actix = { version = "0.6", optional = true }
 actix-files = { version = "0.6", optional = true }
-actix-web = { version = "4.8", features = ["macros"], optional = true }
+actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
 tokio = { version = "1.39", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.11"
+leptos-use = "0.13"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-url = { version = "2.5", optional = true }
 leptos-fluent = { version = "0.1", features = ["actix"] }
-fluent-templates = "0.9"
+fluent-templates = "0.10"
+chrono = "0.4.38"
 
 [features]
 default = ["ssr"]
@@ -64,7 +64,6 @@ ssr = [
   "dep:actix-files",
   "dep:actix-session",
   "dep:tokio",
-  "dep:url",
 ]
 
 [lints.clippy]
@@ -85,6 +84,9 @@ inherits = "release"
 opt-level = "z"
 lto = true
 codegen-units = 1
+
+[dev-dependencies]
+rstest = "0.22.0"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"

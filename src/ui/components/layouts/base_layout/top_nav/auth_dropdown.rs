@@ -33,7 +33,7 @@ pub fn AuthDropdown() -> impl IntoView {
   });
 
   view! {
-    <nav class="hidden md:block">
+    <nav class="hidden sm:block">
       <ul aria-label=move_tr!("authentication-nav") class="flex items-center gap-x-2">
         <Show
           when=move || user_is_logged_in.get()
