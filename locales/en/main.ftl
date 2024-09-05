@@ -68,3 +68,36 @@ loading = Loading
 home-feed = Home Feed
 upvote = Upvote
 downvote = Downvote
+local-subscribers = Local Subscribers
+subscribers = Subscribers
+community-stats = Community Stats
+moderators = Moderators
+now = Now
+years-ago = {$years ->
+    [one] {$years} year ago
+    *[other] {$years} years ago
+}
+months-ago = {$months ->
+    [one] {$months} month ago
+    *[other] {$months} months ago
+}
+weeks-ago = {$weeks ->
+    [one] {$weeks} week ago
+    *[other] {$weeks} weeks ago
+}
+days-ago = {$days ->
+    [one] {$days} day ago
+    *[other] {$days} days ago
+}
+hours-ago = {$hours ->
+    [one] {$hours} hour ago
+    *[other] {$hours} hours ago
+}
+minutes-ago = {$minutes ->
+    [one] {$minutes} minute ago
+    *[other] {$minutes} minutes ago
+}
+seconds-ago = {$seconds ->
+    [one] {$seconds} second ago
+    *[other] {$seconds} seconds ago
+}

@@ -1,6 +1,16 @@
 use crate::{
   serverfns::{comments::list_comments, posts::get_post},
-  ui::components::{common::unpack::Unpack, post::post_listing::PostListing},
+  ui::components::{
+    common::{
+      sidebar::{
+        sidebar_data::{CommunitySidebarData, SidebarData},
+        Sidebar,
+      },
+      unpack::Unpack,
+    },
+    post::post_listing::PostListing,
+  },
+  utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
   comment::GetComments,
@@ -42,19 +52,40 @@ pub fn PostPage() -> impl IntoView {
     list_comments,
   );
 
-  view! {
-    <main class="md:container mx-auto flex flex-col items-center">
-      <Transition>
-        <Unpack item=post_resource let:res>
-          <PostListing post_view=&res.post_view />
-        </Unpack>
-      </Transition>
+  let sidebar_data = derive_query_signal(post_resource, |post_response| {
+    SidebarData::Community(CommunitySidebarData {
+      community: post_response.community_view.community.clone(),
+      counts: post_response.community_view.counts.clone(),
+      moderators: post_response
+        .moderators
+        .iter()
+        .map(|moderator| moderator.moderator.clone())
+        .collect(),
+    })
+  });
 
-    // <Unpack item=list_comments_resource let:res>
-    // <div>
-    // <CommentNodes comments=res.comments.clone()/>
-    // </div>
-    // </Unpack>
-    </main>
+  view! {
+    <div class="flex mx-auto mt-4 mb-1 sm:gap-12 h-fit sm:h-full">
+      <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 sm:mx-0 h-fit sm:h-full">
+        <Transition>
+          <Unpack item=post_resource let:res>
+            <PostListing post_view=&res.post_view />
+          </Unpack>
+        </Transition>
+
+      // <Unpack item=list_comments_resource let:res>
+      // <div>
+      // <CommentNodes comments=res.comments.clone()/>
+      // </div>
+      // </Unpack>
+      </main>
+      <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 overflow-y-auto min-h-0">
+        <Transition>
+          <Unpack item=sidebar_data let:data>
+            <Sidebar data=&data />
+          </Unpack>
+        </Transition>
+      </aside>
+    </div>
   }
 }

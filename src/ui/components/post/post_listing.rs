@@ -1,4 +1,5 @@
 use crate::{
+  contexts::site_resource_context::SiteResource,
   serverfns::posts::{create_hide_post_action, create_save_post_action, create_vote_post_action},
   ui::components::common::{
     community_listing::CommunityListing,
@@ -7,11 +8,19 @@ use crate::{
     icon::{Icon, IconSize, IconType},
     vote_buttons::VoteButtons,
   },
-  utils::types::{Hidden, PostOrCommentId},
+  utils::{
+    get_time_since,
+    is_image,
+    types::{Hidden, PostOrCommentId},
+  },
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
 use leptos::*;
 use leptos_router::*;
+use std::rc::Rc;
+use thumbnail::Thumbnail;
+
+mod thumbnail;
 
 #[component]
 pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
@@ -23,18 +32,53 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let post_state = RwSignal::new(post_view.clone());
 
+  let post_url = Memo::new(move |_| {
+    with!(|post_state| post_state
+      .post
+      .url
+      .as_deref()
+      .map(AsRef::as_ref)
+      .map(Rc::<str>::from))
+  });
+
+  let image_url = Memo::new(move |_| {
+    with!(
+      |post_state| post_state
+        .post
+        .thumbnail_url
+        .as_deref()
+        .map(AsRef::as_ref)
+        .map(Rc::from)
+        .or_else(|| post_url.get().filter(|url| is_image(url.as_ref()))) // Fall back to post url if no thumbnail, but only if it is an image url
+    )
+  });
+
+  let embed_video_url = Memo::new(move |_| {
+    with!(|post_state| post_state
+      .post
+      .embed_video_url
+      .as_ref()
+      .map(ToString::to_string))
+  });
+
+  let time_since_post =
+    Memo::new(move |_| with!(|post_state| get_time_since(&post_state.post.published)));
+  let site_resource = expect_context::<SiteResource>();
+  let post_language = Memo::new(move |_| {
+    with!(|site_resource, post_state| site_resource
+      .as_ref()
+      .and_then(|r| r.as_ref().ok())
+      .and_then(|site_resource| (post_state.post.language_id.0 != 0)
+        .then(|| site_resource
+          .all_languages
+          .iter()
+          .find(|l| l.id == post_state.post.language_id)
+          .map(|l| l.name.clone()))
+        .flatten()))
+  });
+
   // TODO: These fields will need to be updateable once editing posts is supported
   let (post_name, _set_post_name) = slice!(post_state.post.name);
-  let (url, _set_url) = create_slice(
-    post_state,
-    |state| state.post.url.as_ref().map(|url| url.to_string()),
-    |state, url| state.post.url = url,
-  );
-  let (thumbnail_url, _set_thumbnail_url) = create_slice(
-    post_state,
-    |state| state.post.thumbnail_url.as_ref().map(ToString::to_string),
-    |state, thumbnail_url| state.post.thumbnail_url = thumbnail_url,
-  );
 
   // TODO: Will need setter once creating comments is supported
   let (comments, _set_comments) = slice!(post_state.counts.comments);
@@ -96,64 +140,76 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   let is_on_post_page = use_route().path().starts_with("/post");
 
   view! {
-    <article class="flex gap-x-3 items-center w-fit">
+    <article class="grid sm:grid-areas-post-listing sm:grid-cols-post-listing sm:grid-rows-post-listing grid-areas-post-listing-mobile grid-cols-post-listing-mobile grid-rows-post-listing-mobile w-full h-fit items-center gap-2.5 pe-1">
       <VoteButtons
         id=PostOrCommentId::Post(id)
         my_vote=my_vote
         score=score
         vote_action=vote_action
+        class="grid-in-vote"
       />
-      {move || {
-          with!(
-              | thumbnail_url, url | thumbnail_url.as_ref().or(url.as_ref()).map(| thumbnail_url |
-              view! { < img class = "w-24 aspect-square rounded" src = thumbnail_url /> }
-              .into_view()).unwrap_or_else(|| view! { < A href = format!("/post/{id}") class =
-              "w-24" > < Icon icon = IconType::Comments class = "m-auto" size = IconSize::ExtraLarge
-              /></ A > } .into_view())
-          )
-      }}
+      <Thumbnail
+        url=post_url
+        image_url=image_url
+        has_embed_url=move || with!(|embed_video_url| embed_video_url.is_some())
+        id=id
+      />
 
-      <div class="space-y-1.5">
-        <Show
-          when=move || is_on_post_page
-          fallback=move || {
-              view! {
-                <h2 class="text-lg font-medium">
-                  <A href=format!("/post/{id}")>{post_name}</A>
-                </h2>
-              }
-          }
-        >
+      <Show
+        when=move || is_on_post_page
+        fallback=move || {
+            view! {
+              <h2 class="text-lg font-medium grid-in-title">
+                <A href=format!("/post/{id}")>{post_name}</A>
+              </h2>
+            }
+        }
+      >
 
-          <h1 class="text-xl font-bold">
-            <A href=format!("/post/{id}")>{post_name}</A>
-          </h1>
-        </Show>
-        <div class="flex items-center gap-1.5">
+        <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
+      </Show>
+      <div class="grid-in-to">
+        <div class="flex flex-wrap items-center gap-1.5">
           <CreatorListing creator=creator />
           <div class="text-sm">to</div>
           <CommunityListing community=community />
         </div>
-
-        <div class="flex items-center gap-x-2">
-          <A
-            href=move || { format!("/post/{id}") }
-            class="text-sm whitespace-nowrap"
-            attr:title=num_comments_label
-            attr:aria-label=num_comments_label
-          >
-            <Icon icon=IconType::Comment class="inline align-baseline" />
-            " "
-            <span class="align-sub">{move || comments.get()}</span>
-          </A>
-          <ContentActions
-            post_or_comment_id=PostOrCommentId::Post(id)
-            saved=saved
-            save_action=save_action
-            creator=creator
-            ap_id=ap_id
-          />
+        <div class="flex flex-wrap items-center gap-1.5 mt-2">
+          <div class="text-xs badge badge-ghost gap-x-0.5">
+            <Icon icon=IconType::Clock size=IconSize::Small />
+            {time_since_post}
+          </div>
+          {move || {
+              with!(
+                  |post_language| post_language.as_ref().map(|lang| view! {
+                  <div class="text-xs badge badge-ghost gap-x-0.5">
+                    <Icon icon=IconType::Language size=IconSize::Small />
+                    {lang}
+                  </div>
+            })
+              )
+          }}
         </div>
+      </div>
+
+      <div class="flex items-center gap-x-2 grid-in-actions">
+        <A
+          href=move || { format!("/post/{id}") }
+          class="text-sm whitespace-nowrap"
+          attr:title=num_comments_label
+          attr:aria-label=num_comments_label
+        >
+          <Icon icon=IconType::Comment class="inline align-baseline" />
+          " "
+          <span class="align-sub">{move || comments.get()}</span>
+        </A>
+        <ContentActions
+          post_or_comment_id=PostOrCommentId::Post(id)
+          saved=saved
+          save_action=save_action
+          creator=creator
+          ap_id=ap_id
+        />
       </div>
 
     </article>

@@ -2,12 +2,25 @@
 module.exports = {
   theme: {
     extend: {
-      screens: {
-        "3xl": "1920px",
-        "4xl": "2560px",
-        "5xl": "3840px",
-        "6xl": "5120px",
-        "7xl": "8640px",
+      gridTemplateAreas: {
+        "post-listing": [
+          "vote thumbnail title",
+          "vote thumbnail to",
+          "vote thumbnail actions",
+        ],
+        "post-listing-mobile": [
+          "title title thumbnail",
+          "to to thumbnail",
+          "vote actions thumbnail",
+        ],
+      },
+      gridTemplateColumns: {
+        "post-listing": "min-content min-content auto",
+        "post-listing-mobile": "min-content auto min-content",
+      },
+      gridAutoRows: {
+        "post-listing": "1fr 2fr 1fr",
+        "post-listing-mobile": "1fr 1fr 1fr",
       },
       aria: {
         "current-page": 'current="page"',
@@ -36,12 +49,42 @@ module.exports = {
       animation: {
         "color-cycle": "color-cycle 6s linear infinite",
       },
+      spacing: {
+        "1/20": "5%",
+        "2/20": "10%",
+        "3/20": "15%",
+        "4/20": "20%",
+        "5/20": "25%",
+        "6/20": "30%",
+        "7/20": "35%",
+        "8/20": "40%",
+        "9/20": "45%",
+        "10/20": "50%",
+        "11/20": "55%",
+        "12/20": "60%",
+        "13/20": "65%",
+        "14/20": "70%",
+        "15/20": "75%",
+        "16/20": "80%",
+        "17/20": "85%",
+        "18/20": "90%",
+        "19/20": "95%",
+        "1/10": "10%",
+        "2/10": "20%",
+        "3/10": "30%",
+        "4/10": "40%",
+        "5/10": "50%",
+        "6/10": "60%",
+        "7/10": "70%",
+        "8/10": "80%",
+        "9/10": "90%",
+      },
     },
   },
   content: {
     files: ["*.html", "./src/**/*.rs"],
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require("@savvywombat/tailwindcss-grid-areas")],
   daisyui: {
     themes: ["light", "dark", "retro"],
   },

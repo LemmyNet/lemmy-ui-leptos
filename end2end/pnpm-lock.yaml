@@ -9,37 +9,37 @@ importers:
   .:
     devDependencies:
       '@playwright/test':
-        specifier: ^1.46.0
-        version: 1.46.0
+        specifier: ^1.46.1
+        version: 1.46.1
       '@types/node':
-        specifier: ^22.2.0
-        version: 22.2.0
+        specifier: ^22.5.1
+        version: 22.5.2
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
 
 packages:
 
-  '@playwright/test@1.46.0':
-    resolution: {integrity: sha512-/QYft5VArOrGRP5pgkrfKksqsKA6CEFyGQ/gjNe6q0y4tZ1aaPfq4gIjudr1s3D+pXyrPRdsy4opKDrjBabE5w==}
+  '@playwright/test@1.46.1':
+    resolution: {integrity: sha512-Fq6SwLujA/DOIvNC2EL/SojJnkKf/rAwJ//APpJJHRyMi1PdKrY3Az+4XNQ51N4RTbItbIByQ0jgd1tayq1aeA==}
     engines: {node: '>=18'}
     hasBin: true
 
-  '@types/node@22.2.0':
-    resolution: {integrity: sha512-bm6EG6/pCpkxDf/0gDNDdtDILMOHgaQBVOJGdwsqClnxA3xL6jtMv76rLBc006RVMWbmaf0xbmom4Z/5o2nRkQ==}
+  '@types/node@22.5.2':
+    resolution: {integrity: sha512-acJsPTEqYqulZS/Yp/S3GgeE6GZ0qYODUR8aVr/DkhHQ8l9nd4j5x1/ZJy9/gHrRlFMqkO6i0I3E27Alu4jjPg==}
 
   fsevents@2.3.2:
     resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  playwright-core@1.46.0:
-    resolution: {integrity: sha512-9Y/d5UIwuJk8t3+lhmMSAJyNP1BUC/DqP3cQJDQQL/oWqAiuPTLgy7Q5dzglmTLwcBRdetzgNM/gni7ckfTr6A==}
+  playwright-core@1.46.1:
+    resolution: {integrity: sha512-h9LqIQaAv+CYvWzsZ+h3RsrqCStkBHlgo6/TJlFst3cOTlLghBQlJwPOZKQJTKNaD3QIB7aAVQ+gfWbN3NXB7A==}
     engines: {node: '>=18'}
     hasBin: true
 
-  playwright@1.46.0:
-    resolution: {integrity: sha512-XYJ5WvfefWONh1uPAUAi0H2xXV5S3vrtcnXe6uAOgdGi3aSpqOSXX08IAjXW34xitfuOJsvXU5anXZxPSEQiJw==}
+  playwright@1.46.1:
+    resolution: {integrity: sha512-oPcr1yqoXLCkgKtD5eNUPLiN40rYEM39odNpIb6VE6S7/15gJmA1NzVv6zJYusV0e7tzvkU/utBFNa/Kpxmwng==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -48,30 +48,30 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@6.13.0:
-    resolution: {integrity: sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==}
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
 snapshots:
 
-  '@playwright/test@1.46.0':
+  '@playwright/test@1.46.1':
     dependencies:
-      playwright: 1.46.0
+      playwright: 1.46.1
 
-  '@types/node@22.2.0':
+  '@types/node@22.5.2':
     dependencies:
-      undici-types: 6.13.0
+      undici-types: 6.19.8
 
   fsevents@2.3.2:
     optional: true
 
-  playwright-core@1.46.0: {}
+  playwright-core@1.46.1: {}
 
-  playwright@1.46.0:
+  playwright@1.46.1:
     dependencies:
-      playwright-core: 1.46.0
+      playwright-core: 1.46.1
     optionalDependencies:
       fsevents: 2.3.2
 
   typescript@5.5.4: {}
 
-  undici-types@6.13.0: {}
+  undici-types@6.19.8: {}
