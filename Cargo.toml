@@ -35,6 +35,11 @@ web-sys = { version = "0.3", optional = true, features = ["Url"] }
 leptos-fluent = { version = "0.1", features = ["actix"] }
 fluent-templates = "0.10"
 chrono = "0.4.38"
+markdown-it = "0.6"
+markdown-it-sup = "1"
+markdown-it-sub = "1"
+markdown-it-ruby = "1"
+markdown-it-block-spoiler = "1"
 
 [features]
 default = ["ssr"]
