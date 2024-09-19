@@ -534,9 +534,9 @@ checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
 name = "bytes"
-version = "1.7.1"
+version = "1.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8318a53db07bb3f8dca91a600466bdb3f2eaadeedfdbcf02e1accbad9271ba50"
+checksum = "428d9aa8fbc0670b7b8d6030a7fadd0f86151cae55e4dbbece15f3780a3dfaf3"
 
 [[package]]
 name = "bytestring"
@@ -587,9 +587,9 @@ checksum = "8b96ec4966b5813e2c0507c1f86115c8c5abaadc3980879c3424042a02fd1ad3"
 
 [[package]]
 name = "cc"
-version = "1.1.20"
+version = "1.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "45bcde016d64c21da4be18b655631e5ab6d3107607e71a73a9f53eb48aae23fb"
+checksum = "07b1695e2c7e8fc85310cde85aeaab7e3097f593c91d209d3f9df76c928100f0"
 dependencies = [
  "jobserver",
  "libc",
@@ -1979,6 +1979,7 @@ dependencies = [
  "leptos_router",
  "markdown-it",
  "markdown-it-block-spoiler",
+ "markdown-it-footnote",
  "markdown-it-ruby",
  "markdown-it-sub",
  "markdown-it-sup",
@@ -2506,6 +2507,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "008a8e4184fd08b5dca0f2b5b2ef8f126c1e83ca797c44ee41f8d7765951360c"
 dependencies = [
  "itertools 0.13.0",
+ "markdown-it",
+]
+
+[[package]]
+name = "markdown-it-footnote"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6679ab967fbc45b290b25fb477af7556bf6825feec208a970585e6bb9aae3be"
+dependencies = [
  "markdown-it",
 ]
 

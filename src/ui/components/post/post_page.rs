@@ -66,7 +66,7 @@ pub fn PostPage() -> impl IntoView {
 
   view! {
     <div class="flex mx-auto mt-4 mb-1 sm:gap-12 h-fit sm:h-full">
-      <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 sm:mx-0 h-fit sm:h-full">
+      <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 sm:mx-0 h-fit sm:h-full overflow-y-auto">
         <Transition>
           <Unpack item=post_resource let:res>
             <PostListing post_view=&res.post_view />

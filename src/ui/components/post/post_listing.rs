@@ -11,6 +11,7 @@ use crate::{
   utils::{
     get_time_since,
     is_image,
+    markdown_to_html,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -31,6 +32,8 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   let community = &post_view.community;
 
   let post_state = RwSignal::new(post_view.clone());
+
+  let post_body = Memo::new(move |_| with!(|post_state| post_state.post.body.clone()));
 
   let post_url = Memo::new(move |_| {
     with!(|post_state| post_state
@@ -140,78 +143,86 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
   let is_on_post_page = use_route().path().starts_with("/post");
 
   view! {
-    <article class="grid sm:grid-areas-post-listing sm:grid-cols-post-listing sm:grid-rows-post-listing grid-areas-post-listing-mobile grid-cols-post-listing-mobile grid-rows-post-listing-mobile w-full h-fit items-center gap-2.5 pe-1">
-      <VoteButtons
-        id=PostOrCommentId::Post(id)
-        my_vote=my_vote
-        score=score
-        vote_action=vote_action
-        class="grid-in-vote"
-      />
-      <Thumbnail
-        url=post_url
-        image_url=image_url
-        has_embed_url=move || with!(|embed_video_url| embed_video_url.is_some())
-        id=id
-      />
+    <article class="w-full h-fit pe-1">
+      <div class="grid sm:grid-areas-post-listing sm:grid-cols-post-listing sm:grid-rows-post-listing grid-areas-post-listing-mobile grid-cols-post-listing-mobile grid-rows-post-listing-mobile items-center gap-2.5">
+        <VoteButtons
+          id=PostOrCommentId::Post(id)
+          my_vote=my_vote
+          score=score
+          vote_action=vote_action
+          class="grid-in-vote"
+        />
+        <Thumbnail
+          url=post_url
+          image_url=image_url
+          has_embed_url=move || with!(|embed_video_url| embed_video_url.is_some())
+          id=id
+        />
 
-      <Show
-        when=move || is_on_post_page
-        fallback=move || {
-            view! {
-              <h2 class="text-lg font-medium grid-in-title">
-                <A href=format!("/post/{id}")>{post_name}</A>
-              </h2>
-            }
-        }
-      >
+        <Show
+          when=move || is_on_post_page
+          fallback=move || {
+              view! {
+                <h2 class="text-lg font-medium grid-in-title">
+                  <A href=format!("/post/{id}")>{post_name}</A>
+                </h2>
+              }
+          }
+        >
 
-        <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
-      </Show>
-      <div class="grid-in-to">
-        <div class="flex flex-wrap items-center gap-1.5">
-          <CreatorListing creator=creator />
-          <div class="text-sm">to</div>
-          <CommunityListing community=community />
-        </div>
-        <div class="flex flex-wrap items-center gap-1.5 mt-2">
-          <div class="text-xs badge badge-ghost gap-x-0.5">
-            <Icon icon=IconType::Clock size=IconSize::Small />
-            {time_since_post}
+          <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
+        </Show>
+        <div class="grid-in-to">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <CreatorListing creator=creator />
+            <div class="text-sm">to</div>
+            <CommunityListing community=community />
           </div>
-          {move || {
-              with!(
-                  |post_language| post_language.as_ref().map(|lang| view! {
+          <div class="flex flex-wrap items-center gap-1.5 mt-2">
+            <div class="text-xs badge badge-ghost gap-x-0.5">
+              <Icon icon=IconType::Clock size=IconSize::Small />
+              {time_since_post}
+            </div>
+            {move || {
+                with!(
+                    |post_language| post_language.as_ref().map(|lang| view! {
                   <div class="text-xs badge badge-ghost gap-x-0.5">
                     <Icon icon=IconType::Language size=IconSize::Small />
                     {lang}
                   </div>
             })
-              )
-          }}
+                )
+            }}
+          </div>
+        </div>
+
+        <div class="flex items-center gap-x-2 grid-in-actions">
+          <A
+            href=move || { format!("/post/{id}") }
+            class="text-sm whitespace-nowrap"
+            attr:title=num_comments_label
+            attr:aria-label=num_comments_label
+          >
+            <Icon icon=IconType::Comment class="inline align-baseline" />
+            " "
+            <span class="align-sub">{move || comments.get()}</span>
+          </A>
+          <ContentActions
+            post_or_comment_id=PostOrCommentId::Post(id)
+            saved=saved
+            save_action=save_action
+            creator=creator
+            ap_id=ap_id
+          />
         </div>
       </div>
-
-      <div class="flex items-center gap-x-2 grid-in-actions">
-        <A
-          href=move || { format!("/post/{id}") }
-          class="text-sm whitespace-nowrap"
-          attr:title=num_comments_label
-          attr:aria-label=num_comments_label
-        >
-          <Icon icon=IconType::Comment class="inline align-baseline" />
-          " "
-          <span class="align-sub">{move || comments.get()}</span>
-        </A>
-        <ContentActions
-          post_or_comment_id=PostOrCommentId::Post(id)
-          saved=saved
-          save_action=save_action
-          creator=creator
-          ap_id=ap_id
-        />
-      </div>
-
+      {move || {
+          with!(
+              |post_body| post_body.as_deref().map(|body| is_on_post_page.then(|| view! {
+        <div class="bg-base-200 mt-4 p-5 rounded" inner_html=markdown_to_html(body)/>
+      }))
+          )
+      }}
     </article>
   }
 }
