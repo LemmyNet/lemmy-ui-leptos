@@ -79,7 +79,7 @@ pub fn PostPage() -> impl IntoView {
       // </div>
       // </Unpack>
       </main>
-      <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 overflow-y-auto min-h-0">
+      <aside class="hidden basis-7/20 xl:basis-3/10 lg:block sticky top-0 me-8 min-h-0">
         <Transition>
           <Unpack item=sidebar_data let:data>
             <Sidebar data=&data />

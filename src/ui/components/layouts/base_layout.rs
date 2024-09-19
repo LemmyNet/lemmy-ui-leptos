@@ -32,9 +32,7 @@ pub fn BaseLayout() -> impl IntoView {
               >
                 <SideNav />
               </nav>
-              <div class="flex-auto h-fit sm:h-auto max-w-6xl mx-auto">
-                <Outlet />
-              </div>
+              <Outlet />
             </div>
           </Unpack>
           <MobileNav />
