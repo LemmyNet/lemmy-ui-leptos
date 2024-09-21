@@ -101,22 +101,22 @@ pub fn App() -> impl IntoView {
           <Route
             path="login"
             view=move || {
-                view! {
-                  <AnonymousOnlyRouteView>
-                    <LoginPage />
-                  </AnonymousOnlyRouteView>
-                }
+              view! {
+                <AnonymousOnlyRouteView>
+                  <LoginPage />
+                </AnonymousOnlyRouteView>
+              }
             }
           />
 
           <Route
             path="signup"
             view=move || {
-                view! {
-                  <AnonymousOnlyRouteView>
-                    <CommunitiesPage />
-                  </AnonymousOnlyRouteView>
-                }
+              view! {
+                <AnonymousOnlyRouteView>
+                  <CommunitiesPage />
+                </AnonymousOnlyRouteView>
+              }
             }
           />
 
@@ -147,15 +147,15 @@ fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
       <Show
         when=move || !user_is_logged_in.get()
         fallback=move || {
-            view! {
-              <Redirect
-                path="/"
-                options=NavigateOptions {
-                    replace: true,
-                    ..Default::default()
-                }
-              />
-            }
+          view! {
+            <Redirect
+              path="/"
+              options=NavigateOptions {
+                replace: true,
+                ..Default::default()
+              }
+            />
+          }
         }
       >
 

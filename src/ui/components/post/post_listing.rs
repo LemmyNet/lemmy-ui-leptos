@@ -158,11 +158,11 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
       <Show
         when=move || is_on_post_page
         fallback=move || {
-            view! {
-              <h2 class="text-lg font-medium grid-in-title">
-                <A href=format!("/post/{id}")>{post_name}</A>
-              </h2>
-            }
+          view! {
+            <h2 class="text-lg font-medium grid-in-title">
+              <A href=format!("/post/{id}")>{post_name}</A>
+            </h2>
+          }
         }
       >
 
@@ -180,14 +180,14 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
             {time_since_post}
           </div>
           {move || {
-              with!(
-                  |post_language| post_language.as_ref().map(|lang| view! {
+            with!(
+              |post_language| post_language.as_ref().map(|lang| view! {
                   <div class="text-xs badge badge-ghost gap-x-0.5">
                     <Icon icon=IconType::Language size=IconSize::Small />
                     {lang}
                   </div>
             })
-              )
+            )
           }}
         </div>
       </div>

@@ -39,19 +39,19 @@ pub fn AuthDropdown() -> impl IntoView {
           when=move || user_is_logged_in.get()
 
           fallback=move || {
-              view! {
-                <li>
-                  <A href="/login" class="btn btn-ghost transition duration-500">
-                    {move_tr!("login")}
-                  </A>
-                </li>
-                <li>
-                  <A href="/signup" class="btn btn-primary transition duration-500">
+            view! {
+              <li>
+                <A href="/login" class="btn btn-ghost transition duration-500">
+                  {move_tr!("login")}
+                </A>
+              </li>
+              <li>
+                <A href="/signup" class="btn btn-primary transition duration-500">
 
-                    {move_tr!("signup")}
-                  </A>
-                </li>
-              }
+                  {move_tr!("signup")}
+                </A>
+              </li>
+            }
           }
         >
 
@@ -66,12 +66,12 @@ pub fn AuthDropdown() -> impl IntoView {
                   <span class="text-nowrap leading-loose">
 
                     {
-                        let (name, display_name) = names
-                            .as_ref()
-                            .expect(
-                                "None case for my_user should be handled by ancestor Show component",
-                            );
-                        display_name.as_ref().unwrap_or(name)
+                      let (name, display_name) = names
+                        .as_ref()
+                        .expect(
+                          "None case for my_user should be handled by ancestor Show component",
+                        );
+                      display_name.as_ref().unwrap_or(name)
                     } " "
                     <Icon
                       class="align-bottom inline group-open:rotate-180 transition-transform"
@@ -84,14 +84,14 @@ pub fn AuthDropdown() -> impl IntoView {
                 <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
                   <li>
                     <A href={
-                        let name = names
-                            .as_ref()
-                            .expect(
-                                "None case for my_user should be handled by ancestor Show component",
-                            )
-                            .0
-                            .as_str();
-                        format!("/u/{name}")
+                      let name = names
+                        .as_ref()
+                        .expect(
+                          "None case for my_user should be handled by ancestor Show component",
+                        )
+                        .0
+                        .as_str();
+                      format!("/u/{name}")
                     }>{move_tr!("profile")}</A>
                   </li>
                   <li>

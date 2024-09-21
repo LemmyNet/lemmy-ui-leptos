@@ -33,15 +33,15 @@ pub fn TextInput(
     <div class="relative w-full !mt-8">
       <input
         type=move || {
-            if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
+          if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
         }
 
         id=id
         class=move || {
-            format!(
-                "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
-                validation_class.get(),
-            )
+          format!(
+            "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
+            validation_class.get(),
+          )
         }
 
         placeholder=" "
@@ -57,7 +57,7 @@ pub fn TextInput(
         <button
           type="button"
           aria-label=move || {
-              if show_password.get() { tr!("hide-password") } else { tr!("show-password") }
+            if show_password.get() { tr!("hide-password") } else { tr!("show-password") }
           }
 
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"

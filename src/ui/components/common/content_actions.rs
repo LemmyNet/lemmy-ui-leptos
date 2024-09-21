@@ -76,10 +76,10 @@ where
           aria-label=save_content_label
 
           class=move || {
-              tw_join!(
-                  "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
+            tw_join!(
+              "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
                       .then_some("text-accent")
-              )
+            )
           }
 
           disabled=move || save_action.pending().get()
@@ -89,13 +89,13 @@ where
         </button>
       </ActionForm>
       {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
-          .then(|| {
-              view! {
-                <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
-                  <Icon icon=IconType::Crosspost />
-                </A>
-              }
-          })}
+        .then(|| {
+          view! {
+            <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
+              <Icon icon=IconType::Crosspost />
+            </A>
+          }
+        })}
 
       <div class="dropdown">
         <div tabindex="0" role="button">
@@ -103,12 +103,12 @@ where
         </div>
         <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
           <Show when=move || {
-              logged_in_user_id.get().map(|id| id != creator_stored.get_value().id).unwrap_or(false)
+            logged_in_user_id.get().map(|id| id != creator_stored.get_value().id).unwrap_or(false)
           }>
             {if let PostOrCommentId::Post(id) = post_or_comment_id {
-                Some(view! { <HidePostButton id=id /> })
+              Some(view! { <HidePostButton id=id /> })
             } else {
-                None
+              None
             }} <li>
               <ReportButton
                 creator=&creator_stored.get_value()

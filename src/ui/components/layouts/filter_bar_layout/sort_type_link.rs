@@ -15,9 +15,9 @@ where
 
       <A
         href=move || {
-            let mut query = query.get();
-            query.insert(String::from("sort"), link_sort_type.to_string());
-            query.to_query_string()
+          let mut query = query.get();
+          query.insert(String::from("sort"), link_sort_type.to_string());
+          query.to_query_string()
         }
 
         class="aria-selected:btn-active"

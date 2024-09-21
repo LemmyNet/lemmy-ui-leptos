@@ -6,7 +6,7 @@ pub fn CommentNode(comment_view: MaybeSignal<CommentView>) -> impl IntoView {
   view! {
     <div>
       {move || {
-          format!("{} - {}", comment_view.get().creator.name, comment_view.get().comment.content)
+        format!("{} - {}", comment_view.get().creator.name, comment_view.get().comment.content)
       }}
 
     </div>
