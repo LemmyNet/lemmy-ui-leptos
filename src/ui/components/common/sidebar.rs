@@ -87,18 +87,18 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
             </div>
 
             {if let SidebarData::Site(s) = data {
-                Some(
-                    view! {
-                      <div>
-                        <Icon icon=IconType::Communities size=IconSize::Large class="inline" />
-                        {s.counts.communities.pretty_format()}
-                        " "
-                        <span class="text-sm">{move_tr!("communities")}</span>
-                      </div>
-                    },
-                )
+              Some(
+                view! {
+                  <div>
+                    <Icon icon=IconType::Communities size=IconSize::Large class="inline" />
+                    {s.counts.communities.pretty_format()}
+                    " "
+                    <span class="text-sm">{move_tr!("communities")}</span>
+                  </div>
+                },
+              )
             } else {
-                None
+              None
             }}
           </div>
           <table class="w-full mt-3 table shadow-lg">
@@ -122,16 +122,16 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
               <UserStatRow text=past_month count=users_month />
               <UserStatRow text=past_6_months count=users_6_months />
               {match data {
-                  SidebarData::Site(s) => {
-                      view! { <UserStatRow text=all_time count=s.counts.users /> }.into_view()
+                SidebarData::Site(s) => {
+                  view! { <UserStatRow text=all_time count=s.counts.users /> }.into_view()
+                }
+                SidebarData::Community(c) => {
+                  view! {
+                    <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
+                    <UserStatRow text=subscribers count=c.counts.subscribers />
                   }
-                  SidebarData::Community(c) => {
-                      view! {
-                        <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
-                        <UserStatRow text=subscribers count=c.counts.subscribers />
-                      }
-                          .into_view()
-                  }
+                    .into_view()
+                }
               }}
             </tbody>
           </table>

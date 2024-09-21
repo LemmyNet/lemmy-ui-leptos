@@ -9,11 +9,11 @@ pub fn TeamMemberCard(person: Person) -> impl IntoView {
     <li class="flex-1 text-center max-w-fit rounded-lg p-3 even:bg-base-100 odd:bg-base-300 shadow-lg shadow-neutral">
       <img
         src=person
-            .avatar
-            .as_deref()
-            .map(AsRef::as_ref)
-            .map(ToOwned::to_owned)
-            .unwrap_or(DEFAULT_AVATAR_PATH.to_owned())
+          .avatar
+          .as_deref()
+          .map(AsRef::as_ref)
+          .map(ToOwned::to_owned)
+          .unwrap_or(DEFAULT_AVATAR_PATH.to_owned())
 
         loading="lazy"
         class="mx-auto size-12"
