@@ -159,16 +159,16 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           id=id
         />
 
-      <Show
-        when=move || is_on_post_page
-        fallback=move || {
-          view! {
-            <h2 class="text-lg font-medium grid-in-title">
-              <A href=format!("/post/{id}")>{post_name}</A>
-            </h2>
+        <Show
+          when=move || is_on_post_page
+          fallback=move || {
+            view! {
+              <h2 class="text-lg font-medium grid-in-title">
+                <A href=format!("/post/{id}")>{post_name}</A>
+              </h2>
+            }
           }
-        }
-      >
+        >
           <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
         </Show>
         <div class="grid-in-to">
@@ -183,14 +183,14 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
               {time_since_post}
             </div>
             {move || {
-                with!(
-                    |post_language| post_language.as_ref().map(|lang| view! {
+              with!(
+                |post_language| post_language.as_ref().map(|lang| view! {
                   <div class="text-xs badge badge-ghost gap-x-0.5">
                     <Icon icon=IconType::Language size=IconSize::Small />
                     {lang}
                   </div>
             })
-                )
+              )
             }}
           </div>
         </div>
@@ -216,11 +216,11 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
         </div>
       </div>
       {move || {
-          with!(
-              |post_body| post_body.as_deref().map(|body| is_on_post_page.then(|| view! {
+        with!(
+          |post_body| post_body.as_deref().map(|body| is_on_post_page.then(|| view! {
         <div class="bg-base-200 mt-4 p-5 rounded" inner_html=markdown_to_html(body)/>
       }))
-          )
+        )
       }}
     </article>
   }

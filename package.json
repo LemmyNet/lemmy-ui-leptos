@@ -3,7 +3,7 @@
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
     "daisyui": "^4.12.10",
     "prettier": "^3.3.3",
-    "tailwindcss": "^3.4.12"
+    "tailwindcss": "^3.4.13"
   },
   "scripts": {
     "fmt": "prettier . --write"
