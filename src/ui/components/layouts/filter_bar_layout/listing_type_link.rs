@@ -29,13 +29,13 @@ where
   view! {
     <A
       href=move || {
-          if disabled.get() {
-              String::from("javascript:void(0)")
-          } else {
-              let mut query = query.get();
-              query.insert(String::from("listingType"), link_listing_type.to_string());
-              query.to_query_string()
-          }
+        if disabled.get() {
+          String::from("javascript:void(0)")
+        } else {
+          let mut query = query.get();
+          query.insert(String::from("listingType"), link_listing_type.to_string());
+          query.to_query_string()
+        }
       }
 
       class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"

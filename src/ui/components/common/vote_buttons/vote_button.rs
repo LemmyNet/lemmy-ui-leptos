@@ -40,9 +40,7 @@ where
       <button
         type="submit"
         class=move || {
-            with!(
-                | is_voted | tw_merge!(vote_type.as_class(), (!is_voted).then_some("text-neutral"))
-            )
+          with!(| is_voted | tw_merge!(vote_type.as_class(), (!is_voted).then_some("text-neutral")))
         }
 
         title=title

@@ -49,9 +49,9 @@ fn ReportForm(
       ": "
       <span>
         {move || {
-            with!(
-                |creator_name, creator_actor_id| create_user_apub_name(creator_name, creator_actor_id)
-            )
+          with!(
+            |creator_name, creator_actor_id| create_user_apub_name(creator_name, creator_actor_id)
+          )
         }}
       </span>
     </div>
@@ -112,23 +112,23 @@ pub fn ReportModal(
       _ref=dialog_ref
       class="modal"
       on:close=move |_| {
-          if let Some(form_ref) = form_ref.get() {
-              form_ref.reset();
-          }
+        if let Some(form_ref) = form_ref.get() {
+          form_ref.reset();
+        }
       }
     >
       <Show
         when=move || matches!(post_or_comment_id.get(), PostOrCommentId::Post(_))
         fallback=move || {
-            view! {
-              <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
-                <ReportForm
-                  creator_name=creator_name
-                  creator_actor_id=creator_actor_id
-                  post_or_comment_id=post_or_comment_id
-                />
-              </ActionForm>
-            }
+          view! {
+            <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
+              <ReportForm
+                creator_name=creator_name
+                creator_actor_id=creator_actor_id
+                post_or_comment_id=post_or_comment_id
+              />
+            </ActionForm>
+          }
         }
       >
         <ActionForm node_ref=form_ref action=report_post_action class="modal-box">

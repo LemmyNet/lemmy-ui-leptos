@@ -15,10 +15,10 @@ pub fn CommunityListing<'a>(community: &'a Community) -> impl IntoView {
   view! {
     <div class="flex items-center gap-x-2">
       {icon
-          .map_or_else(
-              || view! { <Icon icon=IconType::Community /> },
-              |icon| view! { <img src=icon class="size-6" /> }.into_view(),
-          )} <div>
+        .map_or_else(
+          || view! { <Icon icon=IconType::Community /> },
+          |icon| view! { <img src=icon class="size-6" /> }.into_view(),
+        )} <div>
         <div class="text-sm mb-px font-medium">{&community.title}</div>
         <A href=format!("/c/{}", community.name) class="text-xs block text-secondary font-light">
           {community_apub_name}

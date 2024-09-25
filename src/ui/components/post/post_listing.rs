@@ -159,17 +159,16 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           id=id
         />
 
-        <Show
-          when=move || is_on_post_page
-          fallback=move || {
-              view! {
-                <h2 class="text-lg font-medium grid-in-title">
-                  <A href=format!("/post/{id}")>{post_name}</A>
-                </h2>
-              }
+      <Show
+        when=move || is_on_post_page
+        fallback=move || {
+          view! {
+            <h2 class="text-lg font-medium grid-in-title">
+              <A href=format!("/post/{id}")>{post_name}</A>
+            </h2>
           }
-        >
-
+        }
+      >
           <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
         </Show>
         <div class="grid-in-to">
@@ -205,7 +204,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           >
             <Icon icon=IconType::Comment class="inline align-baseline" />
             " "
-            <span class="align-sub">{move || comments.get()}</span>
+            <span class="align-sub">{comments}</span>
           </A>
           <ContentActions
             post_or_comment_id=PostOrCommentId::Post(id)
