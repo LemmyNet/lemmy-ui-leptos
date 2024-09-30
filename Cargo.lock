@@ -2017,9 +2017,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.21"
+version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4bd17071f7c70384d36e1bab61ae2d47b995f26f35dcd5ccd52553210063097f"
+checksum = "e51aab952605f2318ed44737bf45fce207053a7d79b715a972c43b16977ce7d2"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -2030,9 +2030,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.21"
+version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb3cb6c22216f2f34781d3a595fc3311f1a65111af504b456e77c5d6bc0c985b"
+checksum = "639282da900c5d7b4b69d1ab9d62b56cb52f6eb66cad56340ccc3ffa04fb9217"
 dependencies = [
  "cfg-expr",
  "current_platform",
@@ -2040,6 +2040,7 @@ dependencies = [
  "fluent-templates",
  "globwalk",
  "pathdiff",
+ "proc-macro-warning",
  "proc-macro2",
  "quote",
  "serde",
@@ -2772,6 +2773,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "smallvec",
+]
+
+[[package]]
+name = "proc-macro-warning"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "834da187cfe638ae8abb0203f0b33e5ccdb02a28e7199f2f47b3e2754f50edca"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.77",
 ]
 
 [[package]]
@@ -4120,7 +4132,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
