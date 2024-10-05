@@ -13,7 +13,7 @@ importers:
         version: 4.0.0(tailwindcss@3.4.13)
       daisyui:
         specifier: ^4.12.10
-        version: 4.12.10(postcss@8.4.47)
+        version: 4.12.12(postcss@8.4.47)
       prettier:
         specifier: ^3.3.3
         version: 3.3.3
@@ -146,8 +146,8 @@ packages:
     resolution: {integrity: sha512-pHJg+jbuFsCjz9iclQBqyL3B2HLCBF71BwVNujUYEvCeQMvV97R59MNK3R2+jgJ3a1fcZgI9B3vYgz8lzr/BFQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  daisyui@4.12.10:
-    resolution: {integrity: sha512-jp1RAuzbHhGdXmn957Z2XsTZStXGHzFfF0FgIOZj3Wv9sH7OZgLfXTRZNfKVYxltGUOBsG1kbWAdF5SrqjebvA==}
+  daisyui@4.12.12:
+    resolution: {integrity: sha512-xmCZ4piuWOjhNyB0VDKczB5vKFCipTA7UxaZNOzCz6cT8kvWgv5BDtUo+Hk9gOFufByOlfuBdzLpfhY5GsebTQ==}
     engines: {node: '>=16.9.0'}
 
   didyoumean@1.2.2:
@@ -291,8 +291,8 @@ packages:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
 
-  package-json-from-dist@1.0.0:
-    resolution: {integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==}
+  package-json-from-dist@1.0.1:
+    resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
 
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
@@ -585,7 +585,7 @@ snapshots:
 
   culori@3.3.0: {}
 
-  daisyui@4.12.10(postcss@8.4.47):
+  daisyui@4.12.12(postcss@8.4.47):
     dependencies:
       css-selector-tokenizer: 0.8.0
       culori: 3.3.0
@@ -646,7 +646,7 @@ snapshots:
       jackspeak: 3.4.3
       minimatch: 9.0.5
       minipass: 7.1.2
-      package-json-from-dist: 1.0.0
+      package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
   hasown@2.0.2:
@@ -716,7 +716,7 @@ snapshots:
 
   object-hash@3.0.0: {}
 
-  package-json-from-dist@1.0.0: {}
+  package-json-from-dist@1.0.1: {}
 
   path-key@3.1.1: {}
 

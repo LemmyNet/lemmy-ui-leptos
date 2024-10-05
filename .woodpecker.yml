@@ -110,7 +110,7 @@ steps:
 
 services:
   database:
-    image: pgautoupgrade/pgautoupgrade:16-alpine
+    image: pgautoupgrade/pgautoupgrade:17-alpine
     environment:
       POSTGRES_USER: lemmy
       POSTGRES_PASSWORD: password
