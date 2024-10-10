@@ -6,12 +6,12 @@ use crate::{
     content_actions::ContentActions,
     creator_listing::CreatorListing,
     icon::{Icon, IconSize, IconType},
+    markdown_content::MarkdownContent,
     vote_buttons::VoteButtons,
   },
   utils::{
     get_time_since,
     is_image,
-    markdown_to_html,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -33,7 +33,8 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let post_state = RwSignal::new(post_view.clone());
 
-  let post_body = Memo::new(move |_| with!(|post_state| post_state.post.body.clone()));
+  let post_body =
+    Memo::new(move |_| with!(|post_state| post_state.post.body.as_deref().map(Rc::<str>::from)));
 
   let post_url = Memo::new(move |_| {
     with!(|post_state| post_state
@@ -169,7 +170,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
             }
           }
         >
-          <h1 class="text-2xl font-bold grid-in-title">{post_name}</h1>
+          <h1 class="text-4xl font-bold grid-in-title">{post_name}</h1>
         </Show>
         <div class="grid-in-to">
           <div class="flex flex-wrap items-center gap-1.5">
@@ -217,9 +218,9 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
       </div>
       {move || {
         with!(
-          |post_body| post_body.as_deref().map(|body| is_on_post_page.then(|| view! {
-        <div class="bg-base-200 mt-4 p-5 rounded" inner_html=markdown_to_html(body)/>
-      }))
+          |post_body| post_body.as_ref().map(|body| is_on_post_page.then(|| view! {
+            <MarkdownContent content=Rc::clone(body)/>
+          }))
         )
       }}
     </article>
