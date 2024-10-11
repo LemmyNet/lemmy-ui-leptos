@@ -712,6 +712,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "const-str"
+version = "0.5.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3618cccc083bb987a415d85c02ca6c9994ea5b44731ec28b9ecf09658655fba9"
+
+[[package]]
 name = "const_format"
 version = "0.2.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1974,6 +1980,7 @@ dependencies = [
  "cfg-if",
  "chrono",
  "console_error_panic_hook",
+ "const-str",
  "fluent-templates",
  "lemmy-client",
  "leptos",
@@ -2116,9 +2123,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.23"
+version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e51aab952605f2318ed44737bf45fce207053a7d79b715a972c43b16977ce7d2"
+checksum = "f6970811a5117ce0615ef331006b22543b41ff85a7beece2eade43057f23bce0"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -2129,9 +2136,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.23"
+version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "639282da900c5d7b4b69d1ab9d62b56cb52f6eb66cad56340ccc3ffa04fb9217"
+checksum = "5783abe500346e7581db3c7861c8a708651bd351903b2cdbfb195520e65fe4ae"
 dependencies = [
  "cfg-expr",
  "current_platform",
