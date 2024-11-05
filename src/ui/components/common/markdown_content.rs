@@ -3,15 +3,17 @@ use leptos::*;
 
 // The class for this is so long that breaking it up into smaller consts makes it easier to deal with.
 const BASE_CLASS: &str = "bg-base-200 mt-4 p-5 rounded space-y-4";
-const H1_CLASS: &str = "[&>h1]:text-2xl [&>h1]:font-black";
-const H2_CLASS: &str = "[&>h2]:text-2xl [&>h2]:font-bold";
-const H3_CLASS: &str = "[&>h3]:text-xl [&>h3]:font-black";
-const H4_CLASS: &str = "[&>h4]:text-xl [&>h4]:font-bold";
-const H5_CLASS: &str = "[&>h5]:text-lg [&>h5]:font-black";
-const H6_CLASS: &str = "[&>h6]:text-lg [&>h6]:font-bold";
+const H1_CLASS: &str = "[&_h1]:text-2xl [&_h1]:font-black";
+const H2_CLASS: &str = "[&_h2]:text-2xl [&_h2]:font-bold";
+const H3_CLASS: &str = "[&_h3]:text-xl [&_h3]:font-black";
+const H4_CLASS: &str = "[&_h4]:text-xl [&_h4]:font-bold";
+const H5_CLASS: &str = "[&_h5]:text-lg [&_h5]:font-black";
+const H6_CLASS: &str = "[&_h6]:text-lg [&_h6]:font-bold";
+const MONOSPACE: &str =
+  "[&_code]:font-mono [&_code]:bg-neutral [&_code]:text-neutral-content [&_code]:p-1 [&_code]:rounded-md [&_code]:font-medium [&_code]:slashed-zero [&_code]:text-sm [&_code]:font-medium";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
-  BASE_CLASS, H1_CLASS, H2_CLASS, H3_CLASS, H4_CLASS, H5_CLASS, H6_CLASS,
+  BASE_CLASS, H1_CLASS, H2_CLASS, H3_CLASS, H4_CLASS, H5_CLASS, H6_CLASS, MONOSPACE,
 ];
 
 #[component]
