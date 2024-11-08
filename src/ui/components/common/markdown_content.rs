@@ -14,6 +14,7 @@ const MONOSPACE_CLASS: &str =
 const BLOCKQUOTE_CLASS: &str = "[&_blockquote]:ps-1.5 [&_blockquote]:py-2 [&_blockquote]:bg-base-300 [&_blockquote]:border-s-4 [&_blockquote]:border-info [&_blockquote]:font-light [&_blockquote]:text-sm [&_blockquote_code]:text-xs [&_blockquote]:italic [&_blockquote>blockquote]:me-4";
 const LIST_CLASS: &str =
   "[&_ul]:list-disc [&_ul]:list-inside [&_ol]:list-decimal [&_ol]:list-inside [&_li]:my-1.5";
+const LINK_CLASS: &str = "[&_a]:text-accent hover:[&_a]:underline hover:[&_a]:underline-offset-2";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
   BASE_CLASS,
@@ -26,6 +27,7 @@ const CLASS_ARRAY_SLICE: &[&str] = &[
   MONOSPACE_CLASS,
   BLOCKQUOTE_CLASS,
   LIST_CLASS,
+  LINK_CLASS,
 ];
 
 #[component]
