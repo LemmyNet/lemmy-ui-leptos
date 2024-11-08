@@ -9,9 +9,11 @@ const H3_CLASS: &str = "[&_h3]:text-xl [&_h3]:font-black";
 const H4_CLASS: &str = "[&_h4]:text-xl [&_h4]:font-bold";
 const H5_CLASS: &str = "[&_h5]:text-lg [&_h5]:font-black";
 const H6_CLASS: &str = "[&_h6]:text-lg [&_h6]:font-bold";
-const MONOSPACE: &str =
+const MONOSPACE_CLASS: &str =
   "[&_code]:font-mono [&_code]:bg-neutral [&_code]:text-neutral-content [&_code]:p-1 [&_code]:rounded-md [&_code]:not-italic [&_code]:font-medium [&_code]:slashed-zero [&_code]:text-sm [&_code]:font-medium";
 const BLOCKQUOTE_CLASS: &str = "[&_blockquote]:ps-1.5 [&_blockquote]:py-2 [&_blockquote]:bg-base-300 [&_blockquote]:border-s-4 [&_blockquote]:border-info [&_blockquote]:font-light [&_blockquote]:text-sm [&_blockquote_code]:text-xs [&_blockquote]:italic [&_blockquote>blockquote]:me-4";
+const LIST_CLASS: &str =
+  "[&_ul]:list-disc [&_ul]:list-inside [&_ol]:list-decimal [&_ol]:list-inside [&_li]:my-1.5";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
   BASE_CLASS,
@@ -21,8 +23,9 @@ const CLASS_ARRAY_SLICE: &[&str] = &[
   H4_CLASS,
   H5_CLASS,
   H6_CLASS,
-  MONOSPACE,
+  MONOSPACE_CLASS,
   BLOCKQUOTE_CLASS,
+  LIST_CLASS,
 ];
 
 #[component]
