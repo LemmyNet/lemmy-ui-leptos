@@ -15,6 +15,7 @@ const BLOCKQUOTE_CLASS: &str = "[&_blockquote]:ps-1.5 [&_blockquote]:py-2 [&_blo
 const LIST_CLASS: &str =
   "[&_ul]:list-disc [&_ul]:list-inside [&_ol]:list-decimal [&_ol]:list-inside [&_li]:my-1.5";
 const LINK_CLASS: &str = "[&_a]:text-accent hover:[&_a]:underline hover:[&_a]:underline-offset-2";
+const IMG_CLASS: &str = "[&_img[title^=emoji]]:inline [&_img[title^=emoji]]:w-16 [&_img]:max-h-[40vh] [&_img]:max-w-full [&_img]:h-auto";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
   BASE_CLASS,
@@ -28,6 +29,7 @@ const CLASS_ARRAY_SLICE: &[&str] = &[
   BLOCKQUOTE_CLASS,
   LIST_CLASS,
   LINK_CLASS,
+  IMG_CLASS,
 ];
 
 #[component]
