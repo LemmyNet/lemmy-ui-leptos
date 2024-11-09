@@ -628,6 +628,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "clearurls"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e291c00af89ac0a5b400d9ba46a682e38015ae3cd8926dbbe85b3b864d550be3"
+dependencies = [
+ "linkify",
+ "percent-encoding",
+ "regex",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
 name = "codee"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -946,9 +960,9 @@ dependencies = [
 
 [[package]]
 name = "derive-new"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d150dea618e920167e5973d70ae6ece4385b7164e0d799fe7c122dd0a5d912ad"
+checksum = "2cdc8d50f426189eef89dac62fabfa0abb27d5cc008f25bf4156a0203325becc"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1387,27 +1401,6 @@ dependencies = [
  "bitflags",
  "ignore",
  "walkdir",
-]
-
-[[package]]
-name = "gloo-net"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "43aaa242d1239a8822c15c645f02166398da4f8b5c4bae795c1f5b44e9eee173"
-dependencies = [
- "futures-channel",
- "futures-core",
- "futures-sink",
- "gloo-utils",
- "http 0.2.12",
- "js-sys",
- "pin-project",
- "serde",
- "serde_json",
- "thiserror",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
 ]
 
 [[package]]
@@ -1855,12 +1848,12 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "lemmy-client"
-version = "1.0.2"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5517fe60fe92f33507caa1af6c6f72ee9f291067eb9eca17b46ea71f5541f4cf"
+checksum = "3bf33aecad3e42ff2f82f0c34ac39eff29f4a7d090521e61ab1afa9b3f8a5fa1"
 dependencies = [
  "cfg-if",
- "gloo-net 0.5.0",
+ "gloo-net",
  "http 1.1.0",
  "lemmy_api_common",
  "leptos",
@@ -1902,9 +1895,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_api_common"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0350aefa5e5b7bc90fe5a6f992dbac5a1960c776ff16f4bee18660f11b3b95fc"
+checksum = "e54b26f03e2ad053f26a2a6f5daa568a617e9ba27f83aa810787be256baea067"
 dependencies = [
  "anyhow",
  "chrono",
@@ -1925,9 +1918,9 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_schema"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4280976725dce988e4750e124a5600ead8d7fca0a07a7cf9e42da3ece946396c"
+checksum = "76e00ea691ed0e271e29fd78ab5d628fd69cfa7c615ec8ab0b8669224561e7ab"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1938,18 +1931,17 @@ dependencies = [
  "serde",
  "serde_with",
  "strum",
- "strum_macros",
  "tracing",
- "typed-builder",
+ "typed-builder 0.19.1",
  "url",
  "uuid",
 ]
 
 [[package]]
 name = "lemmy_db_views"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7107a8725ed7fd12eb0cb451dff52d969ca5ac445d1aabb77881cfe75715a45"
+checksum = "0f9b56741f74714dc0d1942013ce07d495f43b1e52b01dafb40d86b872ccd57b"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
@@ -1959,23 +1951,22 @@ dependencies = [
 
 [[package]]
 name = "lemmy_db_views_actor"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb7eeb5e65373c37aff03793cf90f8096557af7eb5f41426be9d3bc64b782152"
+checksum = "5aea3579f90e3a406fac194e5c91f6bf4b6a8a49093ee641083e6acbb0ec1417"
 dependencies = [
  "chrono",
  "lemmy_db_schema",
  "serde",
  "serde_with",
  "strum",
- "strum_macros",
 ]
 
 [[package]]
 name = "lemmy_db_views_moderator"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52b9425bb6059979ebe5b4f2124ff5af898ac6e5fcf43053bd2485c504afe39e"
+checksum = "7004e73c88c0179d5689388881fbd2f87b65f92a0732fdbf06435e87dbffce36"
 dependencies = [
  "lemmy_db_schema",
  "serde",
@@ -1984,15 +1975,15 @@ dependencies = [
 
 [[package]]
 name = "lemmy_utils"
-version = "0.19.5"
+version = "0.19.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5afa108b6db73c057eb9aadaecd84269c138500519789c76106c671df684fb5a"
+checksum = "3c5d4d9d80703a48bbfe0a37e01ca7ad21166098a44417a5d2a43aea74d0f146"
 dependencies = [
  "cfg-if",
+ "clearurls",
  "rosetta-build",
  "serde",
  "strum",
- "strum_macros",
 ]
 
 [[package]]
@@ -2009,8 +2000,8 @@ dependencies = [
  "leptos_server",
  "server_fn",
  "tracing",
- "typed-builder",
- "typed-builder-macro",
+ "typed-builder 0.18.2",
+ "typed-builder-macro 0.18.2",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -2104,7 +2095,7 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
- "typed-builder",
+ "typed-builder 0.18.2",
 ]
 
 [[package]]
@@ -2242,7 +2233,7 @@ checksum = "8d71dea7d42c0d29c40842750232d3425ed1cf10e313a1f898076d20871dad32"
 dependencies = [
  "cached",
  "cfg-if",
- "gloo-net 0.6.0",
+ "gloo-net",
  "itertools",
  "js-sys",
  "lazy_static",
@@ -2296,6 +2287,15 @@ checksum = "bfae20f6b19ad527b550c223fddc3077a547fc70cda94b9b566575423fd303ee"
 dependencies = [
  "serde",
  "serde_test",
+]
+
+[[package]]
+name = "linkify"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1dfa36d52c581e9ec783a7ce2a5e0143da6237be5811a0b3153fedfdbe9f780"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
@@ -3316,7 +3316,7 @@ dependencies = [
  "const_format",
  "dashmap",
  "futures",
- "gloo-net 0.6.0",
+ "gloo-net",
  "http 1.1.0",
  "inventory",
  "js-sys",
@@ -3828,7 +3828,16 @@ version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77739c880e00693faef3d65ea3aad725f196da38b22fdc7ea6ded6e1ce4d3add"
 dependencies = [
- "typed-builder-macro",
+ "typed-builder-macro 0.18.2",
+]
+
+[[package]]
+name = "typed-builder"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a06fbd5b8de54c5f7c91f6fe4cebb949be2125d7758e630bb58b1d831dbce600"
+dependencies = [
+ "typed-builder-macro 0.19.1",
 ]
 
 [[package]]
@@ -3836,6 +3845,17 @@ name = "typed-builder-macro"
 version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f718dfaf347dcb5b983bfc87608144b0bad87970aebcbea5ce44d2a30c08e63"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.85",
+]
+
+[[package]]
+name = "typed-builder-macro"
+version = "0.19.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f9534daa9fd3ed0bd911d462a37f172228077e7abf18c18a5f67199d959205f8"
 dependencies = [
  "proc-macro2",
  "quote",
