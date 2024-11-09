@@ -14,8 +14,12 @@ const MONOSPACE_CLASS: &str =
 const BLOCKQUOTE_CLASS: &str = "[&_blockquote]:ps-1.5 [&_blockquote]:py-2 [&_blockquote]:bg-base-300 [&_blockquote]:border-s-4 [&_blockquote]:border-info [&_blockquote]:font-light [&_blockquote]:text-sm [&_blockquote_code]:text-xs [&_blockquote]:italic [&_blockquote>blockquote]:me-4";
 const LIST_CLASS: &str =
   "[&_ul]:list-disc [&_ul]:list-inside [&_ol]:list-decimal [&_ol]:list-inside [&_li]:my-1.5";
-const LINK_CLASS: &str = "[&_a]:text-accent hover:[&_a]:underline hover:[&_a]:underline-offset-2";
+const LINK_CLASS: &str =
+  "[&_a]:text-accent [&_a]:font-medium hover:[&_a]:underline hover:[&_a]:underline-offset-2";
 const IMG_CLASS: &str = "[&_img[title^=emoji]]:inline [&_img[title^=emoji]]:w-16 [&_img]:max-h-[40vh] [&_img]:max-w-full [&_img]:h-auto";
+const HR_CLASS: &str = "[&_hr]:border-secondary";
+const TABLE_CLASS: &str =
+  "[&_table]:table [&_table]:w-auto [&_table]:mx-auto [&_table]:shadow-lg [&_table]:rounded-md [&_table]:bg-base-100 [&_thead_tr]:bg-base-300 [&_th]:bg-base-max-w-fit [&_td]:bg-base-max-w-fit [&_tbody_tr:not(:first-child)]:border-t-2 [&_tbody_tr:not(:first-child)]:border-accent [&_tbody_td:not(:first-child)]:border-accent [&_tbody_td:not(:first-child)]:border-l-2";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
   BASE_CLASS,
@@ -30,6 +34,8 @@ const CLASS_ARRAY_SLICE: &[&str] = &[
   LIST_CLASS,
   LINK_CLASS,
   IMG_CLASS,
+  HR_CLASS,
+  TABLE_CLASS,
 ];
 
 #[component]
