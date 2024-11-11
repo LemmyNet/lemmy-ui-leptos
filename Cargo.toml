@@ -41,7 +41,6 @@ markdown-it-sub = "1"
 markdown-it-ruby = "1"
 markdown-it-block-spoiler = "1"
 markdown-it-footnote = "0.2"
-const-str = "0.5.7"
 
 [features]
 default = ["ssr"]
