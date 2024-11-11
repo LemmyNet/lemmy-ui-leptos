@@ -19,7 +19,9 @@ const LINK_CLASS: &str =
 const IMG_CLASS: &str = "[&_img[title^=emoji]]:inline [&_img[title^=emoji]]:w-16 [&_img]:max-h-[40vh] [&_img]:max-w-full [&_img]:h-auto";
 const HR_CLASS: &str = "[&_hr]:border-secondary";
 const TABLE_CLASS: &str =
-  "[&_table]:table [&_table]:w-auto [&_table]:mx-auto [&_table]:shadow-lg [&_table]:rounded-md [&_table]:bg-base-100 [&_thead_tr]:bg-base-300 [&_th]:bg-base-max-w-fit [&_td]:bg-base-max-w-fit [&_tbody_tr:not(:first-child)]:border-t-2 [&_tbody_tr:not(:first-child)]:border-accent [&_tbody_td:not(:first-child)]:border-accent [&_tbody_td:not(:first-child)]:border-l-2";
+  "[&_table]:table [&_table]:w-auto [&_table]:mx-auto [&_table]:shadow-lg [&_table]:rounded-md [&_table]:bg-base-100 [&_thead_tr]:bg-base-300 [&_th]:bg-base-max-w-fit [&_td]:bg-base-max-w-fit [&_tbody_tr]:border-t-2 [&_tbody_tr]:border-accent [&_tbody_td:not(:first-child)]:border-accent [&_tbody_td:not(:first-child)]:border-l-2 [&_thead_th:not(:first-child)]:border-accent [&_thead_th:not(:first-child)]:border-l-2";
+const SPOLIER_CLASS: &str =
+  "[&_summary]:flex [&_summary]:justify-start [&_summary]:cursor-pointer [&_summary]:before:align-middle [&_summary]:before:content-[url(/icons.svg#css-warning)] [&_summary]:before:block [&_summary]:before:size-6 [&_summary]:before:me-1 [&_summary]:after:align-middle [&_summary]:after:content-[url(/icons.svg#css-caret)] [&_summary]:after:block [&_summary]:after:size-6 [&_summary]:after:ms-auto [&_details]:bg-warning [&_details]:text-warning-content [&_details]:p-3 [&_details]:rounded-md [&_details[open]>summary]:mb-2 [&_details[open]>summary]:after:rotate-180";
 
 const CLASS_ARRAY_SLICE: &[&str] = &[
   BASE_CLASS,
@@ -36,6 +38,7 @@ const CLASS_ARRAY_SLICE: &[&str] = &[
   IMG_CLASS,
   HR_CLASS,
   TABLE_CLASS,
+  SPOLIER_CLASS,
 ];
 
 #[component]
