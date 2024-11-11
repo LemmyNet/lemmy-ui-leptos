@@ -47,6 +47,7 @@ pub enum IconType {
   Clock,
   Language,
   Warning,
+  Quote,
 }
 
 #[derive(Debug, TwVariant)]

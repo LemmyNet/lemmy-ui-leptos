@@ -35,11 +35,26 @@
 }
 
 .markdown-content blockquote {
-  @apply ps-1.5 py-2 bg-base-300 border-s-4 border-info font-light text-sm italic;
+  @apply ps-1.5 pe-7 py-2 bg-base-300 border-s-4 border-info font-light text-sm italic relative  rounded-se-md rounded-ee-md break-all;
 }
 
 .markdown-content blockquote code {
-  @apply text-xs;
+  @apply text-xs font-normal;
+}
+
+.markdown-content blockquote strong {
+  @apply font-semibold;
+}
+
+.markdown-content blockquote em {
+  @apply not-italic;
+}
+
+.markdown-content blockquote:not(blockquote blockquote)::after {
+  content: " ";
+  mask-image: url("/icons.svg#css-quote");
+  -webkit-mask-image: url("/icons.svg#css-quote");
+  @apply bg-info block size-6 absolute end-1 bottom-1;
 }
 
 .markdown-content ul {
@@ -96,17 +111,21 @@
 }
 
 .markdown-content summary {
-  @apply flex justify-start cursor-pointer;
+  @apply flex justify-start cursor-pointer break-all;
 }
 
 .markdown-content summary::before {
-  content: url("/icons.svg#css-warning");
-  @apply align-middle block size-6 me-1;
+  content: " ";
+  mask-image: url("/icons.svg#css-warning");
+  -webkit-mask-image: url("/icons.svg#css-warning");
+  @apply bg-warning-content block size-6 min-w-6 min-h-6 me-1;
 }
 
 .markdown-content summary::after {
-  content: url("/icons.svg#css-caret");
-  @apply align-middle block size-6 ms-auto;
+  content: " ";
+  mask-image: url("/icons.svg#css-caret");
+  -webkit-mask-image: url("/icons.svg#css-caret");
+  @apply bg-warning-content block size-6 min-w-6 min-h-6 ms-auto transition-transform;
 }
 
 .markdown-content details {
