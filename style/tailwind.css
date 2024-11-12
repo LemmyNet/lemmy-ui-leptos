@@ -1,3 +1,141 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.markdown-content {
+  @apply bg-base-200 mt-4 p-5 rounded space-y-4;
+}
+
+.markdown-content h1 {
+  @apply text-2xl font-black;
+}
+
+.markdown-content h2 {
+  @apply text-2xl font-bold;
+}
+
+.markdown-content h3 {
+  @apply text-xl font-black;
+}
+
+.markdown-content h4 {
+  @apply text-xl font-bold;
+}
+
+.markdown-content h5 {
+  @apply text-lg font-black;
+}
+
+.markdown-content h6 {
+  @apply text-lg font-bold;
+}
+
+.markdown-content code {
+  @apply font-mono bg-neutral text-neutral-content p-1 rounded-md not-italic font-medium slashed-zero text-sm;
+}
+
+.markdown-content blockquote {
+  @apply ps-1.5 pe-7 py-2 bg-base-300 border-s-4 border-info font-light text-sm italic relative  rounded-se-md rounded-ee-md break-all;
+}
+
+.markdown-content blockquote code {
+  @apply text-xs font-normal;
+}
+
+.markdown-content blockquote strong {
+  @apply font-semibold;
+}
+
+.markdown-content blockquote em {
+  @apply not-italic;
+}
+
+.markdown-content blockquote:not(blockquote blockquote)::after {
+  content: " ";
+  mask-image: url("/icons.svg#css-quote");
+  -webkit-mask-image: url("/icons.svg#css-quote");
+  @apply bg-info block size-6 absolute end-1 bottom-1;
+}
+
+.markdown-content ul {
+  @apply list-inside list-disc;
+}
+
+.markdown-content ol {
+  @apply list-inside list-decimal;
+}
+
+.markdown-content li {
+  @apply my-1.5;
+}
+
+.markdown-content a {
+  @apply text-accent font-medium;
+}
+
+.markdown-content a:hover {
+  @apply underline underline-offset-2;
+}
+
+.markdown-content img {
+  max-height: 40vh;
+  @apply max-w-full h-auto;
+}
+
+.markdown-content img[title^="emoji"] {
+  @apply inline w-16;
+}
+
+.markdown-content hr {
+  @apply border-secondary;
+}
+
+.markdown-content table {
+  @apply table w-auto mx-auto shadow-lg rounded-md bg-base-100;
+}
+
+.markdown-content thead tr {
+  @apply bg-base-300;
+}
+
+.markdown-content tbody tr {
+  @apply border-t-2 border-accent;
+}
+
+.markdown-content tbody td:not(:first-child) {
+  @apply border-accent border-l-2;
+}
+
+.markdown-content thead th:not(:first-child) {
+  @apply border-accent border-l-2;
+}
+
+.markdown-content summary {
+  @apply flex justify-start cursor-pointer break-all;
+}
+
+.markdown-content summary::before {
+  content: " ";
+  mask-image: url("/icons.svg#css-warning");
+  -webkit-mask-image: url("/icons.svg#css-warning");
+  @apply bg-warning-content block size-6 min-w-6 min-h-6 me-1;
+}
+
+.markdown-content summary::after {
+  content: " ";
+  mask-image: url("/icons.svg#css-caret");
+  -webkit-mask-image: url("/icons.svg#css-caret");
+  @apply bg-warning-content block size-6 min-w-6 min-h-6 ms-auto transition-transform;
+}
+
+.markdown-content details {
+  @apply bg-warning text-warning-content p-3 rounded-md;
+}
+
+.markdown-content details[open] > summary {
+  @apply mb-2;
+}
+
+.markdown-content details[open] > summary::after {
+  @apply rotate-180;
+}

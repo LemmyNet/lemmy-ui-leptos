@@ -9,13 +9,13 @@ importers:
   .:
     devDependencies:
       '@playwright/test':
-        specifier: ^1.47.2
+        specifier: ^1.48.2
         version: 1.48.2
       '@types/node':
-        specifier: ^22.5.5
+        specifier: ^22.9.0
         version: 22.9.0
       typescript:
-        specifier: ^5.6.2
+        specifier: ^5.6.3
         version: 5.6.3
 
 packages:

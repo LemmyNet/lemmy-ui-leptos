@@ -16,6 +16,9 @@ pub use get_time_since::get_time_since;
 pub mod traits;
 pub mod types;
 
+pub mod markdown;
+pub use markdown::markdown_to_html;
+
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
 use crate::constants::AUTH_COOKIE;

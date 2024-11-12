@@ -3,6 +3,7 @@ pub mod content_actions;
 pub mod creator_listing;
 pub mod fedilink;
 pub mod icon;
+pub mod markdown_content;
 pub mod sidebar;
 pub mod text_input;
 pub mod unpack;

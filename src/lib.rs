@@ -47,7 +47,7 @@ pub fn App() -> impl IntoView {
   provide_site_resource_context();
   provide_theme_resource_context();
 
-  leptos_fluent! {{
+  leptos_fluent! {
     translations: [TRANSLATIONS],
     locales: "./locales",
     check_translations: "./src/**/*.rs",
@@ -57,7 +57,7 @@ pub fn App() -> impl IntoView {
     initial_language_from_cookie: true,
     set_language_to_cookie: true,
     initial_language_from_navigator: true
-  }};
+  };
 
   let is_routing = RwSignal::new(false);
 
