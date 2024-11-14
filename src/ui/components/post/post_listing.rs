@@ -10,8 +10,7 @@ use crate::{
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since,
-    is_image,
+    get_time_since, is_image,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -216,13 +215,19 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           />
         </div>
       </div>
+
+      <Show when=move || is_on_post_page>
       {move || {
         with!(
-          |post_body| post_body.as_ref().map(|body| is_on_post_page.then(|| view! {
-            <MarkdownContent content=Rc::clone(body)/>
-          }))
+          |post_body| post_body.as_ref().map(|body| view! {
+            <section>
+                <h2 class="sr-only">Post Body</h2>
+                <MarkdownContent content=Rc::clone(body)/>
+            </section>
+          })
         )
       }}
+      </Show>
     </article>
   }
 }
