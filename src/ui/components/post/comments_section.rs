@@ -1,10 +1,10 @@
-use lemmy_client::lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId};
-use leptos::*;
-
 use crate::{
-  serverfns::comments::list_comments, ui::components::common::unpack::Unpack,
+  serverfns::comments::list_comments,
+  ui::components::common::unpack::Unpack,
   utils::derive_query_signal,
 };
+use lemmy_client::lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId};
+use leptos::*;
 
 #[component]
 pub fn CommentsSection(post_id: PostId) -> impl IntoView {
@@ -20,13 +20,13 @@ pub fn CommentsSection(post_id: PostId) -> impl IntoView {
   let comments = derive_query_signal(comments_resource, |r| r.comments.clone());
 
   view! {
-      <section>
-          <h2 class="sr-only">Comments Section</h2>
-          <Transition>
-            <Unpack item=comments let:comments>
-                <div id/>
-            </Unpack>
-          </Transition>
-      </section>
+    <section>
+      <h2 class="sr-only">Comments Section</h2>
+      <Transition>
+        <Unpack item=comments let:comments>
+          <div id />
+        </Unpack>
+      </Transition>
+    </section>
   }
 }

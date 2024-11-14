@@ -7,10 +7,11 @@ use crate::{
     creator_listing::CreatorListing,
     icon::{Icon, IconSize, IconType},
     markdown_content::MarkdownContent,
+    time_since::TimeSince,
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since, is_image,
+    is_image,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -64,8 +65,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
       .map(ToString::to_string))
   });
 
-  let time_since_post =
-    Memo::new(move |_| with!(|post_state| get_time_since(&post_state.post.published)));
+  let published = Memo::new(move |_| with!(|post_state| post_state.post.published));
   let site_resource = expect_context::<SiteResource>();
   let post_language = Memo::new(move |_| {
     with!(|site_resource, post_state| site_resource
@@ -178,10 +178,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
             <CommunityListing community=community />
           </div>
           <div class="flex flex-wrap items-center gap-1.5 mt-2">
-            <div class="text-xs badge badge-ghost gap-x-0.5">
-              <Icon icon=IconType::Clock size=IconSize::Small />
-              {time_since_post}
-            </div>
+            <TimeSince datetime=published />
             {move || {
               with!(
                 |post_language| post_language.as_ref().map(|lang| view! {
@@ -216,17 +213,19 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
         </div>
       </div>
 
-      <Show when=move || is_on_post_page>
-      {move || {
-        with!(
-          |post_body| post_body.as_ref().map(|body| view! {
+      <Show when=move || {
+        is_on_post_page
+      }>
+        {move || {
+          with!(
+            |post_body| post_body.as_ref().map(|body| view! {
             <section>
                 <h2 class="sr-only">Post Body</h2>
                 <MarkdownContent content=Rc::clone(body)/>
             </section>
           })
-        )
-      }}
+          )
+        }}
       </Show>
     </article>
   }

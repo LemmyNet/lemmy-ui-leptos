@@ -6,5 +6,6 @@ pub mod icon;
 pub mod markdown_content;
 pub mod sidebar;
 pub mod text_input;
+pub mod time_since;
 pub mod unpack;
 pub mod vote_buttons;
