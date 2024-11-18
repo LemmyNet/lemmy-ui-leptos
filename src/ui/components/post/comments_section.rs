@@ -1,6 +1,6 @@
 use crate::{
   serverfns::comments::list_comments,
-  ui::components::common::unpack::Unpack,
+  ui::components::{comment::comment_node::CommentNode, common::unpack::Unpack},
   utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{comment::GetComments, lemmy_db_schema::newtypes::PostId};
@@ -22,11 +22,15 @@ pub fn CommentsSection(post_id: PostId) -> impl IntoView {
   view! {
     <section>
       <h2 class="sr-only">Comments Section</h2>
+      <ul>
       <Transition>
         <Unpack item=comments let:comments>
-          <div id />
+          <For each=move || comments.clone() key=|cv| cv.comment.id let:cv>
+            <li><CommentNode comment_view=&cv /></li>
+          </For>
         </Unpack>
       </Transition>
+      </ul>
     </section>
   }
 }

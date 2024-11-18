@@ -2235,9 +2235,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent"
-version = "0.1.25"
+version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8694e728080aab17e1d7dff584229648f9815c4442fb0f094b241a738129f696"
+checksum = "b70687dd09e7d3f483dc293d6b8e871a067a45336513cb92915755c6ce2496c9"
 dependencies = [
  "fluent-templates",
  "leptos",
@@ -2248,9 +2248,9 @@ dependencies = [
 
 [[package]]
 name = "leptos-fluent-macros"
-version = "0.1.25"
+version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cdba6806ff03bc1473402516453c58d5f564f44f5d4c958de6b1fa470286acbe"
+checksum = "68d29e3b8115374be879e590ad8f1234c76fcea1e26e677d3d569dad3e9c2220"
 dependencies = [
  "cfg-expr",
  "current_platform",
@@ -2502,9 +2502,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.162"
+version = "0.2.164"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "18d287de67fe55fd7e1581fe933d965a5a9477b38e949cfa9f8574ef01506398"
+checksum = "433bfe06b8c75da9b2e3fbea6e5329ff87748f0b144ef75306e674c3f6f7c13f"
 
 [[package]]
 name = "linear-map"
@@ -3573,9 +3573,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.132"
+version = "1.0.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d726bfaff4b320266d395898905d0eba0345aae23b54aee3a737e260fd46db03"
+checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
 dependencies = [
  "itoa",
  "memchr",

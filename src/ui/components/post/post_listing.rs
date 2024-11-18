@@ -1,14 +1,17 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   serverfns::posts::{create_hide_post_action, create_save_post_action, create_vote_post_action},
-  ui::components::common::{
-    community_listing::CommunityListing,
-    content_actions::ContentActions,
-    creator_listing::CreatorListing,
-    icon::{Icon, IconSize, IconType},
-    markdown_content::MarkdownContent,
-    time_since::TimeSince,
-    vote_buttons::VoteButtons,
+  ui::components::{
+    common::{
+      community_listing::CommunityListing,
+      content_actions::ContentActions,
+      creator_listing::CreatorListing,
+      icon::{Icon, IconSize, IconType},
+      markdown_content::MarkdownContent,
+      time_since::TimeSince,
+      vote_buttons::VoteButtons,
+    },
+    post::comments_section::CommentsSection,
   },
   utils::{
     is_image,
@@ -226,6 +229,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
           })
           )
         }}
+        <CommentsSection post_id=id />
       </Show>
     </article>
   }

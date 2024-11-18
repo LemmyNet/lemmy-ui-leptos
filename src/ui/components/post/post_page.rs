@@ -13,9 +13,7 @@ use crate::{
   utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
-  comment::GetComments,
-  lemmy_db_schema::newtypes::PostId,
-  post::GetPost,
+  comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost,
 };
 use leptos::*;
 use leptos_router::use_params_map;
@@ -72,12 +70,6 @@ pub fn PostPage() -> impl IntoView {
             <PostListing post_view=&res.post_view />
           </Unpack>
         </Transition>
-
-      // <Unpack item=list_comments_resource let:res>
-      // <div>
-      // <CommentNodes comments=res.comments.clone()/>
-      // </div>
-      // </Unpack>
       </main>
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 sticky top-6 h-fit">
         <Transition>
