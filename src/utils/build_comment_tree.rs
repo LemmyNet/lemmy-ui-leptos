@@ -1,47 +1,53 @@
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::CommentView;
 use std::collections::HashMap;
 
-struct CommentNode {
-  pub node: CommentView,
-  pub children: Option<Vec<CommentNode>>,
-}
+use super::types::CommentTree;
 
-fn build_tree_comments(comment_views: Vec<CommentView>) -> Vec<CommentNode> {
-  let parent_tree = comment_views.iter().fold(HashMap::new(), |mut m, c| {
-    let parent = get_parent(&c.comment.path);
+const ROOT_ID: i32 = 0;
 
-    let v = m.entry(parent).or_insert_with(|| Vec::new());
-    v.push(c);
+pub fn build_comment_tree<'a>(comment_views: Vec<&'a CommentView>) -> Vec<CommentTree<'a>> {
+  let child_map = comment_views
+    .iter()
+    .fold(HashMap::new(), |mut child_map, comment_view| {
+      let parent = get_parent_id(&comment_view.comment.path);
 
-    m
-  });
+      let children: &mut Vec<&CommentView> = child_map.entry(parent).or_default();
+      children.push(comment_view);
 
-  parent_tree
-    .get(&0)
-    .cloned()
+      child_map
+    });
+
+  child_map
+    .get(&ROOT_ID)
+    .map(|comment_views| {
+      comment_views
+        .iter()
+        .map(|comment_view| build_comment_tree_rec(comment_view, &child_map))
+        .collect()
+    })
     .unwrap_or_default()
-    .into_iter()
-    .map(|c| build_children(c, &parent_tree))
-    .collect()
 }
 
-fn build_children(c: &CommentView, m: &HashMap<i32, Vec<&CommentView>>) -> CommentNode {
-  let children = m
-    .get(&c.comment.id.0)
-    .map(|v| v.iter().map(|c| build_children(c, m)).collect());
+fn build_comment_tree_rec<'a>(
+  comment_view: &'a CommentView,
+  child_map: &HashMap<i32, Vec<&'a CommentView>>,
+) -> CommentTree<'a> {
+  let children = child_map
+    .get(&comment_view.comment.id.0)
+    .map(|comment_views| {
+      comment_views
+        .iter()
+        .map(|comment_view| build_comment_tree_rec(comment_view, child_map))
+        .collect()
+    });
 
-  CommentNode {
-    node: c.clone(),
-    children,
-  }
+  CommentTree::new(&comment_view, children)
 }
 
-fn get_parent(path: &str) -> i32 {
+fn get_parent_id(path: &str) -> i32 {
   path
     .split('.')
-    .rev()
-    .skip(1)
-    .next()
+    .nth_back(1)
     .expect(r#"Comments should always have parents; top level comments have "0" as a parent."#)
     .parse()
     .expect("Comment IDs should be valid i32s")

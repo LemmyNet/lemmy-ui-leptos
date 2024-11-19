@@ -20,6 +20,7 @@ pub mod markdown;
 pub use markdown::markdown_to_html;
 
 pub mod build_comment_tree;
+pub use build_comment_tree::build_comment_tree;
 
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
