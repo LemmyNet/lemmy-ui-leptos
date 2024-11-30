@@ -9,7 +9,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 leptos = { version = "0.6" }
 leptos_meta = { version = "0.6" }
-leptos_router = { version = "0.6" }
+leptos_router = { version = "0.7" }
 cfg-if = "1"
 lemmy-client = { version = "1.0.2", features = ["leptos"] }
 serde = "1.0"
