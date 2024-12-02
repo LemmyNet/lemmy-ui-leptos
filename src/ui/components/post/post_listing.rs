@@ -10,13 +10,12 @@ use crate::{
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since,
-    is_image,
+    get_time_since, is_image,
     types::{Hidden, PostOrCommentId},
   },
 };
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::*;
-use leptos::*;
+use leptos::prelude::*;
 use leptos_router::*;
 use std::rc::Rc;
 use thumbnail::Thumbnail;
@@ -33,8 +32,7 @@ pub fn PostListing<'a>(post_view: &'a PostView) -> impl IntoView {
 
   let post_state = RwSignal::new(post_view.clone());
 
-  let post_body =
-    Memo::new(move |_| with!(|post_state| post_state.post.body.as_deref().map(Rc::<str>::from)));
+  let post_body = Memo::new(move |_| post_state.read().post.body.as_deref().map(Rc::<str>::from));
 
   let post_url = Memo::new(move |_| {
     with!(|post_state| post_state

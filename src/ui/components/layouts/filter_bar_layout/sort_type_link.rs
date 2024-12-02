@@ -1,12 +1,12 @@
 use crate::utils::traits::BoolOptionStr;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::SortType;
-use leptos::*;
-use leptos_router::{use_query_map, A};
+use leptos::prelude::*;
+use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
 pub fn SortTypeLink<S>(sort_type: S, link_sort_type: SortType, children: Children) -> impl IntoView
 where
-  S: SignalGet<Value = SortType> + 'static,
+  S: Get<Value = SortType> + 'static,
 {
   let query = use_query_map();
 
@@ -20,7 +20,7 @@ where
           query.to_query_string()
         }
 
-        class="aria-selected:btn-active"
+        attr:class="aria-selected:btn-active"
         attr:aria-selected=move || { (sort_type.get() == link_sort_type).then_str() }
       >
 

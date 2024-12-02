@@ -4,9 +4,8 @@ use crate::{
   utils::{traits::ToStr, types::Hidden},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PostId;
-use leptos::*;
+use leptos::{form::ActionForm, prelude::*};
 use leptos_fluent::tr;
-use leptos_router::ActionForm;
 
 #[component]
 pub fn HidePostButton(id: PostId) -> impl IntoView {

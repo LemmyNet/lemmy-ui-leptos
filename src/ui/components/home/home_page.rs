@@ -17,7 +17,7 @@ use lemmy_client::lemmy_api_common::{
   lemmy_db_schema::{ListingType, SortType},
   post::GetPosts,
 };
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 #[component]
@@ -26,7 +26,7 @@ pub fn HomePage() -> impl IntoView {
   let sort_type = expect_context::<ReadSignal<SortType>>();
   let filter_bar = expect_context::<Signal<View>>();
 
-  let posts_resource = create_blocking_resource(
+  let posts_resource = Resource::new_blocking(
     move || GetPosts {
       type_: Some(listing_type.get()),
       sort: Some(sort_type.get()),

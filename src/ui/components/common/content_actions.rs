@@ -13,9 +13,9 @@ use crate::{
 };
 use hide_post_button::HidePostButton;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::{ActionForm, A};
+use leptos_router::components::A;
 use report_button::ReportButton;
 use tailwind_fuse::tw_join;
 
@@ -36,13 +36,18 @@ where
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
   let logged_in_user_id = Signal::derive(move || {
-    with!(|site_resource| site_resource
+    site_resource
+      .read()
       .as_ref()
-      .and_then(|data| data.as_ref().ok().map(|data| data
-        .my_user
-        .as_ref()
-        .map(|data| data.local_user_view.person.id))))
-    .flatten()
+      .and_then(|data| {
+        data.as_ref().ok().map(|data| {
+          data
+            .my_user
+            .as_ref()
+            .map(|data| data.local_user_view.person.id)
+        })
+      })
+      .flatten()
   });
 
   let block_user_action = create_block_user_action();
@@ -62,7 +67,7 @@ where
   let crosspost_label = move_tr!("crosspost");
 
   // See https://book.leptos.dev/interlude_projecting_children.html
-  let creator_stored = store_value(creator.clone());
+  let creator_stored = StoredValue::new(creator.clone());
 
   view! {
     <Fedilink href=ap_id.to_string() />

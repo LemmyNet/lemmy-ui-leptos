@@ -13,12 +13,10 @@ use crate::{
   utils::derive_query_signal,
 };
 use lemmy_client::lemmy_api_common::{
-  comment::GetComments,
-  lemmy_db_schema::newtypes::PostId,
-  post::GetPost,
+  comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost,
 };
 use leptos::*;
-use leptos_router::use_params_map;
+use leptos_router::hooks::use_params_map;
 
 #[component]
 pub fn PostPage() -> impl IntoView {

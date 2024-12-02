@@ -7,9 +7,9 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.6" }
-leptos_meta = { version = "0.6" }
-leptos_router = { version = "0.6" }
+leptos = "0.7"
+leptos_meta = "0.7"
+leptos_router = "0.7"
 cfg-if = "1"
 lemmy-client = { version = "1.0.2", features = ["leptos"] }
 serde = "1.0"
@@ -19,7 +19,7 @@ serde_json = "1.0"
 console_error_panic_hook = { version = "0.1", optional = true }
 
 # dependecies for server (enable when ssr set)
-leptos_actix = { version = "0.6", optional = true }
+leptos_actix = { version = "0.7", optional = true }
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
@@ -28,11 +28,11 @@ actix-session = { version = "0.10", features = [
 tokio = { version = "1.41", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.13"
+leptos-use = "0.14.0-gamma2"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-leptos-fluent = { version = "0.1", features = ["actix"] }
+leptos-fluent = { git = "https://github.com/mondeja/leptos-fluent", branch = "leptos-v0.7", features = ["actix"] }
 fluent-templates = "0.11"
 chrono = "0.4.38"
 markdown-it = "0.6"
@@ -46,16 +46,12 @@ markdown-it-footnote = "0.2"
 default = ["ssr"]
 hydrate = [
   "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
   "leptos-fluent/hydrate",
   "dep:console_error_panic_hook",
   "dep:web-sys",
 ]
 csr = [
   "leptos/csr",
-  "leptos_meta/csr",
-  "leptos_router/csr",
   "dep:console_error_panic_hook",
   "dep:web-sys",
 ]
@@ -88,8 +84,7 @@ lto = true
 [profile.wasm-release]
 inherits = "release"
 opt-level = "z"
-lto = true
-codegen-units = 1
+panic = "abort"
 
 [dev-dependencies]
 rstest = "0.23.0"

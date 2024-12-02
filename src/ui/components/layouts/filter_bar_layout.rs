@@ -4,11 +4,10 @@ use crate::{
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
-  ListingType,
-  SortType,
+  ListingType, SortType,
 };
-use leptos::*;
-use leptos_router::{use_query_map, Outlet};
+use leptos::prelude::*;
+use leptos_router::{components::Outlet, hooks::use_query_map};
 use serde::Deserialize;
 
 mod filter_bar;

@@ -6,7 +6,7 @@ use crate::{
     types::{PostOrCommentId, ServerAction, ServerActionFn},
   },
 };
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 use pretty_num::PrettyNumber;
 use tailwind_fuse::tw_merge;
@@ -43,7 +43,7 @@ where
         vote_type=VoteType::Up
       />
       <div class="text-sm text-center font-medium">
-        {move || with!(|score| score.pretty_format())}
+        {move || score.get().pretty_format()}
       </div>
       <VoteButton
         vote_action=vote_action

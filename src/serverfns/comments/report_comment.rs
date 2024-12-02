@@ -1,4 +1,3 @@
-use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     comment::{CommentResponse, CreateCommentReport},
@@ -6,7 +5,7 @@ use lemmy_client::{
   },
   LemmyRequest,
 };
-use leptos::*;
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn report_comment(id: CommentId, reason: String) -> Result<CommentResponse, ServerFnError> {
@@ -28,5 +27,5 @@ async fn report_comment(id: CommentId, reason: String) -> Result<CommentResponse
 }
 
 pub fn create_report_comment_action() -> ServerAction<ReportComment> {
-  Action::server()
+  ServerAction::new()
 }

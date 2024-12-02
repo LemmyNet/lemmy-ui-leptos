@@ -1,5 +1,5 @@
 use crate::ui::components::login::login_form::LoginForm;
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
 pub fn LoginPage() -> impl IntoView {

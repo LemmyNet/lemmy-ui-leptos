@@ -7,9 +7,9 @@ use crate::{
   },
   utils::{derive_query_signal, derive_user_is_logged_in},
 };
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::{ActionForm, A};
+use leptos_router::components::A;
 
 #[component]
 pub fn AuthDropdown() -> impl IntoView {
@@ -41,12 +41,12 @@ pub fn AuthDropdown() -> impl IntoView {
           fallback=move || {
             view! {
               <li>
-                <A href="/login" class="btn btn-ghost transition duration-500">
+                <A href="/login" attr:class="btn btn-ghost transition duration-500">
                   {move_tr!("login")}
                 </A>
               </li>
               <li>
-                <A href="/signup" class="btn btn-primary transition duration-500">
+                <A href="/signup" attr:class="btn btn-primary transition duration-500">
 
                   {move_tr!("signup")}
                 </A>

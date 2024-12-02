@@ -1,8 +1,7 @@
 use lemmy_client::lemmy_api_common::community::{
-  ListCommunities as ListCommunitiesBody,
-  ListCommunitiesResponse,
+  ListCommunities as ListCommunitiesBody, ListCommunitiesResponse,
 };
-use leptos::{server_fn::codec::GetUrl, *};
+use leptos::prelude::{server_fn::codec::GetUrl, *};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 pub async fn list_communities(

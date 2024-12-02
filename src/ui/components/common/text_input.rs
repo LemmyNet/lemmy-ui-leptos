@@ -2,7 +2,7 @@ use crate::ui::components::common::icon::{
   Icon,
   IconType::{Eye, EyeSlash},
 };
-use leptos::*;
+use leptos::{prelude::*, text_prop::TextProp};
 use leptos_fluent::tr;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -21,13 +21,12 @@ pub fn TextInput(
   #[prop(into)] name: TextProp,
   #[prop(into)] label: TextProp,
   #[prop(default = InputType::Text)] input_type: InputType,
-  #[prop(optional)] validation_class: MaybeSignal<String>,
+  #[prop(optional)] validation_class: Signal<String>,
   #[prop(default = false)] autofocus: bool,
 ) -> impl IntoView {
   let show_password = RwSignal::new(false);
   let for_id = id.get().clone();
-  let eye_icon =
-    Signal::derive(move || with!(|show_password| if *show_password { EyeSlash } else { Eye }));
+  let eye_icon = Signal::derive(move || if show_password.get() { EyeSlash } else { Eye });
 
   view! {
     <div class="relative w-full !mt-8">
@@ -61,7 +60,7 @@ pub fn TextInput(
           }
 
           class="btn btn-ghost btn-sm btn-circle absolute end-1 bottom-2 text-base-content"
-          on:click=move |_| update!(| show_password | * show_password = !* show_password)
+          on:click=move |_| show_password.set(!show_password.get())
         >
           <Icon icon=eye_icon />
         </button>

@@ -1,5 +1,5 @@
 use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-use leptos::{server_fn::codec::GetUrl, *};
+use leptos::prelude::{server_fn::codec::GetUrl, *};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 pub async fn get_site() -> Result<GetSiteResponse, ServerFnError> {

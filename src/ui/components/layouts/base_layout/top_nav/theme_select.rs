@@ -4,10 +4,8 @@ use crate::{
   ui::components::common::icon::{Icon, IconSize, IconType},
   utils::types::Theme,
 };
-use html::Details;
-use leptos::*;
+use leptos::{form::ActionForm, html::Details, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::ActionForm;
 #[cfg(not(feature = "ssr"))]
 use leptos_use::on_click_outside;
 
@@ -43,7 +41,7 @@ pub fn ThemeSelect() -> impl IntoView {
       </summary>
       <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
         <li>
-          <ActionForm action=theme_action class="p-0">
+          <ActionForm action=theme_action attr:class="p-0">
             <input type="hidden" name="theme" value=Theme::Dark />
             <button type="submit" class="p-2.5">
               {move_tr!("dark")}
@@ -51,7 +49,7 @@ pub fn ThemeSelect() -> impl IntoView {
           </ActionForm>
         </li>
         <li>
-          <ActionForm action=theme_action class="p-0">
+          <ActionForm action=theme_action attr:class="p-0">
             <input type="hidden" name="theme" value=Theme::Light />
             <button type="submit" class="p-2.5">
               {move_tr!("light")}
@@ -59,7 +57,7 @@ pub fn ThemeSelect() -> impl IntoView {
           </ActionForm>
         </li>
         <li>
-          <ActionForm action=theme_action class="p-0">
+          <ActionForm action=theme_action attr:class="p-0">
             <input type="hidden" name="theme" value=Theme::Retro />
             <button type="submit" class="p-2.5">
               {move_tr!("retro")}

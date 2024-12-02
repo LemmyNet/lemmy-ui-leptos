@@ -1,5 +1,5 @@
 use crate::ui::components::common::icon::{Icon, IconSize, IconType};
-use leptos::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use pretty_num::PrettyNumber;
 use sidebar_data::SidebarData;
@@ -123,14 +123,13 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
               <UserStatRow text=past_6_months count=users_6_months />
               {match data {
                 SidebarData::Site(s) => {
-                  view! { <UserStatRow text=all_time count=s.counts.users /> }.into_view()
+                  Either::Left(view! { <UserStatRow text=all_time count=s.counts.users /> })
                 }
                 SidebarData::Community(c) => {
-                  view! {
+                  Either::Right(view! {
                     <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
                     <UserStatRow text=subscribers count=c.counts.subscribers />
-                  }
-                    .into_view()
+                  })
                 }
               }}
             </tbody>

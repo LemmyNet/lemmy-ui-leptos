@@ -1,5 +1,5 @@
 use crate::utils::types::Theme;
-use leptos::{server_fn::codec::GetUrl, *};
+use leptos::prelude::{server_fn::codec::GetUrl, *};
 use std::str::FromStr;
 
 #[server(prefix = "/serverfn", input = GetUrl)]

@@ -3,7 +3,7 @@ use crate::{
   utils::types::{PostOrCommentId, ReportModalData, ReportModalNode},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 fn report_content<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId) {
@@ -28,7 +28,7 @@ pub fn ReportButton<'a>(creator: &'a Person, post_or_comment_id: PostOrCommentId
   } else {
     move_tr!("report-post")
   };
-  let creator_stored = store_value(creator.clone());
+  let creator_stored = StoredValue::new(creator.clone());
   let onclick = move |_| report_content(&creator_stored.get_value(), post_or_comment_id);
 
   view! {

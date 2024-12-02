@@ -3,8 +3,8 @@ use crate::{
   utils::{derive_user_is_logged_in, traits::BoolOptionStr},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::ListingType;
-use leptos::*;
-use leptos_router::{use_query_map, A};
+use leptos::prelude::*;
+use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
 pub fn ListingTypeLink<S>(
@@ -13,7 +13,7 @@ pub fn ListingTypeLink<S>(
   children: Children,
 ) -> impl IntoView
 where
-  S: SignalGet<Value = ListingType> + 'static,
+  S: Get<Value = ListingType> + 'static,
 {
   let query = use_query_map();
   let site_resource = expect_context::<SiteResource>();
@@ -38,7 +38,7 @@ where
         }
       }
 
-      class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
+      attr:class="btn join-item aria-disabled:pointer-events-none aria-disabled:btn-disabled aria-selected:btn-active"
       attr:aria-disabled=move || disabled.get().then_str()
       attr:aria-selected=move || { (listing_type.get() == link_listing_type).then_str() }
     >

@@ -1,5 +1,5 @@
 use super::PostOrCommentId;
-use leptos::{html::Dialog, NodeRef};
+use leptos::{html::Dialog, prelude::NodeRef};
 
 #[derive(Clone, Default)]
 pub struct ReportModalData {

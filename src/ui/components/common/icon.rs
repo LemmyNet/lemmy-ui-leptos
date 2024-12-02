@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::{prelude::*, text_prop::TextProp};
 use strum::{EnumString, IntoStaticStr};
 use tailwind_fuse::{tw_merge, AsTailwindClass, TwVariant};
 
@@ -64,9 +64,9 @@ pub enum IconSize {
 
 #[component]
 pub fn Icon(
-  #[prop(into)] icon: MaybeSignal<IconType>,
+  #[prop(into)] icon: Signal<IconType>,
   #[prop(into, default = TextProp::from(""))] class: TextProp,
-  #[prop(into, default = MaybeSignal::Static(IconSize::Normal))] size: MaybeSignal<IconSize>,
+  #[prop(into, default = Signal::stored(IconSize::Normal))] size: Signal<IconSize>,
 ) -> impl IntoView {
   let href =
     Signal::derive(move || format!("/icons.svg#{}", Into::<&'static str>::into(icon.get())));

@@ -1,7 +1,7 @@
 use crate::ui::components::common::icon::{Icon, IconType};
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::A;
+use leptos_router::components::A;
 
 #[component]
 pub fn SideNav() -> impl IntoView {
@@ -53,7 +53,7 @@ fn NavLink(href: &'static str, icon: IconType, text: Signal<String>) -> impl Int
     <li>
       <A
         href=href
-        class="text-sm block leading-relaxed hover:bg-base-100 p-1.5 rounded-md transition duration-500 my-1 aria-current-page:bg-secondary aria-current-page:text-neutral aria-current-page:hover:bg-secondary/[0.6]"
+        attr:class="text-sm block leading-relaxed hover:bg-base-100 p-1.5 rounded-md transition duration-500 my-1 aria-current-page:bg-secondary aria-current-page:text-neutral aria-current-page:hover:bg-secondary/[0.6]"
       >
         <Icon icon=icon class="inline me-1.5" />
         <span class="align-bottom">{text}</span>

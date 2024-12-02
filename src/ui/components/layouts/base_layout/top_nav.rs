@@ -6,15 +6,13 @@ use crate::{
       unpack::Unpack,
     },
     layouts::base_layout::top_nav::{
-      auth_dropdown::AuthDropdown,
-      notification_bell::NotificationBell,
-      theme_select::ThemeSelect,
+      auth_dropdown::AuthDropdown, notification_bell::NotificationBell, theme_select::ThemeSelect,
     },
   },
   utils::derive_query_signal,
 };
-use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::components::A;
 
 mod auth_dropdown;
 mod notification_bell;

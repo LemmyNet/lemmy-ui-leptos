@@ -5,9 +5,9 @@ use crate::{
     layouts::base_layout::{mobile_nav::MobileNav, side_nav::SideNav, top_nav::TopNav},
   },
 };
-use leptos::*;
+use leptos::prelude::*;
 use leptos_meta::Html;
-use leptos_router::Outlet;
+use leptos_router::components::Outlet;
 
 mod mobile_nav;
 mod side_nav;
@@ -40,7 +40,7 @@ pub fn BaseLayout() -> impl IntoView {
           <MobileNav />
         </Transition>
       </div>
-      <div class="drawer-side" class="sm:hidden">
+      <div class="drawer-side sm:hidden" >
         <label for="mobile-drawer" aria-label="Close mobile drawer" class="drawer-overlay"></label>
         <aside class="w-2/3 whitespace-nowrap px-3.5 pb-5 pt-3 flex flex-col bg-base-300 overflow-y-auto h-full border-e border-neutral">
           <SideNav />

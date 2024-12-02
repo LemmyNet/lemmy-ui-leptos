@@ -3,8 +3,8 @@ use crate::{
   utils::{is_image, is_video},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::PostId;
-use leptos::*;
-use leptos_router::A;
+use leptos::prelude::*;
+use leptos_router::components::A;
 use std::rc::Rc;
 use tailwind_fuse::{AsTailwindClass, TwVariant};
 

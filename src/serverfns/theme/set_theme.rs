@@ -1,5 +1,4 @@
-use crate::utils::types::ServerAction;
-use leptos::*;
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
@@ -25,5 +24,5 @@ pub async fn change_theme(theme: String) -> Result<(), ServerFnError> {
 }
 
 pub fn create_set_theme_action() -> ServerAction<ChangeTheme> {
-  Action::server()
+  ServerAction::new()
 }

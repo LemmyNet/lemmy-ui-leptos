@@ -1,9 +1,8 @@
 use crate::{
   ui::components::common::icon::{Icon, IconType},
-  utils::types::{PostOrCommentId, ServerAction, ServerActionFn},
+  utils::types::{PostOrCommentId, ServerActionFn},
 };
-use leptos::*;
-use leptos_router::ActionForm;
+use leptos::{form::ActionForm, prelude::*};
 use tailwind_fuse::{tw_merge, AsTailwindClass, TwVariant};
 
 #[derive(TwVariant)]
@@ -35,12 +34,12 @@ where
       <input
         type="hidden"
         name="score"
-        value=move || with!(| is_voted | if * is_voted { 0 } else { vote_value })
+        value={move || if * is_voted.read() { 0 } else { vote_value }}
       />
       <button
         type="submit"
         class=move || {
-          with!(| is_voted | tw_merge!(vote_type.as_class(), (!is_voted).then_some("text-neutral")))
+          tw_merge!(vote_type.as_class(), (!*is_voted.read()).then_some("text-neutral"))
         }
 
         title=title
