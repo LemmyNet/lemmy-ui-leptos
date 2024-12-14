@@ -2653,9 +2653,9 @@ dependencies = [
 
 [[package]]
 name = "markdown-it-ruby"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3505f4ada7c372e7f5eb4b07850bf5921193bc0bd43cb18991233999c9134d4"
+checksum = "ef6891dd91314780bb54c6bdb20d92501687c8ee3f840b906f483b7a0f16f962"
 dependencies = [
  "itertools 0.13.0",
  "markdown-it",
