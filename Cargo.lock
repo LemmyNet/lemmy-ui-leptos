@@ -2672,9 +2672,9 @@ dependencies = [
 
 [[package]]
 name = "markdown-it-sup"
-version = "1.0.0"
+version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5ae949e78c7a615f88a47019d51b65962bfc5c4cbc65fa81eae8b9b2506d1cb1"
+checksum = "453f547d757af7b85e0e0405c4b4d3cfdd434b1cd4e7fe76c91df217990d91c4"
 dependencies = [
  "markdown-it",
 ]
@@ -3818,7 +3818,7 @@ dependencies = [
  "cfg-if",
  "libc",
  "psm",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3975,7 +3975,7 @@ dependencies = [
  "fastrand",
  "once_cell",
  "rustix",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4560,7 +4560,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
