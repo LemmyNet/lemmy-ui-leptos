@@ -32,7 +32,7 @@ leptos-use = "0.13"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-leptos-fluent = { version = "0.1", features = ["actix"] }
+leptos-fluent = { version = "0.2", features = ["actix"] }
 fluent-templates = "0.11"
 chrono = "0.4.38"
 markdown-it = "0.6"
