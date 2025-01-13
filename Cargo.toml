@@ -28,12 +28,12 @@ actix-session = { version = "0.10", features = [
 tokio = { version = "1.41", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.14.0-gamma2"
+leptos-use = "0.15.3"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-leptos-fluent = { git = "https://github.com/mondeja/leptos-fluent", branch = "leptos-v0.7", features = ["actix"] }
-fluent-templates = "0.11"
+leptos-fluent = { version = "0.2", features = ["actix"] }
+fluent-templates = "0.13"
 chrono = "0.4.38"
 markdown-it = "0.6"
 markdown-it-sup = "1"
@@ -87,7 +87,7 @@ opt-level = "z"
 panic = "abort"
 
 [dev-dependencies]
-rstest = "0.23.0"
+rstest = "0.24.0"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"

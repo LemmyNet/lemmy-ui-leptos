@@ -119,7 +119,7 @@ services:
       - event: pull_request
 
   lemmy:
-    image: dessalines/lemmy:0.19.7
+    image: dessalines/lemmy:0.19.8
     environment:
       LEMMY_CONFIG_LOCATION: /woodpecker/src/github.com/LemmyNet/lemmy-ui-leptos/end2end/lemmy.hjson
     when:
