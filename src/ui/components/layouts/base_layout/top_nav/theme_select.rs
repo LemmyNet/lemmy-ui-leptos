@@ -25,7 +25,8 @@ pub fn ThemeSelect() -> impl IntoView {
   let _ = on_click_outside(dropdown_node_ref, move |_| {
     // Using this approach instead of conditional rendering so that the dropdown works at least somewhat when JS is disabled
     if let Some(el) = dropdown_node_ref.get() {
-      let _ = el.attr("open", None::<&str>);
+      use leptos::attr::*;
+      let _ = el.attr(Attr(Open, None::<&str>));
     }
   });
 

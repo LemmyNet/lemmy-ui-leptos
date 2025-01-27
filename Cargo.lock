@@ -2002,15 +2002,14 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "lemmy-client"
-version = "1.0.4"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bd30b84b26380af016ab45dded3d6959f00ff815649f50ff1b512d96a7a49de"
+checksum = "94d1392b0238c8b8e3832a2d68cfcdf4efd1ecca412d64b052e47f5427ccf7ea"
 dependencies = [
  "cfg-if",
  "gloo-net",
  "http 1.2.0",
  "lemmy_api_common",
- "leptos",
  "reqwest",
  "serde",
  "serde_json",
@@ -2050,6 +2049,7 @@ dependencies = [
  "tailwind_fuse",
  "tokio",
  "trait-set",
+ "wasm-bindgen",
  "web-sys",
 ]
 
@@ -3418,9 +3418,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-pki-types"
-version = "1.10.1"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2bf47e6ff922db3825eb750c4e2ff784c6ff8fb9e13046ef6a1d1c5401b0b37"
+checksum = "917ce264624a4b4db1c364dcc35bfca9ded014d0a958cd47ad3e960e988ea51c"
 
 [[package]]
 name = "rustversion"

@@ -11,7 +11,7 @@ leptos = "0.7"
 leptos_meta = "0.7"
 leptos_router = "0.7"
 cfg-if = "1"
-lemmy-client = { version = "1.0.4", features = ["leptos"] }
+lemmy-client = "1.0.5"
 serde = "1.0"
 serde_json = "1.0"
 
@@ -32,6 +32,7 @@ leptos-use = "0.15"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
+wasm-bindgen = { version = "0.2", optional = true }
 leptos-fluent = { version = "0.2", features = ["actix"] }
 fluent-templates = "0.13"
 chrono = "0.4"
@@ -49,8 +50,9 @@ hydrate = [
   "leptos-fluent/hydrate",
   "dep:console_error_panic_hook",
   "dep:web-sys",
+  "dep:wasm-bindgen"
 ]
-csr = ["leptos/csr", "dep:console_error_panic_hook", "dep:web-sys"]
+csr = ["leptos/csr", "dep:console_error_panic_hook", "dep:web-sys", "dep:wasm-bindgen"]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
@@ -83,7 +85,7 @@ opt-level = "z"
 panic = "abort"
 
 [dev-dependencies]
-rstest = "0.24.0"
+rstest = "0.24"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"
