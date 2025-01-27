@@ -4,7 +4,8 @@ use leptos::prelude::*;
 use leptos_router::components::A;
 
 #[component]
-pub fn CreatorListing<'a>(creator: &'a Person) -> impl IntoView {
+pub fn CreatorListing(#[prop(into)] creator: Signal<Person>) -> impl IntoView {
+  let creator = creator.read_untracked();
   let user_apub_name = create_user_apub_name(&creator.name, creator.actor_id.inner().as_str());
   let creator_display_name = creator.display_name.as_ref().unwrap_or(&creator.name);
   let avatar = creator

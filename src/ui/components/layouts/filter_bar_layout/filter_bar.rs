@@ -18,14 +18,14 @@ pub fn FilterBar(
     |user| user.default_listing_type,
     |site| site.default_post_listing_type,
   );
-  Effect::new(move |_| listing_type.set(local_listing_type.get()));
+  // Effect::new(move |_| listing_type.set(local_listing_type.get()));
 
   let local_sort_type = derive_link_type(
     "sort",
     |user| user.default_sort_type,
     |site| site.default_sort_type,
   );
-  Effect::new(move |_| sort_type.set(local_sort_type.get()));
+  // Effect::new(move |_| sort_type.set(local_sort_type.get()));
 
   view! {
     <div class="mb-4 flex flex-wrap gap-3">

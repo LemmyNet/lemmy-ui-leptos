@@ -1,6 +1,3 @@
-mod derive_query_signal;
-pub use derive_query_signal::*;
-
 mod apub_name;
 pub use apub_name::*;
 

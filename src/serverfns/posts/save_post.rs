@@ -7,6 +7,8 @@ use lemmy_client::{
 };
 use leptos::prelude::*;
 
+use crate::utils::types::ServerActionFn;
+
 #[server(prefix = "/serverfn")]
 async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
@@ -25,4 +27,8 @@ async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError
 
 pub fn create_save_post_action() -> ServerAction<SavePost> {
   ServerAction::new()
+}
+
+impl ServerActionFn for SavePost {
+  type Out = PostResponse;
 }

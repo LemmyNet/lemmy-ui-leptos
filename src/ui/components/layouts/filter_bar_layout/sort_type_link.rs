@@ -4,10 +4,11 @@ use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
-pub fn SortTypeLink<S>(sort_type: S, link_sort_type: SortType, children: Children) -> impl IntoView
-where
-  S: Get<Value = SortType> + 'static,
-{
+pub fn SortTypeLink(
+  #[prop(into)] sort_type: Signal<SortType>,
+  link_sort_type: SortType,
+  children: Children,
+) -> impl IntoView {
   let query = use_query_map();
 
   view! {

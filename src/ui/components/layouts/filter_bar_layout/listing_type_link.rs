@@ -7,14 +7,11 @@ use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
-pub fn ListingTypeLink<S>(
-  listing_type: S,
+pub fn ListingTypeLink(
+  #[prop(into)] listing_type: Signal<ListingType>,
   link_listing_type: ListingType,
   children: Children,
-) -> impl IntoView
-where
-  S: Get<Value = ListingType> + 'static,
-{
+) -> impl IntoView {
   let query = use_query_map();
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);

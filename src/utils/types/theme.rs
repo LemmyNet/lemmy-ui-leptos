@@ -16,6 +16,6 @@ impl IntoAttributeValue for Theme {
   type Output = Oco<'static, str>;
 
   fn into_attribute_value(self) -> Self::Output {
-    Oco::Borrowed(self.into() as &'static str)
+    Oco::Borrowed(self.into())
   }
 }

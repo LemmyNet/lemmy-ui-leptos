@@ -7,6 +7,8 @@ use lemmy_client::{
 };
 use leptos::prelude::*;
 
+use crate::utils::types::ServerActionFn;
+
 #[server(prefix = "/serverfn")]
 async fn vote_post(id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
@@ -26,4 +28,8 @@ async fn vote_post(id: PostId, score: i16) -> Result<PostResponse, ServerFnError
 
 pub fn create_vote_post_action() -> ServerAction<VotePost> {
   ServerAction::new()
+}
+
+impl ServerActionFn for VotePost {
+  type Out = PostResponse;
 }

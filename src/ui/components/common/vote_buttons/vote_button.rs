@@ -34,7 +34,7 @@ where
       <input
         type="hidden"
         name="score"
-        value={move || if * is_voted.read() { 0 } else { vote_value }}
+        value=move || if *is_voted.read() { 0 } else { vote_value }
       />
       <button
         type="submit"

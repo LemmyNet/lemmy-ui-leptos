@@ -3,7 +3,7 @@ use crate::{
   ui::components::common::icon::IconType,
   utils::{
     derive_user_is_logged_in,
-    types::{PostOrCommentId, ServerAction, ServerActionFn},
+    types::{PostOrCommentId, ServerActionFn},
   },
 };
 use leptos::prelude::*;
@@ -42,9 +42,7 @@ where
         vote_value=1
         vote_type=VoteType::Up
       />
-      <div class="text-sm text-center font-medium">
-        {move || score.get().pretty_format()}
-      </div>
+      <div class="text-sm text-center font-medium">{move || score.get().pretty_format()}</div>
       <VoteButton
         vote_action=vote_action
         id=id

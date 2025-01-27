@@ -25,7 +25,7 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <ActionForm class="space-y-3" action=login>
+    <ActionForm attr:class="space-y-3" action=login>
       {login_error}
       <TextInput
         id="username"
@@ -43,7 +43,6 @@ pub fn LoginForm() -> impl IntoView {
         pattern=".{10,60}"
         required=true
       />
-
       <button class="btn btn-lg" type="submit">
         {move_tr!("login")}
       </button>

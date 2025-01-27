@@ -19,7 +19,10 @@ pub fn TeamMemberCard(person: Person) -> impl IntoView {
         class="mx-auto size-12"
       />
       <div class="font-medium">{person.display_name.unwrap_or_else(|| person.name.clone())}</div>
-      <A href=format!("/u/{}", person.name.clone()) attr:class="text-xs block text-primary font-light">
+      <A
+        href=format!("/u/{}", person.name.clone())
+        attr:class="text-xs block text-primary font-light"
+      >
         {format!("@{}", person.name.clone())}
       </A>
     </li>

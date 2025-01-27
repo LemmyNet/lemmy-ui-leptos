@@ -28,36 +28,42 @@ use leptos_fluent::leptos_fluent;
 use leptos_meta::*;
 use leptos_router::{components::*, *};
 use ui::components::modals::ReportModal;
-use utils::{
-  derive_user_is_logged_in,
-  types::{ReportModalData, ReportModalNode},
-};
+use utils::types::{ReportModalData, ReportModalNode};
 
 static_loader! {
-  pub static TRANSLATIONS = {
+  static TRANSLATIONS = {
       locales: "./locales",
       fallback_language: "en",
   };
 }
 
 #[component]
-pub fn App() -> impl IntoView {
-  provide_meta_context();
-  provide_site_resource_context();
-  provide_theme_resource_context();
+fn I18n(children: Children) -> impl IntoView {
+  leptos_fluent! {
+    children: children(),
+    translations: [TRANSLATIONS],
+    locales: "./locales",
+    check_translations: "./src/**/*.rs",
+    sync_html_tag_lang: true,
+    initial_language_from_accept_language_header: true,
+    cookie_attrs: "SameSite=Strict; Secure;",
+    initial_language_from_cookie: true,
+    set_language_to_cookie: true,
+    initial_language_from_navigator: true
+  }
+}
 
-  // TODO: Fix this once leptos-fluent supports 0.7
-  // leptos_fluent! {
-  //   translations: [TRANSLATIONS],
-  //   locales: "./locales",
-  //   check_translations: "./src/**/*.rs",
-  //   sync_html_tag_lang: true,
-  //   initial_language_from_accept_language_header: true,
-  //   cookie_attrs: "SameSite=Strict; Secure;",
-  //   initial_language_from_cookie: true,
-  //   set_language_to_cookie: true,
-  //   initial_language_from_navigator: true
-  // };
+#[component]
+fn AppRoutes() -> impl IntoView {
+  let site_resource = expect_context::<SiteResource>();
+  let user_is_logged_in = move || {
+    site_resource.read().as_ref().map(|response| {
+      response
+        .as_ref()
+        .ok()
+        .map_or(false, |response| response.my_user.is_some())
+    })
+  };
 
   let is_routing = RwSignal::new(false);
 
@@ -69,97 +75,58 @@ pub fn App() -> impl IntoView {
 
   view! {
     <Router set_is_routing=is_routing>
-      // <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250) />
+    <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250) />
 
-      // <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css" />
-      // <Link rel="shortcut icon" href="/favicon.svg" />
+    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css" />
+    <Title text="Brand from env" />
 
-      // <Meta name="description" content="Lemmy-UI-Leptos." />
-      // <Meta name="viewport" content="width=device-width, viewport-fit=cover" />
-      // debug where there is no visible console (mobile/live/desktop)
-      // <Script src="//cdn.jsdelivr.net/npm/eruda"/>
-      // <Script>eruda.init();</Script>
-      // <Title text="Brand from env" />
-      // <Body class="h-full max-h-screen flex flex-col overflow-y-hidden" />
-
-      <Routes fallback={NotFound}>
-        <ParentRoute path=path!("") view=BaseLayout ssr=SsrMode::Async>
-          <ParentRoute path=path!("") view=FilterBarLayout>
-            <Route path=path!("") view=HomePage />
-          </ParentRoute>
-
-          <Route path=path!("create_post") view=CommunitiesPage />
-          <Route path=path!("post/:id") view=PostPage />
-
-          <Route path=path!("search") view=CommunitiesPage />
-          <Route path=path!("communities") view=CommunitiesPage />
-          <Route path=path!("create_community") view=CommunitiesPage />
-          <Route path=path!("c/:id") view=CommunitiesPage />
-
-          <Route
-            path=path!("login")
-            view=move || {
-              view! {
-                <AnonymousOnlyRouteView>
-                  <LoginPage />
-                </AnonymousOnlyRouteView>
-              }
-            }
-          />
-
-          <Route
-            path=path!("signup")
-            view=move || {
-              view! {
-                <AnonymousOnlyRouteView>
-                  <CommunitiesPage />
-                </AnonymousOnlyRouteView>
-              }
-            }
-          />
-
-          <Route path=path!("inbox") view=CommunitiesPage />
-          <Route path=path!("settings") view=CommunitiesPage />
-          <Route path=path!("u/:id") view=CommunitiesPage />
-          <Route path=path!("saved") view=CommunitiesPage />
-
-          <Route path=path!("modlog") view=CommunitiesPage />
-          <Route path=path!("instances") view=CommunitiesPage />
-          <Route path=path!("legal") view=CommunitiesPage />
+    <Routes fallback={NotFound}>
+      <ParentRoute path=path!("") view=BaseLayout ssr=SsrMode::Async>
+        <ParentRoute path=path!("") view=FilterBarLayout>
+          <Route path=path!("") view=HomePage />
         </ParentRoute>
-      </Routes>
 
-      <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
-    </Router>
+        <Route path=path!("create_post") view=CommunitiesPage />
+        <Route path=path!("post/:id") view=PostPage />
+
+        <Route path=path!("search") view=CommunitiesPage />
+        <Route path=path!("communities") view=CommunitiesPage />
+        <Route path=path!("create_community") view=CommunitiesPage />
+        <Route path=path!("c/:id") view=CommunitiesPage />
+        <ProtectedRoute
+          path=path!("login")
+          view=LoginPage
+          redirect_path=move || ""
+          condition=user_is_logged_in/>
+
+          <ProtectedRoute path=path!("signup") view=CommunitiesPage redirect_path=move || "" condition=user_is_logged_in/>
+
+        <Route path=path!("inbox") view=CommunitiesPage />
+        <Route path=path!("settings") view=CommunitiesPage />
+        <Route path=path!("u/:id") view=CommunitiesPage />
+        <Route path=path!("saved") view=CommunitiesPage />
+
+        <Route path=path!("modlog") view=CommunitiesPage />
+        <Route path=path!("instances") view=CommunitiesPage />
+        <Route path=path!("legal") view=CommunitiesPage />
+      </ParentRoute>
+    </Routes>
+
+    <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
+  </Router>
   }
 }
 
 #[component]
-fn AnonymousOnlyRouteView(children: ChildrenFn) -> impl IntoView {
-  let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
-  let children = StoredValue::new(children);
+pub fn App() -> impl IntoView {
+  provide_meta_context();
+  provide_site_resource_context();
+  provide_theme_resource_context();
 
   view! {
-    <Transition>
-      <Show
-        when=move || !user_is_logged_in.get()
-        fallback=move || {
-          view! {
-            <Redirect
-              path="/"
-              options=NavigateOptions {
-                replace: true,
-                ..Default::default()
-              }
-            />
-          }
-        }
-      >
-
-        {children.get_value()}
-      </Show>
-    </Transition>
+    <I18n>
+      <AppRoutes />
+  </I18n>
   }
 }
 

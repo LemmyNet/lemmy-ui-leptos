@@ -16,7 +16,7 @@ pub fn TextInput(
   #[prop(optional, into)] disabled: MaybeProp<bool>,
   #[prop(optional, into)] required: MaybeProp<bool>,
   #[prop(optional, into)] min_length: MaybeProp<u8>,
-  #[prop(optional, into)] pattern: MaybeProp<TextProp>,
+  #[prop(optional, into)] pattern: Option<&'static str>,
   #[prop(into)] id: TextProp,
   #[prop(into)] name: TextProp,
   #[prop(into)] label: TextProp,
@@ -35,7 +35,7 @@ pub fn TextInput(
           if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
         }
 
-        id=id
+        id={move || id.get()}
         class=move || {
           format!(
             "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
@@ -45,10 +45,10 @@ pub fn TextInput(
 
         placeholder=" "
         name=move || name.get()
-        disabled=disabled
-        required=required
-        min_length=min_length
-        pattern=move || pattern.get().map(|p| p.get())
+        disabled={move || disabled.get()}
+        required={move || required.get()}
+        minlength={move || min_length.get()}
+        pattern={pattern}
         autofocus=autofocus
       />
 
@@ -69,7 +69,7 @@ pub fn TextInput(
         class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-base-content/75 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
         for=for_id
       >
-        {label}
+        {move || label.get()}
       </label>
     </div>
   }

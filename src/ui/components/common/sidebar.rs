@@ -11,7 +11,7 @@ mod team_member_card;
 mod user_stat_row;
 
 #[component]
-pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
+pub fn Sidebar(data: SidebarData) -> impl IntoView {
   let today = move_tr!("today");
   let past_week = move_tr!("past-week");
   let past_month = move_tr!("past-month");
@@ -35,7 +35,7 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
     users_month,
     users_6_months,
   ) = match data {
-    SidebarData::Site(s) => (
+    SidebarData::Site(ref s) => (
       move_tr!("instance-stats"),
       move_tr!("admins"),
       s.admins.clone(),
@@ -48,7 +48,7 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
       s.counts.users_active_month,
       s.counts.users_active_half_year,
     ),
-    SidebarData::Community(c) => (
+    SidebarData::Community(ref c) => (
       move_tr!("community-stats"),
       move_tr!("moderators"),
       c.moderators.clone(),
@@ -86,7 +86,7 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
               <span class="text-sm">{move_tr!("comments")}</span>
             </div>
 
-            {if let SidebarData::Site(s) = data {
+            {if let SidebarData::Site(ref s) = data {
               Some(
                 view! {
                   <div>
@@ -122,14 +122,16 @@ pub fn Sidebar<'a>(data: &'a SidebarData) -> impl IntoView {
               <UserStatRow text=past_month count=users_month />
               <UserStatRow text=past_6_months count=users_6_months />
               {match data {
-                SidebarData::Site(s) => {
+                SidebarData::Site(ref s) => {
                   Either::Left(view! { <UserStatRow text=all_time count=s.counts.users /> })
                 }
-                SidebarData::Community(c) => {
-                  Either::Right(view! {
-                    <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
-                    <UserStatRow text=subscribers count=c.counts.subscribers />
-                  })
+                SidebarData::Community(ref c) => {
+                  Either::Right(
+                    view! {
+                      <UserStatRow text=local_subscribers count=c.counts.subscribers_local />
+                      <UserStatRow text=subscribers count=c.counts.subscribers />
+                    },
+                  )
                 }
               }}
             </tbody>

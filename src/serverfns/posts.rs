@@ -8,10 +8,10 @@ mod report_post;
 pub use report_post::create_report_post_action;
 
 mod save_post;
-pub use save_post::create_save_post_action;
+pub use save_post::*;
 
 mod vote_post;
-pub use vote_post::create_vote_post_action;
+pub use vote_post::*;
 
 mod hide_post;
 pub use hide_post::{create_hide_post_action, HidePostAction};

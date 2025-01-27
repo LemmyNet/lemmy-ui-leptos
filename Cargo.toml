@@ -11,7 +11,7 @@ leptos = "0.7"
 leptos_meta = "0.7"
 leptos_router = "0.7"
 cfg-if = "1"
-lemmy-client = { version = "1.0.2", features = ["leptos"] }
+lemmy-client = { version = "1.0.4", features = ["leptos"] }
 serde = "1.0"
 serde_json = "1.0"
 
@@ -25,16 +25,16 @@ actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.41", optional = true, features = ["macros"] }
+tokio = { version = "1.43", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
 trait-set = "0.3"
-leptos-use = "0.15.3"
+leptos-use = "0.15"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
 leptos-fluent = { version = "0.2", features = ["actix"] }
 fluent-templates = "0.13"
-chrono = "0.4.38"
+chrono = "0.4"
 markdown-it = "0.6"
 markdown-it-sup = "1"
 markdown-it-sub = "1"
@@ -50,11 +50,7 @@ hydrate = [
   "dep:console_error_panic_hook",
   "dep:web-sys",
 ]
-csr = [
-  "leptos/csr",
-  "dep:console_error_panic_hook",
-  "dep:web-sys",
-]
+csr = ["leptos/csr", "dep:console_error_panic_hook", "dep:web-sys"]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",

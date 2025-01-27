@@ -50,9 +50,7 @@ fn ReportForm(
       <strong class="font-semibold">{move || creator_of_start.get()}</strong>
       ": "
       <span>
-        {move || {
-          create_user_apub_name(&creator_name.read(), &creator_actor_id.read())
-        }}
+        {move || { create_user_apub_name(&creator_name.read(), &creator_actor_id.read()) }}
       </span>
     </div>
     <input type="hidden" name="id" value=move || post_or_comment_id.get().get_id() />
