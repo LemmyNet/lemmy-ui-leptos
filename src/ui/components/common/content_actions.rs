@@ -54,79 +54,82 @@ where
     <Fedilink href=ap_id.to_string() />
     <Transition>
       {move || Suspend::new(async move {
-        site_resource.await.map(|site| {
-          let logged_in_user_id = site.my_user.map(|u| u.local_user_view.person.id);
+        site_resource
+          .await
+          .map(|site| {
+            let logged_in_user_id = site.my_user.map(|u| u.local_user_view.person.id);
+            logged_in_user_id
+              .map(|user_id| {
 
-          logged_in_user_id.map(|user_id| {
-            view!{
-              <ActionForm action=save_action attr:class="flex items-center">
-                <input type="hidden" name="id" value=post_or_comment_id.get_id() />
-                <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
-                <button
-                  type="submit"
-                  title=save_content_label
-                  aria-label=save_content_label
+                view! {
+                  <ActionForm action=save_action attr:class="flex items-center">
+                    <input type="hidden" name="id" value=post_or_comment_id.get_id() />
+                    <input type="hidden" name="save" value=move || (!saved.get()).to_str() />
+                    <button
+                      type="submit"
+                      title=save_content_label
+                      aria-label=save_content_label
 
-                  class=move || {
-                    tw_join!(
-                      "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
+                      class=move || {
+                        tw_join!(
+                          "disabled:cursor-not-allowed disabled:text-neutral-content", saved.get()
                               .then_some("text-accent")
-                    )
-                  }
+                        )
+                      }
 
-                  disabled=move || save_action.pending().get()
-                >
-                  <Icon icon=save_icon />
+                      disabled=move || save_action.pending().get()
+                    >
+                      <Icon icon=save_icon />
 
-                </button>
-              </ActionForm>
-              {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
-                .then(|| {
-                  view! {
-                    <A href="/create_post" attr:title=crosspost_label attr:aria-label=crosspost_label>
-                      <Icon icon=IconType::Crosspost />
-                    </A>
-                  }
-                })}
+                    </button>
+                  </ActionForm>
+                  {(matches!(post_or_comment_id, PostOrCommentId::Post(_)))
+                    .then(|| {
+                      view! {
+                        <A
+                          href="/create_post"
+                          attr:title=crosspost_label
+                          attr:aria-label=crosspost_label
+                        >
+                          <Icon icon=IconType::Crosspost />
+                        </A>
+                      }
+                    })}
 
-              <div class="dropdown">
-                <div tabindex="0" role="button">
-                  <Icon icon=IconType::VerticalDots />
-                </div>
-                <menu tabindex="0" class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow">
-                  <Show when=move || {
-                    user_id == creator.read_untracked().id
-                  }>
-                    {if let PostOrCommentId::Post(id) = post_or_comment_id {
-                      Some(view! { <HidePostButton id=id /> })
-                    } else {
-                      None
-                    }}
-                    <li>
-                      <ReportButton
-                        creator=creator
-                        post_or_comment_id=post_or_comment_id
-                      />
-                    </li>
-                    <li>
-                      <ActionForm action=block_user_action>
-                        <input type="hidden" name="id" value=creator.read_untracked().id.0 />
-                        <input type="hidden" name="block" value="true" />
-                        <button class="text-xs whitespace-nowrap" type="submit">
-                          <Icon icon=IconType::Block class="inline-block" />
-                          " "
-                          {move_tr!("block-user")}
-                        </button>
-                      </ActionForm>
-                    </li>
-                  </Show>
-                </menu>
-              </div>
-            }
+                  <div class="dropdown">
+                    <div tabindex="0" role="button">
+                      <Icon icon=IconType::VerticalDots />
+                    </div>
+                    <menu
+                      tabindex="0"
+                      class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow"
+                    >
+                      <Show when=move || {
+                        user_id == creator.read_untracked().id
+                      }>
+                        {if let PostOrCommentId::Post(id) = post_or_comment_id {
+                          Some(view! { <HidePostButton id=id /> })
+                        } else {
+                          None
+                        }} <li>
+                          <ReportButton creator=creator post_or_comment_id=post_or_comment_id />
+                        </li> <li>
+                          <ActionForm action=block_user_action>
+                            <input type="hidden" name="id" value=creator.read_untracked().id.0 />
+                            <input type="hidden" name="block" value="true" />
+                            <button class="text-xs whitespace-nowrap" type="submit">
+                              <Icon icon=IconType::Block class="inline-block" />
+                              " "
+                              {move_tr!("block-user")}
+                            </button>
+                          </ActionForm>
+                        </li>
+                      </Show>
+                    </menu>
+                  </div>
+                }
+              })
           })
-
-
-        })
       })}
     </Transition>
   }

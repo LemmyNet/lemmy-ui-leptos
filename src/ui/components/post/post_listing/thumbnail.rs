@@ -85,19 +85,24 @@ pub fn Thumbnail(
       IconType::ExternalLink | IconType::Comments
     ) {
       Either::Left(view! {
-          <A
-            href={url.read().as_ref().map(Arc::clone).map(|url| url.to_string()).unwrap_or_else(|| format!("/post/{id}"))}
-            attr:class=wrapper_class
-          >
-            <Inner image_url=image_url thumbnail_data=thumbnail_data/>
-          </A>
+        <A
+          href=url
+            .read()
+            .as_ref()
+            .map(Arc::clone)
+            .map(|url| url.to_string())
+            .unwrap_or_else(|| format!("/post/{id}"))
+          attr:class=wrapper_class
+        >
+          <Inner image_url=image_url thumbnail_data=thumbnail_data />
+        </A>
       })
     } else {
       Either::Right(view! {
-                  <button type="button" class=wrapper_class>
-                  <Inner image_url=image_url thumbnail_data=thumbnail_data/>
+        <button type="button" class=wrapper_class>
+          <Inner image_url=image_url thumbnail_data=thumbnail_data />
 
-          </button>
+        </button>
       })
     }
   }
@@ -109,15 +114,19 @@ fn Inner(
   thumbnail_data: Signal<ThumbnailData>,
 ) -> impl IntoView {
   view! {
-      {move || {
-  image_url
-      .read()
-      .as_ref()
-      .map(Arc::clone)
-      .map(|thumbnail| {
+    {move || {
+      image_url
+        .read()
+        .as_ref()
+        .map(Arc::clone)
+        .map(|thumbnail| {
           view! { <img class="size-full object-cover aspect-square" src=thumbnail /> }
-      })
-  }}
-  <Icon icon=thumbnail_data.read().icon class=Arc::clone(&thumbnail_data.read().icon_class) size=thumbnail_data.read().icon_size />
+        })
+    }}
+    <Icon
+      icon=thumbnail_data.read().icon
+      class=Arc::clone(&thumbnail_data.read().icon_class)
+      size=thumbnail_data.read().icon_size
+    />
   }
 }

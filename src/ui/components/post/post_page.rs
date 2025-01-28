@@ -9,7 +9,9 @@ use crate::{
   },
 };
 use lemmy_client::lemmy_api_common::{
-  comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost,
+  comment::GetComments,
+  lemmy_db_schema::newtypes::PostId,
+  post::GetPost,
 };
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
@@ -47,11 +49,11 @@ pub fn PostPage() -> impl IntoView {
     <div class="max-w-screen-2xl mx-auto flex gap-6 flex mt-4 mb-1 sm:gap-12 h-fit">
       <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 lg:mx-0 h-fit">
         <Transition>
-            {move || Suspend::new(async move {
-              post_resource.await.map(|post_response| view! {
-                <PostListing post_view=post_response.post_view />
-              })
-            })}
+          {move || Suspend::new(async move {
+            post_resource
+              .await
+              .map(|post_response| view! { <PostListing post_view=post_response.post_view /> })
+          })}
         </Transition>
 
       // <Unpack item=list_comments_resource let:res>
@@ -62,19 +64,19 @@ pub fn PostPage() -> impl IntoView {
       </main>
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 sticky top-6 h-fit">
         <Transition>
-            {move || Suspend::new(async move {
-              post_resource.await.map(|post_response| {
+          {move || Suspend::new(async move {
+            post_resource
+              .await
+              .map(|post_response| {
                 let data = SidebarData::Community(CommunitySidebarData {
                   community: post_response.community_view.community,
                   counts: post_response.community_view.counts,
-                  moderators: post_response.moderators.into_iter().map(|m| m.moderator).collect()
+                  moderators: post_response.moderators.into_iter().map(|m| m.moderator).collect(),
                 });
 
-                view! {
-                  <Sidebar data=data />
-                }
+                view! { <Sidebar data=data /> }
               })
-            })}
+          })}
         </Transition>
       </aside>
     </div>

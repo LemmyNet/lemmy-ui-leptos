@@ -1,7 +1,9 @@
 use crate::{
   contexts::theme_resource_context::ThemeResource,
   ui::components::layouts::base_layout::{
-    mobile_nav::MobileNav, side_nav::SideNav, top_nav::TopNav,
+    mobile_nav::MobileNav,
+    side_nav::SideNav,
+    top_nav::TopNav,
   },
 };
 use leptos::prelude::*;
@@ -21,11 +23,16 @@ pub fn BaseLayout() -> impl IntoView {
       <input id="mobile-drawer" type="checkbox" class="drawer-toggle" />
       <div class="drawer-content h-full min-h-screen sm:min-h-0 sm:max-h-screen flex flex-col">
         <Transition>
-        {move || Suspend::new(async move {
-          theme.await.ok().map(|theme| view! {
-            <Html attr:data-theme=theme attr:class="h-full max-h-screen overflow-y-hidden" />
-          })
-        })}
+          {move || Suspend::new(async move {
+            theme
+              .await
+              .ok()
+              .map(|theme| {
+                view! {
+                  <Html attr:data-theme=theme attr:class="h-full max-h-screen overflow-y-hidden" />
+                }
+              })
+          })}
         </Transition>
         <TopNav />
         <div class="flex gap-x-4 h-full overflow-y-auto sm:overflow-y-hidden grow">

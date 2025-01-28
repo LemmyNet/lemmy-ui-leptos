@@ -1,6 +1,5 @@
-use leptos::prelude::{Read, Signal};
-
 use crate::contexts::site_resource_context::SiteResource;
+use leptos::prelude::{Read, Signal};
 
 pub fn derive_user_is_logged_in(site_signal: SiteResource) -> Signal<bool> {
   Signal::derive(move || {

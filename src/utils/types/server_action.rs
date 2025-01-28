@@ -1,5 +1,8 @@
 use leptos::server_fn::{
-  client::browser::BrowserClient, codec::PostUrl, error::NoCustomError, ServerFn,
+  client::browser::BrowserClient,
+  codec::PostUrl,
+  error::NoCustomError,
+  ServerFn,
 };
 use serde::de::DeserializeOwned;
 

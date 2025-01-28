@@ -1,7 +1,9 @@
 use crate::ui::components::{
   common::icon::{Icon, IconSize, IconType},
   layouts::filter_bar_layout::{
-    derive_link_type, listing_type_link::ListingTypeLink, sort_type_link::SortTypeLink,
+    derive_link_type,
+    listing_type_link::ListingTypeLink,
+    sort_type_link::SortTypeLink,
   },
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{ListingType, SortType};

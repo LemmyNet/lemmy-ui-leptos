@@ -10,7 +10,8 @@ use crate::{
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since, is_image,
+    get_time_since,
+    is_image,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -137,12 +138,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
           vote_action=vote_action
           class="grid-in-vote"
         />
-        <Thumbnail
-          url=post_url
-          image_url=image_url
-          has_embed_url=has_embed_video_url
-          id=id
-        />
+        <Thumbnail url=post_url image_url=image_url has_embed_url=has_embed_video_url id=id />
 
         <Show
           when=move || is_on_post_page
@@ -169,15 +165,26 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
             </div>
             <Transition>
               {move || Suspend::new(async move {
-                site_resource.await.map(|site_response| {
-                  let language_id = post_state.read().post.language_id;
-                  (language_id.0 != 0).then(|| site_response.all_languages.into_iter().find(|l| l.id == language_id).map(|l| view! {
-                    <div class="text-xs badge badge-ghost gap-x-0.5">
-                    <Icon icon=IconType::Language size=IconSize::Small />
-                    {l.name}
-                    </div>
-                  }))
-                })
+                site_resource
+                  .await
+                  .map(|site_response| {
+                    let language_id = post_state.read().post.language_id;
+                    (language_id.0 != 0)
+                      .then(|| {
+                        site_response
+                          .all_languages
+                          .into_iter()
+                          .find(|l| l.id == language_id)
+                          .map(|l| {
+                            view! {
+                              <div class="text-xs badge badge-ghost gap-x-0.5">
+                                <Icon icon=IconType::Language size=IconSize::Small />
+                                {l.name}
+                              </div>
+                            }
+                          })
+                      })
+                  })
               })}
             </Transition>
           </div>
@@ -204,10 +211,12 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
         </div>
       </div>
       {move || {
-          post_body.read().as_ref().map(|body| is_on_post_page.then(|| view! {
-            <MarkdownContent content=Arc::clone(body)/>
-          }))
-
+        post_body
+          .read()
+          .as_ref()
+          .map(|body| {
+            is_on_post_page.then(|| view! { <MarkdownContent content=Arc::clone(body) /> })
+          })
       }}
     </article>
   }

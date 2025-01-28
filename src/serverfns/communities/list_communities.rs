@@ -1,5 +1,6 @@
 use lemmy_client::lemmy_api_common::community::{
-  ListCommunities as ListCommunitiesBody, ListCommunitiesResponse,
+  ListCommunities as ListCommunitiesBody,
+  ListCommunitiesResponse,
 };
 use leptos::prelude::{server_fn::codec::GetUrl, *};
 

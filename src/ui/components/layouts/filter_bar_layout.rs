@@ -4,7 +4,8 @@ use crate::{
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
-  ListingType, SortType,
+  ListingType,
+  SortType,
 };
 use leptos::prelude::*;
 use leptos_router::{components::Outlet, hooks::use_query_map};

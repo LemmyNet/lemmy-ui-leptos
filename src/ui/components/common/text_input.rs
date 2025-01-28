@@ -35,7 +35,7 @@ pub fn TextInput(
           if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
         }
 
-        id={move || id.get()}
+        id=move || id.get()
         class=move || {
           format!(
             "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
@@ -45,10 +45,10 @@ pub fn TextInput(
 
         placeholder=" "
         name=move || name.get()
-        disabled={move || disabled.get()}
-        required={move || required.get()}
-        minlength={move || min_length.get()}
-        pattern={pattern}
+        disabled=move || disabled.get()
+        required=move || required.get()
+        minlength=move || min_length.get()
+        pattern=pattern
         autofocus=autofocus
       />
 

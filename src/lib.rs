@@ -75,45 +75,51 @@ fn AppRoutes() -> impl IntoView {
 
   view! {
     <Router set_is_routing=is_routing>
-    <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250) />
+      <RoutingProgress is_routing max_time=std::time::Duration::from_millis(250) />
 
-    <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css" />
-    <Title text="Brand from env" />
+      <Stylesheet id="leptos" href="/pkg/lemmy-ui-leptos.css" />
+      <Title text="Brand from env" />
 
-    <Routes fallback={NotFound}>
-      <ParentRoute path=path!("") view=BaseLayout ssr=SsrMode::Async>
-        <ParentRoute path=path!("") view=FilterBarLayout>
-          <Route path=path!("") view=HomePage />
+      <Routes fallback=NotFound>
+        <ParentRoute path=path!("") view=BaseLayout ssr=SsrMode::Async>
+          <ParentRoute path=path!("") view=FilterBarLayout>
+            <Route path=path!("") view=HomePage />
+          </ParentRoute>
+
+          <Route path=path!("create_post") view=CommunitiesPage />
+          <Route path=path!("post/:id") view=PostPage />
+
+          <Route path=path!("search") view=CommunitiesPage />
+          <Route path=path!("communities") view=CommunitiesPage />
+          <Route path=path!("create_community") view=CommunitiesPage />
+          <Route path=path!("c/:id") view=CommunitiesPage />
+          <ProtectedRoute
+            path=path!("login")
+            view=LoginPage
+            redirect_path=move || ""
+            condition=user_is_logged_in
+          />
+
+          <ProtectedRoute
+            path=path!("signup")
+            view=CommunitiesPage
+            redirect_path=move || ""
+            condition=user_is_logged_in
+          />
+
+          <Route path=path!("inbox") view=CommunitiesPage />
+          <Route path=path!("settings") view=CommunitiesPage />
+          <Route path=path!("u/:id") view=CommunitiesPage />
+          <Route path=path!("saved") view=CommunitiesPage />
+
+          <Route path=path!("modlog") view=CommunitiesPage />
+          <Route path=path!("instances") view=CommunitiesPage />
+          <Route path=path!("legal") view=CommunitiesPage />
         </ParentRoute>
+      </Routes>
 
-        <Route path=path!("create_post") view=CommunitiesPage />
-        <Route path=path!("post/:id") view=PostPage />
-
-        <Route path=path!("search") view=CommunitiesPage />
-        <Route path=path!("communities") view=CommunitiesPage />
-        <Route path=path!("create_community") view=CommunitiesPage />
-        <Route path=path!("c/:id") view=CommunitiesPage />
-        <ProtectedRoute
-          path=path!("login")
-          view=LoginPage
-          redirect_path=move || ""
-          condition=user_is_logged_in/>
-
-          <ProtectedRoute path=path!("signup") view=CommunitiesPage redirect_path=move || "" condition=user_is_logged_in/>
-
-        <Route path=path!("inbox") view=CommunitiesPage />
-        <Route path=path!("settings") view=CommunitiesPage />
-        <Route path=path!("u/:id") view=CommunitiesPage />
-        <Route path=path!("saved") view=CommunitiesPage />
-
-        <Route path=path!("modlog") view=CommunitiesPage />
-        <Route path=path!("instances") view=CommunitiesPage />
-        <Route path=path!("legal") view=CommunitiesPage />
-      </ParentRoute>
-    </Routes>
-
-    <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
-  </Router>
+      <ReportModal dialog_ref=report_modal.0 modal_data=report_modal_data />
+    </Router>
   }
 }
 
@@ -126,7 +132,7 @@ pub fn App() -> impl IntoView {
   view! {
     <I18n>
       <AppRoutes />
-  </I18n>
+    </I18n>
   }
 }
 

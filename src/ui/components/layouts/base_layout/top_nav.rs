@@ -3,7 +3,9 @@ use crate::{
   ui::components::{
     common::icon::{Icon, IconType},
     layouts::base_layout::top_nav::{
-      auth_dropdown::AuthDropdown, notification_bell::NotificationBell, theme_select::ThemeSelect,
+      auth_dropdown::AuthDropdown,
+      notification_bell::NotificationBell,
+      theme_select::ThemeSelect,
     },
   },
 };

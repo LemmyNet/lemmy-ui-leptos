@@ -1,6 +1,8 @@
 use lemmy_client::{
   lemmy_api_common::{
-    lemmy_db_schema::newtypes::PostId, post::HidePost as HidePostForm, SuccessResponse,
+    lemmy_db_schema::newtypes::PostId,
+    post::HidePost as HidePostForm,
+    SuccessResponse,
   },
   LemmyRequest,
 };

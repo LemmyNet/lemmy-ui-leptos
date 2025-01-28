@@ -50,9 +50,14 @@ hydrate = [
   "leptos-fluent/hydrate",
   "dep:console_error_panic_hook",
   "dep:web-sys",
-  "dep:wasm-bindgen"
+  "dep:wasm-bindgen",
 ]
-csr = ["leptos/csr", "dep:console_error_panic_hook", "dep:web-sys", "dep:wasm-bindgen"]
+csr = [
+  "leptos/csr",
+  "dep:console_error_panic_hook",
+  "dep:web-sys",
+  "dep:wasm-bindgen",
+]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
@@ -72,7 +77,14 @@ needless_lifetimes = "allow"
 let_unit_value = "allow"
 
 [package.metadata.cargo-all-features]
-denylist = ["actix-files", "actix-web", "leptos_actix", "console_error_panic_hook", "wasm-bindgen", "web-sys"]
+denylist = [
+  "actix-files",
+  "actix-web",
+  "leptos_actix",
+  "console_error_panic_hook",
+  "wasm-bindgen",
+  "web-sys",
+]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [profile.release]
