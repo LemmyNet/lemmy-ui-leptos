@@ -4,7 +4,7 @@ use crate::{
   ui::components::common::icon::{Icon, IconSize, IconType},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
 use leptos_router::components::A;
 
@@ -23,32 +23,12 @@ pub fn AuthDropdown() -> impl IntoView {
   view! {
     <nav class="hidden sm:block">
       <ul aria-label=move_tr!("authentication-nav") class="flex items-center gap-x-2">
-
-
-
-        <Transition
-        fallback=move || {
-          view! {
-            <li>
-              <A href="/login" attr:class="btn btn-ghost transition duration-500">
-                {move_tr!("login")}
-              </A>
-            </li>
-            <li>
-              <A href="/signup" attr:class="btn btn-primary transition duration-500">
-
-                {move_tr!("signup")}
-              </A>
-            </li>
-          }
-        }
-        >
                     {move || Suspend::new(async move {
                       site_resource.await.map(|site| {
                         site.my_user.map(|my_user| {
                           let Person {ref name, display_name, ..} = my_user.local_user_view.person;
 
-                          view! {
+                          Either::Left(view! {
                             <li>
                             <details
                               class="dropdown dropdown-end group"
@@ -91,11 +71,24 @@ pub fn AuthDropdown() -> impl IntoView {
                               </ul>
                             </details>
                           </li>
-                          }
-                        })
+                          })
+                        }).unwrap_or_else(||
+                          Either::Right(view! {
+                            <li>
+                              <A href="/login" attr:class="btn btn-ghost transition duration-500">
+                                {move_tr!("login")}
+                              </A>
+                            </li>
+                            <li>
+                              <A href="/signup" attr:class="btn btn-primary transition duration-500">
+
+                                {move_tr!("signup")}
+                              </A>
+                            </li>
+                          })
+                        )
                       })
                     })}
-        </Transition>
       </ul>
     </nav>
   }

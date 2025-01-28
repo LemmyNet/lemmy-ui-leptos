@@ -72,7 +72,7 @@ needless_lifetimes = "allow"
 let_unit_value = "allow"
 
 [package.metadata.cargo-all-features]
-denylist = ["actix-files", "actix-web", "leptos_actix"]
+denylist = ["actix-files", "actix-web", "leptos_actix", "console_error_panic_hook", "wasm-bindgen", "web-sys"]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [profile.release]
@@ -106,7 +106,7 @@ browserquery = "defaults"
 site-root = "target/site"
 site-pkg-dir = "pkg"
 assets-dir = "public"
-site-addr = "0.0.0.0:1237"
+site-addr = "127.0.0.1:1237"
 reload-port = 3001
 
 end2end-cmd = "npx playwright test"

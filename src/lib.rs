@@ -61,7 +61,7 @@ fn AppRoutes() -> impl IntoView {
       response
         .as_ref()
         .ok()
-        .map_or(false, |response| response.my_user.is_some())
+        .is_some_and(|response| response.my_user.is_some())
     })
   };
 

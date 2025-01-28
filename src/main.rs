@@ -5,7 +5,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use lemmy_ui_leptos::{App, cookie_middleware::cookie_middleware, host::get_client};
         use actix_files::Files;
-        use actix_web::*;
+        use actix_web::{*, App as ActixApp};
         use leptos::prelude::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
 
@@ -17,14 +17,14 @@ cfg_if! {
                 ) -> impl actix_web::Responder {
                     let leptos_options = leptos_options.into_inner();
                     let site_root = &leptos_options.site_root;
-                    actix_files::NamedFile::open_async(format!("{site_root}/{}", $file)).await
+                    actix_files::NamedFile::open_async(format!("./{site_root}{}", $file)).await
                 }
             };
         }
 
-        asset_route!(favicon, "favicon.svg");
-        asset_route!(icons, "icons.svg");
-        asset_route!(default_avatar, "default-avatar.png");
+        asset_route!(favicon, "/favicon.svg");
+        asset_route!(icons, "/icons.svg");
+        asset_route!(default_avatar, "/default-avatar.png");
 
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
@@ -37,11 +37,9 @@ cfg_if! {
                 let leptos_options = &conf.leptos_options;
                 let site_root = &leptos_options.site_root;
 
-                App::new()
+                ActixApp::new()
                     .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
                     .wrap(cookie_middleware())
-                    .service(Files::new("/pkg", format!("{site_root}/pkg")))
-                    .service(Files::new("/assets", site_root.as_ref()))
                     .service(favicon)
                     .service(icons)
                     .leptos_routes(
@@ -52,7 +50,7 @@ cfg_if! {
                             <!DOCTYPE html>
                             <html>
                               <head>
-                                <link rel="shortcut icon" href="/favicon.svg" />
+                                <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" />
 
                                 // debug where there is no visible console (mobile/live/desktop)
                                 <script src="//cdn.jsdelivr.net/npm/eruda"/>
@@ -66,12 +64,15 @@ cfg_if! {
                                 <MetaTags/>
                               </head>
                               <body class="h-full max-h-screen flex flex-col overflow-y-hidden">
+                                <App />
                               </body>
                             </html>
                           }
                         }
                     )
                     .app_data(web::Data::new(get_client()))
+                    .app_data(web::Data::new(leptos_options.clone()))
+                    .service(Files::new("/", site_root.as_ref()))
             })
             .bind(&addr)?
             .run()

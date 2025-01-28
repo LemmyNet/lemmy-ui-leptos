@@ -43,9 +43,10 @@ pub fn HomePage() -> impl IntoView {
           <h1 class="text-4xl font-bold text-nowrap">{move_tr!("home-feed")}</h1>
           // {filter_bar}
         </div>
+        <Suspense fallback=|| move_tr!("loading")>
+
         <ErrorBoundary fallback=|_| { move_tr!("could-not-load-posts") }>
 
-        <Suspense fallback=|| move_tr!("loading")>
           {move || Suspend::new(async move {
             posts_resource.await.map(|posts_response| {
               view! {
@@ -53,8 +54,8 @@ pub fn HomePage() -> impl IntoView {
               }
             })
           })}
-        </Suspense>
         </ErrorBoundary>
+        </Suspense>
 
       </main>
 
