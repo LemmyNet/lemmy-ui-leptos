@@ -28,11 +28,17 @@ pub fn PostListings() -> impl IntoView {
       posts_resource.await.map(|posts_response| {
         view! {
           <ul class="divide-y divide-neutral min-h-0 h-fit sm:h-full mb-14 sm:mb-4">
-            {posts_response.posts.into_iter().map(|pv| view! {
-              <li class="py-4 h-fit">
-                <PostListing post_view=pv />
-              </li>
-            }).collect::<Vec<_>>()}
+            {posts_response
+              .posts
+              .into_iter()
+              .map(|pv| {
+                view! {
+                  <li class="py-4 h-fit">
+                    <PostListing post_view=pv />
+                  </li>
+                }
+              })
+              .collect::<Vec<_>>()}
           </ul>
         }
       })

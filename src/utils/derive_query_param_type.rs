@@ -1,12 +1,12 @@
-use std::str::FromStr;
-
 use crate::contexts::site_resource_context::SiteResource;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::{
   source::{local_site::LocalSite, local_user::LocalUser},
-  ListingType, SortType,
+  ListingType,
+  SortType,
 };
 use leptos::prelude::{Read, Signal};
 use leptos_router::hooks::query_signal;
+use std::str::FromStr;
 
 fn derive_link_type<T>(
   site_resource: SiteResource,
@@ -20,6 +20,9 @@ where
   let (query_type, _) = query_signal::<T>(key);
 
   Signal::derive(move || {
+    // The warning "you are reading a resource in `hydrate` mode outside a <Suspense/> or <Transition/> or effect."
+    // is a false positive that occurs dues to a bug in Leptos.
+    // See https://github.com/leptos-rs/leptos/issues/3372
     let site_response = site_resource.read();
     let site_response = site_response
       .as_ref()

@@ -17,15 +17,9 @@ pub fn FilterBar() -> impl IntoView {
         <button class="btn join-item btn-disabled">{move_tr!("comments")}</button>
       </div>
       <div class="join">
-        <ListingTypeLink link_listing_type=ListingType::Subscribed>
-          {move_tr!("subscribed")}
-        </ListingTypeLink>
-        <ListingTypeLink link_listing_type=ListingType::Local>
-          {move_tr!("local")}
-        </ListingTypeLink>
-        <ListingTypeLink link_listing_type=ListingType::All>
-          {move_tr!("all")}
-        </ListingTypeLink>
+        <ListingTypeLink link_listing_type=ListingType::Subscribed text=move_tr!("subscribed") />
+        <ListingTypeLink link_listing_type=ListingType::Local text=move_tr!("local") />
+        <ListingTypeLink link_listing_type=ListingType::All text=move_tr!("all") />
       </div>
       <details class="dropdown dropdown-end group">
         <summary class="btn">
@@ -39,15 +33,9 @@ pub fn FilterBar() -> impl IntoView {
           </span>
         </summary>
         <menu class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
-          <SortTypeLink link_sort_type=SortType::Active>
-            {move_tr!("active")}
-          </SortTypeLink>
-          <SortTypeLink link_sort_type=SortType::Hot>
-            {move_tr!("hot")}
-          </SortTypeLink>
-          <SortTypeLink link_sort_type=SortType::New>
-            {move_tr!("new")}
-          </SortTypeLink>
+          <SortTypeLink link_sort_type=SortType::Active text=move_tr!("active") />
+          <SortTypeLink link_sort_type=SortType::Hot text=move_tr!("hot") />
+          <SortTypeLink link_sort_type=SortType::New text=move_tr!("new") />
         </menu>
       </details>
     </div>

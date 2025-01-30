@@ -7,7 +7,7 @@ use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
-pub fn SortTypeLink(link_sort_type: SortType, children: Children) -> impl IntoView {
+pub fn SortTypeLink(link_sort_type: SortType, text: Signal<String>) -> impl IntoView {
   let query = use_query_map();
   let site_resource = expect_context::<SiteResource>();
   let sort_type = derive_sort_type(site_resource);
@@ -24,7 +24,7 @@ pub fn SortTypeLink(link_sort_type: SortType, children: Children) -> impl IntoVi
         attr:class="aria-selected:btn-active"
         attr:aria-selected=move || { (sort_type.get() == link_sort_type).then_str() }
       >
-        {children()}
+        {text}
       </A>
     </li>
   }

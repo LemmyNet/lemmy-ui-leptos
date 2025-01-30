@@ -7,7 +7,7 @@ use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
-pub fn ListingTypeLink(link_listing_type: ListingType, children: Children) -> impl IntoView {
+pub fn ListingTypeLink(link_listing_type: ListingType, text: Signal<String>) -> impl IntoView {
   let query = use_query_map();
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
@@ -37,7 +37,7 @@ pub fn ListingTypeLink(link_listing_type: ListingType, children: Children) -> im
       attr:aria-selected=move || { (listing_type.get() == link_listing_type).then_str() }
     >
 
-      {children()}
+      {text}
     </A>
   }
 }

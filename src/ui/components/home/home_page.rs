@@ -29,10 +29,8 @@ pub fn HomePage() -> impl IntoView {
           </Transition>
         </div>
         <Suspense fallback=|| move_tr!("loading")>
-          <ErrorBoundary fallback=|_| {
-            move_tr!("could-not-load-posts")
-          }>
-           <PostListings />
+          <ErrorBoundary fallback=|_| { move_tr!("could-not-load-posts") }>
+            <PostListings />
           </ErrorBoundary>
         </Suspense>
 

@@ -43,8 +43,7 @@ pub fn AuthDropdown() -> impl IntoView {
 
                             <span class="text-nowrap leading-loose">
 
-                              {
-                              display_name.unwrap_or(name.clone())} " "
+                              {display_name.unwrap_or(name.clone())} " "
                               <Icon
                                 class="align-bottom inline group-open:rotate-180 transition-transform"
                                 icon=IconType::DropdownCaret
@@ -55,8 +54,7 @@ pub fn AuthDropdown() -> impl IntoView {
                           </summary>
                           <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
                             <li>
-                              <A href=
-                              format!("/u/{name}")>{move_tr!("profile")}</A>
+                              <A href=format!("/u/{name}")>{move_tr!("profile")}</A>
                             </li>
                             <li>
                               <A href="/settings">{move_tr!("settings")}</A>
