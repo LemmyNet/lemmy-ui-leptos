@@ -10,9 +10,9 @@ Install `taplo` with:
 
 `cargo install taplo-cli`
 
-Install `machete` with:
+Install `shear` with:
 
-`cargo install cargo-machete`
+`cargo install cargo-shear`
 
 Then run:
 

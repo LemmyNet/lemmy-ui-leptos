@@ -2059,7 +2059,6 @@ dependencies = [
  "strum",
  "tailwind_fuse",
  "tokio",
- "wasm-bindgen",
  "web-sys",
 ]
 
