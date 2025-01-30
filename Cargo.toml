@@ -48,11 +48,7 @@ hydrate = [
   "dep:console_error_panic_hook",
   "dep:web-sys",
 ]
-csr = [
-  "leptos/csr",
-  "dep:console_error_panic_hook",
-  "dep:web-sys",
-]
+csr = ["leptos/csr", "dep:console_error_panic_hook", "dep:web-sys"]
 ssr = [
   "leptos/ssr",
   "leptos_meta/ssr",
