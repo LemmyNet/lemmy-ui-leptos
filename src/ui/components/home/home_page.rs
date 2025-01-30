@@ -1,5 +1,6 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
+  serverfns::posts::list_posts,
   ui::components::{
     common::{
       filter_bar::FilterBar,
@@ -10,14 +11,27 @@ use crate::{
     },
     post::post_listings::PostListings,
   },
+  utils::{derive_listing_type, derive_sort_type},
 };
-use lemmy_client::lemmy_api_common::site::GetSiteResponse;
+use lemmy_client::lemmy_api_common::{post::GetPosts, site::GetSiteResponse};
 use leptos::prelude::*;
 use leptos_fluent::move_tr;
 
 #[component]
 pub fn HomePage() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
+  let listing_type = derive_listing_type(site_resource);
+  let sort_type = derive_sort_type(site_resource);
+
+  let posts_resource = Resource::new_blocking(
+    move || GetPosts {
+      type_: Some(listing_type.get()),
+      sort: Some(sort_type.get()),
+      limit: Some(20),
+      ..Default::default()
+    },
+    list_posts,
+  );
 
   view! {
     <div class="max-w-screen-2xl mx-auto flex mb-1 gap-6">
@@ -29,8 +43,16 @@ pub fn HomePage() -> impl IntoView {
           </Transition>
         </div>
         <Suspense fallback=|| move_tr!("loading")>
-          <ErrorBoundary fallback=|_| { move_tr!("could-not-load-posts") }>
-            <PostListings />
+          <ErrorBoundary fallback=|_| {
+            move_tr!("could-not-load-posts")
+          }>
+            {move || Suspend::new(async move {
+              posts_resource
+                .await
+                .map(|posts_response| {
+                  view! { <PostListings posts=posts_response.posts /> }
+                })
+            })}
           </ErrorBoundary>
         </Suspense>
 
