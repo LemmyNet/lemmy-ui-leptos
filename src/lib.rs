@@ -14,11 +14,8 @@ use crate::{
     theme_resource_context::provide_theme_resource_context,
   },
   ui::components::{
-    communities::communities_page::CommunitiesPage,
-    home::home_page::HomePage,
-    layouts::base_layout::BaseLayout,
-    login::login_page::LoginPage,
-    post::post_page::PostPage,
+    communities::communities_page::CommunitiesPage, home::home_page::HomePage,
+    layouts::base_layout::BaseLayout, login::login_page::LoginPage, post::post_page::PostPage,
   },
 };
 use contexts::site_resource_context::SiteResource;
@@ -146,7 +143,7 @@ fn NotFound() -> impl IntoView {
 }
 
 #[cfg(feature = "hydrate")]
-#[web_sys::wasm_bindgen::prelude::wasm_bindgen]
+#[wasm_bindgen::prelude::wasm_bindgen]
 pub fn hydrate() {
   console_error_panic_hook::set_once();
   leptos::mount::hydrate_body(App);
