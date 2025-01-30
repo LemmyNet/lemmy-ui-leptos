@@ -1,7 +1,7 @@
 use crate::constants::DEFAULT_AVATAR_PATH;
 use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
-use leptos::*;
-use leptos_router::A;
+use leptos::prelude::*;
+use leptos_router::components::A;
 
 #[component]
 pub fn TeamMemberCard(person: Person) -> impl IntoView {
@@ -19,7 +19,10 @@ pub fn TeamMemberCard(person: Person) -> impl IntoView {
         class="mx-auto size-12"
       />
       <div class="font-medium">{person.display_name.unwrap_or_else(|| person.name.clone())}</div>
-      <A href=format!("/u/{}", person.name.clone()) class="text-xs block text-primary font-light">
+      <A
+        href=format!("/u/{}", person.name.clone())
+        attr:class="text-xs block text-primary font-light"
+      >
         {format!("@{}", person.name.clone())}
       </A>
     </li>

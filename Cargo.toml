@@ -7,34 +7,33 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = { version = "0.6" }
-leptos_meta = { version = "0.6" }
-leptos_router = { version = "0.6" }
+leptos = "0.7"
+leptos_meta = "0.7"
+leptos_router = "0.7"
 cfg-if = "1"
-lemmy-client = { version = "1.0.2", features = ["leptos"] }
+lemmy-client = "1.0.5"
 serde = "1.0"
-serde_json = "1.0"
 
 # required for better debug messages
 console_error_panic_hook = { version = "0.1", optional = true }
 
 # dependecies for server (enable when ssr set)
-leptos_actix = { version = "0.6", optional = true }
+leptos_actix = { version = "0.7", optional = true }
 actix-files = { version = "0.6", optional = true }
 actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.41", optional = true, features = ["macros"] }
+tokio = { version = "1.43", optional = true, features = ["macros"] }
 strum = { version = "0.26", features = ["derive"] }
-trait-set = "0.3"
-leptos-use = "0.13"
+leptos-use = "0.15"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
-leptos-fluent = { version = "0.1", features = ["actix"] }
-fluent-templates = "0.12"
-chrono = "0.4.38"
+wasm-bindgen = { version = "0.2", optional = true }
+leptos-fluent = { version = "0.2", features = ["actix"] }
+fluent-templates = "0.13"
+chrono = "0.4"
 markdown-it = "0.6"
 markdown-it-sup = "1"
 markdown-it-sub = "1"
@@ -46,18 +45,16 @@ markdown-it-footnote = "0.2"
 default = ["ssr"]
 hydrate = [
   "leptos/hydrate",
-  "leptos_meta/hydrate",
-  "leptos_router/hydrate",
   "leptos-fluent/hydrate",
   "dep:console_error_panic_hook",
   "dep:web-sys",
+  "dep:wasm-bindgen",
 ]
 csr = [
   "leptos/csr",
-  "leptos_meta/csr",
-  "leptos_router/csr",
   "dep:console_error_panic_hook",
   "dep:web-sys",
+  "dep:wasm-bindgen",
 ]
 ssr = [
   "leptos/ssr",
@@ -78,7 +75,14 @@ needless_lifetimes = "allow"
 let_unit_value = "allow"
 
 [package.metadata.cargo-all-features]
-denylist = ["actix-files", "actix-web", "leptos_actix"]
+denylist = [
+  "actix-files",
+  "actix-web",
+  "leptos_actix",
+  "console_error_panic_hook",
+  "wasm-bindgen",
+  "web-sys",
+]
 skip_feature_sets = [["csr", "ssr"], ["csr", "hydrate"], ["ssr", "hydrate"]]
 
 [profile.release]
@@ -88,11 +92,10 @@ lto = true
 [profile.wasm-release]
 inherits = "release"
 opt-level = "z"
-lto = true
-codegen-units = 1
+panic = "abort"
 
 [dev-dependencies]
-rstest = "0.24.0"
+rstest = "0.24"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"
@@ -113,7 +116,7 @@ browserquery = "defaults"
 site-root = "target/site"
 site-pkg-dir = "pkg"
 assets-dir = "public"
-site-addr = "0.0.0.0:1237"
+site-addr = "127.0.0.1:1237"
 reload-port = 3001
 
 end2end-cmd = "npx playwright test"

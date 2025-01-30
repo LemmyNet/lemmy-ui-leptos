@@ -1,5 +1,5 @@
 use lemmy_client::lemmy_api_common::post::{GetPosts, GetPostsResponse};
-use leptos::{server, server_fn::codec::GetUrl, ServerFnError};
+use leptos::prelude::{server, server_fn::codec::GetUrl, ServerFnError};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 pub async fn list_posts(body: GetPosts) -> Result<GetPostsResponse, ServerFnError> {

@@ -1,28 +1,16 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   serverfns::auth::create_logout_action,
-  ui::components::common::{
-    icon::{Icon, IconSize, IconType},
-    unpack::Unpack,
-  },
-  utils::{derive_query_signal, derive_user_is_logged_in},
+  ui::components::common::icon::{Icon, IconSize, IconType},
 };
-use leptos::*;
+use lemmy_client::lemmy_api_common::lemmy_db_schema::source::person::Person;
+use leptos::{either::Either, prelude::*};
 use leptos_fluent::move_tr;
-use leptos_router::{ActionForm, A};
+use leptos_router::components::A;
 
 #[component]
 pub fn AuthDropdown() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
-  let user_is_logged_in = derive_user_is_logged_in(site_resource);
-  let names = derive_query_signal(site_resource, |site_response| {
-    site_response.my_user.as_ref().map(|my_user| {
-      (
-        my_user.local_user_view.person.name.clone(),
-        my_user.local_user_view.person.display_name.clone(),
-      )
-    })
-  });
 
   let logout_action = create_logout_action();
 
@@ -35,81 +23,73 @@ pub fn AuthDropdown() -> impl IntoView {
   view! {
     <nav class="hidden sm:block">
       <ul aria-label=move_tr!("authentication-nav") class="flex items-center gap-x-2">
-        <Show
-          when=move || user_is_logged_in.get()
+        {move || Suspend::new(async move {
+          site_resource
+            .await
+            .map(|site| {
+              site
+                .my_user
+                .map(|my_user| {
+                  let Person { ref name, display_name, .. } = my_user.local_user_view.person;
+                  Either::Left(
 
-          fallback=move || {
-            view! {
-              <li>
-                <A href="/login" class="btn btn-ghost transition duration-500">
-                  {move_tr!("login")}
-                </A>
-              </li>
-              <li>
-                <A href="/signup" class="btn btn-primary transition duration-500">
+                    view! {
+                      <li>
+                        <details
+                          class="dropdown dropdown-end group"
+                          aria-label=move_tr!("logged-in-user-dropdown")
+                        >
+                          <summary class="btn">
 
-                  {move_tr!("signup")}
-                </A>
-              </li>
-            }
-          }
-        >
+                            <span class="text-nowrap leading-loose">
 
-          <Unpack item=names let:names>
-            <li>
-              <details
-                class="dropdown dropdown-end group"
-                aria-label=move_tr!("logged-in-user-dropdown")
-              >
-                <summary class="btn">
+                              {display_name.unwrap_or(name.clone())} " "
+                              <Icon
+                                class="align-bottom inline group-open:rotate-180 transition-transform"
+                                icon=IconType::DropdownCaret
+                                size=IconSize::Small
+                              />
+                            </span>
 
-                  <span class="text-nowrap leading-loose">
+                          </summary>
+                          <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+                            <li>
+                              <A href=format!("/u/{name}")>{move_tr!("profile")}</A>
+                            </li>
+                            <li>
+                              <A href="/settings">{move_tr!("settings")}</A>
+                            </li>
+                            <div class="divider my-0"></div>
+                            <li>
+                              <ActionForm action=logout_action attr:class="p-0">
+                                <button type="submit" class="p-2.5">
+                                  {move_tr!("logout")}
+                                </button>
+                              </ActionForm>
+                            </li>
+                          </ul>
+                        </details>
+                      </li>
+                    },
+                  )
+                })
+                .unwrap_or_else(|| Either::Right(
+                  view! {
+                    <li>
+                      <A href="/login" attr:class="btn btn-ghost transition duration-500">
+                        {move_tr!("login")}
+                      </A>
+                    </li>
+                    <li>
+                      <A href="/signup" attr:class="btn btn-primary transition duration-500">
 
-                    {
-                      let (name, display_name) = names
-                        .as_ref()
-                        .expect(
-                          "None case for my_user should be handled by ancestor Show component",
-                        );
-                      display_name.as_ref().unwrap_or(name)
-                    } " "
-                    <Icon
-                      class="align-bottom inline group-open:rotate-180 transition-transform"
-                      icon=IconType::DropdownCaret
-                      size=IconSize::Small
-                    />
-                  </span>
-
-                </summary>
-                <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
-                  <li>
-                    <A href={
-                      let name = names
-                        .as_ref()
-                        .expect(
-                          "None case for my_user should be handled by ancestor Show component",
-                        )
-                        .0
-                        .as_str();
-                      format!("/u/{name}")
-                    }>{move_tr!("profile")}</A>
-                  </li>
-                  <li>
-                    <A href="/settings">{move_tr!("settings")}</A>
-                  </li>
-                  <div class="divider my-0"></div>
-                  <li>
-                    <ActionForm action=logout_action class="p-0">
-                      <button type="submit" class="p-2.5">
-                        {move_tr!("logout")}
-                      </button>
-                    </ActionForm>
-                  </li>
-                </ul>
-              </details>
-            </li>
-          </Unpack>
-        </Show>
+                        {move_tr!("signup")}
+                      </A>
+                    </li>
+                  },
+                ))
+            })
+        })}
       </ul>
     </nav>
   }

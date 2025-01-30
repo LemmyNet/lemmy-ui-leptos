@@ -1,4 +1,4 @@
-use leptos::*;
+use leptos::prelude::*;
 use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoStaticStr};
 
@@ -12,12 +12,10 @@ pub enum Theme {
   Retro,
 }
 
-impl IntoAttribute for Theme {
-  fn into_attribute(self) -> Attribute {
-    Attribute::String(Oco::Borrowed(self.into()))
-  }
+impl IntoAttributeValue for Theme {
+  type Output = Oco<'static, str>;
 
-  fn into_attribute_boxed(self: Box<Self>) -> Attribute {
-    self.into_attribute()
+  fn into_attribute_value(self) -> Self::Output {
+    Oco::Borrowed(self.into())
   }
 }

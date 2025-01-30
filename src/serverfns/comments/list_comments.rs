@@ -1,5 +1,5 @@
 use lemmy_client::lemmy_api_common::comment::{GetComments, GetCommentsResponse};
-use leptos::{server_fn::codec::GetUrl, *};
+use leptos::prelude::{server_fn::codec::GetUrl, *};
 
 #[server(prefix = "/serverfn", input = GetUrl)]
 pub async fn list_comments(body: GetComments) -> Result<GetCommentsResponse, ServerFnError> {

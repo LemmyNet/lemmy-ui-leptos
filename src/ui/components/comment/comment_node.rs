@@ -1,8 +1,8 @@
 use lemmy_client::lemmy_api_common::lemmy_db_views::structs::CommentView;
-use leptos::*;
+use leptos::prelude::*;
 
 #[component]
-pub fn CommentNode(comment_view: MaybeSignal<CommentView>) -> impl IntoView {
+pub fn CommentNode(#[prop(into)] comment_view: Signal<CommentView>) -> impl IntoView {
   view! {
     <div>
       {move || {

@@ -1,7 +1,7 @@
 use crate::ui::components::common::icon::{Icon, IconType};
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::*;
+use leptos_router::components::A;
 
 #[component]
 pub fn MobileNav() -> impl IntoView {

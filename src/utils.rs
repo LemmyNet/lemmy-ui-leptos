@@ -1,6 +1,3 @@
-mod derive_query_signal;
-pub use derive_query_signal::*;
-
 mod apub_name;
 pub use apub_name::*;
 
@@ -15,6 +12,9 @@ pub use get_time_since::get_time_since;
 
 pub mod traits;
 pub mod types;
+
+mod derive_query_param_type;
+pub use derive_query_param_type::*;
 
 pub mod markdown;
 pub use markdown::markdown_to_html;

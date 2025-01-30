@@ -1,20 +1,16 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
   ui::components::{
-    common::{
-      icon::{Icon, IconType},
-      unpack::Unpack,
-    },
+    common::icon::{Icon, IconType},
     layouts::base_layout::top_nav::{
       auth_dropdown::AuthDropdown,
       notification_bell::NotificationBell,
       theme_select::ThemeSelect,
     },
   },
-  utils::derive_query_signal,
 };
-use leptos::*;
-use leptos_router::*;
+use leptos::prelude::*;
+use leptos_router::components::A;
 
 mod auth_dropdown;
 mod notification_bell;
@@ -23,16 +19,17 @@ mod theme_select;
 #[component]
 fn InstanceName() -> impl IntoView {
   let site_resource = expect_context::<SiteResource>();
-  let instance_name = derive_query_signal(site_resource, |site_response| {
-    site_response.site_view.site.name.clone()
-  });
 
-  view! {
-    <Unpack item=instance_name let:instance_name>
-      <A href="/" class="block navbar-start text-xl whitespace-nowrap">
-        {instance_name}
-      </A>
-    </Unpack>
+  move || {
+    Suspend::new(async move {
+      site_resource.await.map(|site_response| {
+        view! {
+          <A href="/" attr:class="block navbar-start text-xl whitespace-nowrap">
+            {site_response.site_view.site.name}
+          </A>
+        }
+      })
+    })
   }
 }
 

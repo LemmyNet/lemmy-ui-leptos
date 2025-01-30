@@ -3,9 +3,8 @@ use crate::{
   serverfns::auth::create_login_action,
   ui::components::common::text_input::{InputType, TextInput},
 };
-use leptos::*;
+use leptos::{form::ActionForm, prelude::*};
 use leptos_fluent::{move_tr, tr};
-use leptos_router::ActionForm;
 
 #[component]
 pub fn LoginForm() -> impl IntoView {
@@ -26,7 +25,7 @@ pub fn LoginForm() -> impl IntoView {
   });
 
   view! {
-    <ActionForm class="space-y-3" action=login>
+    <ActionForm attr:class="space-y-3" action=login>
       {login_error}
       <TextInput
         id="username"
@@ -44,7 +43,6 @@ pub fn LoginForm() -> impl IntoView {
         pattern=".{10,60}"
         required=true
       />
-
       <button class="btn btn-lg" type="submit">
         {move_tr!("login")}
       </button>

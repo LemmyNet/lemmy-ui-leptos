@@ -1,4 +1,3 @@
-use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PostId,
@@ -7,7 +6,7 @@ use lemmy_client::{
   },
   LemmyRequest,
 };
-use leptos::*;
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn hide_post(id: PostId, hide: bool) -> Result<SuccessResponse, ServerFnError> {
@@ -29,7 +28,7 @@ async fn hide_post(id: PostId, hide: bool) -> Result<SuccessResponse, ServerFnEr
 }
 
 pub fn create_hide_post_action() -> ServerAction<HidePost> {
-  Action::server()
+  ServerAction::new()
 }
 
 pub type HidePostAction = ServerAction<HidePost>;

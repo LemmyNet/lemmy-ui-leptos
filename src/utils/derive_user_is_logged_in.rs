@@ -1,14 +1,12 @@
-use lemmy_client::lemmy_api_common::site::GetSiteResponse;
-use leptos::{with, ServerFnError, Signal, SignalWith};
+use crate::contexts::site_resource_context::SiteResource;
+use leptos::prelude::{Read, Signal};
 
-pub fn derive_user_is_logged_in<S>(site_signal: S) -> Signal<bool>
-where
-  S: SignalWith<Value = Option<Result<GetSiteResponse, ServerFnError>>> + 'static,
-{
+pub fn derive_user_is_logged_in(site_signal: SiteResource) -> Signal<bool> {
   Signal::derive(move || {
-    with!(|site_signal| site_signal
+    site_signal
+      .read()
       .as_ref()
       .and_then(|data| data.as_ref().ok())
-      .map_or(false, |s| s.my_user.is_some()))
+      .is_some_and(|s| s.my_user.is_some())
   })
 }

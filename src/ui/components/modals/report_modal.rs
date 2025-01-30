@@ -9,10 +9,12 @@ use crate::{
     types::{PostOrCommentId, ReportModalData},
   },
 };
-use html::Dialog;
-use leptos::*;
+use leptos::{
+  form::ActionForm,
+  html::{Dialog, Form as FormElement},
+  prelude::*,
+};
 use leptos_fluent::{move_tr, tr};
-use leptos_router::ActionForm;
 
 #[component]
 fn ReportForm(
@@ -48,11 +50,7 @@ fn ReportForm(
       <strong class="font-semibold">{move || creator_of_start.get()}</strong>
       ": "
       <span>
-        {move || {
-          with!(
-            |creator_name, creator_actor_id| create_user_apub_name(creator_name, creator_actor_id)
-          )
-        }}
+        {move || { create_user_apub_name(&creator_name.read(), &creator_actor_id.read()) }}
       </span>
     </div>
     <input type="hidden" name="id" value=move || post_or_comment_id.get().get_id() />
@@ -79,13 +77,11 @@ pub fn ReportModal(
   dialog_ref: NodeRef<Dialog>,
   modal_data: ReadSignal<ReportModalData>,
 ) -> impl IntoView {
-  let post_or_comment_id =
-    Signal::derive(move || with!(|modal_data| modal_data.post_or_comment_id));
-  let creator_actor_id =
-    Signal::derive(move || with!(|modal_data| modal_data.creator_actor_id.clone()));
-  let creator_name = Signal::derive(move || with!(|modal_data| modal_data.creator_name.clone()));
+  let post_or_comment_id = Signal::derive(move || modal_data.read().post_or_comment_id);
+  let creator_actor_id = Signal::derive(move || modal_data.read().creator_actor_id.clone());
+  let creator_name = Signal::derive(move || modal_data.read().creator_name.clone());
 
-  let form_ref = create_node_ref::<html::Form>();
+  let form_ref = NodeRef::<FormElement>::new();
   let close = move |_| {
     if let (Some(form_ref), Some(dialog_ref)) = (form_ref.get(), dialog_ref.get()) {
       form_ref.reset();
@@ -109,7 +105,7 @@ pub fn ReportModal(
 
   view! {
     <dialog
-      _ref=dialog_ref
+      node_ref=dialog_ref
       class="modal"
       on:close=move |_| {
         if let Some(form_ref) = form_ref.get() {
@@ -121,7 +117,7 @@ pub fn ReportModal(
         when=move || matches!(post_or_comment_id.get(), PostOrCommentId::Post(_))
         fallback=move || {
           view! {
-            <ActionForm node_ref=form_ref action=report_comment_action class="modal-box">
+            <ActionForm node_ref=form_ref action=report_comment_action attr:class="modal-box">
               <ReportForm
                 creator_name=creator_name
                 creator_actor_id=creator_actor_id
@@ -131,7 +127,7 @@ pub fn ReportModal(
           }
         }
       >
-        <ActionForm node_ref=form_ref action=report_post_action class="modal-box">
+        <ActionForm node_ref=form_ref action=report_post_action attr:class="modal-box">
           <ReportForm
             creator_name=creator_name
             creator_actor_id=creator_actor_id

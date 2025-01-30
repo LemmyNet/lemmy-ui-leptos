@@ -3,9 +3,9 @@ use crate::{
   ui::components::common::icon::{Icon, IconType},
   utils::derive_user_is_logged_in,
 };
-use leptos::*;
+use leptos::prelude::*;
 use leptos_fluent::move_tr;
-use leptos_router::A;
+use leptos_router::components::A;
 
 #[component]
 pub fn NotificationBell() -> impl IntoView {
@@ -14,7 +14,7 @@ pub fn NotificationBell() -> impl IntoView {
 
   view! {
     <Show when=move || user_is_logged_in.get()>
-      <A href="/inbox" class="me-2">
+      <A href="/inbox" attr:class="me-2">
         <span title=move_tr!("unread-messages")>
           <Icon icon=IconType::Notifications />
         </span>

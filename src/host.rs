@@ -9,7 +9,7 @@ fn get_internal_host() -> String {
 
 #[cfg(not(feature = "ssr"))]
 fn get_external_host() -> String {
-  let location = leptos::window().location();
+  let location = leptos::prelude::window().location();
 
   format!(
     "{}:{}",

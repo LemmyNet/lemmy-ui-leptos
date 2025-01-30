@@ -1,4 +1,3 @@
-use crate::utils::types::ServerAction;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PostId,
@@ -6,7 +5,7 @@ use lemmy_client::{
   },
   LemmyRequest,
 };
-use leptos::*;
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, ServerFnError> {
@@ -28,5 +27,5 @@ async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, S
 }
 
 pub fn create_report_post_action() -> ServerAction<ReportPost> {
-  Action::server()
+  ServerAction::new()
 }

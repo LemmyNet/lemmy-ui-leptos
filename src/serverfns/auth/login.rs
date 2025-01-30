@@ -1,5 +1,5 @@
-use crate::{constants::AUTH_COOKIE, utils::types::ServerAction};
-use leptos::{server_fn::error::NoCustomError, *};
+use crate::constants::AUTH_COOKIE;
+use leptos::prelude::{server_fn::error::NoCustomError, *};
 
 #[server(prefix = "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -27,5 +27,5 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
 }
 
 pub fn create_login_action() -> ServerAction<Login> {
-  Action::server()
+  ServerAction::new()
 }

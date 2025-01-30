@@ -1,6 +1,5 @@
-use crate::utils::types::ServerAction;
 use lemmy_client::LemmyRequest;
-use leptos::{server_fn::error::NoCustomError, *};
+use leptos::prelude::{server_fn::error::NoCustomError, *};
 
 #[server(prefix = "/serverfn")]
 async fn logout() -> Result<(), ServerFnError> {
@@ -18,5 +17,5 @@ async fn logout() -> Result<(), ServerFnError> {
 }
 
 pub fn create_logout_action() -> ServerAction<Logout> {
-  Action::server()
+  ServerAction::new()
 }

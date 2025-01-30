@@ -1,5 +1,5 @@
 use crate::utils::markdown_to_html;
-use leptos::*;
+use leptos::{prelude::*, text_prop::TextProp};
 
 #[component]
 pub fn MarkdownContent(#[prop(into)] content: TextProp) -> impl IntoView {

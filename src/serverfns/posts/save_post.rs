@@ -1,4 +1,4 @@
-use crate::utils::types::ServerAction;
+use crate::utils::types::ServerActionFn;
 use lemmy_client::{
   lemmy_api_common::{
     lemmy_db_schema::newtypes::PostId,
@@ -6,7 +6,7 @@ use lemmy_client::{
   },
   LemmyRequest,
 };
-use leptos::*;
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError> {
@@ -25,5 +25,9 @@ async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError
 }
 
 pub fn create_save_post_action() -> ServerAction<SavePost> {
-  Action::server()
+  ServerAction::new()
+}
+
+impl ServerActionFn for SavePost {
+  type Out = PostResponse;
 }
