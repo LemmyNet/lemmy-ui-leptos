@@ -1,5 +1,3 @@
-use leptos::prelude::{ServerFnError, Signal};
-
 mod theme;
 pub use theme::Theme;
 

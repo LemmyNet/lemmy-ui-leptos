@@ -13,6 +13,9 @@ pub use get_time_since::get_time_since;
 pub mod traits;
 pub mod types;
 
+mod derive_query_param_type;
+pub use derive_query_param_type::*;
+
 pub mod markdown;
 pub use markdown::markdown_to_html;
 

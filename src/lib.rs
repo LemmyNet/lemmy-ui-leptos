@@ -14,11 +14,8 @@ use crate::{
     theme_resource_context::provide_theme_resource_context,
   },
   ui::components::{
-    communities::communities_page::CommunitiesPage,
-    home::home_page::HomePage,
-    layouts::{base_layout::BaseLayout, filter_bar_layout::FilterBarLayout},
-    login::login_page::LoginPage,
-    post::post_page::PostPage,
+    communities::communities_page::CommunitiesPage, home::home_page::HomePage,
+    layouts::base_layout::BaseLayout, login::login_page::LoginPage, post::post_page::PostPage,
   },
 };
 use contexts::site_resource_context::SiteResource;
@@ -82,9 +79,7 @@ fn AppRoutes() -> impl IntoView {
 
       <Routes fallback=NotFound>
         <ParentRoute path=path!("") view=BaseLayout ssr=SsrMode::Async>
-          <ParentRoute path=path!("") view=FilterBarLayout>
-            <Route path=path!("") view=HomePage />
-          </ParentRoute>
+          <Route path=path!("") view=HomePage />
 
           <Route path=path!("create_post") view=CommunitiesPage />
           <Route path=path!("post/:id") view=PostPage />

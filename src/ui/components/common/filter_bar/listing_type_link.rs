@@ -1,17 +1,13 @@
 use crate::{
   contexts::site_resource_context::SiteResource,
-  utils::{derive_user_is_logged_in, traits::BoolOptionStr},
+  utils::{derive_listing_type, derive_user_is_logged_in, traits::BoolOptionStr},
 };
 use lemmy_client::lemmy_api_common::lemmy_db_schema::ListingType;
 use leptos::prelude::*;
 use leptos_router::{components::A, hooks::use_query_map};
 
 #[component]
-pub fn ListingTypeLink(
-  #[prop(into)] listing_type: Signal<ListingType>,
-  link_listing_type: ListingType,
-  children: Children,
-) -> impl IntoView {
+pub fn ListingTypeLink(link_listing_type: ListingType, children: Children) -> impl IntoView {
   let query = use_query_map();
   let site_resource = expect_context::<SiteResource>();
   let user_is_logged_in = derive_user_is_logged_in(site_resource);
@@ -22,6 +18,7 @@ pub fn ListingTypeLink(
         ListingType::Subscribed | ListingType::ModeratorView
       )
   });
+  let listing_type = derive_listing_type(site_resource);
 
   view! {
     <A
@@ -30,7 +27,7 @@ pub fn ListingTypeLink(
           String::from("javascript:void(0)")
         } else {
           let mut query = query.get();
-          query.insert(String::from("listingType"), link_listing_type.to_string());
+          query.replace("listingType", link_listing_type.to_string());
           query.to_query_string()
         }
       }
