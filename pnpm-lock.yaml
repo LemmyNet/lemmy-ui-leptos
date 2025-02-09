@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@savvywombat/tailwindcss-grid-areas':
         specifier: ^4.0.0
-        version: 4.0.0(tailwindcss@4.0.3)
+        version: 4.0.0(tailwindcss@4.0.5)
       daisyui:
         specifier: ^4.12.23
         version: 4.12.23(postcss@8.5.1)
@@ -19,7 +19,7 @@ importers:
         version: 3.4.2
       tailwindcss:
         specifier: ^4.0.0
-        version: 4.0.3
+        version: 4.0.5
 
 packages:
 
@@ -79,14 +79,14 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  tailwindcss@4.0.3:
-    resolution: {integrity: sha512-ImmZF0Lon5RrQpsEAKGxRvHwCvMgSC4XVlFRqmbzTEDb/3wvin9zfEZrMwgsa3yqBbPqahYcVI6lulM2S7IZAA==}
+  tailwindcss@4.0.5:
+    resolution: {integrity: sha512-DZZIKX3tA23LGTjHdnwlJOTxfICD1cPeykLLsYF1RQBI9QsCR3i0szohJfJDVjr6aNRAIio5WVO7FGB77fRHwg==}
 
 snapshots:
 
-  '@savvywombat/tailwindcss-grid-areas@4.0.0(tailwindcss@4.0.3)':
+  '@savvywombat/tailwindcss-grid-areas@4.0.0(tailwindcss@4.0.5)':
     dependencies:
-      tailwindcss: 4.0.3
+      tailwindcss: 4.0.5
 
   camelcase-css@2.0.1: {}
 
@@ -129,4 +129,4 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  tailwindcss@4.0.3: {}
+  tailwindcss@4.0.5: {}
