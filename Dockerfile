@@ -17,6 +17,7 @@ RUN wget -O- https://deb.nodesource.com/setup_20.x | bash
 RUN apt-get install -y nodejs
 
 # Enable corepack to use pnpm
+RUN npm i -g corepack
 RUN corepack enable
 RUN pnpm install --frozen-lockfile
 
