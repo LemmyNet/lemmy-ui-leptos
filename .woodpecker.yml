@@ -76,6 +76,7 @@ steps:
       - rustup target add wasm32-unknown-unknown
       - wget -O- https://deb.nodesource.com/setup_20.x | bash
       - apt-get install -y nodejs
+      - npm i -g corepack
       - corepack enable
       - pnpm install --frozen-lockfile
       - cargo binstall -y cargo-leptos
