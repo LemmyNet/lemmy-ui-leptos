@@ -10,8 +10,7 @@ use crate::{
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since,
-    is_image,
+    get_time_since, is_image,
     types::{Hidden, PostOrCommentId},
   },
 };
@@ -130,7 +129,7 @@ pub fn PostListing(post_view: PostView) -> impl IntoView {
 
   view! {
     <article class="w-full h-fit pe-1">
-      <div class="grid sm:grid-areas-post-listing sm:grid-cols-post-listing sm:grid-rows-post-listing grid-areas-post-listing-mobile grid-cols-post-listing-mobile grid-rows-post-listing-mobile items-center gap-2.5">
+      <div class="grid grid-areas-post-listing items-center gap-2.5">
         <VoteButtons
           id=PostOrCommentId::Post(id)
           my_vote=my_vote
