@@ -84,7 +84,7 @@ module.exports = {
   content: {
     files: ["*.html", "./src/**/*.rs"],
   },
-  plugins: [require("daisyui"), require("@savvywombat/tailwindcss-grid-areas")],
+  plugins: [],
   daisyui: {
     themes: ["light", "dark", "retro"],
   },

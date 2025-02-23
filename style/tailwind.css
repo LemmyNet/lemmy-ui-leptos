@@ -1,9 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.js';
 
 .markdown-content {
-  @apply bg-base-200 mt-4 p-5 rounded space-y-4;
+  @apply bg-base-200 mt-4 p-5 rounded-sm space-y-4;
 }
 
 .markdown-content h1 {

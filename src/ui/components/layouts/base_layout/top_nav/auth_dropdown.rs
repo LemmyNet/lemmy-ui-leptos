@@ -52,7 +52,7 @@ pub fn AuthDropdown() -> impl IntoView {
                             </span>
 
                           </summary>
-                          <ul class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+                          <ul class="*:p-0 p-2 shadow-sm menu dropdown-content z-1 bg-base-100 rounded-box">
                             <li>
                               <A href=format!("/u/{name}")>{move_tr!("profile")}</A>
                             </li>

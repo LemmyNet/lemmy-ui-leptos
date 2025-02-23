@@ -10,16 +10,16 @@ importers:
     devDependencies:
       '@savvywombat/tailwindcss-grid-areas':
         specifier: ^4.0.0
-        version: 4.0.0(tailwindcss@4.0.6)
+        version: 4.0.0(tailwindcss@4.0.8)
       daisyui:
         specifier: ^4.12.23
         version: 4.12.23(postcss@8.5.1)
       prettier:
-        specifier: ^3.4.2
-        version: 3.5.1
+        specifier: ^3.5.2
+        version: 3.5.2
       tailwindcss:
-        specifier: ^4.0.0
-        version: 4.0.6
+        specifier: ^4.0.8
+        version: 4.0.8
 
 packages:
 
@@ -70,8 +70,8 @@ packages:
     resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prettier@3.5.1:
-    resolution: {integrity: sha512-hPpFQvHwL3Qv5AdRvBFMhnKo4tYxp0ReXiPn2bxkiohEX6mBeBwEpBSQTkD458RaaDKQMYSp4hX4UtfUTA5wDw==}
+  prettier@3.5.2:
+    resolution: {integrity: sha512-lc6npv5PH7hVqozBR7lkBNOGXV9vMwROAPlumdBkX0wTbbzPu/U1hk5yL8p2pt4Xoc+2mkT8t/sow2YrV/M5qg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -79,14 +79,14 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  tailwindcss@4.0.6:
-    resolution: {integrity: sha512-mysewHYJKaXgNOW6pp5xon/emCsfAMnO8WMaGKZZ35fomnR/T5gYnRg2/yRTTrtXiEl1tiVkeRt0eMO6HxEZqw==}
+  tailwindcss@4.0.8:
+    resolution: {integrity: sha512-Me7N5CKR+D2A1xdWA5t5+kjjT7bwnxZOE6/yDI/ixJdJokszsn2n++mdU5yJwrsTpqFX2B9ZNMBJDwcqk9C9lw==}
 
 snapshots:
 
-  '@savvywombat/tailwindcss-grid-areas@4.0.0(tailwindcss@4.0.6)':
+  '@savvywombat/tailwindcss-grid-areas@4.0.0(tailwindcss@4.0.8)':
     dependencies:
-      tailwindcss: 4.0.6
+      tailwindcss: 4.0.8
 
   camelcase-css@2.0.1: {}
 
@@ -125,8 +125,8 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  prettier@3.5.1: {}
+  prettier@3.5.2: {}
 
   source-map-js@1.2.1: {}
 
-  tailwindcss@4.0.6: {}
+  tailwindcss@4.0.8: {}

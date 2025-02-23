@@ -40,7 +40,7 @@ pub fn ThemeSelect() -> impl IntoView {
           size=IconSize::Small
         />
       </summary>
-      <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+      <ul class="p-2 shadow-sm menu dropdown-content z-1 bg-base-100 rounded-box">
         <li>
           <ActionForm action=theme_action attr:class="p-0">
             <input type="hidden" name="theme" value=Theme::Dark />

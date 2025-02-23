@@ -102,7 +102,7 @@ where
                     </div>
                     <menu
                       tabindex="0"
-                      class="menu dropdown-content z-[1] bg-base-100 rounded-box shadow"
+                      class="menu dropdown-content z-1 bg-base-100 rounded-box shadow-sm"
                     >
                       <Show when=move || {
                         user_id == creator.read_untracked().id

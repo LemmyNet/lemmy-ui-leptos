@@ -2,8 +2,8 @@
   "devDependencies": {
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
     "daisyui": "^4.12.23",
-    "prettier": "^3.4.2",
-    "tailwindcss": "^4.0.0"
+    "prettier": "^3.5.2",
+    "tailwindcss": "^4.0.8"
   },
   "scripts": {
     "fmt": "prettier . --write"

@@ -46,7 +46,7 @@ pub fn PostPage() -> impl IntoView {
   );
 
   view! {
-    <div class="max-w-screen-2xl mx-auto flex gap-6 flex mt-4 mb-1 sm:gap-12 h-fit">
+    <div class="max-w-(--breakpoint-2xl) mx-auto flex gap-6 flex mt-4 mb-1 sm:gap-12 h-fit">
       <main class="basis-full lg:basis-13/20 xl:basis-7/10 flex flex-col mx-2.5 lg:mx-0 h-fit">
         <Transition>
           {move || Suspend::new(async move {
