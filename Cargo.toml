@@ -41,6 +41,8 @@ markdown-it-ruby = "1"
 markdown-it-block-spoiler = "1"
 markdown-it-footnote = "0.2"
 
+uuid = "=1.12.1"
+
 [features]
 default = ["ssr"]
 hydrate = [
@@ -95,7 +97,7 @@ opt-level = "z"
 panic = "abort"
 
 [dev-dependencies]
-rstest = "0.24"
+rstest = "0.25"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"

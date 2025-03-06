@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@plugin "daisyui" {
+  themes:
+    light --default,
+    dark --prefersdark,
+    retro;
+}
+
+@custom-variant aria-current-page (&[aria-current="page"]);
+
 @theme {
   --animate-color-cycle: color-cycle 6s linear infinite;
 
@@ -77,19 +86,19 @@
 
 .grid-areas-post-listing {
   grid-template-areas:
-    "vote thumbnail title"
-    "vote thumbnail to"
-    "vote thumbnail actions";
-  grid-template-rows: 1fr 2fr 1fr;
-  grid-template-columns: min-content min-content auto;
+    "title title thumbnail"
+    "to to thumbnail"
+    "vote actions thumbnail";
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: min-content auto min-content;
 
   @variant sm {
     grid-template-areas:
-      "title title thumbnail"
-      "to to thumbnail"
-      "vote actions thumbnail";
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-template-columns: min-content auto min-content;
+      "vote thumbnail title"
+      "vote thumbnail to"
+      "vote thumbnail actions";
+    grid-template-rows: 1fr 2fr 1fr;
+    grid-template-columns: min-content min-content auto;
   }
 }
 

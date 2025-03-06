@@ -14,11 +14,8 @@ use crate::{
     theme_resource_context::provide_theme_resource_context,
   },
   ui::components::{
-    communities::communities_page::CommunitiesPage,
-    home::home_page::HomePage,
-    layouts::base_layout::BaseLayout,
-    login::login_page::LoginPage,
-    post::post_page::PostPage,
+    communities::communities_page::CommunitiesPage, home::home_page::HomePage,
+    layouts::base_layout::BaseLayout, login::login_page::LoginPage, post::post_page::PostPage,
   },
 };
 use contexts::site_resource_context::SiteResource;
@@ -94,15 +91,15 @@ fn AppRoutes() -> impl IntoView {
           <ProtectedRoute
             path=path!("login")
             view=LoginPage
-            redirect_path=move || ""
-            condition=user_is_logged_in
+            redirect_path=move || "/"
+            condition=move || user_is_logged_in().map(|show| !show)
           />
 
           <ProtectedRoute
             path=path!("signup")
             view=CommunitiesPage
-            redirect_path=move || ""
-            condition=user_is_logged_in
+            redirect_path=move || "/"
+            condition=move || user_is_logged_in().map(|show| !show)
           />
 
           <Route path=path!("inbox") view=CommunitiesPage />
