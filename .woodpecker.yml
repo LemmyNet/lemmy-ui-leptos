@@ -71,10 +71,11 @@ steps:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo_home
+      LEPTOS_TAILWIND_VERSION: v4.0.12
     commands:
       - *install_binstall
       - rustup target add wasm32-unknown-unknown
-      - wget -O- https://deb.nodesource.com/setup_20.x | bash
+      - wget -O- https://deb.nodesource.com/setup_22.x | bash
       - apt-get install -y nodejs
       - npm i -g corepack
       - corepack enable
