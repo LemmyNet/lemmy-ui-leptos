@@ -29,7 +29,7 @@ pub fn TextInput(
   let eye_icon = Signal::derive(move || if show_password.get() { EyeSlash } else { Eye });
 
   view! {
-    <div class="relative w-full mt-8!">
+    <div class="relative w-full mt-8">
       <input
         type=move || {
           if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
