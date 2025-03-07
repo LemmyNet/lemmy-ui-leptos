@@ -35,7 +35,7 @@ pub fn ThemeSelect() -> impl IntoView {
       <summary class="btn btn-circle btn-ghost relative" aria-label=move_tr!("theme")>
         <Icon class="absolute left-1 inset-y-auto" icon=IconType::Theme />
         <Icon
-          class="absolute right-2.5 bottom-1 group-open:rotate-180 transition-transform"
+          class="absolute right-2 bottom-0.5 group-open:rotate-180 transition-transform"
           icon=IconType::DropdownCaret
           size=IconSize::Small
         />

@@ -10,7 +10,8 @@ use crate::{
     vote_buttons::VoteButtons,
   },
   utils::{
-    get_time_since, is_image,
+    get_time_since,
+    is_image,
     types::{Hidden, PostOrCommentId},
   },
 };

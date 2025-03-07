@@ -14,8 +14,11 @@ use crate::{
     theme_resource_context::provide_theme_resource_context,
   },
   ui::components::{
-    communities::communities_page::CommunitiesPage, home::home_page::HomePage,
-    layouts::base_layout::BaseLayout, login::login_page::LoginPage, post::post_page::PostPage,
+    communities::communities_page::CommunitiesPage,
+    home::home_page::HomePage,
+    layouts::base_layout::BaseLayout,
+    login::login_page::LoginPage,
+    post::post_page::PostPage,
   },
 };
 use contexts::site_resource_context::SiteResource;
