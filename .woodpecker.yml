@@ -80,6 +80,7 @@ steps:
       - npm i -g corepack
       - corepack enable
       - pnpm install --frozen-lockfile
+      - cargo binstall -y cargo-leptos
       - cargo leptos build
     when:
       - event: pull_request
