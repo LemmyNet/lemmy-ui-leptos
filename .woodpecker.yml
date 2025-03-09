@@ -76,7 +76,7 @@ steps:
     commands:
       - *install_binstall
       # - *install_nodejs
-      - apt update && apt install -y nodejs
+      - apt update && apt install -y nodejs npm
       - rustup target add wasm32-unknown-unknown
       - npm i -g corepack
       - corepack enable
