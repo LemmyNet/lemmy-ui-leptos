@@ -73,15 +73,15 @@ steps:
     environment:
       CARGO_HOME: .cargo_home
       LEPTOS_TAILWIND_VERSION: v4.0.12
+      RUST_BACKTRACE: full
     commands:
       - *install_binstall
-      # - *install_nodejs
-      - apt update && apt install -y nodejs npm
+      - *install_nodejs
       - rustup target add wasm32-unknown-unknown
       - npm i -g corepack
       - corepack enable
       - pnpm install --frozen-lockfile
-      - cargo binstall cargo-leptos
+      - cargo binstall -y cargo-leptos
       - cargo leptos build
     when:
       - event: pull_request
