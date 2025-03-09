@@ -73,13 +73,13 @@ steps:
       CARGO_HOME: .cargo_home
       LEPTOS_TAILWIND_VERSION: v4.0.12
     commands:
+      - *install_binstall
       - rustup target add wasm32-unknown-unknown
-      - wget -O- https://deb.nodesource.com/setup_22.x | bash
+      - wget -O- https://deb.nodesource.com/setup_23.x | bash
       - apt-get install -y nodejs
       - npm i -g corepack
       - corepack enable
       - pnpm install --frozen-lockfile
-      - cargo install --locked cargo-leptos
       - cargo leptos build
     when:
       - event: pull_request
