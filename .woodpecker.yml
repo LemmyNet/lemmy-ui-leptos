@@ -73,6 +73,8 @@ steps:
       CARGO_HOME: .cargo_home
       LEPTOS_TAILWIND_VERSION: v4.0.12
       LEPTOS_BIN_TARGET_TRIPLE: x86_64-unknown-linux-musl
+      RUST_BACKTRACE: full
+      COLORBT_SHOW_HIDDEN: 1
     commands:
       - *install_binstall
       - rustup target add wasm32-unknown-unknown
