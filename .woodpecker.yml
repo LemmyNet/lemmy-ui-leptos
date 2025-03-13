@@ -80,7 +80,7 @@ steps:
     commands:
       - *install_binstall
       - rustup target add wasm32-unknown-unknown
-      - wget -O- https://deb.nodesource.com/setup_22.x | bash
+      - wget -O- https://deb.nodesource.com/setup_23.x | bash
       - apt-get install -y nodejs
       - npm i -g corepack
       - corepack enable
