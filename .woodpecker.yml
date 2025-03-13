@@ -74,7 +74,7 @@ steps:
     image: *rust_image
     environment:
       CARGO_HOME: .cargo_home
-      LEPTOS_TAILWIND_VERSION: v4.0.12
+      LEPTOS_TAILWIND_VERSION: v4.0.14
       RUST_BACKTRACE: full
       COLORBT_SHOW_HIDDEN: 1
     commands:
