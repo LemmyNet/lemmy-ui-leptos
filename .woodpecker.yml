@@ -1,7 +1,7 @@
 variables:
   - &cd_workdir "cd /usr/src/app"
   - &rust_image "rustlang/rust:nightly-bookworm"
-  - &install_binstall "wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz | tar -xvz -C /usr/local/cargo/bin"
+  - &install_binstall "wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-gnu.tgz | tar -xvz -C /usr/local/cargo/bin"
 
 steps:
   prettier_check:
@@ -72,7 +72,6 @@ steps:
     environment:
       CARGO_HOME: .cargo_home
       LEPTOS_TAILWIND_VERSION: v4.0.12
-      LEPTOS_BIN_TARGET_TRIPLE: x86_64-unknown-linux-musl
       RUST_BACKTRACE: full
       COLORBT_SHOW_HIDDEN: 1
     commands:
