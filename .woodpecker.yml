@@ -79,9 +79,6 @@ steps:
       COLORBT_SHOW_HIDDEN: 1
     commands:
       - *install_binstall
-      - 'echo "============================"'
-      - pwd
-      - 'echo "============================="'
       - rustup target add wasm32-unknown-unknown
       - wget -O- https://deb.nodesource.com/setup_22.x | bash
       - apt-get install -y nodejs
