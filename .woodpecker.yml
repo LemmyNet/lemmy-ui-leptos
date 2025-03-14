@@ -1,10 +1,7 @@
 variables:
   - &cd_workdir "cd /usr/src/app"
-  - &rust_image "rustlang/rust:nightly-bookworm"
+  - &rust_image "rustlang/rust:nightly-bookworm-slim"
   - &install_binstall "wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-gnu.tgz | tar -xvz -C /usr/local/cargo/bin"
-
-labels:
-  platform: linux/amd64
 
 steps:
   prettier_check:
@@ -75,8 +72,6 @@ steps:
     environment:
       CARGO_HOME: .cargo_home
       LEPTOS_TAILWIND_VERSION: v4.0.14
-      RUST_BACKTRACE: full
-      COLORBT_SHOW_HIDDEN: 1
     commands:
       - *install_binstall
       - rustup target add wasm32-unknown-unknown
@@ -86,7 +81,7 @@ steps:
       - corepack enable
       - pnpm install --frozen-lockfile
       - cargo binstall -y cargo-leptos
-      - "cargo leptos build -vv"
+      - cargo leptos build
     when:
       - event: pull_request
 
