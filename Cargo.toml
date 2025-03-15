@@ -24,7 +24,7 @@ actix-web = { version = "4.9", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.43", optional = true, features = ["macros"] }
+tokio = { version = "1.44", optional = true, features = ["macros"] }
 strum = { version = "0.27", features = ["derive"] }
 leptos-use = "0.15"
 pretty-num = "0.1"
@@ -40,6 +40,11 @@ markdown-it-sub = "1"
 markdown-it-ruby = "1"
 markdown-it-block-spoiler = "1"
 markdown-it-footnote = "0.2"
+
+uuid = "=1.12.1"
+
+[package.metadata.cargo-shear]
+ignored = ["uuid"]
 
 [features]
 default = ["ssr"]
@@ -95,7 +100,7 @@ opt-level = "z"
 panic = "abort"
 
 [dev-dependencies]
-rstest = "0.24"
+rstest = "0.25"
 
 [package.metadata.leptos]
 output-name = "lemmy-ui-leptos"

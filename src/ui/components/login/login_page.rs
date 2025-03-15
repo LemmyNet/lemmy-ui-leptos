@@ -4,7 +4,7 @@ use leptos::prelude::*;
 #[component]
 pub fn LoginPage() -> impl IntoView {
   view! {
-    <main class="max-w-screen-sm mx-auto max-w-screen-md p-3">
+    <main class="max-w-(--breakpoint-sm) mx-auto max-w-(--breakpoint-md) p-3">
       <LoginForm />
     </main>
   }

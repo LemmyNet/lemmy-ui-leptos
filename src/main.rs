@@ -50,6 +50,7 @@ cfg_if! {
                             <!DOCTYPE html>
                             <html>
                               <head>
+                                <meta charset="utf-8" />
                                 <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" />
 
                                 // debug where there is no visible console (mobile/live/desktop)

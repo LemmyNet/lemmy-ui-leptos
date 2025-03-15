@@ -29,7 +29,7 @@ pub fn TextInput(
   let eye_icon = Signal::derive(move || if show_password.get() { EyeSlash } else { Eye });
 
   view! {
-    <div class="relative w-full !mt-8">
+    <div class="relative w-full mt-8">
       <input
         type=move || {
           if input_type == InputType::Text || show_password.get() { "text" } else { "password" }
@@ -38,7 +38,7 @@ pub fn TextInput(
         id=move || id.get()
         class=move || {
           format!(
-            "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-none bg-base-300/50 {}",
+            "peer input w-full pe-10 input-bordered border-x-0 border-t-0 rounded-b-none border-b-2 focus:outline-hidden bg-base-300/50 {}",
             validation_class.get(),
           )
         }
@@ -66,7 +66,7 @@ pub fn TextInput(
         </button>
       </Show>
       <label
-        class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-base-content/75 peer-[:not(:placeholder-shown)]:-top-20 peer-focus:text-current peer-[:not(:placeholder-shown)]:start-0 peer-[:not(:placeholder-shown)]:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
+        class="label absolute inset-y-0 start-2 transition-all peer-placeholder-shown:text-base-content/75 peer-not-placeholder-shown:-top-20 peer-focus:text-current peer-not-placeholder-shown:start-0 peer-not-placeholder-shown:text-sm peer-focus:text-sm peer-focus:-top-20 peer-focus:start-0 pointer-events-none select-none"
         for=for_id
       >
         {move || label.get()}

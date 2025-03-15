@@ -32,7 +32,7 @@ pub fn FilterBar() -> impl IntoView {
             />
           </span>
         </summary>
-        <menu class="*:p-0 p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box">
+        <menu class="*:p-0 p-2 shadow-sm menu dropdown-content z-1 bg-base-100 rounded-box">
           <SortTypeLink link_sort_type=SortType::Active text=move_tr!("active") />
           <SortTypeLink link_sort_type=SortType::Hot text=move_tr!("hot") />
           <SortTypeLink link_sort_type=SortType::New text=move_tr!("new") />

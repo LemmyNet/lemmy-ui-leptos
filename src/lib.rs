@@ -94,15 +94,15 @@ fn AppRoutes() -> impl IntoView {
           <ProtectedRoute
             path=path!("login")
             view=LoginPage
-            redirect_path=move || ""
-            condition=user_is_logged_in
+            redirect_path=move || "/"
+            condition=move || user_is_logged_in().map(|show| !show)
           />
 
           <ProtectedRoute
             path=path!("signup")
             view=CommunitiesPage
-            redirect_path=move || ""
-            condition=user_is_logged_in
+            redirect_path=move || "/"
+            condition=move || user_is_logged_in().map(|show| !show)
           />
 
           <Route path=path!("inbox") view=CommunitiesPage />
