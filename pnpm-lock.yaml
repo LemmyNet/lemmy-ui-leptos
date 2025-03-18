@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       daisyui:
-        specifier: ^5.0.4
-        version: 5.0.4
+        specifier: ^5.0.6
+        version: 5.0.6
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -20,8 +20,8 @@ importers:
 
 packages:
 
-  daisyui@5.0.4:
-    resolution: {integrity: sha512-9X3oX/k9hPBCslAECk8kYfvwgrz6Grs0lN7VI0/ZTM/hUfq1uFREHxCcBCCq0QROpN183N19B1hTNRWGipO2Eg==}
+  daisyui@5.0.6:
+    resolution: {integrity: sha512-/e/9Gw/2y9oawBJlWkJMSEhRXdmfOLvcPl+6q/x2rPEdIVOtebs1t3ex2vwySl9vCRs1GGNBKCiL+P60Ps/wUw==}
 
   prettier@3.5.3:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
@@ -33,7 +33,7 @@ packages:
 
 snapshots:
 
-  daisyui@5.0.4: {}
+  daisyui@5.0.6: {}
 
   prettier@3.5.3: {}
 

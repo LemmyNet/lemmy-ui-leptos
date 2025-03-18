@@ -15,7 +15,7 @@ pub fn PostListings(posts: Vec<PostView>) -> impl IntoView {
             </li>
           }
         })
-        .collect::<Vec<_>>()}
+        .collect_view()}
     </ul>
   }
 }

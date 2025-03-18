@@ -1,6 +1,7 @@
 use crate::{
   serverfns::{comments::list_comments, posts::get_post},
   ui::components::{
+    comment::comment_nodes::CommentNodes,
     common::sidebar::{
       sidebar_data::{CommunitySidebarData, SidebarData},
       Sidebar,
@@ -9,9 +10,7 @@ use crate::{
   },
 };
 use lemmy_client::lemmy_api_common::{
-  comment::GetComments,
-  lemmy_db_schema::newtypes::PostId,
-  post::GetPost,
+  comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost,
 };
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
@@ -36,7 +35,7 @@ pub fn PostPage() -> impl IntoView {
     get_post,
   );
 
-  let _list_comments_resource = Resource::new(
+  let list_comments_resource = Resource::new(
     move || GetComments {
       post_id: Some(*post_id.read()),
       max_depth: Some(8),
@@ -56,11 +55,17 @@ pub fn PostPage() -> impl IntoView {
           })}
         </Transition>
 
-      // <Unpack item=list_comments_resource let:res>
-      // <div>
-      // <CommentNodes comments=res.comments.clone()/>
-      // </div>
-      // </Unpack>
+        <Suspense fallback=|| "Bar">
+          <ErrorBoundary fallback=|_| "Foo">
+          {move || Suspend::new(async move {
+            list_comments_resource.await.map(|comments_response| {
+              view! {
+                <CommentNodes comments=comments_response.comments/>
+              }
+            })
+          })}
+          </ ErrorBoundary>
+        </Suspense>
       </main>
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 sticky top-6 h-fit">
         <Transition>
