@@ -3,10 +3,5 @@ use leptos::prelude::*;
 
 #[component]
 pub fn CommentNode(#[prop(into)] comment_view: CommentView) -> impl IntoView {
-  view! {
-    <div>
-      "Foo"
-
-    </div>
-  }
+  view! { <div>"Foo"</div> }
 }

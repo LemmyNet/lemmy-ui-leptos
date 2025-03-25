@@ -10,7 +10,9 @@ use crate::{
   },
 };
 use lemmy_client::lemmy_api_common::{
-  comment::GetComments, lemmy_db_schema::newtypes::PostId, post::GetPost,
+  comment::GetComments,
+  lemmy_db_schema::newtypes::PostId,
+  post::GetPost,
 };
 use leptos::prelude::*;
 use leptos_router::hooks::use_params_map;
@@ -56,15 +58,17 @@ pub fn PostPage() -> impl IntoView {
         </Transition>
 
         <Suspense fallback=|| "Bar">
-          <ErrorBoundary fallback=|_| "Foo">
-          {move || Suspend::new(async move {
-            list_comments_resource.await.map(|comments_response| {
-              view! {
-                <CommentNodes comments=comments_response.comments/>
-              }
-            })
-          })}
-          </ ErrorBoundary>
+          <ErrorBoundary fallback=|_| {
+            "Foo"
+          }>
+            {move || Suspend::new(async move {
+              list_comments_resource
+                .await
+                .map(|comments_response| {
+                  view! { <CommentNodes comments=comments_response.comments /> }
+                })
+            })}
+          </ErrorBoundary>
         </Suspense>
       </main>
       <aside class="hidden basis-7/20 xl:basis-3/10 lg:block me-8 sticky top-6 h-fit">

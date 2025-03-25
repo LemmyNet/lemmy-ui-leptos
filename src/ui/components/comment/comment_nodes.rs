@@ -6,11 +6,16 @@ use leptos::prelude::*;
 pub fn CommentNodes(comments: Vec<CommentView>) -> impl IntoView {
   view! {
     <ul>
-      {comments.into_iter().map(|cv| view! {
-        <li>
-        <CommentNode comment_view=cv/>
-        </li>
-      }).collect_view()}
+      {comments
+        .into_iter()
+        .map(|cv| {
+          view! {
+            <li>
+              <CommentNode comment_view=cv />
+            </li>
+          }
+        })
+        .collect_view()}
     </ul>
   }
 }

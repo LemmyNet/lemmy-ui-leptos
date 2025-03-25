@@ -16,8 +16,10 @@ pub mod types;
 mod derive_query_param_type;
 pub use derive_query_param_type::*;
 
-pub mod markdown;
+mod markdown;
 pub use markdown::markdown_to_html;
+
+mod build_comment_tree;
 
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
