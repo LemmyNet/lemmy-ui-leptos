@@ -1,10 +1,13 @@
 use lemmy_client::lemmy_api_common::{
-  lemmy_db_schema::newtypes::CommentId,
-  lemmy_db_views::structs::CommentView,
+  lemmy_db_schema::newtypes::CommentId, lemmy_db_views::structs::CommentView,
 };
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
-struct CommentNode {
+#[derive(Debug)]
+pub struct CommentList(Vec<Rc<RefCell<CommentNode>>>);
+
+#[derive(Debug)]
+pub struct CommentNode {
   data: CommentView,
   children: Vec<Rc<RefCell<CommentNode>>>,
 }
@@ -17,39 +20,67 @@ fn parse_comment_id(id: Option<&str>) -> CommentId {
   )
 }
 
-pub fn build_comment_tree(comment_views: Vec<CommentView>) {
-  let comments = comment_views
-    .into_iter()
-    .fold(
-      (HashMap::new(), HashMap::new(), Vec::new()),
-      |(mut node_map, mut orphan_map, mut top_level_comments), comment_view| {
-        let mut path_segments = comment_view.comment.path.split('.').rev();
+/// Only used during construction of `CommentList`
+struct CommentListAccumulator {
+  node_map: HashMap<CommentId, Rc<RefCell<CommentNode>>>,
+  orphan_map: HashMap<CommentId, Vec<Rc<RefCell<CommentNode>>>>,
+  top_level_comments: Vec<Rc<RefCell<CommentNode>>>,
+}
 
-        let (own_id, parent_id) = (
-          parse_comment_id(path_segments.next()),
-          parse_comment_id(path_segments.next()),
-        );
+impl CommentList {
+  pub fn new(comment_views: impl IntoIterator<Item = CommentView>) -> Self {
+    // TODO: Make unit tests for this. Lemmy API common types not implementing `Default` make this
+    // much harder to do than expected.
 
-        let children = orphan_map.remove(&own_id).unwrap_or_else(|| Vec::new());
-        let node = Rc::new(RefCell::new(CommentNode {
-          data: comment_view,
-          children,
-        }));
-        node_map.insert(own_id, Rc::clone(&node));
+    Self(
+      comment_views
+        .into_iter()
+        .fold(
+          CommentListAccumulator {
+            node_map: HashMap::new(),
+            orphan_map: HashMap::new(),
+            top_level_comments: Vec::new(),
+          },
+          |mut acc, comment_view| {
+            let mut path_segments = comment_view.comment.path.split('.').rev();
 
-        if let Some(parent_node) = node_map.get(&parent_id) {
-          (*parent_node.borrow_mut()).children.push(Rc::clone(&node));
-        }
-        // Parent ID is 0 if it is a top level comment (i.e. it cannot be any other comment's child).
-        else if parent_id.0 == 0 {
-          top_level_comments.push(Rc::clone(&node));
-        } else {
-          let orphans = orphan_map.entry(parent_id).or_default();
-          orphans.push(Rc::clone(&node));
-        }
+            let (own_id, parent_id) = (
+              parse_comment_id(path_segments.next()),
+              parse_comment_id(path_segments.next()),
+            );
 
-        (node_map, orphan_map, top_level_comments)
-      },
+            let children = acc.orphan_map.remove(&own_id).unwrap_or_else(|| Vec::new());
+            let node = Rc::new(RefCell::new(CommentNode {
+              data: comment_view,
+              children,
+            }));
+            acc.node_map.insert(own_id, Rc::clone(&node));
+
+            if let Some(parent_node) = acc.node_map.get(&parent_id) {
+              (*parent_node.borrow_mut()).children.push(Rc::clone(&node));
+            }
+            // Parent ID is 0 if it is a top level comment (i.e. it cannot be any other comment's child).
+            else if parent_id.0 == 0 {
+              acc.top_level_comments.push(Rc::clone(&node));
+            } else {
+              let orphans = acc.orphan_map.entry(parent_id).or_default();
+              orphans.push(Rc::clone(&node));
+            }
+
+            acc
+          },
+        )
+        .top_level_comments,
     )
-    .2;
+  }
+}
+
+impl IntoIterator for CommentList {
+  type Item = Rc<RefCell<CommentNode>>;
+
+  type IntoIter = std::vec::IntoIter<Self::Item>;
+
+  fn into_iter(self) -> Self::IntoIter {
+    self.0.into_iter()
+  }
 }

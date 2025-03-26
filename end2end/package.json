@@ -9,8 +9,8 @@
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.51.1",
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.13.13",
     "typescript": "^5.8.2"
   },
-  "packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6"
+  "packageManager": "pnpm@10.7.0+sha512.6b865ad4b62a1d9842b61d674a393903b871d9244954f652b8842c2b553c72176b278f64c463e52d40fff8aba385c235c8c9ecf5cc7de4fd78b8bb6d49633ab6"
 }
