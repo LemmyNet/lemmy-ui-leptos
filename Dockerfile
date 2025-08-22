@@ -5,7 +5,7 @@ RUN wget -O- https://github.com/cargo-bins/cargo-binstall/releases/latest/downlo
 FROM base AS leptos-ui
 WORKDIR /usr/src/app
 
-COPY *.toml Cargo.lock tailwind.config.js package.json pnpm-lock.yaml ./
+COPY *.toml Cargo.lock tailwind.config.j[s] package.json pnpm-lock.yaml ./
 COPY src src
 COPY public public
 COPY locales locales
