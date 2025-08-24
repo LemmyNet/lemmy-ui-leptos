@@ -7,7 +7,7 @@ pub fn CommentNodes(comments: Vec<CommentView>) -> impl IntoView {
   let comments = CommentList::new(comments);
   leptos::logging::log!("{comments:#?}");
 
-  view! {"Placeholder"}
+  view! { "Placeholder" }
   // view! {
   //   <ul>
   //     {comments

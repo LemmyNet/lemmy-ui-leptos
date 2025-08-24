@@ -9,3 +9,5 @@ pub use dialog_types::*;
 
 mod content_action_types;
 pub use content_action_types::*;
+
+mod stores;
