@@ -7,26 +7,26 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-leptos = "0.7"
-leptos_meta = "0.7"
-leptos_router = "0.7"
+leptos = "0.8"
+leptos_meta = "0.8"
+leptos_router = "0.8"
 cfg-if = "1"
-lemmy-client = "1.0.5"
+lemmy-client = {git = "https://github.com/LemmyNet/lemmy-client-rs.git", branch = "v1-alpha"}
 serde = "1.0"
 
 # required for better debug messages
 console_error_panic_hook = { version = "0.1", optional = true }
 
 # dependecies for server (enable when ssr set)
-leptos_actix = { version = "0.7", optional = true }
+leptos_actix = { version = "0.8", optional = true }
 actix-files = { version = "0.6", optional = true }
-actix-web = { version = "4.9", features = ["macros"], optional = true }
+actix-web = { version = "4.11", features = ["macros"], optional = true }
 actix-session = { version = "0.10", features = [
   "cookie-session",
 ], optional = true }
-tokio = { version = "1.44", optional = true, features = ["macros"] }
+tokio = { version = "1.47", optional = true, features = ["macros"] }
 strum = { version = "0.27", features = ["derive"] }
-leptos-use = "0.15"
+leptos-use = "0.16"
 pretty-num = "0.1"
 tailwind_fuse = { version = "0.3", features = ["variant"] }
 web-sys = { version = "0.3", optional = true, features = ["Url"] }
@@ -40,8 +40,6 @@ markdown-it-sub = "1"
 markdown-it-ruby = "1"
 markdown-it-block-spoiler = "1"
 markdown-it-footnote = "0.2"
-
-uuid = "=1.12.1"
 
 [package.metadata.cargo-shear]
 ignored = ["uuid"]
