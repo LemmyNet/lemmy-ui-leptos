@@ -1,4 +1,4 @@
-use lemmy_client::lemmy_api_common::lemmy_db_schema::newtypes::{CommentId, PostId};
+use lemmy_client::lemmy_api_common::{comment::CommentId, post::PostId};
 
 #[derive(Clone, Copy)]
 pub enum PostOrCommentId {

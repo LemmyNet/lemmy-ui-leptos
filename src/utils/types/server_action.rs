@@ -1,7 +1,7 @@
 use leptos::server_fn::{
+  actix::ActixServerFnBackend,
   client::browser::BrowserClient,
   codec::PostUrl,
-  error::NoCustomError,
   ServerFn,
 };
 use serde::de::DeserializeOwned;
@@ -12,12 +12,7 @@ pub trait ServerActionFn:
   + Send
   + Sync
   + 'static
-  + ServerFn<
-    InputEncoding = PostUrl,
-    Client = BrowserClient,
-    Output = Self::Out,
-    Error = NoCustomError,
-  >
+  + ServerFn<Client = BrowserClient, Server = ActixServerFnBackend, Output = Self::Out>
 {
   type Out: Send + Sync + 'static;
 }
