@@ -1,6 +1,7 @@
 communities = Communities
 create-post = Create post
 create-community = Create community
+name = Name
 donate = Donate
 search = Search
 login = Login
