@@ -27,7 +27,10 @@ use leptos::{html::Dialog, prelude::*};
 use leptos_fluent::leptos_fluent;
 use leptos_meta::*;
 use leptos_router::{components::*, *};
-use ui::components::modals::ReportModal;
+use ui::components::{
+  communities::create_community_page::CreateCommunityPage,
+  modals::ReportModal,
+};
 use utils::types::{ReportModalData, ReportModalNode};
 
 static_loader! {
@@ -89,7 +92,7 @@ fn AppRoutes() -> impl IntoView {
 
           <Route path=path!("search") view=CommunitiesPage />
           <Route path=path!("communities") view=CommunitiesPage />
-          <Route path=path!("create_community") view=CommunitiesPage />
+          <Route path=path!("create_community") view=CreateCommunityPage />
           <Route path=path!("c/:id") view=CommunitiesPage />
           <ProtectedRoute
             path=path!("login")
