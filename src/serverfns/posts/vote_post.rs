@@ -22,7 +22,7 @@ async fn vote_post(id: PostId, score: i16) -> Result<PostResponse, ServerFnError
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_vote_post_action() -> ServerAction<VotePost> {

@@ -12,5 +12,5 @@ pub async fn get_site() -> Result<GetSiteResponse, ServerFnError> {
   client
     .get_site(LemmyRequest::from_jwt(jwt))
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }

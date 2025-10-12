@@ -24,7 +24,7 @@ async fn hide_post(id: PostId, hide: bool) -> Result<SuccessResponse, ServerFnEr
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_hide_post_action() -> ServerAction<HidePost> {

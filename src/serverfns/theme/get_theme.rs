@@ -7,7 +7,7 @@ pub async fn get_theme() -> Result<Theme, ServerFnError> {
   use actix_web::HttpRequest;
   use leptos_actix::extract;
 
-  let req = extract::<HttpRequest>().await?;
+  let req = extract::<HttpRequest>().await.map_err(ServerFnError::new)?;
 
   Ok(req.cookie("theme").map_or(Theme::Light, |c| {
     Theme::from_str(c.value()).unwrap_or(Theme::Light)

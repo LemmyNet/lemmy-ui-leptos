@@ -18,5 +18,5 @@ pub async fn list_communities(
   client
     .list_communities(LemmyRequest { body, jwt })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }

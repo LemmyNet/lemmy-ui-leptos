@@ -1,5 +1,5 @@
 use crate::constants::AUTH_COOKIE;
-use leptos::prelude::{server_fn::error::NoCustomError, *};
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
@@ -14,12 +14,7 @@ pub async fn login(username_or_email: String, password: String) -> Result<(), Se
     totp_2fa_token: None,
   };
 
-  if let Some(jwt) = client
-    .login(req)
-    .await
-    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?
-    .jwt
-  {
+  if let Some(jwt) = client.login(req).await.map_err(ServerFnError::new)?.jwt {
     session.insert(AUTH_COOKIE, jwt.into_inner())?;
   }
 

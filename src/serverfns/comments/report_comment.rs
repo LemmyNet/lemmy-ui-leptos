@@ -23,7 +23,7 @@ async fn report_comment(id: CommentId, reason: String) -> Result<CommentResponse
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_report_comment_action() -> ServerAction<ReportComment> {

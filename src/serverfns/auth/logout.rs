@@ -1,5 +1,5 @@
 use lemmy_client::LemmyRequest;
-use leptos::prelude::{server_fn::error::NoCustomError, *};
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn logout() -> Result<(), ServerFnError> {
@@ -10,7 +10,7 @@ async fn logout() -> Result<(), ServerFnError> {
   client
     .logout(LemmyRequest::from_jwt(jwt))
     .await
-    .map_err(|e| ServerFnError::<NoCustomError>::ServerError(e.to_string()))?;
+    .map_err(ServerFnError::new)?;
 
   session.purge();
   Ok(())

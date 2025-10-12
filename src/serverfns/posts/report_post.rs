@@ -23,7 +23,7 @@ async fn report_post(id: PostId, reason: String) -> Result<PostReportResponse, S
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_report_post_action() -> ServerAction<ReportPost> {

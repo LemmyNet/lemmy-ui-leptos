@@ -12,5 +12,5 @@ pub async fn list_posts(body: GetPosts) -> Result<GetPostsResponse, ServerFnErro
   client
     .list_posts(LemmyRequest { body, jwt })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }

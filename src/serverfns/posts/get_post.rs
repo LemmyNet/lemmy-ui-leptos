@@ -12,5 +12,5 @@ pub async fn get_post(body: GetPostBody) -> Result<GetPostResponse, ServerFnErro
   client
     .get_post(LemmyRequest { body, jwt })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }

@@ -13,5 +13,5 @@ pub async fn list_comments(body: GetComments) -> Result<GetCommentsResponse, Ser
   client
     .list_comments(LemmyRequest { body, jwt })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }

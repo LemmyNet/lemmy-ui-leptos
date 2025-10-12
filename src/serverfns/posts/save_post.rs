@@ -21,7 +21,7 @@ async fn save_post(id: PostId, save: bool) -> Result<PostResponse, ServerFnError
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_save_post_action() -> ServerAction<SavePost> {

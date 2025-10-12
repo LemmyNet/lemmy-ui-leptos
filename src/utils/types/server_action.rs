@@ -1,7 +1,7 @@
 use leptos::server_fn::{
   client::browser::BrowserClient,
   codec::PostUrl,
-  error::NoCustomError,
+  error::ServerFnError,
   ServerFn,
 };
 use serde::de::DeserializeOwned;
@@ -16,7 +16,7 @@ pub trait ServerActionFn:
     InputEncoding = PostUrl,
     Client = BrowserClient,
     Output = Self::Out,
-    Error = NoCustomError,
+    Error = ServerFnError,
   >
 {
   type Out: Send + Sync + 'static;

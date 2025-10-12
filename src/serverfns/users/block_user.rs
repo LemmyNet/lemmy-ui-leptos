@@ -23,7 +23,7 @@ async fn block_user(id: PersonId, block: bool) -> Result<BlockPersonResponse, Se
       jwt,
     })
     .await
-    .map_err(|e| ServerFnError::ServerError(e.to_string()))
+    .map_err(ServerFnError::new)
 }
 
 pub fn create_block_user_action() -> ServerAction<BlockUser> {
