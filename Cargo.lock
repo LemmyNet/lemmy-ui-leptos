@@ -3031,9 +3031,9 @@ dependencies = [
 
 [[package]]
 name = "pretty-num"
-version = "0.1.0"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2bfff55c3353ff43605263111dcc4dee89b5e09fc8660f174c53e980d8db8cf"
+checksum = "3252dc88fb63107b2a0470c9d371a74b2389dd07cdf8306e1c9904676496396a"
 
 [[package]]
 name = "prettyplease"
