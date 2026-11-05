@@ -3,7 +3,7 @@ use leptos_meta::MetaTags;
 
 cfg_if! {
     if #[cfg(feature = "ssr")] {
-        use lemmy_ui_leptos::{App, cookie_middleware::cookie_middleware, host::get_client};
+        use lemmy_ui_leptos::{App, cookie_middleware::{cookie_middleware, session_key}, host::get_client};
         use actix_files::Files;
         use actix_web::{*, App as ActixApp};
         use leptos::prelude::*;
@@ -31,6 +31,11 @@ cfg_if! {
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             let conf = get_configuration(None).unwrap();
             let addr = conf.leptos_options.site_addr;
+            // Checked once, before binding: without a key a release build doesn't start.
+            let session_key = session_key().unwrap_or_else(|error| {
+                eprintln!("error: {error}");
+                std::process::exit(1);
+            });
 
             HttpServer::new(move || {
                 let routes = generate_route_list(App);
@@ -39,7 +44,7 @@ cfg_if! {
 
                 ActixApp::new()
                     .route("/serverfn/{tail:.*}", leptos_actix::handle_server_fns())
-                    .wrap(cookie_middleware())
+                    .wrap(cookie_middleware(session_key.clone()))
                     .service(favicon)
                     .service(icons)
                     .leptos_routes(

@@ -32,6 +32,8 @@ Create the environment variables to point to your instance and specify Tailwind 
 export LEPTOS_TAILWIND_VERSION=v3.4.1
 export INTERNAL_HOST=localhost:8536
 export HTTPS=false
+# Release builds only (debug builds fall back to a fixed development key):
+# export LEMMY_UI_SESSION_KEY="$(openssl rand -base64 64)"
 ```
 
 Compile and run with:
