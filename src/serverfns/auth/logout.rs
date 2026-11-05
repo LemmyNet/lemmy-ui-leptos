@@ -1,9 +1,10 @@
-use lemmy_client::LemmyRequest;
-use leptos::prelude::{server_fn::error::NoCustomError, *};
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn logout() -> Result<(), ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
+  use lemmy_client::LemmyRequest;
+  use leptos::prelude::server_fn::error::NoCustomError;
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;
