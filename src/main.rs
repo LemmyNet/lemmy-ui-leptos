@@ -53,9 +53,13 @@ cfg_if! {
                                 <meta charset="utf-8" />
                                 <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" />
 
-                                // debug where there is no visible console (mobile/live/desktop)
-                                <script src="//cdn.jsdelivr.net/npm/eruda"/>
-                                <script>eruda.init();</script>
+                                // debug where there is no visible console (mobile/live/desktop);
+                                // debug builds only: a release build must not load third-party code
+                                // or send its visitors' addresses to a CDN
+                                {cfg!(debug_assertions).then(|| view! {
+                                    <script src="//cdn.jsdelivr.net/npm/eruda"/>
+                                    <script>"eruda.init();"</script>
+                                })}
 
                                 <meta name="description" content="Lemmy-UI-Leptos." />
                                 <meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1" />
