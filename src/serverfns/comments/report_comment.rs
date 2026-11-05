@@ -1,15 +1,13 @@
-use lemmy_client::{
-  lemmy_api_common::{
-    comment::{CommentResponse, CreateCommentReport},
-    lemmy_db_schema::newtypes::CommentId,
-  },
-  LemmyRequest,
+use lemmy_client::lemmy_api_common::{
+  comment::CommentResponse,
+  lemmy_db_schema::newtypes::CommentId,
 };
 use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn report_comment(id: CommentId, reason: String) -> Result<CommentResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
+  use lemmy_client::{lemmy_api_common::comment::CreateCommentReport, LemmyRequest};
   let (client, session) = get_client_and_session().await?;
 
   let jwt = session.get_jwt()?;

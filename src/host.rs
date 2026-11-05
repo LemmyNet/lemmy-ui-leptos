@@ -1,4 +1,6 @@
-use crate::constants::{HTTPS, INTERNAL_HOST};
+use crate::constants::HTTPS;
+#[cfg(feature = "ssr")]
+use crate::constants::INTERNAL_HOST;
 use cfg_if::cfg_if;
 use lemmy_client::{ClientOptions, LemmyClient};
 

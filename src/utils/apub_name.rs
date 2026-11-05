@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use std::str::FromStr;
 
 pub fn create_user_apub_name(name: &str, actor_id: &str) -> String {
   create_apub_name::<'@'>(name, actor_id).unwrap_or_default()
@@ -17,6 +16,7 @@ fn create_apub_name<const PREFIX: char>(name: &str, actor_id: &str) -> Option<St
   cfg_if! {
       if #[cfg(feature = "ssr")] {
         use actix_web::http::Uri;
+        use std::str::FromStr;
         let url = Uri::from_str(actor_id).ok()?;
         let instance = url.host().expect("No host name in actor id");
       } else {

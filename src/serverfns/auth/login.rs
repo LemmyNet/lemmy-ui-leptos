@@ -1,10 +1,10 @@
-use crate::constants::AUTH_COOKIE;
-use leptos::prelude::{server_fn::error::NoCustomError, *};
+use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 pub async fn login(username_or_email: String, password: String) -> Result<(), ServerFnError> {
-  use crate::utils::get_client_and_session;
+  use crate::{constants::AUTH_COOKIE, utils::get_client_and_session};
   use lemmy_client::lemmy_api_common::person::Login as LoginBody;
+  use leptos::prelude::server_fn::error::NoCustomError;
 
   let (client, session) = get_client_and_session().await?;
 

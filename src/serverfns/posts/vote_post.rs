@@ -1,16 +1,11 @@
 use crate::utils::types::ServerActionFn;
-use lemmy_client::{
-  lemmy_api_common::{
-    lemmy_db_schema::newtypes::PostId,
-    post::{CreatePostLike, PostResponse},
-  },
-  LemmyRequest,
-};
+use lemmy_client::lemmy_api_common::{lemmy_db_schema::newtypes::PostId, post::PostResponse};
 use leptos::prelude::*;
 
 #[server(prefix = "/serverfn")]
 async fn vote_post(id: PostId, score: i16) -> Result<PostResponse, ServerFnError> {
   use crate::utils::{get_client_and_session, GetJwt};
+  use lemmy_client::{lemmy_api_common::post::CreatePostLike, LemmyRequest};
 
   let (client, session) = get_client_and_session().await?;
 

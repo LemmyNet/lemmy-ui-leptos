@@ -21,6 +21,7 @@ pub use markdown::markdown_to_html;
 
 #[cfg(feature = "ssr")]
 mod get_client_and_session;
+#[cfg(feature = "ssr")]
 use crate::constants::AUTH_COOKIE;
 #[cfg(feature = "ssr")]
 pub use get_client_and_session::*;
