@@ -1,3 +1,5 @@
+// Leptos view types nest deeply; rustc 1.99 overflows the default limit (128) building them.
+#![recursion_limit = "256"]
 #![allow(clippy::empty_docs)]
 
 mod constants;
