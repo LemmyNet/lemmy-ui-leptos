@@ -29,7 +29,7 @@ This project does yet not handle multiple versions of the Lemmy API gracefully. 
 Create the environment variables to point to your instance and specify Tailwind version (defaults shown here):
 
 ```
-export LEPTOS_TAILWIND_VERSION=v3.4.1
+export LEPTOS_TAILWIND_VERSION=v4.0.14
 export INTERNAL_HOST=localhost:8536
 export HTTPS=false
 ```
